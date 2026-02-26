@@ -4,19 +4,22 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { toast } from "sonner@2.0.3";
+import { post } from "../../lib/api";
 
 interface ResetPasswordPageProps {
   onNavigate: (page: string) => void;
+  token: string | null;
 }
 
-export function ResetPasswordPage({ onNavigate }: ResetPasswordPageProps) {
+export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!password || !confirmPassword) {
       toast.error("Please fill in all fields");
       return;
@@ -32,9 +35,21 @@ export function ResetPasswordPage({ onNavigate }: ResetPasswordPageProps) {
       return;
     }
 
-    // Simulate password reset
-    setSubmitted(true);
-    toast.success("Password reset successfully!");
+    if (!token) {
+      toast.error("Invalid or missing reset token");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await post("/api/v1/auth/reset-password", { token, password });
+      setSubmitted(true);
+      toast.success("Password reset successfully!");
+    } catch (err: any) {
+      toast.error(err.message || "Reset failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -101,9 +116,10 @@ export function ResetPasswordPage({ onNavigate }: ResetPasswordPageProps) {
                 <Button
                   type="submit"
                   size="lg"
+                  disabled={isLoading}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  Reset Password
+                  {isLoading ? "Resetting..." : "Reset Password"}
                 </Button>
               </form>
             </>

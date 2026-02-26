@@ -6,13 +6,15 @@ import { Label } from "../ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Separator } from "../ui/separator";
 import { toast } from "sonner@2.0.3";
+import { API_URL } from "../../lib/api";
 
 interface LoginPageProps {
   onNavigate: (page: string) => void;
-  onLogin: (email: string, password: string, userType: "buyer" | "seller") => void;
+  onLogin: (email: string, password: string) => Promise<void>;
+  onRegister: (name: string, email: string, password: string, userType: "buyer" | "seller") => Promise<void>;
 }
 
-export function LoginPage({ onNavigate, onLogin }: LoginPageProps) {
+export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
   const [userType, setUserType] = useState<"buyer" | "seller">("buyer");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -20,17 +22,25 @@ export function LoginPage({ onNavigate, onLogin }: LoginPageProps) {
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirm, setRegisterConfirm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginEmail || !loginPassword) {
       toast.error("Please fill in all fields");
       return;
     }
-    onLogin(loginEmail, loginPassword, "buyer");
+    setIsLoading(true);
+    try {
+      await onLogin(loginEmail, loginPassword);
+    } catch (err: any) {
+      toast.error(err.message || "Login failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!registerName || !registerEmail || !registerPassword || !registerConfirm) {
       toast.error("Please fill in all fields");
@@ -44,7 +54,14 @@ export function LoginPage({ onNavigate, onLogin }: LoginPageProps) {
       toast.error("Password must be at least 6 characters");
       return;
     }
-    onLogin(registerEmail, registerPassword, userType);
+    setIsLoading(true);
+    try {
+      await onRegister(registerName, registerEmail, registerPassword, userType);
+    } catch (err: any) {
+      toast.error(err.message || "Registration failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -148,9 +165,10 @@ export function LoginPage({ onNavigate, onLogin }: LoginPageProps) {
                   <Button
                     type="submit"
                     size="lg"
+                    disabled={isLoading}
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   >
-                    Sign In
+                    {isLoading ? "Signing in..." : "Sign In"}
                   </Button>
                 </div>
 
@@ -162,7 +180,12 @@ export function LoginPage({ onNavigate, onLogin }: LoginPageProps) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <Button variant="outline" className="w-full">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => { window.location.href = `${API_URL}/api/v1/auth/google`; }}
+                  >
                     <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                       <path
                         fill="currentColor"
@@ -183,7 +206,12 @@ export function LoginPage({ onNavigate, onLogin }: LoginPageProps) {
                     </svg>
                     Google
                   </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => { window.location.href = `${API_URL}/api/v1/auth/github`; }}
+                  >
                     <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z" />
                     </svg>
@@ -290,9 +318,10 @@ export function LoginPage({ onNavigate, onLogin }: LoginPageProps) {
                   <Button
                     type="submit"
                     size="lg"
+                    disabled={isLoading}
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   >
-                    Create Account
+                    {isLoading ? "Creating account..." : "Create Account"}
                   </Button>
                 </div>
 

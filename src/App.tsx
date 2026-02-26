@@ -35,6 +35,7 @@ import { HelpPage } from "./components/pages/HelpPage";
 import { ChatPage } from "./components/pages/ChatPage";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner@2.0.3";
+import { get, post } from "./lib/api";
 
 export interface CartItem {
   id: number;
@@ -93,10 +94,32 @@ export default function App() {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Apply dark mode to html element
   useEffect(() => {
     document.documentElement.classList.add("dark");
+  }, []);
+
+  // Restore session on mount + handle reset-password token in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const resetToken = params.get("token");
+    if (resetToken) {
+      setCurrentPage("reset-password");
+      setPageData({ token: resetToken });
+      window.history.replaceState({}, "", "/");
+    }
+
+    get<{ user: User }>("/api/v1/auth/me")
+      .then(({ user: me }) => {
+        setUser(me);
+        setIsAuthenticated(true);
+      })
+      .catch(() => {
+        // Not authenticated, stay as guest
+      })
+      .finally(() => setIsAuthLoading(false));
   }, []);
 
   const navigate = (page: Page, data?: any) => {
@@ -105,26 +128,46 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  const handleLogin = (email: string, password: string, userType: "buyer" | "seller") => {
-    // Simulate authentication
-    const newUser: User = {
-      email,
-      name: email.split("@")[0],
-      userType,
-    };
-    setUser(newUser);
+  const handleLogin = async (email: string, password: string) => {
+    const { user: me } = await post<{ user: User }>("/api/v1/auth/login", { email, password });
+    setUser(me);
     setIsAuthenticated(true);
-    toast.success(`Welcome back, ${newUser.name}!`);
-    
-    // Navigate based on user type
-    if (userType === "seller") {
+    toast.success(`Welcome back, ${me.name}!`);
+    if (me.userType === "seller") {
       navigate("dashboard");
     } else {
       navigate("home");
     }
   };
 
-  const handleLogout = () => {
+  const handleRegister = async (
+    name: string,
+    email: string,
+    password: string,
+    userType: "buyer" | "seller"
+  ) => {
+    const { user: me } = await post<{ user: User }>("/api/v1/auth/register", {
+      name,
+      email,
+      password,
+      userType,
+    });
+    setUser(me);
+    setIsAuthenticated(true);
+    toast.success(`Welcome, ${me.name}!`);
+    if (me.userType === "seller") {
+      navigate("dashboard");
+    } else {
+      navigate("home");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await post("/api/v1/auth/logout");
+    } catch {
+      // Session may have already expired
+    }
     setUser(null);
     setIsAuthenticated(false);
     setCartItems([]);
@@ -355,11 +398,15 @@ export default function App() {
         }
         return <AddProductPage onNavigate={navigate} />;
       case "login":
-        return <LoginPage onNavigate={navigate} onLogin={handleLogin} />;
+        if (isAuthenticated) {
+          setTimeout(() => navigate(user?.userType === "seller" ? "dashboard" : "home"), 0);
+          return null;
+        }
+        return <LoginPage onNavigate={navigate} onLogin={handleLogin} onRegister={handleRegister} />;
       case "forgot-password":
         return <ForgotPasswordPage onNavigate={navigate} />;
       case "reset-password":
-        return <ResetPasswordPage onNavigate={navigate} />;
+        return <ResetPasswordPage onNavigate={navigate} token={pageData?.token ?? null} />;
       case "about":
         return <AboutPage />;
       case "contact":
@@ -446,6 +493,14 @@ export default function App() {
         );
     }
   };
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white/40 text-sm">Loading...</div>
+      </div>
+    );
+  }
 
   const isSellerPage = ["dashboard", "seller-products", "seller-orders", "add-product", "edit-product"].includes(currentPage);
   const isSeller = user?.userType === "seller";

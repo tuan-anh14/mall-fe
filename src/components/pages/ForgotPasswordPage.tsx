@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { toast } from "sonner@2.0.3";
+import { post } from "../../lib/api";
 
 interface ForgotPasswordPageProps {
   onNavigate: (page: string) => void;
@@ -12,17 +13,23 @@ interface ForgotPasswordPageProps {
 export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       toast.error("Please enter your email address");
       return;
     }
-    
-    // Simulate sending reset email
-    setSubmitted(true);
-    toast.success("Password reset link sent to your email!");
+    setIsLoading(true);
+    try {
+      await post("/api/v1/auth/forgot-password", { email });
+      setSubmitted(true);
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -69,9 +76,10 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                 <Button
                   type="submit"
                   size="lg"
+                  disabled={isLoading}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  Send Reset Link
+                  {isLoading ? "Sending..." : "Send Reset Link"}
                 </Button>
               </form>
             </>
