@@ -73,7 +73,9 @@ export function ProductCard({ product, onView, onAddToCart, onAddToWishlist, isI
       {/* Product Info */}
       <div className="p-4 space-y-3">
         <div>
-          <p className="text-xs text-purple-400 mb-1">{product.category}</p>
+          <p className="text-xs text-purple-400 mb-1">
+            {typeof product.category === 'object' ? (product.category as any)?.name || 'Uncategorized' : product.category}
+          </p>
           <h3 className="text-white line-clamp-2 group-hover:text-purple-400 transition-colors">
             {product.name}
           </h3>

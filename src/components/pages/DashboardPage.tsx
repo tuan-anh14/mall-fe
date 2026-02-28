@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { TrendingUp, ShoppingBag, Users, Package, Plus, Search } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
@@ -6,13 +6,56 @@ import { Input } from "../ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-import { dashboardStats, salesData, products, orders } from "../../lib/mock-data";
+import { get } from "../../lib/api";
+import { toast } from "sonner";
+import { ImageWithFallback } from "../figma/ImageWithFallback";
 
 interface DashboardPageProps {
   onNavigate: (page: string, payload?: any) => void;
 }
 
 export function DashboardPage({ onNavigate }: DashboardPageProps) {
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    revenueChange: 0,
+    totalOrders: 0,
+    ordersChange: 0,
+    totalProducts: 0,
+    productsChange: 0,
+    totalCustomers: 0,
+    customersChange: 0,
+  });
+  const [salesData, setSalesData] = useState<any[]>([]);
+  const [recentProducts, setRecentProducts] = useState<any[]>([]);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        setIsLoading(true);
+        const [statsData, salesDataRes, productsRes, ordersRes] = await Promise.all([
+          get("/api/v1/seller/dashboard/stats"),
+          get("/api/v1/seller/dashboard/sales-data"),
+          get("/api/v1/seller/products?limit=6"), // Fetch limited recent products
+          get("/api/v1/seller/orders?limit=5")    // Fetch limited recent orders
+        ]);
+        
+        setStats(statsData || stats);
+        setSalesData(salesDataRes || []);
+        
+        // Ensure array mapping
+        setRecentProducts(productsRes.data || productsRes.items || []);
+        setRecentOrders(ordersRes.items || ordersRes.data || []);
+      } catch (error: any) {
+        toast.error(error.message || "Failed to load dashboard data");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchDashboardData();
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -37,11 +80,13 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               <TrendingUp className="h-6 w-6 text-purple-400" />
             </div>
             <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-              +{dashboardStats.revenueChange}%
+              +{stats.revenueChange}%
             </Badge>
           </div>
           <p className="text-sm text-white/60 mb-1">Total Revenue</p>
-          <p className="text-3xl text-white">${(dashboardStats.totalRevenue / 1000).toFixed(1)}K</p>
+          <p className="text-3xl text-white">
+            ${isLoading ? "..." : (stats.totalRevenue / 1000).toFixed(1)}K
+          </p>
         </div>
 
         <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-2xl p-6">
@@ -50,11 +95,11 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               <ShoppingBag className="h-6 w-6 text-blue-400" />
             </div>
             <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-              +{dashboardStats.ordersChange}%
+              +{stats.ordersChange}%
             </Badge>
           </div>
           <p className="text-sm text-white/60 mb-1">Total Orders</p>
-          <p className="text-3xl text-white">{dashboardStats.totalOrders.toLocaleString()}</p>
+          <p className="text-3xl text-white">{isLoading ? "..." : stats.totalOrders.toLocaleString()}</p>
         </div>
 
         <div className="bg-gradient-to-br from-pink-500/10 to-pink-600/10 border border-pink-500/20 rounded-2xl p-6">
@@ -63,11 +108,11 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               <Package className="h-6 w-6 text-pink-400" />
             </div>
             <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-              +{dashboardStats.productsChange}%
+              +{stats.productsChange}%
             </Badge>
           </div>
           <p className="text-sm text-white/60 mb-1">Products</p>
-          <p className="text-3xl text-white">{dashboardStats.totalProducts}</p>
+          <p className="text-3xl text-white">{isLoading ? "..." : stats.totalProducts}</p>
         </div>
 
         <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-2xl p-6">
@@ -76,11 +121,11 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               <Users className="h-6 w-6 text-orange-400" />
             </div>
             <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-              +{dashboardStats.customersChange}%
+              +{stats.customersChange}%
             </Badge>
           </div>
           <p className="text-sm text-white/60 mb-1">Customers</p>
-          <p className="text-3xl text-white">{(dashboardStats.totalCustomers / 1000).toFixed(1)}K</p>
+          <p className="text-3xl text-white">{isLoading ? "..." : (stats.totalCustomers / 1000).toFixed(1)}K</p>
         </div>
       </div>
 
@@ -186,13 +231,13 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products.slice(0, 6).map((product) => (
+                {recentProducts.slice(0, 6).map((product) => (
                   <TableRow key={product.id} className="border-white/10 hover:bg-white/5">
                     <TableCell className="text-white">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-white/5 rounded-lg overflow-hidden">
-                          <img
-                            src={product.image}
+                          <ImageWithFallback
+                            src={product.images?.[0] || ""}
                             alt={product.name}
                             className="w-full h-full object-cover"
                           />
@@ -200,7 +245,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                         <span>{product.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-white/70">{product.category}</TableCell>
+                    <TableCell className="text-white/70">{product.category?.name || "Uncategorized"}</TableCell>
                     <TableCell className="text-white">${product.price}</TableCell>
                     <TableCell>
                       <Badge
@@ -261,12 +306,14 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orders.map((order) => (
+                {recentOrders.slice(0, 5).map((order) => (
                   <TableRow key={order.id} className="border-white/10 hover:bg-white/5">
                     <TableCell className="text-white">{order.id}</TableCell>
-                    <TableCell className="text-white/70">{order.date}</TableCell>
-                    <TableCell className="text-white/70">Customer #{Math.floor(Math.random() * 1000)}</TableCell>
-                    <TableCell className="text-white">${order.total.toFixed(2)}</TableCell>
+                    <TableCell className="text-white/70">{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-white/70">
+                      {order.user?.firstName ? `${order.user.firstName} ${order.user.lastName}` : `Customer #${order.userId?.substring(0,4) || "Unknown"}`}
+                    </TableCell>
+                    <TableCell className="text-white">${order.totalAmount}</TableCell>
                     <TableCell>
                       <Badge
                         className={

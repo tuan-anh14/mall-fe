@@ -4,7 +4,7 @@ import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { motion } from "motion/react";
 import { products } from "../../lib/mock-data";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import { WishlistItem } from "../../App";
 
 interface WishlistPageProps {
@@ -104,7 +104,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                     <div className="p-4">
                       <div className="mb-2">
                         <Badge variant="outline" className="border-white/20 text-white/60 text-xs mb-2">
-                          {item.product.category}
+                          {typeof item.product.category === 'object' ? (item.product.category as any)?.name || 'Uncategorized' : item.product.category}
                         </Badge>
                       </div>
                       <h3

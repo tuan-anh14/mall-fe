@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Package, Truck, CheckCircle, Clock, Filter } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -6,8 +6,8 @@ import { Badge } from "../ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { orders, products } from "../../lib/mock-data";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
+import { get, put } from "../../lib/api";
 
 interface SellerOrdersPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -17,18 +17,32 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  const getOrdersWithDetails = () => {
-    return orders.map((order) => ({
-      ...order,
-      customer: `Customer #${Math.floor(Math.random() * 1000)}`,
-      items: order.items.map((item) => ({
-        ...item,
-        product: products.find((p) => p.id === item.productId)!,
-      })),
-    }));
+  const [allOrders, setAllOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      const data = await get("/api/v1/seller/orders");
+      // Mapped to match UI structure expectations
+      const mappedOrders = (data.items || data || []).map((order: any) => ({
+        ...order,
+        date: new Date(order.createdAt).toLocaleDateString(),
+        customer: order.user?.firstName ? `${order.user.firstName} ${order.user.lastName}` : `Customer #${order.userId?.substring(0,4) || 'Unknown'}`,
+        items: order.orderItems || [],
+        total: order.totalAmount || 0,
+      }));
+      setAllOrders(mappedOrders);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to fetch orders");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const allOrders = getOrdersWithDetails();
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const filteredOrders = allOrders.filter((order) => {
     const matchesSearch = 
@@ -40,12 +54,18 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
     return matchesSearch && matchesStatus;
   });
 
-  const pendingOrders = allOrders.filter((o) => o.status === "Processing");
+  const pendingOrders = allOrders.filter((o) => o.status === "Processing" || o.status === "Pending");
   const shippedOrders = allOrders.filter((o) => o.status === "Shipped");
   const deliveredOrders = allOrders.filter((o) => o.status === "Delivered");
 
-  const handleUpdateStatus = (orderId: string, newStatus: string) => {
-    toast.success(`Order ${orderId} status updated to ${newStatus}`);
+  const handleUpdateStatus = async (orderId: string, newStatus: string) => {
+    try {
+      await put(`/api/v1/seller/orders/${orderId}/status`, { status: newStatus });
+      toast.success(`Order ${orderId} status updated to ${newStatus}`);
+      fetchOrders();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update order status");
+    }
   };
 
   return (
@@ -185,7 +205,13 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
                         </TableCell>
                       </TableRow>
                     ))
-                  ) : (
+                  ) : isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-white/60 py-8">
+                    Loading orders...
+                  </TableCell>
+                </TableRow>
+              ) : (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center text-white/60 py-8">
                         No orders found
@@ -239,7 +265,13 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
                         </TableCell>
                       </TableRow>
                     ))
-                  ) : (
+                  ) : isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-white/60 py-8">
+                    Loading orders...
+                  </TableCell>
+                </TableRow>
+              ) : (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center text-white/60 py-8">
                         No pending orders
@@ -293,7 +325,13 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
                         </TableCell>
                       </TableRow>
                     ))
-                  ) : (
+                  ) : isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-white/60 py-8">
+                    Loading orders...
+                  </TableCell>
+                </TableRow>
+              ) : (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center text-white/60 py-8">
                         No shipped orders
@@ -340,7 +378,13 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
                         </TableCell>
                       </TableRow>
                     ))
-                  ) : (
+                  ) : isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-white/60 py-8">
+                    Loading orders...
+                  </TableCell>
+                </TableRow>
+              ) : (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center text-white/60 py-8">
                         No delivered orders

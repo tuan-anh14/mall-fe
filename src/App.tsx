@@ -266,7 +266,7 @@ export default function App() {
         return (
           <HomePage 
             onNavigate={navigate}
-            onAddToCart={addToCart}
+            onAddToCart={(product, quantity = 1) => addToCart(product, quantity)}
             onAddToWishlist={addToWishlist}
             isInWishlist={isInWishlist}
           />
@@ -276,7 +276,7 @@ export default function App() {
           <ShopPage 
             onNavigate={navigate} 
             initialCategory={pageData?.category}
-            onAddToCart={addToCart}
+            onAddToCart={(product, quantity = 1) => addToCart(product, quantity)}
             onAddToWishlist={addToWishlist}
             isInWishlist={isInWishlist}
           />
@@ -397,7 +397,7 @@ export default function App() {
             </div>
           );
         }
-        return <AddProductPage onNavigate={navigate} />;
+        return <AddProductPage onNavigate={navigate} initialData={pageData} />;
       case "login":
         if (isAuthenticated) {
           setTimeout(() => navigate(user?.userType === "seller" ? "dashboard" : "home"), 0);

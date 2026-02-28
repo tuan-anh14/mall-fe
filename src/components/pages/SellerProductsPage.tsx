@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, Eye, Package } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
-import { products } from "../../lib/mock-data";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
+import { get, del } from "../../lib/api";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,9 +27,29 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
+  const [products, setProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      const data = await get("/api/v1/seller/products");
+      // The backend returns { data: [...], stats: {...} }
+      setProducts(data.data || data.items || []);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to fetch products");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchQuery.toLowerCase())
+    (product.category?.name || "Uncategorized").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleDeleteClick = (product: any) => {
@@ -37,10 +57,18 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
     setDeleteDialogOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    toast.success(`Product "${selectedProduct?.name}" deleted successfully`);
-    setDeleteDialogOpen(false);
-    setSelectedProduct(null);
+  const handleDeleteConfirm = async () => {
+    if (!selectedProduct) return;
+    try {
+      await del(`/api/v1/seller/products/${selectedProduct.id}`);
+      toast.success(`Product "${selectedProduct.name}" deleted successfully`);
+      fetchProducts();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete product");
+    } finally {
+      setDeleteDialogOpen(false);
+      setSelectedProduct(null);
+    }
   };
 
   return (
@@ -126,16 +154,16 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                     <TableCell className="text-white">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-white/5 rounded-lg overflow-hidden flex-shrink-0">
-                          <ImageWithFallback
-                            src={product.image}
-                            alt={product.name}
-                            className="w-full h-full object-cover"
-                          />
+                            <ImageWithFallback
+                              src={product.images?.[0] || ""}
+                              alt={product.name}
+                              className="w-full h-full object-cover"
+                            />
                         </div>
                         <span className="line-clamp-1">{product.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-white/70">{product.category}</TableCell>
+                    <TableCell className="text-white/70">{product.category?.name || "N/A"}</TableCell>
                     <TableCell className="text-white">${product.price}</TableCell>
                     <TableCell>
                       <Badge
@@ -185,6 +213,12 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                     </TableCell>
                   </TableRow>
                 ))
+              ) : isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-white/60 py-8">
+                    Loading products...
+                  </TableCell>
+                </TableRow>
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center text-white/60 py-8">

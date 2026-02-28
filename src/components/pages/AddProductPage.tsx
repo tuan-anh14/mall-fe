@@ -1,35 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Upload, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
+import { get, post, put } from "../../lib/api";
 
 interface AddProductPageProps {
   onNavigate: (page: string, data?: any) => void;
+  initialData?: any;
 }
 
-export function AddProductPage({ onNavigate }: AddProductPageProps) {
+export function AddProductPage({ onNavigate, initialData }: AddProductPageProps) {
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    category: "",
-    price: "",
-    stock: "",
-    sku: "",
-    brand: "",
+    name: initialData?.name || "",
+    description: initialData?.description || "",
+    category: initialData?.category?.id || "",
+    price: initialData?.price?.toString() || "",
+    stock: initialData?.stock?.toString() || "",
+    sku: initialData?.sku || "",
+    brand: initialData?.brand || "",
   });
 
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>(initialData?.images?.map((img: any) => img.url) || []);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const data = await get("/api/v1/categories");
+        setCategories(data.items || data || []);
+      } catch (error) {
+        toast.error("Failed to load categories for selection");
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation
@@ -38,8 +57,32 @@ export function AddProductPage({ onNavigate }: AddProductPageProps) {
       return;
     }
 
-    toast.success("Product added successfully!");
-    onNavigate("seller-products");
+    try {
+      setIsSubmitting(true);
+      const payload = {
+        name: formData.name,
+        description: formData.description,
+        categoryId: formData.category, // sending the real CategoryID mapped from selection
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock, 10),
+        sku: formData.sku || undefined,
+        brand: formData.brand || undefined,
+        images: images.length > 0 ? images : ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"], // Fallback image
+      };
+
+      if (initialData?.id) {
+        await put(`/api/v1/seller/products/${initialData.id}`, payload);
+        toast.success("Product updated successfully!");
+      } else {
+        await post("/api/v1/seller/products", payload);
+        toast.success("Product added successfully!");
+      }
+      onNavigate("seller-products");
+    } catch (error: any) {
+      toast.error(error.message || `Failed to ${initialData ? "update" : "add"} product`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleImageUpload = () => {
@@ -63,8 +106,10 @@ export function AddProductPage({ onNavigate }: AddProductPageProps) {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Products
         </Button>
-        <h1 className="text-4xl text-white mb-2">Add New Product</h1>
-        <p className="text-white/60">Create a new product listing for your store</p>
+        <h1 className="text-4xl text-white mb-2">{initialData ? "Edit Product" : "Add New Product"}</h1>
+        <p className="text-white/60">
+          {initialData ? "Update your product information" : "Create a new product listing for your store"}
+        </p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -110,19 +155,16 @@ export function AddProductPage({ onNavigate }: AddProductPageProps) {
                 <Label htmlFor="category" className="text-white mb-2 block">
                   Category <span className="text-red-400">*</span>
                 </Label>
-                <Select value={formData.category} onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}>
+                <Select value={formData.category} onValueChange={(value: string) => setFormData((prev) => ({ ...prev, category: value }))}>
                   <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder={isLoadingCategories ? "Loading categories..." : "Select category"} />
                   </SelectTrigger>
                   <SelectContent className="bg-black border-white/10">
-                    <SelectItem value="Electronics">Electronics</SelectItem>
-                    <SelectItem value="Fashion">Fashion</SelectItem>
-                    <SelectItem value="Home & Garden">Home & Garden</SelectItem>
-                    <SelectItem value="Sports">Sports</SelectItem>
-                    <SelectItem value="Books">Books</SelectItem>
-                    <SelectItem value="Toys">Toys</SelectItem>
-                    <SelectItem value="Beauty">Beauty</SelectItem>
-                    <SelectItem value="Accessories">Accessories</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -243,9 +285,10 @@ export function AddProductPage({ onNavigate }: AddProductPageProps) {
           </Button>
           <Button
             type="submit"
+            disabled={isSubmitting}
             className="bg-gradient-to-r from-purple-600 to-blue-600 sm:w-auto w-full"
           >
-            Add Product
+            {isSubmitting ? "Adding..." : "Add Product"}
           </Button>
         </div>
       </form>

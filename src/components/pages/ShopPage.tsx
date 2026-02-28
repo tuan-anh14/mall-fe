@@ -300,7 +300,7 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
                   onView={(id) =>
                     onNavigate("product", products.find((p) => p.id === id))
                   }
-                  onAddToCart={(prod) => onAddToCart?.(prod, 1)}
+                  onAddToCart={(prod) => onAddToCart?.(prod)}
                   onAddToWishlist={onAddToWishlist}
                   isInWishlist={isInWishlist?.(product.id)}
                 />

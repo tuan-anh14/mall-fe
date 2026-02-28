@@ -73,7 +73,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                   <div className="flex-1">
                     <div className="flex justify-between mb-2">
                       <div>
-                        <Badge className="mb-2">{item.product.category}</Badge>
+                        <Badge className="mb-2">{typeof item.product.category === 'object' ? (item.product.category as any)?.name || 'Uncategorized' : item.product.category}</Badge>
                         <h3 className="text-xl text-white mb-1">{item.product.name}</h3>
                         <p className="text-sm text-white/60">{item.product.brand}</p>
                         {(item.selectedColor || item.selectedSize) && (

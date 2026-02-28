@@ -8,7 +8,7 @@ import { Progress } from "../ui/progress";
 import { Separator } from "../ui/separator";
 import { reviews } from "../../lib/mock-data";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface ProductDetailPageProps {
   product: any;
@@ -114,7 +114,7 @@ console.log(
             )}
           </div>
           <div className="grid grid-cols-4 gap-4">
-            {(product.images || [product.image]).map((img, i) => (
+            {(product.images || [product.image]).map((img: string, i: number) => (
               <button
                 key={i}
                 onClick={() => setSelectedImage(i)}
@@ -133,7 +133,7 @@ console.log(
         {/* Product Info */}
         <div className="space-y-6">
           <div>
-            <Badge className="mb-3">{product.category}</Badge>
+            <Badge className="mb-3">{typeof product.category === 'object' ? product.category?.name || 'Uncategorized' : product.category}</Badge>
             <h1 className="text-4xl text-white mb-2">{product.name}</h1>
             <p className="text-white/60">by {product.brand}</p>
           </div>
