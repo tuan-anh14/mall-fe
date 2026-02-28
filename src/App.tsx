@@ -51,6 +51,7 @@ export interface WishlistItem {
 }
 
 export interface User {
+  id: string;
   email: string;
   name: string;
   userType: "buyer" | "seller";
@@ -454,7 +455,7 @@ export default function App() {
             </div>
           );
         }
-        return <SettingsPage onNavigate={navigate} />;
+        return <SettingsPage onNavigate={navigate as (page: string, data?: any) => void} user={user} />;
       case "help":
         return <HelpPage onNavigate={navigate} />;
       case "chat":

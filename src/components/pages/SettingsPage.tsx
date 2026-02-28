@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Settings, User, Bell, Lock, CreditCard, Globe, Moon, Shield, Smartphone, Mail, Eye, MapPin, Plus, Edit, Trash2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
@@ -10,17 +10,51 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "../ui/dialog";
 import { motion } from "motion/react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
+import { get } from "../../lib/api";
+import { User as AuthUser } from "../../App";
 
 interface SettingsPageProps {
   onNavigate: (page: string, data?: any) => void;
+  user?: AuthUser | null;
 }
 
-export function SettingsPage({ onNavigate }: SettingsPageProps) {
+export function SettingsPage({ onNavigate, user }: SettingsPageProps) {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
   const [editingPayment, setEditingPayment] = useState<any>(null);
   const [editingAddress, setEditingAddress] = useState<any>(null);
+
+  const [userData, setUserData] = useState<any>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (user?.id) {
+      get(`/api/v1/users/${user.id}`)
+        .then((data: any) => {
+          setUserData({
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            email: data.email || "",
+            phone: data.phone || "",
+          });
+        })
+        .catch((error) => {
+          toast.error("Failed to load user settings");
+          console.error(error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
+    }
+  }, [user]);
 
   const handleSaveSettings = () => {
     toast.success("Settings saved successfully!");
@@ -59,6 +93,14 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
   const handleDeleteAddress = (id: number) => {
     toast.success("Address deleted successfully!");
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black py-8 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-t-2 border-b-2 border-purple-500 animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black py-8">
@@ -112,7 +154,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                       <Label htmlFor="firstName" className="text-white/80">First Name</Label>
                       <Input
                         id="firstName"
-                        defaultValue="John"
+                        value={userData.firstName}
+                        onChange={(e) => setUserData({...userData, firstName: e.target.value})}
                         className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
@@ -120,7 +163,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                       <Label htmlFor="lastName" className="text-white/80">Last Name</Label>
                       <Input
                         id="lastName"
-                        defaultValue="Doe"
+                        value={userData.lastName}
+                        onChange={(e) => setUserData({...userData, lastName: e.target.value})}
                         className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
@@ -130,7 +174,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                     <Input
                       id="email"
                       type="email"
-                      defaultValue="john.doe@example.com"
+                      value={userData.email}
+                      onChange={(e) => setUserData({...userData, email: e.target.value})}
                       className="bg-white/5 border-white/10 text-white"
                     />
                   </div>
@@ -139,7 +184,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                     <Input
                       id="phone"
                       type="tel"
-                      defaultValue="+1 234 567 8900"
+                      value={userData.phone}
+                      onChange={(e) => setUserData({...userData, phone: e.target.value})}
                       className="bg-white/5 border-white/10 text-white"
                     />
                   </div>
