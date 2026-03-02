@@ -3,20 +3,19 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { motion } from "motion/react";
-import { products } from "../../lib/mock-data";
 import { toast } from "sonner@2.0.3";
 import { WishlistItem } from "../../App";
 
 interface WishlistPageProps {
   onNavigate: (page: string, data?: any) => void;
   wishlistItems: WishlistItem[];
-  onRemoveItem: (itemId: number) => void;
+  onRemoveItem: (productId: string) => void;
   onAddToCart: (product: any, quantity: number) => void;
 }
 
 export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToCart }: WishlistPageProps) {
-  const removeFromWishlist = (itemId: number) => {
-    onRemoveItem(itemId);
+  const removeFromWishlist = (productId: string) => {
+    onRemoveItem(productId);
     toast.success("Removed from wishlist");
   };
 
@@ -51,7 +50,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  wishlistItems.forEach((item) => onRemoveItem(item.id));
+                  wishlistItems.forEach((item) => onRemoveItem(item.productId));
                   toast.success("Wishlist cleared");
                 }}
               >
@@ -89,7 +88,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                         variant="ghost"
                         size="icon"
                         className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm hover:bg-black/70 text-white"
-                        onClick={() => removeFromWishlist(item.id)}
+                        onClick={() => removeFromWishlist(item.productId)}
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -119,7 +118,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                             <svg
                               key={i}
                               className={`w-4 h-4 ${
-                                i < Math.floor(item.product.rating)
+                                i < Math.floor(item.product.rating ?? item.product.ratingAverage ?? 0)
                                   ? "text-yellow-500 fill-current"
                                   : "text-white/20 fill-current"
                               }`}
@@ -129,20 +128,16 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                             </svg>
                           ))}
                         </div>
-                        <span className="text-sm text-white/60">({item.product.reviews})</span>
+                        <span className="text-sm text-white/60">
+                          ({item.product.reviews ?? item.product.reviewCount ?? 0})
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 mb-4">
-                        {item.product.discount > 0 ? (
-                          <>
-                            <span className="text-white">
-                              ${item.product.price - (item.product.price * item.product.discount) / 100}
-                            </span>
-                            <span className="text-sm text-white/40 line-through">
-                              ${item.product.price}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-white">${item.product.price}</span>
+                        <span className="text-white">${Number(item.product.price).toFixed(2)}</span>
+                        {item.product.originalPrice && (
+                          <span className="text-sm text-white/40 line-through">
+                            ${Number(item.product.originalPrice).toFixed(2)}
+                          </span>
                         )}
                       </div>
 
@@ -159,7 +154,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                           variant="ghost"
                           size="icon"
                           className="border border-white/10 hover:bg-white/5"
-                          onClick={() => removeFromWishlist(item.id)}
+                          onClick={() => removeFromWishlist(item.productId)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -191,62 +186,6 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
               Continue Shopping
             </Button>
           </motion.div>
-        )}
-
-        {/* Recommendations Section */}
-        {wishlistItems.length > 0 && (
-          <div className="mt-16">
-            <div className="mb-6">
-              <h2 className="text-white mb-2">You might also like</h2>
-              <p className="text-white/60">Based on your wishlist items</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {products.slice(4, 8).map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className="bg-white/5 border-white/10 hover:border-white/20 transition-all group overflow-hidden cursor-pointer">
-                    <CardContent className="p-0" onClick={() => onNavigate("product", product)}>
-                      <div className="relative aspect-square overflow-hidden bg-white/5">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                        {product.discount > 0 && (
-                          <Badge className="absolute top-3 left-3 bg-red-500">
-                            -{product.discount}%
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <h3 className="text-white text-sm mb-2 line-clamp-2">
-                          {product.name}
-                        </h3>
-                        <div className="flex items-center gap-2">
-                          {product.discount > 0 ? (
-                            <>
-                              <span className="text-white">
-                                ${product.price - (product.price * product.discount) / 100}
-                              </span>
-                              <span className="text-xs text-white/40 line-through">
-                                ${product.price}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="text-white">${product.price}</span>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
         )}
       </div>
     </div>

@@ -1,5 +1,21 @@
-import { useState } from "react";
-import { Settings, User, Bell, Lock, CreditCard, Globe, Moon, Shield, Smartphone, Mail, Eye, MapPin, Plus, Edit, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Settings,
+  User,
+  Bell,
+  Lock,
+  CreditCard,
+  Globe,
+  Moon,
+  Shield,
+  Smartphone,
+  Mail,
+  Eye,
+  MapPin,
+  Plus,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -7,23 +23,233 @@ import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
 import { Separator } from "../ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "../ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../ui/dialog";
 import { motion } from "motion/react";
 import { toast } from "sonner@2.0.3";
+import { get, put, post, del } from "../../lib/api";
 
 interface SettingsPageProps {
   onNavigate: (page: string, data?: any) => void;
 }
 
-export function SettingsPage({ onNavigate }: SettingsPageProps) {
-  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
-  const [addressDialogOpen, setAddressDialogOpen] = useState(false);
-  const [editingPayment, setEditingPayment] = useState<any>(null);
-  const [editingAddress, setEditingAddress] = useState<any>(null);
+interface Address {
+  id: string;
+  label: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+  isDefault: boolean;
+}
 
-  const handleSaveSettings = () => {
-    toast.success("Settings saved successfully!");
+interface NotificationSettings {
+  emailNotifications: boolean;
+  orderUpdates: boolean;
+  promotions: boolean;
+  newsletter: boolean;
+  twoFactorAuth: boolean;
+  loginAlerts: boolean;
+}
+
+interface AddressFormState {
+  label: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+}
+
+const defaultAddressForm: AddressFormState = {
+  label: "",
+  street: "",
+  city: "",
+  state: "",
+  zip: "",
+  country: "United States",
+};
+
+export function SettingsPage({ onNavigate }: SettingsPageProps) {
+  // Profile state
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  // Addresses state
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
+  const [addressDialogOpen, setAddressDialogOpen] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+  const [addressForm, setAddressForm] = useState<AddressFormState>(defaultAddressForm);
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
+
+  // Notification settings state
+  const [notifSettings, setNotifSettings] = useState<NotificationSettings>({
+    emailNotifications: false,
+    orderUpdates: false,
+    promotions: false,
+    newsletter: false,
+    twoFactorAuth: false,
+    loginAlerts: false,
+  });
+  const [isSavingNotif, setIsSavingNotif] = useState(false);
+
+  // Payment dialog state (UI only — no real payment API)
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [editingPayment, setEditingPayment] = useState<any>(null);
+
+  // Load profile on mount
+  useEffect(() => {
+    loadProfile();
+    loadAddresses();
+    loadNotifSettings();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const res = await get<{
+        id: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone?: string;
+        avatar?: string;
+        settings?: NotificationSettings;
+      }>("/api/v1/users/me");
+      setFirstName(res.firstName ?? "");
+      setLastName(res.lastName ?? "");
+      setEmail(res.email ?? "");
+      setPhone(res.phone ?? "");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to load profile");
+    }
+  };
+
+  const loadAddresses = async () => {
+    setIsLoadingAddresses(true);
+    try {
+      const res = await get<{ addresses: Address[] }>("/api/v1/users/me/addresses");
+      setAddresses(res.addresses ?? []);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to load addresses");
+    } finally {
+      setIsLoadingAddresses(false);
+    }
+  };
+
+  const loadNotifSettings = async () => {
+    try {
+      const res = await get<NotificationSettings>("/api/v1/users/me/settings");
+      setNotifSettings({
+        emailNotifications: res.emailNotifications ?? false,
+        orderUpdates: res.orderUpdates ?? false,
+        promotions: res.promotions ?? false,
+        newsletter: res.newsletter ?? false,
+        twoFactorAuth: res.twoFactorAuth ?? false,
+        loginAlerts: res.loginAlerts ?? false,
+      });
+    } catch (err: any) {
+      toast.error(err.message || "Failed to load notification settings");
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    setIsSavingProfile(true);
+    try {
+      await put("/api/v1/users/me", { firstName, lastName, phone });
+      toast.success("Profile updated successfully!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save profile");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const handleAddAddress = () => {
+    setEditingAddress(null);
+    setAddressForm(defaultAddressForm);
+    setAddressDialogOpen(true);
+  };
+
+  const handleEditAddress = (address: Address) => {
+    setEditingAddress(address);
+    setAddressForm({
+      label: address.label,
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      zip: address.zip,
+      country: address.country,
+    });
+    setAddressDialogOpen(true);
+  };
+
+  const handleSaveAddress = async () => {
+    if (!addressForm.label || !addressForm.street || !addressForm.city) {
+      toast.error("Please fill in required fields (label, street, city)");
+      return;
+    }
+    setIsSavingAddress(true);
+    try {
+      if (editingAddress) {
+        const updated = await put<Address>(
+          `/api/v1/users/me/addresses/${editingAddress.id}`,
+          addressForm
+        );
+        setAddresses((prev) =>
+          prev.map((a) => (a.id === editingAddress.id ? updated : a))
+        );
+        toast.success("Address updated!");
+      } else {
+        const created = await post<Address>("/api/v1/users/me/addresses", addressForm);
+        setAddresses((prev) => [...prev, created]);
+        toast.success("Address added!");
+      }
+      setAddressDialogOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save address");
+    } finally {
+      setIsSavingAddress(false);
+    }
+  };
+
+  const handleDeleteAddress = async (id: string) => {
+    try {
+      await del(`/api/v1/users/me/addresses/${id}`);
+      setAddresses((prev) => prev.filter((a) => a.id !== id));
+      toast.success("Address deleted successfully!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete address");
+    }
+  };
+
+  const handleSaveNotifSettings = async () => {
+    setIsSavingNotif(true);
+    try {
+      await put("/api/v1/users/me/settings", notifSettings);
+      toast.success("Notification preferences saved!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save notification settings");
+    } finally {
+      setIsSavingNotif(false);
+    }
   };
 
   const handleAddPayment = () => {
@@ -41,23 +267,12 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
     setPaymentDialogOpen(false);
   };
 
-  const handleAddAddress = () => {
-    setEditingAddress(null);
-    setAddressDialogOpen(true);
+  const updateAddressForm = (field: keyof AddressFormState, value: string) => {
+    setAddressForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleEditAddress = (address: any) => {
-    setEditingAddress(address);
-    setAddressDialogOpen(true);
-  };
-
-  const handleSaveAddress = () => {
-    toast.success(editingAddress ? "Address updated!" : "Address added!");
-    setAddressDialogOpen(false);
-  };
-
-  const handleDeleteAddress = (id: number) => {
-    toast.success("Address deleted successfully!");
+  const toggleNotif = (field: keyof NotificationSettings) => {
+    setNotifSettings((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   return (
@@ -96,6 +311,7 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
+              {/* Personal Information */}
               <Card className="bg-white/5 border-white/10">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
@@ -112,7 +328,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                       <Label htmlFor="firstName" className="text-white/80">First Name</Label>
                       <Input
                         id="firstName"
-                        defaultValue="John"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
                         className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
@@ -120,7 +337,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                       <Label htmlFor="lastName" className="text-white/80">Last Name</Label>
                       <Input
                         id="lastName"
-                        defaultValue="Doe"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
                         className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
@@ -130,8 +348,9 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                     <Input
                       id="email"
                       type="email"
-                      defaultValue="john.doe@example.com"
-                      className="bg-white/5 border-white/10 text-white"
+                      value={email}
+                      readOnly
+                      className="bg-white/5 border-white/10 text-white opacity-70 cursor-not-allowed"
                     />
                   </div>
                   <div className="space-y-2">
@@ -139,19 +358,22 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                     <Input
                       id="phone"
                       type="tel"
-                      defaultValue="+1 234 567 8900"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
                       className="bg-white/5 border-white/10 text-white"
                     />
                   </div>
                   <Button
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                    onClick={handleSaveSettings}
+                    onClick={handleSaveProfile}
+                    disabled={isSavingProfile}
                   >
-                    Save Changes
+                    {isSavingProfile ? "Saving..." : "Save Changes"}
                   </Button>
                 </CardContent>
               </Card>
 
+              {/* Payment Methods */}
               <Card className="bg-white/5 border-white/10">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
@@ -174,16 +396,16 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                           <p className="text-sm text-white/60">Expires 12/25</p>
                         </div>
                       </div>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="sm"
                         onClick={() => handleEditPayment({ type: "Visa", last4: "4242", expiry: "12/25" })}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                     </div>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="w-full border-white/10 text-white hover:bg-white/5"
                       onClick={handleAddPayment}
                     >
@@ -207,83 +429,65 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-start justify-between p-4 rounded-lg bg-white/5 border border-white/10">
-                      <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
-                          <MapPin className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="text-white">Home</p>
-                            <span className="text-xs px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full">Default</span>
+                    {isLoadingAddresses ? (
+                      <div className="text-center py-4 text-white/40 text-sm">
+                        Loading addresses...
+                      </div>
+                    ) : addresses.length === 0 ? (
+                      <div className="text-center py-4 text-white/40 text-sm">
+                        No addresses saved yet
+                      </div>
+                    ) : (
+                      addresses.map((address) => (
+                        <div
+                          key={address.id}
+                          className="flex items-start justify-between p-4 rounded-lg bg-white/5 border border-white/10"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                              <MapPin className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="text-white">{address.label}</p>
+                                {address.isDefault && (
+                                  <span className="text-xs px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full">
+                                    Default
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-white/80">{address.street}</p>
+                              <p className="text-sm text-white/60">
+                                {address.city}, {address.state} {address.zip}
+                              </p>
+                              <p className="text-sm text-white/60">{address.country}</p>
+                            </div>
                           </div>
-                          <p className="text-sm text-white/80">123 Main Street</p>
-                          <p className="text-sm text-white/60">New York, NY 10001</p>
-                          <p className="text-sm text-white/60">United States</p>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditAddress(address)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            {!address.isDefault && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-400 hover:text-red-300"
+                                onClick={() => handleDeleteAddress(address.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEditAddress({ 
-                            id: 1, 
-                            label: "Home", 
-                            street: "123 Main Street", 
-                            city: "New York", 
-                            state: "NY", 
-                            zip: "10001", 
-                            country: "United States",
-                            isDefault: true 
-                          })}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
+                      ))
+                    )}
 
-                    <div className="flex items-start justify-between p-4 rounded-lg bg-white/5 border border-white/10">
-                      <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
-                          <MapPin className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="text-white mb-1">Office</p>
-                          <p className="text-sm text-white/80">456 Business Ave, Suite 200</p>
-                          <p className="text-sm text-white/60">San Francisco, CA 94102</p>
-                          <p className="text-sm text-white/60">United States</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEditAddress({ 
-                            id: 2, 
-                            label: "Office", 
-                            street: "456 Business Ave, Suite 200", 
-                            city: "San Francisco", 
-                            state: "CA", 
-                            zip: "94102", 
-                            country: "United States",
-                            isDefault: false 
-                          })}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="text-red-400 hover:text-red-300"
-                          onClick={() => handleDeleteAddress(2)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="w-full border-white/10 text-white hover:bg-white/5"
                       onClick={handleAddAddress}
                     >
@@ -318,7 +522,10 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                       <Label className="text-white">Email Notifications</Label>
                       <p className="text-sm text-white/60">Receive notifications via email</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch
+                      checked={notifSettings.emailNotifications}
+                      onCheckedChange={() => toggleNotif("emailNotifications")}
+                    />
                   </div>
                   <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
@@ -326,7 +533,10 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                       <Label className="text-white">Order Updates</Label>
                       <p className="text-sm text-white/60">Get updates about your orders</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch
+                      checked={notifSettings.orderUpdates}
+                      onCheckedChange={() => toggleNotif("orderUpdates")}
+                    />
                   </div>
                   <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
@@ -334,7 +544,10 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                       <Label className="text-white">Promotional Emails</Label>
                       <p className="text-sm text-white/60">Receive special offers and promotions</p>
                     </div>
-                    <Switch />
+                    <Switch
+                      checked={notifSettings.promotions}
+                      onCheckedChange={() => toggleNotif("promotions")}
+                    />
                   </div>
                   <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
@@ -342,21 +555,28 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                       <Label className="text-white">Price Drop Alerts</Label>
                       <p className="text-sm text-white/60">Get notified when wishlist items go on sale</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch
+                      checked={notifSettings.newsletter}
+                      onCheckedChange={() => toggleNotif("newsletter")}
+                    />
                   </div>
                   <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Push Notifications</Label>
-                      <p className="text-sm text-white/60">Receive push notifications on your device</p>
+                      <Label className="text-white">Login Alerts</Label>
+                      <p className="text-sm text-white/60">Get notified of new login activity</p>
                     </div>
-                    <Switch />
+                    <Switch
+                      checked={notifSettings.loginAlerts}
+                      onCheckedChange={() => toggleNotif("loginAlerts")}
+                    />
                   </div>
                   <Button
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                    onClick={handleSaveSettings}
+                    onClick={handleSaveNotifSettings}
+                    disabled={isSavingNotif}
                   >
-                    Save Preferences
+                    {isSavingNotif ? "Saving..." : "Save Preferences"}
                   </Button>
                 </CardContent>
               </Card>
@@ -407,7 +627,7 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                   </div>
                   <Button
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                    onClick={handleSaveSettings}
+                    onClick={() => toast.success("Password updated!")}
                   >
                     Update Password
                   </Button>
@@ -430,11 +650,17 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                       <Smartphone className="h-5 w-5 text-white/60" />
                       <div>
                         <p className="text-white">Authenticator App</p>
-                        <p className="text-sm text-white/60">Not enabled</p>
+                        <p className="text-sm text-white/60">
+                          {notifSettings.twoFactorAuth ? "Enabled" : "Not enabled"}
+                        </p>
                       </div>
                     </div>
-                    <Button variant="outline" className="border-white/10 text-white hover:bg-white/5">
-                      Enable
+                    <Button
+                      variant="outline"
+                      className="border-white/10 text-white hover:bg-white/5"
+                      onClick={() => toggleNotif("twoFactorAuth")}
+                    >
+                      {notifSettings.twoFactorAuth ? "Disable" : "Enable"}
                     </Button>
                   </div>
                   <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
@@ -549,7 +775,7 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                   </div>
                   <Button
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                    onClick={handleSaveSettings}
+                    onClick={() => toast.success("Preferences saved!")}
                   >
                     Save Preferences
                   </Button>
@@ -594,7 +820,9 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
           <DialogHeader>
             <DialogTitle>{editingPayment ? "Edit Payment Method" : "Add Payment Method"}</DialogTitle>
             <DialogDescription className="text-white/60">
-              {editingPayment ? "Update your payment method details" : "Add a new payment method to your account"}
+              {editingPayment
+                ? "Update your payment method details"
+                : "Add a new payment method to your account"}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -658,9 +886,13 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
       <Dialog open={addressDialogOpen} onOpenChange={setAddressDialogOpen}>
         <DialogContent className="bg-black border-white/10 text-white max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{editingAddress ? "Edit Shipping Address" : "Add Shipping Address"}</DialogTitle>
+            <DialogTitle>
+              {editingAddress ? "Edit Shipping Address" : "Add Shipping Address"}
+            </DialogTitle>
             <DialogDescription className="text-white/60">
-              {editingAddress ? "Update your shipping address details" : "Add a new shipping address to your account"}
+              {editingAddress
+                ? "Update your shipping address details"
+                : "Add a new shipping address to your account"}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -669,7 +901,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
               <Input
                 id="addressLabel"
                 placeholder="Home, Office, etc."
-                defaultValue={editingAddress?.label || ""}
+                value={addressForm.label}
+                onChange={(e) => updateAddressForm("label", e.target.value)}
                 className="bg-white/5 border-white/10 text-white"
               />
             </div>
@@ -678,7 +911,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
               <Input
                 id="street"
                 placeholder="123 Main Street"
-                defaultValue={editingAddress?.street || ""}
+                value={addressForm.street}
+                onChange={(e) => updateAddressForm("street", e.target.value)}
                 className="bg-white/5 border-white/10 text-white"
               />
             </div>
@@ -688,7 +922,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                 <Input
                   id="city"
                   placeholder="New York"
-                  defaultValue={editingAddress?.city || ""}
+                  value={addressForm.city}
+                  onChange={(e) => updateAddressForm("city", e.target.value)}
                   className="bg-white/5 border-white/10 text-white"
                 />
               </div>
@@ -697,7 +932,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                 <Input
                   id="state"
                   placeholder="NY"
-                  defaultValue={editingAddress?.state || ""}
+                  value={addressForm.state}
+                  onChange={(e) => updateAddressForm("state", e.target.value)}
                   className="bg-white/5 border-white/10 text-white"
                 />
               </div>
@@ -708,33 +944,21 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                 <Input
                   id="zip"
                   placeholder="10001"
-                  defaultValue={editingAddress?.zip || ""}
+                  value={addressForm.zip}
+                  onChange={(e) => updateAddressForm("zip", e.target.value)}
                   className="bg-white/5 border-white/10 text-white"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="country" className="text-white/80">Country</Label>
-                <Select defaultValue={editingAddress?.country || "us"}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-950 border-white/10">
-                    <SelectItem value="us">United States</SelectItem>
-                    <SelectItem value="ca">Canada</SelectItem>
-                    <SelectItem value="uk">United Kingdom</SelectItem>
-                    <SelectItem value="au">Australia</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Input
+                  id="country"
+                  placeholder="United States"
+                  value={addressForm.country}
+                  onChange={(e) => updateAddressForm("country", e.target.value)}
+                  className="bg-white/5 border-white/10 text-white"
+                />
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="setDefault"
-                defaultChecked={editingAddress?.isDefault}
-                className="h-4 w-4 rounded border-white/10 bg-white/5"
-              />
-              <Label htmlFor="setDefault" className="text-white/80">Set as default shipping address</Label>
             </div>
           </div>
           <DialogFooter>
@@ -747,9 +971,10 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
             </Button>
             <Button
               onClick={handleSaveAddress}
+              disabled={isSavingAddress}
               className="bg-gradient-to-r from-purple-600 to-blue-600"
             >
-              {editingAddress ? "Update" : "Add"} Address
+              {isSavingAddress ? "Saving..." : editingAddress ? "Update" : "Add"} Address
             </Button>
           </DialogFooter>
         </DialogContent>

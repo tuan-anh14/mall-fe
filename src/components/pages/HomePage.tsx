@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { ProductCard } from "../ProductCard";
 import { motion, AnimatePresence } from "motion/react";
-import { products, categories } from "../../lib/mock-data";
+import { get } from "../../lib/api";
 
 interface HomePageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -14,31 +14,71 @@ interface HomePageProps {
 }
 
 export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlist }: HomePageProps) {
-  const featuredProducts = products.filter((p) => p.featured);
-  const trendingProducts = products.filter((p) => p.trending);
-  
-  // Auto-rotate featured product every 10 seconds
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [trendingProducts, setTrendingProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Auto-rotate featured product every 5 seconds
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
-  const featuredProductsForHero = featuredProducts.length > 0 ? featuredProducts : products.slice(0, 5);
+  const featuredProductsForHero = featuredProducts.length > 0 ? featuredProducts : [];
 
   useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [featuredRes, trendingRes, categoriesRes] = await Promise.all([
+          get<{ products: any[]; total: number; page: number; limit: number; totalPages: number }>(
+            "/api/v1/products?featured=true&limit=6"
+          ),
+          get<{ products: any[]; total: number; page: number; limit: number; totalPages: number }>(
+            "/api/v1/products?trending=true&limit=6"
+          ),
+          get<{ categories: any[] }>("/api/v1/categories"),
+        ]);
+
+        setFeaturedProducts(featuredRes.products ?? []);
+        setTrendingProducts(trendingRes.products ?? []);
+        setCategories(categoriesRes.categories ?? []);
+      } catch (err) {
+        console.error("Failed to load homepage data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (featuredProductsForHero.length === 0) return;
     const interval = setInterval(() => {
-      setCurrentFeaturedIndex((prevIndex) => 
+      setCurrentFeaturedIndex((prevIndex) =>
         (prevIndex + 1) % featuredProductsForHero.length
       );
-    }, 5000); // Change every 5 seconds
-
+    }, 5000);
     return () => clearInterval(interval);
   }, [featuredProductsForHero.length]);
 
   const currentProduct = featuredProductsForHero[currentFeaturedIndex];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
+          <p className="text-white/60 text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-50" />
-        
+
         <div className="container mx-auto px-4 py-20 relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -79,59 +119,61 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
               transition={{ duration: 0.6, delay: 0.2 }}
               className="relative hidden lg:block"
             >
-              <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-8">
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={currentFeaturedIndex}
-                    src={currentProduct.image}
-                    alt="Featured Product"
-                    className="w-full h-[500px] object-cover rounded-2xl"
-                    initial={{ opacity: 0, scale: 1.1 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                </AnimatePresence>
-                <div className="absolute bottom-12 left-12 right-12 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-sm text-purple-400">Featured Product</p>
-                    <div className="flex gap-1">
-                      {featuredProductsForHero.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentFeaturedIndex(index)}
-                          className={`h-1.5 rounded-full transition-all ${
-                            index === currentFeaturedIndex 
-                              ? "w-8 bg-purple-400" 
-                              : "w-1.5 bg-white/30 hover:bg-white/50"
-                          }`}
-                          aria-label={`Go to product ${index + 1}`}
-                        />
-                      ))}
-                    </div>
-                  </div>
+              {currentProduct && (
+                <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-8">
                   <AnimatePresence mode="wait">
-                    <motion.div
+                    <motion.img
                       key={currentFeaturedIndex}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <h3 className="text-2xl text-white mb-2">{currentProduct.name}</h3>
-                      <div className="flex items-center justify-between">
-                        <span className="text-3xl text-white">${currentProduct.price}</span>
-                        <Button
-                          onClick={() => onNavigate("product", currentProduct)}
-                          className="bg-gradient-to-r from-purple-600 to-blue-600"
-                        >
-                          View Details
-                        </Button>
-                      </div>
-                    </motion.div>
+                      src={currentProduct.image}
+                      alt="Featured Product"
+                      className="w-full h-[500px] object-cover rounded-2xl"
+                      initial={{ opacity: 0, scale: 1.1 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.5 }}
+                    />
                   </AnimatePresence>
+                  <div className="absolute bottom-12 left-12 right-12 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm text-purple-400">Featured Product</p>
+                      <div className="flex gap-1">
+                        {featuredProductsForHero.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentFeaturedIndex(index)}
+                            className={`h-1.5 rounded-full transition-all ${
+                              index === currentFeaturedIndex
+                                ? "w-8 bg-purple-400"
+                                : "w-1.5 bg-white/30 hover:bg-white/50"
+                            }`}
+                            aria-label={`Go to product ${index + 1}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentFeaturedIndex}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <h3 className="text-2xl text-white mb-2">{currentProduct.name}</h3>
+                        <div className="flex items-center justify-between">
+                          <span className="text-3xl text-white">${currentProduct.price}</span>
+                          <Button
+                            onClick={() => onNavigate("product", currentProduct)}
+                            className="bg-gradient-to-r from-purple-600 to-blue-600"
+                          >
+                            View Details
+                          </Button>
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
                 </div>
-              </div>
+              )}
             </motion.div>
           </div>
         </div>
@@ -198,7 +240,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
               <h3 className="text-white group-hover:text-purple-400 transition-colors">
                 {cat.name}
               </h3>
-              <p className="text-xs text-white/50 mt-1">{cat.count} items</p>
+              <p className="text-xs text-white/50 mt-1">{cat.productCount} items</p>
             </motion.button>
           ))}
         </div>
@@ -222,7 +264,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
             <ProductCard
               key={product.id}
               product={product}
-              onView={(id) => onNavigate("product", products.find((p) => p.id === id))}
+              onView={(id) => onNavigate("product", featuredProducts.find((p) => p.id === id))}
               onAddToCart={(prod) => onAddToCart?.(prod, 1)}
               onAddToWishlist={onAddToWishlist}
               isInWishlist={isInWishlist?.(product.id)}
@@ -271,7 +313,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
             <ProductCard
               key={product.id}
               product={product}
-              onView={(id) => onNavigate("product", products.find((p) => p.id === id))}
+              onView={(id) => onNavigate("product", trendingProducts.find((p) => p.id === id))}
               onAddToCart={(prod) => onAddToCart?.(prod, 1)}
               onAddToWishlist={onAddToWishlist}
               isInWishlist={isInWishlist?.(product.id)}

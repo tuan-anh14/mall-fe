@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, Heart, Share2, Truck, Shield, RotateCcw, MessageCircle, Minus, Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
@@ -6,9 +6,45 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Progress } from "../ui/progress";
 import { Separator } from "../ui/separator";
-import { reviews } from "../../lib/mock-data";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { toast } from "sonner@2.0.3";
+import { get } from "../../lib/api";
+
+interface ReviewUser {
+  id: string;
+  name: string;
+  avatar?: string;
+}
+
+interface Review {
+  id: string;
+  productId: string;
+  rating: number;
+  comment: string;
+  helpful: number;
+  user: ReviewUser;
+  createdAt: string;
+}
+
+interface RatingBreakdownItem {
+  rating: number;
+  count: number;
+  percentage: number;
+}
+
+interface RelatedProduct {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  discount?: number;
+  image?: string;
+  images?: string[];
+  rating?: number;
+  reviews?: number;
+  category?: string;
+  brand?: string;
+}
 
 interface ProductDetailPageProps {
   product: any;
@@ -19,13 +55,13 @@ interface ProductDetailPageProps {
   isInWishlist: boolean;
 }
 
-export function ProductDetailPage({ 
-  product, 
-  onNavigate, 
-  onAddToCart, 
-  onAddToWishlist, 
+export function ProductDetailPage({
+  product,
+  onNavigate,
+  onAddToCart,
+  onAddToWishlist,
   onRemoveFromWishlist,
-  isInWishlist: initialIsInWishlist 
+  isInWishlist: initialIsInWishlist
 }: ProductDetailPageProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -33,11 +69,51 @@ export function ProductDetailPage({
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || null);
   const [isLiked, setIsLiked] = useState(initialIsInWishlist);
 
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [ratingBreakdown, setRatingBreakdown] = useState<RatingBreakdownItem[]>([]);
+  const [ratingAverage, setRatingAverage] = useState<number>(product.rating ?? 0);
 
-console.log(
-  product
-);
+  const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
+  const [relatedLoading, setRelatedLoading] = useState(false);
 
+  useEffect(() => {
+    if (!product.id) return;
+
+    const fetchReviews = async () => {
+      setReviewsLoading(true);
+      try {
+        const data = await get(`/api/v1/reviews/products/${product.id}?page=1&limit=10`);
+        setReviews(data.reviews ?? []);
+        setRatingBreakdown(data.breakdown ?? []);
+        if (data.ratingAverage !== undefined) {
+          setRatingAverage(data.ratingAverage);
+        }
+      } catch {
+        // silently fall back to empty state
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
+    const fetchRelated = async () => {
+      setRelatedLoading(true);
+      try {
+        const data = await get(`/api/v1/products/${product.id}/related`);
+        const items: RelatedProduct[] = Array.isArray(data)
+          ? data
+          : (data.products ?? []);
+        setRelatedProducts(items);
+      } catch {
+        // silently fall back to empty state
+      } finally {
+        setRelatedLoading(false);
+      }
+    };
+
+    fetchReviews();
+    fetchRelated();
+  }, [product.id]);
 
   const handleAddToCart = () => {
     onAddToCart(product, quantity, selectedColor, selectedSize);
@@ -86,14 +162,14 @@ console.log(
     }
   };
 
-  const productReviews = reviews.filter((r) => r.productId === product.id);
+  const getBreakdownPercentage = (star: number): number =>
+    ratingBreakdown.find((b) => b.rating === star)?.percentage ?? 0;
 
-  const ratingDistribution = {
-    5: 65,
-    4: 20,
-    3: 10,
-    2: 3,
-    1: 2,
+  const getAvatarInitials = (name?: string): string => {
+    if (!name) return "?";
+    const parts = name.trim().split(" ");
+    if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "?";
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
   return (
@@ -114,7 +190,7 @@ console.log(
             )}
           </div>
           <div className="grid grid-cols-4 gap-4">
-            {(product.images || [product.image]).map((img, i) => (
+            {(product.images || [product.image]).map((img: string, i: number) => (
               <button
                 key={i}
                 onClick={() => setSelectedImage(i)}
@@ -271,16 +347,16 @@ console.log(
             >
               Add to Cart
             </Button>
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               variant="outline"
               onClick={handleLike}
               className={isLiked ? "border-red-500 text-red-500" : ""}
             >
               <Heart className={`h-5 w-5 ${isLiked ? "fill-red-500" : ""}`} />
             </Button>
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               variant="outline"
               onClick={handleShare}
             >
@@ -288,9 +364,9 @@ console.log(
             </Button>
           </div>
 
-          <Button 
-            size="lg" 
-            variant="outline" 
+          <Button
+            size="lg"
+            variant="outline"
             className="w-full"
             onClick={handleBuyNow}
           >
@@ -365,7 +441,7 @@ console.log(
         <TabsList className="w-full justify-start bg-white/5 border-b border-white/10 rounded-none">
           <TabsTrigger value="description">Description</TabsTrigger>
           <TabsTrigger value="specifications">Specifications</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews ({productReviews.length})</TabsTrigger>
+          <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="description" className="mt-8">
@@ -395,13 +471,13 @@ console.log(
             {/* Rating Summary */}
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
               <div className="text-center mb-6">
-                <div className="text-5xl text-white mb-2">{product.rating}</div>
+                <div className="text-5xl text-white mb-2">{ratingAverage}</div>
                 <div className="flex justify-center mb-2">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       className={`h-5 w-5 ${
-                        i < Math.floor(product.rating)
+                        i < Math.floor(ratingAverage)
                           ? "fill-yellow-400 text-yellow-400"
                           : "text-white/20"
                       }`}
@@ -411,11 +487,13 @@ console.log(
                 <p className="text-white/60">Based on {product.reviews} reviews</p>
               </div>
               <div className="space-y-3">
-                {Object.entries(ratingDistribution).reverse().map(([rating, percentage]) => (
-                  <div key={rating} className="flex items-center gap-3">
-                    <span className="text-sm text-white/60 w-8">{rating}★</span>
-                    <Progress value={percentage as number} className="flex-1" />
-                    <span className="text-sm text-white/60 w-12">{percentage}%</span>
+                {[5, 4, 3, 2, 1].map((star) => (
+                  <div key={star} className="flex items-center gap-3">
+                    <span className="text-sm text-white/60 w-8">{star}★</span>
+                    <Progress value={getBreakdownPercentage(star)} className="flex-1" />
+                    <span className="text-sm text-white/60 w-12">
+                      {getBreakdownPercentage(star)}%
+                    </span>
                   </div>
                 ))}
               </div>
@@ -423,48 +501,100 @@ console.log(
 
             {/* Reviews List */}
             <div className="lg:col-span-2 space-y-6">
-              {productReviews.map((review) => (
-                <div
-                  key={review.id}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-6"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarFallback className="bg-purple-500">
-                          {review.avatar}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-white">{review.user}</p>
-                        <div className="flex items-center gap-2">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-4 w-4 ${
-                                  i < review.rating
-                                    ? "fill-yellow-400 text-yellow-400"
-                                    : "text-white/20"
-                                }`}
-                              />
-                            ))}
+              {reviewsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <p className="text-white/50">Loading reviews...</p>
+                </div>
+              ) : reviews.length === 0 ? (
+                <div className="flex items-center justify-center py-12">
+                  <p className="text-white/50">No reviews yet.</p>
+                </div>
+              ) : (
+                reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="bg-white/5 border border-white/10 rounded-2xl p-6"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarFallback className="bg-purple-500">
+                            {getAvatarInitials(review.user?.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-white">{review.user?.name}</p>
+                          <div className="flex items-center gap-2">
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${
+                                    i < review.rating
+                                      ? "fill-yellow-400 text-yellow-400"
+                                      : "text-white/20"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-sm text-white/50">
+                              {new Date(review.createdAt).toLocaleDateString()}
+                            </span>
                           </div>
-                          <span className="text-sm text-white/50">{review.date}</span>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <p className="text-white/70 mb-4">{review.comment}</p>
-                  <Button variant="ghost" size="sm" className="text-white/50 hover:text-white">
-                    👍 Helpful ({review.helpful})
+                    <p className="text-white/70 mb-4">{review.comment}</p>
+                    <Button variant="ghost" size="sm" className="text-white/50 hover:text-white">
+                      👍 Helpful ({review.helpful})
                     </Button>
-                </div>
-              ))}
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Related Products */}
+      {!relatedLoading && relatedProducts.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-2xl text-white mb-8">Related Products</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {relatedProducts.map((related) => (
+              <div
+                key={related.id}
+                className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 transition-all cursor-pointer"
+                onClick={() => onNavigate("product-detail")}
+              >
+                <div className="aspect-square overflow-hidden">
+                  <ImageWithFallback
+                    src={related.images?.[0] || related.image || ""}
+                    alt={related.name}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-4">
+                  <p className="text-white/60 text-xs mb-1">{related.brand}</p>
+                  <p className="text-white text-sm font-medium line-clamp-2 mb-2">{related.name}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-semibold">${related.price}</span>
+                    {related.originalPrice && (
+                      <span className="text-white/40 text-sm line-through">${related.originalPrice}</span>
+                    )}
+                  </div>
+                  {related.rating !== undefined && (
+                    <div className="flex items-center gap-1 mt-1">
+                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      <span className="text-white/60 text-xs">{related.rating}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

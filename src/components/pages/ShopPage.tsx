@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Grid, List, SlidersHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { ProductCard } from "../ProductCard";
@@ -7,8 +7,8 @@ import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
-import { products, categories } from "../../lib/mock-data";
 import { Badge } from "../ui/badge";
+import { get } from "../../lib/api";
 
 interface ShopPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -17,6 +17,14 @@ interface ShopPageProps {
   onAddToWishlist?: (product: any) => void;
   isInWishlist?: (productId: number) => boolean;
 }
+
+const SORT_MAP: Record<string, string> = {
+  popularity: "popular",
+  "price-low": "price_asc",
+  "price-high": "price_desc",
+  rating: "rating",
+  newest: "newest",
+};
 
 export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWishlist, isInWishlist }: ShopPageProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -27,7 +35,87 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("popularity");
 
-  const brands = Array.from(new Set(products.map((p) => p.brand)));
+  const [products, setProducts] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const [categories, setCategories] = useState<any[]>([]);
+  const [brands, setBrands] = useState<string[]>([]);
+
+  // Debounce price range to avoid firing on every slider tick
+  const priceRangeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [debouncedPriceRange, setDebouncedPriceRange] = useState([0, 3000]);
+
+  const handlePriceRangeChange = (value: number[]) => {
+    setPriceRange(value);
+    if (priceRangeDebounceRef.current) clearTimeout(priceRangeDebounceRef.current);
+    priceRangeDebounceRef.current = setTimeout(() => {
+      setDebouncedPriceRange(value);
+    }, 500);
+  };
+
+  // Fetch categories once on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await get<{ categories: any[] }>("/api/v1/categories");
+        setCategories(res.categories ?? []);
+      } catch (err) {
+        console.error("Failed to load categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Fetch products whenever filters change
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        params.set("limit", "12");
+        params.set("page", "1");
+
+        if (selectedCategories.length === 1) {
+          params.set("category", selectedCategories[0]);
+        }
+        if (selectedBrands.length === 1) {
+          params.set("brand", selectedBrands[0]);
+        }
+        if (debouncedPriceRange[0] > 0) {
+          params.set("minPrice", String(debouncedPriceRange[0]));
+        }
+        if (debouncedPriceRange[1] < 3000) {
+          params.set("maxPrice", String(debouncedPriceRange[1]));
+        }
+        if (sortBy && SORT_MAP[sortBy]) {
+          params.set("sort", SORT_MAP[sortBy]);
+        }
+
+        const res = await get<{ products: any[]; total: number; page: number; limit: number; totalPages: number }>(
+          `/api/v1/products?${params.toString()}`
+        );
+
+        const fetched = res.products ?? [];
+        setProducts(fetched);
+        setTotal(res.total ?? 0);
+
+        // Derive brands from fetched products
+        const uniqueBrands = Array.from(new Set(fetched.map((p: any) => p.brand).filter(Boolean))) as string[];
+        setBrands((prev) => {
+          // Merge with previously known brands so filter options don't disappear
+          const merged = Array.from(new Set([...prev, ...uniqueBrands]));
+          return merged;
+        });
+      } catch (err) {
+        console.error("Failed to load products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [selectedCategories, selectedBrands, debouncedPriceRange, sortBy]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -43,33 +131,12 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
     );
   };
 
-  const filteredProducts = products.filter((product) => {
-    if (selectedCategories.length > 0 && !selectedCategories.includes(product.category)) {
-      return false;
-    }
-    if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) {
-      return false;
-    }
-    if (product.price < priceRange[0] || product.price > priceRange[1]) {
-      return false;
-    }
-    return true;
-  });
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case "price-low":
-        return a.price - b.price;
-      case "price-high":
-        return b.price - a.price;
-      case "rating":
-        return b.rating - a.rating;
-      case "newest":
-        return b.id - a.id;
-      default:
-        return b.reviews - a.reviews;
-    }
-  });
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setSelectedBrands([]);
+    setPriceRange([0, 3000]);
+    setDebouncedPriceRange([0, 3000]);
+  };
 
   const FiltersContent = () => (
     <div className="space-y-6">
@@ -88,7 +155,7 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
                 htmlFor={`cat-${cat.name}`}
                 className="text-sm text-white/70 cursor-pointer"
               >
-                {cat.name} ({cat.count})
+                {cat.name} ({cat.productCount})
               </Label>
             </div>
           ))}
@@ -103,7 +170,7 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
           max={3000}
           step={50}
           value={priceRange}
-          onValueChange={setPriceRange}
+          onValueChange={handlePriceRangeChange}
           className="mb-4"
         />
         <div className="flex items-center justify-between text-sm text-white/70">
@@ -154,11 +221,7 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
       <Button
         variant="outline"
         className="w-full"
-        onClick={() => {
-          setSelectedCategories([]);
-          setSelectedBrands([]);
-          setPriceRange([0, 3000]);
-        }}
+        onClick={clearFilters}
       >
         Clear All Filters
       </Button>
@@ -172,7 +235,7 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
         <div>
           <h1 className="text-3xl text-white mb-2">All Products</h1>
           <p className="text-white/60">
-            Showing {sortedProducts.length} of {products.length} products
+            {loading ? "Loading products..." : `Showing ${products.length} of ${total} products`}
           </p>
         </div>
 
@@ -271,17 +334,17 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
 
         {/* Products Grid */}
         <div className="lg:col-span-3">
-          {sortedProducts.length === 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-24">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-10 h-10 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
+                <p className="text-white/60 text-sm">Loading products...</p>
+              </div>
+            </div>
+          ) : products.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-xl text-white/60">No products found</p>
-              <Button
-                className="mt-4"
-                onClick={() => {
-                  setSelectedCategories([]);
-                  setSelectedBrands([]);
-                  setPriceRange([0, 3000]);
-                }}
-              >
+              <Button className="mt-4" onClick={clearFilters}>
                 Clear Filters
               </Button>
             </div>
@@ -293,7 +356,7 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
                   : "space-y-6"
               }
             >
-              {sortedProducts.map((product) => (
+              {products.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}

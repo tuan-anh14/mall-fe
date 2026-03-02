@@ -6,7 +6,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface ProductCardProps {
   product: {
-    id: number;
+    id: string | number;
     name: string;
     category: string;
     price: number;
@@ -17,7 +17,7 @@ interface ProductCardProps {
     discount?: number;
     stock: number;
   };
-  onView: (id: number) => void;
+  onView: (id: string | number) => void;
   onAddToCart: (product: any) => void;
   onAddToWishlist?: (product: any) => void;
   isInWishlist?: boolean;

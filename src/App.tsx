@@ -35,24 +35,28 @@ import { HelpPage } from "./components/pages/HelpPage";
 import { ChatPage } from "./components/pages/ChatPage";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner@2.0.3";
-import { get, post } from "./lib/api";
+import { get, post, del, put } from "./lib/api";
 
 export interface CartItem {
-  id: number;
+  id: string;
+  productId: string;
   product: any;
   quantity: number;
-  selectedColor?: string;
-  selectedSize?: string;
+  selectedColor?: string | null;
+  selectedSize?: string | null;
 }
 
 export interface WishlistItem {
-  id: number;
+  id: string;
+  productId: string;
   product: any;
 }
 
 export interface User {
+  id?: string;
   email: string;
   name: string;
+  avatar?: string;
   userType: "buyer" | "seller";
 }
 
@@ -112,9 +116,10 @@ export default function App() {
     }
 
     get<{ user: User }>("/api/v1/auth/me")
-      .then(({ user: me }) => {
+      .then(async ({ user: me }) => {
         setUser(me);
         setIsAuthenticated(true);
+        await fetchCartAndWishlist();
       })
       .catch(() => {
         // Not authenticated, stay as guest
@@ -128,10 +133,20 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
+  const fetchCartAndWishlist = async () => {
+    const [cartRes, wishlistRes] = await Promise.allSettled([
+      get<{ items: CartItem[] }>("/api/v1/cart"),
+      get<{ items: WishlistItem[] }>("/api/v1/wishlist"),
+    ]);
+    if (cartRes.status === "fulfilled") setCartItems(cartRes.value.items ?? []);
+    if (wishlistRes.status === "fulfilled") setWishlistItems(wishlistRes.value.items ?? []);
+  };
+
   const handleLogin = async (email: string, password: string) => {
     const { user: me } = await post<{ user: User }>("/api/v1/auth/login", { email, password });
     setUser(me);
     setIsAuthenticated(true);
+    await fetchCartAndWishlist();
     toast.success(`Welcome back, ${me.name}!`);
     if (me.userType === "seller") {
       navigate("dashboard");
@@ -154,6 +169,7 @@ export default function App() {
     });
     setUser(me);
     setIsAuthenticated(true);
+    await fetchCartAndWishlist();
     toast.success(`Welcome, ${me.name}!`);
     if (me.userType === "seller") {
       navigate("dashboard");
@@ -186,77 +202,71 @@ export default function App() {
     return true;
   };
 
-  const addToCart = (product: any, quantity: number, selectedColor?: string, selectedSize?: string) => {
+  const addToCart = async (product: any, quantity: number, selectedColor?: string, selectedSize?: string) => {
     if (!isAuthenticated) {
       toast.error("Please login to add items to cart");
       navigate("login");
       return;
     }
-
-    setCartItems((prev) => {
-      // Check if item with same product, color, and size already exists
-      const existingItemIndex = prev.findIndex(
-        (item) =>
-          item.product.id === product.id &&
-          item.selectedColor === selectedColor &&
-          item.selectedSize === selectedSize
-      );
-
-      if (existingItemIndex > -1) {
-        // Update quantity of existing item
-        const updated = [...prev];
-        updated[existingItemIndex].quantity += quantity;
-        return updated;
-      } else {
-        // Add new item
-        return [
-          ...prev,
-          {
-            id: Date.now(),
-            product,
-            quantity,
-            selectedColor,
-            selectedSize,
-          },
-        ];
-      }
-    });
+    try {
+      const res = await post<{ items: CartItem[] }>("/api/v1/cart/items", {
+        productId: product.id,
+        quantity,
+        selectedColor: selectedColor ?? null,
+        selectedSize: selectedSize ?? null,
+      });
+      setCartItems(res.items ?? []);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to add to cart");
+    }
   };
 
-  const removeFromCart = (itemId: number) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== itemId));
+  const removeFromCart = async (itemId: string) => {
+    try {
+      const res = await del<{ items: CartItem[] }>(`/api/v1/cart/items/${itemId}`);
+      setCartItems(res.items ?? []);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to remove from cart");
+    }
   };
 
-  const updateCartQuantity = (itemId: number, quantity: number) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === itemId ? { ...item, quantity } : item
-      )
-    );
+  const updateCartQuantity = async (itemId: string, quantity: number) => {
+    try {
+      const res = await put<{ items: CartItem[] }>(`/api/v1/cart/items/${itemId}`, { quantity });
+      setCartItems(res.items ?? []);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update cart");
+    }
   };
 
-  const addToWishlist = (product: any) => {
+  const addToWishlist = async (product: any) => {
     if (!isAuthenticated) {
       toast.error("Please login to add items to wishlist");
       navigate("login");
       return;
     }
-
-    setWishlistItems((prev) => {
-      // Check if product already in wishlist
-      if (prev.some((item) => item.product.id === product.id)) {
-        return prev;
-      }
-      return [...prev, { id: Date.now(), product }];
-    });
+    if (wishlistItems.some((item) => item.productId === product.id)) return;
+    try {
+      const res = await post<{ items: WishlistItem[] }>("/api/v1/wishlist", {
+        productId: product.id,
+      });
+      setWishlistItems(res.items ?? []);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to add to wishlist");
+    }
   };
 
-  const removeFromWishlist = (itemId: number) => {
-    setWishlistItems((prev) => prev.filter((item) => item.id !== itemId));
+  const removeFromWishlist = async (productId: string) => {
+    try {
+      const res = await del<{ items: WishlistItem[] }>(`/api/v1/wishlist/${productId}`);
+      setWishlistItems(res.items ?? []);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to remove from wishlist");
+    }
   };
 
-  const isInWishlist = (productId: number) => {
-    return wishlistItems.some((item) => item.product.id === productId);
+  const isInWishlist = (productId: string | number) => {
+    return wishlistItems.some((item) => item.productId === String(productId));
   };
 
   const renderPage = () => {
@@ -319,7 +329,13 @@ export default function App() {
             </div>
           );
         }
-        return <CheckoutPage onNavigate={navigate} cartItems={cartItems} />;
+        return (
+          <CheckoutPage
+            onNavigate={navigate}
+            cartItems={cartItems}
+            onOrderPlaced={() => setCartItems([])}
+          />
+        );
       case "orders":
         if (!isAuthenticated) {
           toast.error("Please login to view your orders");
@@ -330,7 +346,7 @@ export default function App() {
             </div>
           );
         }
-        return <OrderTrackingPage onNavigate={navigate} />;
+        return <OrderTrackingPage onNavigate={navigate} orderId={pageData?.orderId} />;
       case "profile":
         if (!isAuthenticated) {
           toast.error("Please login to view your profile");
@@ -467,7 +483,7 @@ export default function App() {
             </div>
           );
         }
-        return <ChatPage onNavigate={navigate} sellerInfo={pageData} />;
+        return <ChatPage onNavigate={navigate} sellerInfo={pageData} userId={user?.id} />;
       case "careers":
         return <CareersPage />;
       case "returns":

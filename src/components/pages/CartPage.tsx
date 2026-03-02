@@ -6,26 +6,45 @@ import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { CartItem } from "../../App";
+import { post } from "../../lib/api";
+import { toast } from "sonner@2.0.3";
 
 interface CartPageProps {
   onNavigate: (page: string) => void;
   cartItems: CartItem[];
-  onRemoveItem: (itemId: number) => void;
-  onUpdateQuantity: (itemId: number, quantity: number) => void;
+  onRemoveItem: (itemId: string) => void;
+  onUpdateQuantity: (itemId: string, quantity: number) => void;
 }
 
 export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity }: CartPageProps) {
   const [couponCode, setCouponCode] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponApplied, setCouponApplied] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
-  const updateQuantity = (itemId: number, delta: number) => {
+  const updateQuantity = (itemId: string, delta: number) => {
     const item = cartItems.find((i) => i.id === itemId);
     if (item) {
       onUpdateQuantity(itemId, Math.max(1, item.quantity + delta));
     }
   };
 
-  const removeItem = (itemId: number) => {
-    onRemoveItem(itemId);
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setApplyingCoupon(true);
+    try {
+      const res = await post<{ couponDiscount: number; couponCode: string }>(
+        "/api/v1/cart/coupon",
+        { couponCode: couponCode.trim() }
+      );
+      setCouponDiscount(res.couponDiscount ?? 0);
+      setCouponApplied(res.couponCode ?? couponCode);
+      toast.success(`Coupon applied! You saved $${(res.couponDiscount ?? 0).toFixed(2)}`);
+    } catch (err: any) {
+      toast.error(err.message || "Invalid coupon code");
+    } finally {
+      setApplyingCoupon(false);
+    }
   };
 
   const subtotal = cartItems.reduce(
@@ -34,7 +53,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
   );
   const shipping = subtotal > 50 ? 0 : 9.99;
   const tax = subtotal * 0.1;
-  const total = subtotal + shipping + tax;
+  const total = Math.max(0, subtotal - couponDiscount) + shipping + tax;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -73,9 +92,13 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                   <div className="flex-1">
                     <div className="flex justify-between mb-2">
                       <div>
-                        <Badge className="mb-2">{item.product.category}</Badge>
+                        {item.product.category && (
+                          <Badge className="mb-2">{item.product.category}</Badge>
+                        )}
                         <h3 className="text-xl text-white mb-1">{item.product.name}</h3>
-                        <p className="text-sm text-white/60">{item.product.brand}</p>
+                        {item.product.brand && (
+                          <p className="text-sm text-white/60">{item.product.brand}</p>
+                        )}
                         {(item.selectedColor || item.selectedSize) && (
                           <div className="flex gap-2 mt-1">
                             {item.selectedColor && (
@@ -90,7 +113,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                       <Button
                         size="icon"
                         variant="ghost"
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => onRemoveItem(item.id)}
                         className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -152,15 +175,38 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                 <label className="text-sm text-white/70 mb-2 block">
                   Coupon Code
                 </label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Enter code"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    className="bg-white/5 border-white/10"
-                  />
-                  <Button variant="outline">Apply</Button>
-                </div>
+                {couponApplied ? (
+                  <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                    <span className="text-sm text-green-400 flex-1">
+                      "{couponApplied}" applied — -${couponDiscount.toFixed(2)}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-white/50 hover:text-white h-6 px-2"
+                      onClick={() => { setCouponApplied(""); setCouponDiscount(0); setCouponCode(""); }}
+                    >
+                      ×
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Enter code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="bg-white/5 border-white/10"
+                      onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={handleApplyCoupon}
+                      disabled={applyingCoupon || !couponCode.trim()}
+                    >
+                      {applyingCoupon ? "..." : "Apply"}
+                    </Button>
+                  </div>
+                )}
               </div>
 
               <Separator className="bg-white/10" />
@@ -171,6 +217,12 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                   <span>Subtotal ({cartItems.length} items)</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-green-400">
+                    <span>Coupon discount</span>
+                    <span>-${couponDiscount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-white/70">
                   <span>Shipping</span>
                   <span>

@@ -7,15 +7,29 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { CartItem } from "../../App";
+import { toast } from "sonner@2.0.3";
+import { post } from "../../lib/api";
 
 interface CheckoutPageProps {
   onNavigate: (page: string, data?: any) => void;
   cartItems?: CartItem[];
+  onOrderPlaced?: () => void;
 }
 
-export function CheckoutPage({ onNavigate, cartItems = [] }: CheckoutPageProps) {
+export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced }: CheckoutPageProps) {
   const [step, setStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("card");
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+
+  // Shipping form state
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zip, setZip] = useState("");
 
   const steps = [
     { number: 1, title: "Shipping", icon: MapPin },
@@ -37,6 +51,40 @@ export function CheckoutPage({ onNavigate, cartItems = [] }: CheckoutPageProps) 
     shipping,
     tax,
     total,
+  };
+
+  const handlePlaceOrder = async () => {
+    setIsPlacingOrder(true);
+    try {
+      const order = await post("/api/v1/orders", {
+        shippingAddress: {
+          firstName,
+          lastName,
+          email,
+          phone,
+          street: address,
+          city,
+          state,
+          zip,
+        },
+        paymentMethod: paymentMethod as "card" | "paypal" | "crypto",
+        items: cartItems.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          selectedColor: item.selectedColor,
+          selectedSize: item.selectedSize,
+        })),
+      });
+      toast.success("Order placed successfully!");
+      if (onOrderPlaced) {
+        onOrderPlaced();
+      }
+      onNavigate("orders", { orderId: order?.id });
+    } catch (err: any) {
+      toast.error(err.message || "Failed to place order. Please try again.");
+    } finally {
+      setIsPlacingOrder(false);
+    }
   };
 
   return (
@@ -96,11 +144,21 @@ export function CheckoutPage({ onNavigate, cartItems = [] }: CheckoutPageProps) 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" className="bg-white/5 border-white/10" />
+                    <Input
+                      id="firstName"
+                      className="bg-white/5 border-white/10"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" className="bg-white/5 border-white/10" />
+                    <Input
+                      id="lastName"
+                      className="bg-white/5 border-white/10"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
                   </div>
                 </div>
 
@@ -110,31 +168,59 @@ export function CheckoutPage({ onNavigate, cartItems = [] }: CheckoutPageProps) 
                     id="email"
                     type="email"
                     className="bg-white/5 border-white/10"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
 
                 <div>
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" type="tel" className="bg-white/5 border-white/10" />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    className="bg-white/5 border-white/10"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
                 </div>
 
                 <div>
                   <Label htmlFor="address">Street Address</Label>
-                  <Input id="address" className="bg-white/5 border-white/10" />
+                  <Input
+                    id="address"
+                    className="bg-white/5 border-white/10"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
                     <Label htmlFor="city">City</Label>
-                    <Input id="city" className="bg-white/5 border-white/10" />
+                    <Input
+                      id="city"
+                      className="bg-white/5 border-white/10"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="state">State</Label>
-                    <Input id="state" className="bg-white/5 border-white/10" />
+                    <Input
+                      id="state"
+                      className="bg-white/5 border-white/10"
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="zip">ZIP Code</Label>
-                    <Input id="zip" className="bg-white/5 border-white/10" />
+                    <Input
+                      id="zip"
+                      className="bg-white/5 border-white/10"
+                      value={zip}
+                      onChange={(e) => setZip(e.target.value)}
+                    />
                   </div>
                 </div>
 
@@ -272,10 +358,10 @@ export function CheckoutPage({ onNavigate, cartItems = [] }: CheckoutPageProps) 
                   <div className="bg-white/5 rounded-lg p-4">
                     <h3 className="text-white mb-2">Shipping Address</h3>
                     <p className="text-white/70 text-sm">
-                      John Doe<br />
-                      123 Main Street<br />
-                      New York, NY 10001<br />
-                      United States
+                      {firstName} {lastName}<br />
+                      {address}<br />
+                      {city}{city && state ? ", " : ""}{state} {zip}<br />
+                      {phone}
                     </p>
                   </div>
 
@@ -295,10 +381,11 @@ export function CheckoutPage({ onNavigate, cartItems = [] }: CheckoutPageProps) 
                   </Button>
                   <Button
                     size="lg"
-                    onClick={() => onNavigate("orders")}
+                    onClick={handlePlaceOrder}
+                    disabled={isPlacingOrder}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600"
                   >
-                    Place Order
+                    {isPlacingOrder ? "Placing Order..." : "Place Order"}
                   </Button>
                 </div>
               </div>
