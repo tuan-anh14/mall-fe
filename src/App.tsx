@@ -412,7 +412,7 @@ export default function App() {
             </div>
           );
         }
-        return <AddProductPage onNavigate={navigate} />;
+        return <AddProductPage onNavigate={navigate} initialProduct={pageData} />;
       case "login":
         if (isAuthenticated) {
           setTimeout(() => navigate(user?.userType === "seller" ? "dashboard" : "home"), 0);

@@ -21,11 +21,20 @@ import {
 interface Product {
   id: string;
   name: string;
+  description?: string;
   category: { id: string; name: string } | null;
   price: number;
+  originalPrice?: number | null;
   stock: number;
+  sku?: string | null;
+  brand?: string | null;
   status: string;
+  ratingAverage: number;
+  reviewCount: number;
   images: { id: string; url: string; isPrimary: boolean; sortOrder: number }[];
+  colors?: { id: string; name: string; hexCode?: string }[];
+  sizes?: { id: string; value: string }[];
+  specifications?: { id: string; key: string; value: string }[];
 }
 
 interface ProductStats {
@@ -213,12 +222,20 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                       <TableCell>
                         <Badge
                           className={
-                            product.stock > 0
+                            product.status === "ACTIVE"
                               ? "bg-green-500/20 text-green-400 border-green-500/30"
+                              : product.status === "DRAFT"
+                              ? "bg-gray-500/20 text-gray-400 border-gray-500/30"
                               : "bg-red-500/20 text-red-400 border-red-500/30"
                           }
                         >
-                          {product.stock > 0 ? "Active" : "Out of Stock"}
+                          {product.status === "ACTIVE"
+                            ? "Active"
+                            : product.status === "INACTIVE"
+                            ? "Inactive"
+                            : product.status === "OUT_OF_STOCK"
+                            ? "Out of Stock"
+                            : "Draft"}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -226,7 +243,20 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => onNavigate("product", product)}
+                            onClick={() => {
+                              // Transform seller format → buyer format for ProductDetailPage
+                              const viewProduct = {
+                                ...product,
+                                image: product.images[0]?.url || "",
+                                images: product.images.map((img: any) => img.url),
+                                colors: (product.colors ?? []).map((c: any) => c.name),
+                                sizes: (product.sizes ?? []).map((s: any) => s.value),
+                                rating: product.ratingAverage,
+                                reviews: product.reviewCount,
+                                category: product.category?.name ?? "",
+                              };
+                              onNavigate("product", viewProduct);
+                            }}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>

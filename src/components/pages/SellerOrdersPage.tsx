@@ -92,9 +92,6 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
     }
   };
 
-  const pendingOrders = orders.filter((o) => o.status === "Processing");
-  const shippedOrders = orders.filter((o) => o.status === "Shipped");
-  const deliveredOrders = orders.filter((o) => o.status === "Delivered");
 
   const OrderTable = ({ rows, showStatus = true }: { rows: Order[]; showStatus?: boolean }) => (
     <div className="overflow-x-auto">
@@ -252,7 +249,16 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
         {loading ? (
           <div className="text-center text-white/60 py-12">Loading orders...</div>
         ) : (
-          <Tabs defaultValue="all" className="w-full">
+          <Tabs
+            value={statusFilter === "all" ? "all" : statusFilter === "Processing" ? "pending" : statusFilter === "Shipped" ? "shipped" : "delivered"}
+            onValueChange={(tab: string) => {
+              if (tab === "all") setStatusFilter("all");
+              else if (tab === "pending") setStatusFilter("Processing");
+              else if (tab === "shipped") setStatusFilter("Shipped");
+              else if (tab === "delivered") setStatusFilter("Delivered");
+            }}
+            className="w-full"
+          >
             <TabsList className="w-full justify-start bg-white/5 border-b border-white/10 rounded-none px-4">
               <TabsTrigger value="all">All Orders ({stats.total})</TabsTrigger>
               <TabsTrigger value="pending">Pending ({stats.pending})</TabsTrigger>
@@ -265,15 +271,15 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
             </TabsContent>
 
             <TabsContent value="pending" className="m-0">
-              <OrderTable rows={pendingOrders} showStatus={false} />
+              <OrderTable rows={orders} showStatus={false} />
             </TabsContent>
 
             <TabsContent value="shipped" className="m-0">
-              <OrderTable rows={shippedOrders} showStatus={false} />
+              <OrderTable rows={orders} showStatus={false} />
             </TabsContent>
 
             <TabsContent value="delivered" className="m-0">
-              <OrderTable rows={deliveredOrders} showStatus={false} />
+              <OrderTable rows={orders} showStatus={false} />
             </TabsContent>
           </Tabs>
         )}
