@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { User, ShoppingBag, Heart, Settings, LogOut, Package, LayoutDashboard } from "lucide-react";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback } from "../ui/avatar";
@@ -69,8 +69,8 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
     const fetchProfile = async () => {
       setProfileLoading(true);
       try {
-        const data = await get<UserProfile>("/api/v1/users/me");
-        setProfile(data);
+        const data = await get<{ user: UserProfile }>("/api/v1/users/me");
+        setProfile(data.user);
       } catch {
         // Fall back to userProp
       } finally {

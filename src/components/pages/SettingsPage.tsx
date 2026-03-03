@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Settings,
   User,
@@ -48,6 +48,8 @@ interface SettingsPageProps {
 
 interface Address {
   id: string;
+  firstName: string;
+  lastName: string;
   label: string;
   street: string;
   city: string;
@@ -67,6 +69,8 @@ interface NotificationSettings {
 }
 
 interface AddressFormState {
+  firstName: string;
+  lastName: string;
   label: string;
   street: string;
   city: string;
@@ -76,6 +80,8 @@ interface AddressFormState {
 }
 
 const defaultAddressForm: AddressFormState = {
+  firstName: "",
+  lastName: "",
   label: "",
   street: "",
   city: "",
@@ -125,18 +131,19 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
   const loadProfile = async () => {
     try {
       const res = await get<{
-        id: string;
-        firstName: string;
-        lastName: string;
-        email: string;
-        phone?: string;
-        avatar?: string;
-        settings?: NotificationSettings;
+        user: {
+          id: string;
+          firstName: string;
+          lastName: string;
+          email: string;
+          phone?: string;
+          avatar?: string;
+        };
       }>("/api/v1/users/me");
-      setFirstName(res.firstName ?? "");
-      setLastName(res.lastName ?? "");
-      setEmail(res.email ?? "");
-      setPhone(res.phone ?? "");
+      setFirstName(res.user.firstName ?? "");
+      setLastName(res.user.lastName ?? "");
+      setEmail(res.user.email ?? "");
+      setPhone(res.user.phone ?? "");
     } catch (err: any) {
       toast.error(err.message || "Failed to load profile");
     }
@@ -156,14 +163,15 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
 
   const loadNotifSettings = async () => {
     try {
-      const res = await get<NotificationSettings>("/api/v1/users/me/settings");
+      const res = await get<{ settings: any }>("/api/v1/users/me/settings");
+      const s = res.settings ?? {};
       setNotifSettings({
-        emailNotifications: res.emailNotifications ?? false,
-        orderUpdates: res.orderUpdates ?? false,
-        promotions: res.promotions ?? false,
-        newsletter: res.newsletter ?? false,
-        twoFactorAuth: res.twoFactorAuth ?? false,
-        loginAlerts: res.loginAlerts ?? false,
+        emailNotifications: s.emailNotifications ?? false,
+        orderUpdates: s.orderUpdates ?? false,
+        promotions: s.promotionalEmails ?? false,
+        newsletter: s.priceDropAlerts ?? false,
+        twoFactorAuth: s.twoFactorEnabled ?? false,
+        loginAlerts: false,
       });
     } catch (err: any) {
       toast.error(err.message || "Failed to load notification settings");
@@ -191,6 +199,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
   const handleEditAddress = (address: Address) => {
     setEditingAddress(address);
     setAddressForm({
+      firstName: address.firstName ?? "",
+      lastName: address.lastName ?? "",
       label: address.label,
       street: address.street,
       city: address.city,
@@ -202,24 +212,28 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
   };
 
   const handleSaveAddress = async () => {
-    if (!addressForm.label || !addressForm.street || !addressForm.city) {
-      toast.error("Please fill in required fields (label, street, city)");
+    if (!addressForm.firstName || !addressForm.lastName) {
+      toast.error("Please fill in first name and last name");
+      return;
+    }
+    if (!addressForm.street || !addressForm.city || !addressForm.state || !addressForm.zip) {
+      toast.error("Please fill in all required address fields");
       return;
     }
     setIsSavingAddress(true);
     try {
       if (editingAddress) {
-        const updated = await put<Address>(
+        const result = await put<{ address: Address }>(
           `/api/v1/users/me/addresses/${editingAddress.id}`,
           addressForm
         );
         setAddresses((prev) =>
-          prev.map((a) => (a.id === editingAddress.id ? updated : a))
+          prev.map((a) => (a.id === editingAddress.id ? result.address : a))
         );
         toast.success("Address updated!");
       } else {
-        const created = await post<Address>("/api/v1/users/me/addresses", addressForm);
-        setAddresses((prev) => [...prev, created]);
+        const result = await post<{ address: Address }>("/api/v1/users/me/addresses", addressForm);
+        setAddresses((prev) => [...prev, result.address]);
         toast.success("Address added!");
       }
       setAddressDialogOpen(false);
@@ -243,7 +257,13 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
   const handleSaveNotifSettings = async () => {
     setIsSavingNotif(true);
     try {
-      await put("/api/v1/users/me/settings", notifSettings);
+      await put("/api/v1/users/me/settings", {
+        emailNotifications: notifSettings.emailNotifications,
+        orderUpdates: notifSettings.orderUpdates,
+        promotionalEmails: notifSettings.promotions,
+        priceDropAlerts: notifSettings.newsletter,
+        twoFactorEnabled: notifSettings.twoFactorAuth,
+      });
       toast.success("Notification preferences saved!");
     } catch (err: any) {
       toast.error(err.message || "Failed to save notification settings");
@@ -265,6 +285,19 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
   const handleSavePayment = () => {
     toast.success(editingPayment ? "Payment method updated!" : "Payment method added!");
     setPaymentDialogOpen(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
+      return;
+    }
+    try {
+      await del("/api/v1/users/me");
+      toast.success("Account deleted successfully");
+      onNavigate("home");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete account");
+    }
   };
 
   const updateAddressForm = (field: keyof AddressFormState, value: string) => {
@@ -807,7 +840,7 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                     Permanently delete your account and all data
                   </p>
                 </div>
-                <Button variant="destructive">Delete Account</Button>
+                <Button variant="destructive" onClick={handleDeleteAccount}>Delete Account</Button>
               </div>
             </CardContent>
           </Card>
@@ -896,6 +929,28 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="addrFirstName" className="text-white/80">First Name <span className="text-red-400">*</span></Label>
+                <Input
+                  id="addrFirstName"
+                  placeholder="John"
+                  value={addressForm.firstName}
+                  onChange={(e) => updateAddressForm("firstName", e.target.value)}
+                  className="bg-white/5 border-white/10 text-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="addrLastName" className="text-white/80">Last Name <span className="text-red-400">*</span></Label>
+                <Input
+                  id="addrLastName"
+                  placeholder="Doe"
+                  value={addressForm.lastName}
+                  onChange={(e) => updateAddressForm("lastName", e.target.value)}
+                  className="bg-white/5 border-white/10 text-white"
+                />
+              </div>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="addressLabel" className="text-white/80">Address Label</Label>
               <Input
