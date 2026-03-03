@@ -470,7 +470,7 @@ export default function App() {
             </div>
           );
         }
-        return <SettingsPage onNavigate={navigate} />;
+        return <SettingsPage onNavigate={navigate} onLogout={handleLogout} />;
       case "help":
         return <HelpPage onNavigate={navigate} />;
       case "chat":

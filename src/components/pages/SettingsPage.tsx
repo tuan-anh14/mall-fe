@@ -38,12 +38,23 @@ import {
   DialogTitle,
   DialogFooter,
 } from "../ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../ui/alert-dialog";
 import { motion } from "motion/react";
 import { toast } from "sonner@2.0.3";
 import { get, put, post, del } from "../../lib/api";
 
 interface SettingsPageProps {
   onNavigate: (page: string, data?: any) => void;
+  onLogout?: () => void;
 }
 
 interface Address {
@@ -90,13 +101,23 @@ const defaultAddressForm: AddressFormState = {
   country: "United States",
 };
 
-export function SettingsPage({ onNavigate }: SettingsPageProps) {
+export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
   // Profile state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  // Password state
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  // Delete account state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Addresses state
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -287,16 +308,49 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
     setPaymentDialogOpen(false);
   };
 
-  const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("Please fill in all password fields");
       return;
     }
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters");
+      return;
+    }
+    setIsChangingPassword(true);
+    try {
+      await put("/api/v1/users/me/password", { currentPassword, newPassword });
+      toast.success("Password changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to change password");
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
     try {
       await del("/api/v1/users/me");
       toast.success("Account deleted successfully");
-      onNavigate("home");
+      setDeleteDialogOpen(false);
+      // Call logout to clear session cookie + update app state
+      if (onLogout) {
+        onLogout();
+      } else {
+        onNavigate("home");
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete account");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -639,6 +693,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                     <Input
                       id="currentPassword"
                       type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
                       className="bg-white/5 border-white/10 text-white"
                     />
                   </div>
@@ -647,6 +703,8 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                     <Input
                       id="newPassword"
                       type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
                       className="bg-white/5 border-white/10 text-white"
                     />
                   </div>
@@ -655,14 +713,17 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                     <Input
                       id="confirmPassword"
                       type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       className="bg-white/5 border-white/10 text-white"
                     />
                   </div>
                   <Button
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                    onClick={() => toast.success("Password updated!")}
+                    onClick={handleChangePassword}
+                    disabled={isChangingPassword}
                   >
-                    Update Password
+                    {isChangingPassword ? "Updating..." : "Update Password"}
                   </Button>
                 </CardContent>
               </Card>
@@ -840,12 +901,36 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
                     Permanently delete your account and all data
                   </p>
                 </div>
-                <Button variant="destructive" onClick={handleDeleteAccount}>Delete Account</Button>
+                <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>Delete Account</Button>
               </div>
             </CardContent>
           </Card>
         </motion.div>
       </div>
+
+      {/* Delete Account Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-black border border-white/10">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Account</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/60">
+              Are you sure you want to permanently delete your account? All your data, orders, and settings will be removed. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteAccount}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isDeleting ? "Deleting..." : "Delete Account"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Payment Method Dialog */}
       <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
