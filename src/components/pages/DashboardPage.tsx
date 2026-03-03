@@ -1,18 +1,96 @@
-import React from "react";
-import { TrendingUp, ShoppingBag, Users, Package, Plus, Search } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { TrendingUp, ShoppingBag, Users, Package, Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { Input } from "../ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-import { dashboardStats, salesData, products, orders } from "../../lib/mock-data";
+import { get } from "../../lib/api";
+
+interface DashboardStats {
+  totalRevenue: number;
+  totalOrders: number;
+  totalProducts: number;
+  totalCustomers: number;
+  revenueChange: number;
+  ordersChange: number;
+  productsChange: number;
+  customersChange: number;
+}
+
+interface SalesDataPoint {
+  month: string;
+  revenue: number;
+  orders: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  category: { id: string; name: string } | null;
+  price: number;
+  stock: number;
+  status: string;
+  images: { id: string; url: string; isPrimary: boolean; sortOrder: number }[];
+}
+
+interface Order {
+  id: string;
+  date: string;
+  status: string;
+  total: number;
+  customer: { id: string; name: string; email: string };
+  items: any[];
+}
 
 interface DashboardPageProps {
   onNavigate: (page: string, payload?: any) => void;
 }
 
 export function DashboardPage({ onNavigate }: DashboardPageProps) {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [salesData, setSalesData] = useState<SalesDataPoint[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [statsData, salesDataRes, productsRes, ordersRes] = await Promise.all([
+          get<DashboardStats>('/api/v1/seller/dashboard/stats'),
+          get<SalesDataPoint[]>('/api/v1/seller/dashboard/sales-data'),
+          get<{ data: Product[]; stats: any }>('/api/v1/seller/products'),
+          get<{ data: Order[]; stats: any }>('/api/v1/seller/orders'),
+        ]);
+        setStats(statsData);
+        setSalesData(salesDataRes);
+        setProducts(productsRes.data);
+        setOrders(ordersRes.data);
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  const changeClass = (val: number) =>
+    val >= 0
+      ? "bg-green-500/20 text-green-400 border-green-500/30"
+      : "bg-red-500/20 text-red-400 border-red-500/30";
+
+  const changeLabel = (val: number) => `${val >= 0 ? "+" : ""}${val}%`;
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
+        <p className="text-white/60">Loading dashboard...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -20,7 +98,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           <h1 className="text-4xl text-white mb-2">Dashboard</h1>
           <p className="text-white/60">Welcome back! Here's your store overview.</p>
         </div>
-        <Button 
+        <Button
           className="bg-gradient-to-r from-purple-600 to-blue-600"
           onClick={() => onNavigate("add-product")}
         >
@@ -36,12 +114,12 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             <div className="h-12 w-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
               <TrendingUp className="h-6 w-6 text-purple-400" />
             </div>
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-              +{dashboardStats.revenueChange}%
+            <Badge className={changeClass(stats?.revenueChange ?? 0)}>
+              {changeLabel(stats?.revenueChange ?? 0)}
             </Badge>
           </div>
           <p className="text-sm text-white/60 mb-1">Total Revenue</p>
-          <p className="text-3xl text-white">${(dashboardStats.totalRevenue / 1000).toFixed(1)}K</p>
+          <p className="text-3xl text-white">${((stats?.totalRevenue ?? 0) / 1000).toFixed(1)}K</p>
         </div>
 
         <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-2xl p-6">
@@ -49,12 +127,12 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             <div className="h-12 w-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
               <ShoppingBag className="h-6 w-6 text-blue-400" />
             </div>
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-              +{dashboardStats.ordersChange}%
+            <Badge className={changeClass(stats?.ordersChange ?? 0)}>
+              {changeLabel(stats?.ordersChange ?? 0)}
             </Badge>
           </div>
           <p className="text-sm text-white/60 mb-1">Total Orders</p>
-          <p className="text-3xl text-white">{dashboardStats.totalOrders.toLocaleString()}</p>
+          <p className="text-3xl text-white">{(stats?.totalOrders ?? 0).toLocaleString()}</p>
         </div>
 
         <div className="bg-gradient-to-br from-pink-500/10 to-pink-600/10 border border-pink-500/20 rounded-2xl p-6">
@@ -62,12 +140,12 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             <div className="h-12 w-12 rounded-xl bg-pink-500/20 flex items-center justify-center">
               <Package className="h-6 w-6 text-pink-400" />
             </div>
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-              +{dashboardStats.productsChange}%
+            <Badge className={changeClass(stats?.productsChange ?? 0)}>
+              {changeLabel(stats?.productsChange ?? 0)}
             </Badge>
           </div>
           <p className="text-sm text-white/60 mb-1">Products</p>
-          <p className="text-3xl text-white">{dashboardStats.totalProducts}</p>
+          <p className="text-3xl text-white">{stats?.totalProducts ?? 0}</p>
         </div>
 
         <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-2xl p-6">
@@ -75,12 +153,12 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             <div className="h-12 w-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
               <Users className="h-6 w-6 text-orange-400" />
             </div>
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-              +{dashboardStats.customersChange}%
+            <Badge className={changeClass(stats?.customersChange ?? 0)}>
+              {changeLabel(stats?.customersChange ?? 0)}
             </Badge>
           </div>
           <p className="text-sm text-white/60 mb-1">Customers</p>
-          <p className="text-3xl text-white">{(dashboardStats.totalCustomers / 1000).toFixed(1)}K</p>
+          <p className="text-3xl text-white">{((stats?.totalCustomers ?? 0) / 1000).toFixed(1)}K</p>
         </div>
       </div>
 
@@ -157,22 +235,13 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
             <div className="p-4 border-b border-white/10 flex justify-between items-center">
               <h2 className="text-xl text-white">Product Management</h2>
-              <div className="flex gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
-                  <Input
-                    placeholder="Search products..."
-                    className="pl-10 bg-white/5 border-white/10"
-                  />
-                </div>
-                <Button 
-                  className="bg-gradient-to-r from-purple-600 to-blue-600"
-                  onClick={() => onNavigate("add-product")}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Product
-                </Button>
-              </div>
+              <Button
+                className="bg-gradient-to-r from-purple-600 to-blue-600"
+                onClick={() => onNavigate("add-product")}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Product
+              </Button>
             </div>
             <Table>
               <TableHeader>
@@ -192,7 +261,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-white/5 rounded-lg overflow-hidden">
                           <img
-                            src={product.image}
+                            src={product.images[0]?.url || ""}
                             alt={product.name}
                             className="w-full h-full object-cover"
                           />
@@ -200,7 +269,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                         <span>{product.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-white/70">{product.category}</TableCell>
+                    <TableCell className="text-white/70">{product.category?.name ?? "-"}</TableCell>
                     <TableCell className="text-white">${product.price}</TableCell>
                     <TableCell>
                       <Badge
@@ -216,20 +285,22 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className="bg-green-500/20 text-green-400">Active</Badge>
+                      <Badge className={product.stock > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
+                        {product.stock > 0 ? "Active" : "Out of Stock"}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => onNavigate("edit-product", product)}
                         >
                           Edit
                         </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
+                        <Button
+                          size="sm"
+                          variant="outline"
                           className="text-red-400"
                           onClick={() => onNavigate("seller-products")}
                         >
@@ -239,6 +310,13 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                     </TableCell>
                   </TableRow>
                 ))}
+                {products.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center text-white/60 py-8">
+                      No products yet
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
@@ -265,7 +343,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                   <TableRow key={order.id} className="border-white/10 hover:bg-white/5">
                     <TableCell className="text-white">{order.id}</TableCell>
                     <TableCell className="text-white/70">{order.date}</TableCell>
-                    <TableCell className="text-white/70">Customer #{Math.floor(Math.random() * 1000)}</TableCell>
+                    <TableCell className="text-white/70">{order.customer.name}</TableCell>
                     <TableCell className="text-white">${order.total.toFixed(2)}</TableCell>
                     <TableCell>
                       <Badge
@@ -279,8 +357,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
                         onClick={() => onNavigate("seller-orders")}
                       >
@@ -289,6 +367,13 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                     </TableCell>
                   </TableRow>
                 ))}
+                {orders.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center text-white/60 py-8">
+                      No orders yet
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
@@ -301,7 +386,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             <p className="text-white/60 mb-4">
               View and manage your customer base, analytics, and insights.
             </p>
-            <Button 
+            <Button
               className="bg-gradient-to-r from-purple-600 to-blue-600"
               onClick={() => onNavigate("dashboard")}
             >

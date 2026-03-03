@@ -1,54 +1,113 @@
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Upload, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { get, post } from "../../lib/api";
+import { API_URL } from "../../lib/api";
 import { toast } from "sonner@2.0.3";
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string | null;
+}
 
 interface AddProductPageProps {
   onNavigate: (page: string, data?: any) => void;
 }
 
 export function AddProductPage({ onNavigate }: AddProductPageProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    category: "",
+    categoryId: "",
     price: "",
+    originalPrice: "",
     stock: "",
     sku: "",
     brand: "",
   });
-
   const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    get<Category[]>('/api/v1/categories')
+      .then(setCategories)
+      .catch(() => toast.error('Failed to load categories'));
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validation
-    if (!formData.name || !formData.category || !formData.price || !formData.stock) {
-      toast.error("Please fill in all required fields");
-      return;
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      Array.from(files).forEach((file) => formData.append('files', file));
+
+      const res = await fetch(`${API_URL}/api/v1/upload/images`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error?.message || 'Upload failed');
+
+      const urls: string[] = json.data?.urls ?? [];
+      setImages((prev) => [...prev, ...urls]);
+      toast.success('Images uploaded successfully');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to upload images');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
-
-    toast.success("Product added successfully!");
-    onNavigate("seller-products");
-  };
-
-  const handleImageUpload = () => {
-    // Mock image upload
-    toast.success("Image upload functionality ready for integration");
   };
 
   const handleRemoveImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.categoryId || !formData.price || !formData.stock) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await post('/api/v1/seller/products', {
+        name: formData.name,
+        description: formData.description || undefined,
+        categoryId: formData.categoryId,
+        price: Number(formData.price),
+        originalPrice: formData.originalPrice ? Number(formData.originalPrice) : undefined,
+        stock: Number(formData.stock),
+        sku: formData.sku || undefined,
+        brand: formData.brand || undefined,
+        images: images.length > 0 ? images : undefined,
+      });
+      toast.success("Product added successfully!");
+      onNavigate("seller-products");
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to add product');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -70,7 +129,7 @@ export function AddProductPage({ onNavigate }: AddProductPageProps) {
       <form onSubmit={handleSubmit}>
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
           <h2 className="text-2xl text-white mb-6">Product Information</h2>
-          
+
           <div className="space-y-6">
             {/* Product Name */}
             <div>
@@ -107,22 +166,22 @@ export function AddProductPage({ onNavigate }: AddProductPageProps) {
             {/* Category and Brand */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label htmlFor="category" className="text-white mb-2 block">
+                <Label htmlFor="categoryId" className="text-white mb-2 block">
                   Category <span className="text-red-400">*</span>
                 </Label>
-                <Select value={formData.category} onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}>
+                <Select
+                  value={formData.categoryId}
+                  onValueChange={(value) => setFormData((prev) => ({ ...prev, categoryId: value }))}
+                >
                   <SelectTrigger className="bg-white/5 border-white/10 text-white">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent className="bg-black border-white/10">
-                    <SelectItem value="Electronics">Electronics</SelectItem>
-                    <SelectItem value="Fashion">Fashion</SelectItem>
-                    <SelectItem value="Home & Garden">Home & Garden</SelectItem>
-                    <SelectItem value="Sports">Sports</SelectItem>
-                    <SelectItem value="Books">Books</SelectItem>
-                    <SelectItem value="Toys">Toys</SelectItem>
-                    <SelectItem value="Beauty">Beauty</SelectItem>
-                    <SelectItem value="Accessories">Accessories</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -142,8 +201,8 @@ export function AddProductPage({ onNavigate }: AddProductPageProps) {
               </div>
             </div>
 
-            {/* Price, Stock, and SKU */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Price, Original Price, Stock, SKU */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="price" className="text-white mb-2 block">
                   Price ($) <span className="text-red-400">*</span>
@@ -162,6 +221,25 @@ export function AddProductPage({ onNavigate }: AddProductPageProps) {
                 />
               </div>
 
+              <div>
+                <Label htmlFor="originalPrice" className="text-white mb-2 block">
+                  Original Price ($)
+                </Label>
+                <Input
+                  id="originalPrice"
+                  name="originalPrice"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.originalPrice}
+                  onChange={handleInputChange}
+                  placeholder="0.00 (optional, for discount)"
+                  className="bg-white/5 border-white/10 text-white"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="stock" className="text-white mb-2 block">
                   Stock Quantity <span className="text-red-400">*</span>
@@ -199,24 +277,36 @@ export function AddProductPage({ onNavigate }: AddProductPageProps) {
         {/* Product Images */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
           <h2 className="text-2xl text-white mb-6">Product Images</h2>
-          
+
           <div className="space-y-4">
-            {/* Image Upload Area */}
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/jpg"
+              multiple
+              className="hidden"
+              onChange={handleFileChange}
+            />
+
+            {/* Upload Area */}
             <div
               className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-purple-500/50 transition-colors cursor-pointer"
-              onClick={handleImageUpload}
+              onClick={() => !uploading && fileInputRef.current?.click()}
             >
               <Upload className="h-12 w-12 text-white/40 mx-auto mb-4" />
-              <p className="text-white mb-2">Click to upload product images</p>
+              <p className="text-white mb-2">
+                {uploading ? "Uploading..." : "Click to upload product images"}
+              </p>
               <p className="text-sm text-white/60">PNG, JPG up to 10MB</p>
             </div>
 
             {/* Image Preview Grid */}
             {images.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {images.map((image, index) => (
+                {images.map((url, index) => (
                   <div key={index} className="relative aspect-square bg-white/5 rounded-lg overflow-hidden group">
-                    <img src={image} alt={`Product ${index + 1}`} className="w-full h-full object-cover" />
+                    <img src={url} alt={`Product ${index + 1}`} className="w-full h-full object-cover" />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(index)}
@@ -243,9 +333,10 @@ export function AddProductPage({ onNavigate }: AddProductPageProps) {
           </Button>
           <Button
             type="submit"
+            disabled={submitting || uploading}
             className="bg-gradient-to-r from-purple-600 to-blue-600 sm:w-auto w-full"
           >
-            Add Product
+            {submitting ? "Adding..." : "Add Product"}
           </Button>
         </div>
       </form>
