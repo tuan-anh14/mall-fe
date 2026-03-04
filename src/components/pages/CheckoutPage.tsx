@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CreditCard, MapPin, Package, Check } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -6,17 +6,19 @@ import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
+import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { CartItem } from "../../App";
 import { toast } from "sonner@2.0.3";
-import { post } from "../../lib/api";
+import { get, post } from "../../lib/api";
 
 interface CheckoutPageProps {
   onNavigate: (page: string, data?: any) => void;
   cartItems?: CartItem[];
   onOrderPlaced?: () => void;
+  user?: any;
 }
 
-export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced }: CheckoutPageProps) {
+export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }: CheckoutPageProps) {
   const [step, setStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
@@ -31,6 +33,40 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced }: Chec
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
 
+  // Pre-fill from user profile + saved addresses
+  useEffect(() => {
+    const prefill = async () => {
+      try {
+        const [profileRes, addrRes] = await Promise.allSettled([
+          get<{ user: any }>("/api/v1/users/me"),
+          get<{ addresses: any[] }>("/api/v1/users/me/addresses"),
+        ]);
+
+        if (profileRes.status === "fulfilled") {
+          const u = profileRes.value.user;
+          setFirstName((v) => v || u.firstName || "");
+          setLastName((v) => v || u.lastName || "");
+          setEmail((v) => v || u.email || "");
+          setPhone((v) => v || u.phone || "");
+        }
+
+        if (addrRes.status === "fulfilled") {
+          const addrs = addrRes.value.addresses ?? [];
+          const defaultAddr = addrs.find((a: any) => a.isDefault) ?? addrs[0];
+          if (defaultAddr) {
+            setAddress((v) => v || defaultAddr.street || "");
+            setCity((v) => v || defaultAddr.city || "");
+            setState((v) => v || defaultAddr.state || "");
+            setZip((v) => v || defaultAddr.zip || defaultAddr.zipCode || "");
+          }
+        }
+      } catch {
+        // silently ignore — form can be filled manually
+      }
+    };
+    prefill();
+  }, []);
+
   const steps = [
     { number: 1, title: "Shipping", icon: MapPin },
     { number: 2, title: "Payment", icon: CreditCard },
@@ -44,14 +80,6 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced }: Chec
   const shipping = subtotal > 50 ? 0 : 9.99;
   const tax = subtotal * 0.1;
   const total = subtotal + shipping + tax;
-
-  const orderSummary = {
-    items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
-    subtotal,
-    shipping,
-    tax,
-    total,
-  };
 
   const handlePlaceOrder = async () => {
     setIsPlacingOrder(true);
@@ -79,7 +107,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced }: Chec
       if (onOrderPlaced) {
         onOrderPlaced();
       }
-      onNavigate("orders", { orderId: order?.id });
+      onNavigate("orders", { orderId: order?.id ?? order?.order?.id });
     } catch (err: any) {
       toast.error(err.message || "Failed to place order. Please try again.");
     } finally {
@@ -368,10 +396,39 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced }: Chec
                   <div className="bg-white/5 rounded-lg p-4">
                     <h3 className="text-white mb-2">Payment Method</h3>
                     <p className="text-white/70 text-sm">
-                      {paymentMethod === "card" && "Credit/Debit Card ending in 3456"}
+                      {paymentMethod === "card" && "Credit/Debit Card"}
                       {paymentMethod === "paypal" && "PayPal"}
                       {paymentMethod === "crypto" && "Cryptocurrency (Bitcoin)"}
                     </p>
+                  </div>
+
+                  {/* Items review */}
+                  <div className="bg-white/5 rounded-lg p-4">
+                    <h3 className="text-white mb-3">Items ({cartItems.length})</h3>
+                    <div className="space-y-3">
+                      {cartItems.map((item) => (
+                        <div key={item.id} className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-lg bg-white/5 overflow-hidden flex-shrink-0">
+                            <ImageWithFallback
+                              src={item.product?.image}
+                              alt={item.product?.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white text-sm truncate">{item.product?.name}</p>
+                            <p className="text-white/50 text-xs">
+                              Qty: {item.quantity}
+                              {item.selectedColor && ` · ${item.selectedColor}`}
+                              {item.selectedSize && ` · ${item.selectedSize}`}
+                            </p>
+                          </div>
+                          <p className="text-white text-sm font-medium flex-shrink-0">
+                            ${(item.product?.price * item.quantity).toFixed(2)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -400,20 +457,61 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced }: Chec
 
             <Separator className="bg-white/10" />
 
+            {/* Cart items list */}
+            {cartItems.length > 0 && (
+              <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                {cartItems.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3">
+                    <div className="relative flex-shrink-0">
+                      <div className="w-14 h-14 rounded-lg bg-white/5 overflow-hidden">
+                        <ImageWithFallback
+                          src={item.product?.image}
+                          alt={item.product?.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-purple-600 text-white text-xs flex items-center justify-center">
+                        {item.quantity}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm line-clamp-2">{item.product?.name}</p>
+                      {(item.selectedColor || item.selectedSize) && (
+                        <p className="text-white/40 text-xs">
+                          {[item.selectedColor, item.selectedSize].filter(Boolean).join(" · ")}
+                        </p>
+                      )}
+                    </div>
+                    <p className="text-white text-sm font-medium flex-shrink-0">
+                      ${(item.product?.price * item.quantity).toFixed(2)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {cartItems.length === 0 && (
+              <p className="text-white/40 text-sm text-center py-4">No items in cart</p>
+            )}
+
+            <Separator className="bg-white/10" />
+
             <div className="space-y-3">
               <div className="flex justify-between text-white/70">
-                <span>Subtotal ({orderSummary.items} items)</span>
-                <span>${orderSummary.subtotal.toFixed(2)}</span>
+                <span>Subtotal ({cartItems.reduce((s, i) => s + i.quantity, 0)} items)</span>
+                <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-white/70">
                 <span>Shipping</span>
-                <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                  FREE
-                </Badge>
+                {shipping === 0 ? (
+                  <Badge variant="secondary" className="bg-green-500/20 text-green-400">FREE</Badge>
+                ) : (
+                  <span>${shipping.toFixed(2)}</span>
+                )}
               </div>
               <div className="flex justify-between text-white/70">
-                <span>Tax</span>
-                <span>${orderSummary.tax.toFixed(2)}</span>
+                <span>Tax (10%)</span>
+                <span>${tax.toFixed(2)}</span>
               </div>
             </div>
 
@@ -422,15 +520,17 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced }: Chec
             <div className="flex justify-between items-center">
               <span className="text-xl text-white">Total</span>
               <span className="text-3xl text-white">
-                ${orderSummary.total.toFixed(2)}
+                ${total.toFixed(2)}
               </span>
             </div>
 
-            <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
-              <p className="text-sm text-purple-400">
-                🎉 You're saving $50.00 on this order!
-              </p>
-            </div>
+            {shipping === 0 && subtotal > 0 && (
+              <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+                <p className="text-sm text-green-400">
+                  Free shipping on orders over $50!
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -83,10 +83,10 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
     const fetchOrders = async () => {
       setOrdersLoading(true);
       try {
-        const res = await get<{ items: ApiOrder[]; total: number }>(
+        const res = await get<{ orders: ApiOrder[]; total: number }>(
           "/api/v1/orders?page=1&limit=5"
         );
-        setOrders(res.items ?? []);
+        setOrders(res.orders ?? []);
         setOrdersTotal(res.total ?? 0);
       } catch {
         // Leave orders empty

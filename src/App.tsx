@@ -135,10 +135,10 @@ export default function App() {
 
   const fetchCartAndWishlist = async () => {
     const [cartRes, wishlistRes] = await Promise.allSettled([
-      get<{ items: CartItem[] }>("/api/v1/cart"),
+      get<{ cart: { items: CartItem[] } }>("/api/v1/cart"),
       get<{ items: WishlistItem[] }>("/api/v1/wishlist"),
     ]);
-    if (cartRes.status === "fulfilled") setCartItems(cartRes.value.items ?? []);
+    if (cartRes.status === "fulfilled") setCartItems(cartRes.value.cart?.items ?? []);
     if (wishlistRes.status === "fulfilled") setWishlistItems(wishlistRes.value.items ?? []);
   };
 
@@ -212,8 +212,8 @@ export default function App() {
       const body: any = { productId: product.id, quantity };
       if (selectedColor) body.color = selectedColor;
       if (selectedSize) body.size = selectedSize;
-      const res = await post<{ items: CartItem[] }>("/api/v1/cart/items", body);
-      setCartItems(res.items ?? []);
+      const res = await post<{ cart: { items: CartItem[] } }>("/api/v1/cart/items", body);
+      setCartItems(res.cart?.items ?? []);
     } catch (err: any) {
       toast.error(err.message || "Failed to add to cart");
     }
@@ -221,8 +221,8 @@ export default function App() {
 
   const removeFromCart = async (itemId: string) => {
     try {
-      const res = await del<{ items: CartItem[] }>(`/api/v1/cart/items/${itemId}`);
-      setCartItems(res.items ?? []);
+      const res = await del<{ cart: { items: CartItem[] } }>(`/api/v1/cart/items/${itemId}`);
+      setCartItems(res.cart?.items ?? []);
     } catch (err: any) {
       toast.error(err.message || "Failed to remove from cart");
     }
@@ -230,8 +230,8 @@ export default function App() {
 
   const updateCartQuantity = async (itemId: string, quantity: number) => {
     try {
-      const res = await put<{ items: CartItem[] }>(`/api/v1/cart/items/${itemId}`, { quantity });
-      setCartItems(res.items ?? []);
+      const res = await put<{ cart: { items: CartItem[] } }>(`/api/v1/cart/items/${itemId}`, { quantity });
+      setCartItems(res.cart?.items ?? []);
     } catch (err: any) {
       toast.error(err.message || "Failed to update cart");
     }
@@ -333,6 +333,7 @@ export default function App() {
             onNavigate={navigate}
             cartItems={cartItems}
             onOrderPlaced={() => setCartItems([])}
+            user={user}
           />
         );
       case "orders":

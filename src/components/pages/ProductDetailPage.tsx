@@ -52,7 +52,7 @@ interface ProductDetailPageProps {
   onNavigate: (page: string, data?: any) => void;
   onAddToCart: (product: any, quantity: number, selectedColor?: string, selectedSize?: string) => void;
   onAddToWishlist: (product: any) => void;
-  onRemoveFromWishlist: (itemId: number) => void;
+  onRemoveFromWishlist: (productId: string) => void;
   isInWishlist: boolean;
 }
 
@@ -171,8 +171,7 @@ export function ProductDetailPage({
       setIsLiked(true);
       toast.success("Added to wishlist");
     } else {
-      // We need to find the wishlist item to remove it, but we don't have the item ID
-      // For now, we'll just toggle the state
+      onRemoveFromWishlist(product.id);
       setIsLiked(false);
       toast.success("Removed from wishlist");
     }
