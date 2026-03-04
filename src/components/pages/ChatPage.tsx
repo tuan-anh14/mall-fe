@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Send,
   ArrowLeft,
@@ -6,7 +6,6 @@ import {
   Video,
   MoreVertical,
   Smile,
-  Paperclip,
   Image as ImageIcon,
   Search,
   UserCircle,
@@ -49,6 +48,7 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { get, post } from "../../lib/api";
+import { API_URL } from "../../lib/api";
 
 interface ChatPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -69,6 +69,8 @@ interface Message {
   sender: "user" | "seller";
   timestamp: string;
   status?: "sent" | "delivered" | "read";
+  attachmentUrl?: string;
+  attachmentType?: string;
 }
 
 interface Conversation {
@@ -115,7 +117,11 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
   const [showVideoDialog, setShowVideoDialog] = useState(false);
   const [showClearChatDialog, setShowClearChatDialog] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId) ?? null;
 
@@ -188,19 +194,20 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
     try {
       const body: any = { sellerId };
       if (productId) body.productId = productId;
-      const res = await post<{ id: string; otherUser: any; product?: any; lastMessage?: string; lastMessageAt?: string; unreadCount: number }>(
+      const res = await post<{ conversation: { id: string; otherUser: any; product?: any; lastMessage?: string; lastMessageAt?: string; unreadCount: number } }>(
         "/api/v1/conversations",
         body
       );
+      const conv = res.conversation ?? (res as any);
       const newConv: Conversation = {
-        id: res.id,
-        name: res.otherUser?.name ?? sellerInfo?.name ?? "Seller",
-        lastMessage: res.lastMessage ?? "",
-        time: res.lastMessageAt ? formatTime(res.lastMessageAt) : "",
-        unread: res.unreadCount ?? 0,
-        avatar: getInitials(res.otherUser?.name ?? sellerInfo?.name ?? ""),
+        id: conv.id,
+        name: conv.otherUser?.name ?? sellerInfo?.name ?? "Seller",
+        lastMessage: conv.lastMessage ?? "",
+        time: conv.lastMessageAt ? formatTime(conv.lastMessageAt) : "",
+        unread: conv.unreadCount ?? 0,
+        avatar: getInitials(conv.otherUser?.name ?? sellerInfo?.name ?? ""),
         online: false,
-        productName: res.product?.name ?? sellerInfo?.productName,
+        productName: conv.product?.name ?? sellerInfo?.productName,
       };
 
       setConversations((prev) => {
@@ -214,17 +221,61 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
     }
   };
 
+  // Stop polling when component unmounts or conversation changes
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
+  }, []);
+
+  const startPolling = (convId: string) => {
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    pollIntervalRef.current = setInterval(async () => {
+      try {
+        const res = await get<{ messages: Array<any>; }>(`/api/v1/conversations/${convId}/messages?page=1&limit=50`);
+        const rawMessages = [...(res.messages ?? [])].reverse();
+        setMessages((prev) => {
+          // Only update if there are new messages
+          if (rawMessages.length <= prev.length) return prev;
+          const conv = conversations.find((c) => c.id === convId);
+          return rawMessages.map((msg) => {
+            let isUser: boolean;
+            if (userId) {
+              isUser = msg.senderId === userId;
+            } else {
+              isUser = conv ? msg.sender?.name !== conv.name : false;
+            }
+            return {
+              id: msg.id,
+              text: msg.text,
+              sender: isUser ? "user" as const : "seller" as const,
+              timestamp: formatTime(msg.createdAt),
+              status: isUser ? "read" as const : undefined,
+              attachmentUrl: msg.attachmentUrl,
+              attachmentType: msg.attachmentType,
+            };
+          });
+        });
+      } catch {
+        // silently fail polling
+      }
+    }, 4000);
+  };
+
   const selectConversation = async (convId: string) => {
     setActiveConversationId(convId);
     setMessages([]);
     setIsLoadingMessages(true);
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     try {
       const res = await get<{
-        items: Array<{
+        messages: Array<{
           id: string;
-          content: string;
+          text: string;
           senderId: string;
           sender: { id: string; name: string; avatar?: string };
+          attachmentUrl?: string;
+          attachmentType?: string;
           createdAt: string;
           status?: string;
         }>;
@@ -234,7 +285,10 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
         totalPages: number;
       }>(`/api/v1/conversations/${convId}/messages?page=1&limit=50`);
 
-      const mapped: Message[] = (res.items ?? []).map((msg) => {
+      // backend returns messages in desc order, reverse to show oldest first
+      const rawMessages = [...(res.messages ?? [])].reverse();
+
+      const mapped: Message[] = rawMessages.map((msg) => {
         // Determine if sender is current user
         // If userId prop is available use it, else we compare senderId with the otherUser's id
         const conv = conversations.find((c) => c.id === convId);
@@ -247,14 +301,17 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
         }
         return {
           id: msg.id,
-          text: msg.content,
+          text: msg.text,
           sender: isUser ? "user" : "seller",
           timestamp: formatTime(msg.createdAt),
           status: isUser ? "read" : undefined,
+          attachmentUrl: msg.attachmentUrl,
+          attachmentType: msg.attachmentType,
         };
       });
 
       setMessages(mapped);
+      startPolling(convId);
     } catch (err: any) {
       toast.error(err.message || "Failed to load messages");
     } finally {
@@ -282,23 +339,31 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
 
     try {
       const res = await post<{
-        id: string;
-        content: string;
-        senderId: string;
-        sender: { id: string; name: string };
-        createdAt: string;
-      }>(`/api/v1/conversations/${activeConversationId}/messages`, { content });
+        message: {
+          id: string;
+          text: string;
+          isMine: boolean;
+          sender: { id: string; name: string };
+          createdAt: string;
+          attachmentUrl?: string;
+          attachmentType?: string;
+        };
+      }>(`/api/v1/conversations/${activeConversationId}/messages`, { text: content });
+
+      const msg = res.message;
 
       // Replace temp message with real one
       setMessages((prev) =>
         prev.map((m) =>
           m.id === tempId
             ? {
-                id: res.id,
-                text: res.content,
+                id: msg.id,
+                text: msg.text,
                 sender: "user",
-                timestamp: formatTime(res.createdAt),
+                timestamp: formatTime(msg.createdAt),
                 status: "sent",
+                attachmentUrl: msg.attachmentUrl,
+                attachmentType: msg.attachmentType,
               }
             : m
         )
@@ -365,6 +430,64 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
 
   const handleArchiveChat = () => {
     toast.success(`${activeConversation?.name} chat archived`);
+  };
+
+  const EMOJIS = ["😊", "😂", "❤️", "👍", "🔥", "😍", "🎉", "👏", "😢", "😮", "🙏", "💯", "✨", "🥰", "😎", "🤔", "💪", "🎁", "⭐", "🛒"];
+
+  const handleEmojiSelect = (emoji: string) => {
+    setNewMessage((prev) => prev + emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !activeConversationId) return;
+    setIsUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("files", file);
+      const uploadRes = await fetch(`${API_URL}/api/v1/upload/images`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      const uploadJson = await uploadRes.json();
+      const imageUrl = uploadJson?.data?.urls?.[0] ?? null;
+      if (!imageUrl) throw new Error("Upload failed");
+
+      // Send as attachment message
+      const tempId = `temp-img-${Date.now()}`;
+      const tempMsg: Message = {
+        id: tempId,
+        text: "",
+        sender: "user",
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        status: "sent",
+        attachmentUrl: imageUrl,
+        attachmentType: "image",
+      };
+      setMessages((prev) => [...prev, tempMsg]);
+
+      const res = await post<{ message: any }>(`/api/v1/conversations/${activeConversationId}/messages`, {
+        text: "📷 Image",
+        attachmentUrl: imageUrl,
+        attachmentType: "image",
+      });
+      const msg = res.message;
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === tempId
+            ? { ...m, id: msg.id, timestamp: formatTime(msg.createdAt), status: "sent" }
+            : m
+        )
+      );
+      toast.success("Image sent!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload image");
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -597,7 +720,17 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
                                   : "bg-white/10 rounded-tl-sm"
                               }`}
                             >
-                              <p className="text-sm text-white">{message.text}</p>
+                              {message.attachmentType === "image" && message.attachmentUrl ? (
+                                <img
+                                  src={message.attachmentUrl}
+                                  alt="Image"
+                                  className="max-w-[200px] max-h-[200px] rounded-lg object-cover cursor-pointer"
+                                  onClick={() => window.open(message.attachmentUrl, "_blank")}
+                                />
+                              ) : null}
+                              {message.text && message.text !== "📷 Image" && (
+                                <p className="text-sm text-white">{message.text}</p>
+                              )}
                             </div>
                             <div
                               className={`flex items-center gap-2 mt-1 ${
@@ -646,18 +779,37 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
 
                 {/* Message Input */}
                 <div className="p-4 border-t border-white/10 bg-white/5">
+                  {/* Emoji Picker */}
+                  {showEmojiPicker && (
+                    <div className="mb-3 p-3 bg-zinc-900 border border-white/10 rounded-xl">
+                      <div className="flex flex-wrap gap-2">
+                        {EMOJIS.map((emoji) => (
+                          <button
+                            key={emoji}
+                            onClick={() => handleEmojiSelect(emoji)}
+                            className="text-xl hover:scale-125 transition-transform"
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="flex gap-2">
+                    {/* Hidden file input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
                     <Button
                       variant="ghost"
                       size="icon"
                       className="text-white hover:bg-white/10 flex-shrink-0"
-                    >
-                      <Paperclip className="h-5 w-5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-white hover:bg-white/10 flex-shrink-0"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploadingImage}
                     >
                       <ImageIcon className="h-5 w-5" />
                     </Button>
@@ -665,14 +817,15 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
                       placeholder="Type a message..."
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
+                      onKeyDown={handleKeyPress}
                       className="flex-1 bg-white/5 border-white/10 text-white"
-                      disabled={isSending}
+                      disabled={isSending || isUploadingImage}
                     />
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-white hover:bg-white/10 flex-shrink-0"
+                      className={`text-white hover:bg-white/10 flex-shrink-0 ${showEmojiPicker ? "bg-white/10" : ""}`}
+                      onClick={() => setShowEmojiPicker((v) => !v)}
                     >
                       <Smile className="h-5 w-5" />
                     </Button>
@@ -680,7 +833,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
                       size="icon"
                       onClick={handleSendMessage}
                       className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 flex-shrink-0"
-                      disabled={!newMessage.trim() || isSending}
+                      disabled={!newMessage.trim() || isSending || isUploadingImage}
                     >
                       <Send className="h-5 w-5" />
                     </Button>

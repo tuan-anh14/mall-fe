@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Search, ShoppingCart, User, Menu, Heart, Bell, Settings, LogOut, Package, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -21,18 +21,33 @@ interface HeaderProps {
   isAuthenticated?: boolean;
   user?: UserType | null;
   onLogout?: () => void;
+  onSearch?: (query: string) => void;
 }
 
-export function Header({ 
-  currentPage, 
-  onNavigate, 
-  cartCount = 0, 
+export function Header({
+  currentPage,
+  onNavigate,
+  cartCount = 0,
   wishlistCount = 0,
   isAuthenticated = false,
   user = null,
-  onLogout
+  onLogout,
+  onSearch,
 }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = () => {
+    const q = searchQuery.trim();
+    if (q) {
+      if (onSearch) onSearch(q);
+      else onNavigate("shop");
+      setSearchQuery("");
+    }
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleSearch();
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl">
@@ -135,14 +150,20 @@ export function Header({
 
           {/* Search Bar */}
           <div className="hidden md:flex flex-1 max-w-md">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
-              <Input
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/50"
-              />
+            <div className="relative w-full flex gap-1">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                <Input
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/50"
+                />
+              </div>
+              <Button size="sm" onClick={handleSearch} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-3">
+                <Search className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 

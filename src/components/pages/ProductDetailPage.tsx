@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Star, Heart, Share2, Truck, Shield, RotateCcw, MessageCircle, Minus, Plus } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Star, Heart, Share2, Truck, Shield, RotateCcw, MessageCircle, Minus, Plus, Upload, X, Smile } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -8,7 +8,8 @@ import { Progress } from "../ui/progress";
 import { Separator } from "../ui/separator";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { toast } from "sonner@2.0.3";
-import { get } from "../../lib/api";
+import { get, post } from "../../lib/api";
+import { API_URL } from "../../lib/api";
 
 interface ReviewUser {
   id: string;
@@ -48,7 +49,7 @@ interface RelatedProduct {
 
 interface ProductDetailPageProps {
   product: any;
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, data?: any) => void;
   onAddToCart: (product: any, quantity: number, selectedColor?: string, selectedSize?: string) => void;
   onAddToWishlist: (product: any) => void;
   onRemoveFromWishlist: (itemId: number) => void;
@@ -77,6 +78,21 @@ export function ProductDetailPage({
   const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
 
+  // Review form state
+  const [canReview, setCanReview] = useState(false);
+  const [userReview, setUserReview] = useState<Review | null>(null);
+  const [reviewFormOpen, setReviewFormOpen] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewEmoji, setReviewEmoji] = useState("");
+  const [reviewImages, setReviewImages] = useState<string[]>([]);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [isUploadingReviewImage, setIsUploadingReviewImage] = useState(false);
+  const [showReviewEmojiPicker, setShowReviewEmojiPicker] = useState(false);
+  const reviewImageInputRef = useRef<HTMLInputElement>(null);
+
+  const REVIEW_EMOJIS = ["😊", "😁", "😍", "🤩", "👍", "🔥", "💯", "⭐", "🎉", "😢", "😞", "👎"];
+
   useEffect(() => {
     if (!product.id) return;
 
@@ -85,9 +101,17 @@ export function ProductDetailPage({
       try {
         const data = await get(`/api/v1/reviews/products/${product.id}?page=1&limit=10`);
         setReviews(data.reviews ?? []);
-        setRatingBreakdown(data.breakdown ?? []);
-        if (data.ratingAverage !== undefined) {
-          setRatingAverage(data.ratingAverage);
+        // breakdown is nested under summary from backend
+        const summary = data.summary ?? {};
+        const rawBreakdown = summary.breakdown ?? {};
+        const breakdownArr: RatingBreakdownItem[] = [5, 4, 3, 2, 1].map((star) => {
+          const count = rawBreakdown[star] ?? 0;
+          const total = Object.values(rawBreakdown as Record<string, number>).reduce((a: number, b: number) => a + b, 0);
+          return { rating: star, count, percentage: total > 0 ? Math.round((count / total) * 100) : 0 };
+        });
+        setRatingBreakdown(breakdownArr);
+        if (summary.ratingAverage !== undefined) {
+          setRatingAverage(Number(summary.ratingAverage));
         }
       } catch {
         // silently fall back to empty state
@@ -111,8 +135,19 @@ export function ProductDetailPage({
       }
     };
 
+    const fetchReviewEligibility = async () => {
+      try {
+        const data = await get(`/api/v1/reviews/products/${product.id}/check`);
+        setCanReview(data.canReview ?? false);
+        setUserReview(data.review ?? null);
+      } catch {
+        // not logged in or not purchased
+      }
+    };
+
     fetchReviews();
     fetchRelated();
+    fetchReviewEligibility();
   }, [product.id]);
 
   const handleAddToCart = () => {
@@ -164,6 +199,62 @@ export function ProductDetailPage({
 
   const getBreakdownPercentage = (star: number): number =>
     ratingBreakdown.find((b) => b.rating === star)?.percentage ?? 0;
+
+  const handleReviewImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingReviewImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("files", file);
+      const res = await fetch(`${API_URL}/api/v1/upload/images`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      const json = await res.json();
+      const url = json?.data?.urls?.[0] ?? null;
+      if (!url) throw new Error("Upload failed");
+      setReviewImages((prev) => [...prev, url]);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload image");
+    } finally {
+      setIsUploadingReviewImage(false);
+      if (reviewImageInputRef.current) reviewImageInputRef.current.value = "";
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!reviewComment.trim()) {
+      toast.error("Please write a review comment");
+      return;
+    }
+    setIsSubmittingReview(true);
+    try {
+      const body: any = {
+        productId: product.id,
+        rating: reviewRating,
+        comment: reviewComment.trim(),
+        images: reviewImages,
+      };
+      if (reviewEmoji) body.emoji = reviewEmoji;
+
+      const data = await post("/api/v1/reviews", body);
+      setReviews((prev) => [data.review, ...prev]);
+      setUserReview(data.review);
+      setCanReview(false);
+      setReviewFormOpen(false);
+      setReviewComment("");
+      setReviewRating(5);
+      setReviewImages([]);
+      setReviewEmoji("");
+      toast.success("Review submitted successfully!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit review");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   const getAvatarInitials = (name?: string): string => {
     if (!name) return "?";
@@ -454,7 +545,7 @@ export function ProductDetailPage({
         <TabsContent value="specifications" className="mt-8">
           <h3 className="text-2xl text-white mb-6">Technical Specifications</h3>
           <div className="grid md:grid-cols-2 gap-4">
-            {Object.entries(product.specifications).map(([key, value]) => (
+            {Object.entries(product.specifications ?? {}).map(([key, value]) => (
               <div
                 key={key}
                 className="bg-white/5 border border-white/10 rounded-lg p-4 flex justify-between"
@@ -467,6 +558,126 @@ export function ProductDetailPage({
         </TabsContent>
 
         <TabsContent value="reviews" className="mt-8">
+          {/* Write Review Button / Form */}
+          {(canReview || reviewFormOpen) && !userReview && (
+            <div className="mb-8 bg-white/5 border border-white/10 rounded-2xl p-6">
+              {!reviewFormOpen ? (
+                <div className="flex items-center justify-between">
+                  <p className="text-white/70">You purchased this product. Share your experience!</p>
+                  <Button
+                    onClick={() => setReviewFormOpen(true)}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                  >
+                    Write a Review
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <h3 className="text-white text-lg">Write Your Review</h3>
+
+                  {/* Star Rating */}
+                  <div>
+                    <label className="text-white/70 text-sm mb-2 block">Rating *</label>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button key={star} onClick={() => setReviewRating(star)}>
+                          <Star className={`h-8 w-8 transition-colors ${star <= reviewRating ? "fill-yellow-400 text-yellow-400" : "text-white/20"}`} />
+                        </button>
+                      ))}
+                      <span className="ml-2 text-white/60 self-center">{reviewRating}/5 stars</span>
+                    </div>
+                  </div>
+
+                  {/* Emoji Reaction */}
+                  <div>
+                    <label className="text-white/70 text-sm mb-2 block">Reaction Emoji (optional)</label>
+                    <div className="flex items-center gap-2">
+                      {reviewEmoji && <span className="text-3xl">{reviewEmoji}</span>}
+                      <Button variant="ghost" size="sm" className="text-white/60 border border-white/10" onClick={() => setShowReviewEmojiPicker((v) => !v)}>
+                        <Smile className="h-4 w-4 mr-1" /> Pick Emoji
+                      </Button>
+                      {reviewEmoji && (
+                        <Button variant="ghost" size="sm" className="text-white/40" onClick={() => setReviewEmoji("")}>
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    {showReviewEmojiPicker && (
+                      <div className="mt-2 p-3 bg-zinc-900 border border-white/10 rounded-xl flex flex-wrap gap-2 w-fit">
+                        {REVIEW_EMOJIS.map((e) => (
+                          <button key={e} className="text-2xl hover:scale-125 transition-transform" onClick={() => { setReviewEmoji(e); setShowReviewEmojiPicker(false); }}>
+                            {e}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Review Comment */}
+                  <div>
+                    <label className="text-white/70 text-sm mb-2 block">Review Comment *</label>
+                    <textarea
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      placeholder="Share your experience with this product..."
+                      rows={4}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white placeholder:text-white/40 resize-none focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+
+                  {/* Image Upload */}
+                  <div>
+                    <label className="text-white/70 text-sm mb-2 block">Review Images (optional)</label>
+                    <input ref={reviewImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleReviewImageUpload} />
+                    <div className="flex flex-wrap gap-3">
+                      {reviewImages.map((url, i) => (
+                        <div key={i} className="relative w-20 h-20">
+                          <img src={url} alt={`Review img ${i + 1}`} className="w-full h-full object-cover rounded-lg" />
+                          <button
+                            className="absolute -top-1 -right-1 bg-red-500 rounded-full h-5 w-5 flex items-center justify-center"
+                            onClick={() => setReviewImages((prev) => prev.filter((_, idx) => idx !== i))}
+                          >
+                            <X className="h-3 w-3 text-white" />
+                          </button>
+                        </div>
+                      ))}
+                      {reviewImages.length < 5 && (
+                        <button
+                          onClick={() => reviewImageInputRef.current?.click()}
+                          disabled={isUploadingReviewImage}
+                          className="w-20 h-20 border-2 border-dashed border-white/20 rounded-lg flex flex-col items-center justify-center text-white/40 hover:border-purple-500 hover:text-purple-400 transition-colors"
+                        >
+                          <Upload className="h-5 w-5 mb-1" />
+                          <span className="text-xs">{isUploadingReviewImage ? "..." : "Add"}</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Submit / Cancel */}
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={handleSubmitReview}
+                      disabled={isSubmittingReview || !reviewComment.trim()}
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    >
+                      {isSubmittingReview ? "Submitting..." : "Submit Review"}
+                    </Button>
+                    <Button variant="ghost" onClick={() => setReviewFormOpen(false)} className="text-white/60">
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {userReview && (
+            <div className="mb-8 bg-purple-500/10 border border-purple-500/30 rounded-2xl p-4">
+              <p className="text-purple-300 text-sm">✓ You have already reviewed this product.</p>
+            </div>
+          )}
+
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Rating Summary */}
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
@@ -544,7 +755,23 @@ export function ProductDetailPage({
                         </div>
                       </div>
                     </div>
+                    {(review as any).emoji && (
+                      <span className="text-2xl mb-2 block">{(review as any).emoji}</span>
+                    )}
                     <p className="text-white/70 mb-4">{review.comment}</p>
+                    {(review as any).images?.length > 0 && (
+                      <div className="flex gap-2 mb-4 flex-wrap">
+                        {(review as any).images.map((url: string, i: number) => (
+                          <img
+                            key={i}
+                            src={url}
+                            alt={`Review image ${i + 1}`}
+                            className="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => window.open(url, "_blank")}
+                          />
+                        ))}
+                      </div>
+                    )}
                     <Button variant="ghost" size="sm" className="text-white/50 hover:text-white">
                       👍 Helpful ({review.helpful})
                     </Button>
@@ -565,7 +792,7 @@ export function ProductDetailPage({
               <div
                 key={related.id}
                 className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 transition-all cursor-pointer"
-                onClick={() => onNavigate("product-detail")}
+                onClick={() => onNavigate("product", related)}
               >
                 <div className="aspect-square overflow-hidden">
                   <ImageWithFallback

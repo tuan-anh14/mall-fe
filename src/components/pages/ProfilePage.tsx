@@ -64,6 +64,8 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
   const [ordersTotal, setOrdersTotal] = useState(0);
   const [profileLoading, setProfileLoading] = useState(true);
   const [ordersLoading, setOrdersLoading] = useState(true);
+  const [wishlistItems, setWishlistItems] = useState<any[]>([]);
+  const [wishlistLoading, setWishlistLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -93,8 +95,21 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
       }
     };
 
+    const fetchWishlist = async () => {
+      setWishlistLoading(true);
+      try {
+        const res = await get<{ items: any[] }>("/api/v1/wishlist");
+        setWishlistItems(res.items ?? []);
+      } catch {
+        // Leave wishlist empty
+      } finally {
+        setWishlistLoading(false);
+      }
+    };
+
     fetchProfile();
     fetchOrders();
+    fetchWishlist();
   }, []);
 
   // Derive display values: prefer real profile, fall back to userProp
@@ -191,7 +206,9 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
           <Heart className="h-8 w-8 text-pink-400 mx-auto mb-2" />
-          <p className="text-3xl text-white mb-1">—</p>
+          <p className="text-3xl text-white mb-1">
+            {wishlistLoading ? "—" : wishlistItems.length}
+          </p>
           <p className="text-sm text-white/60">Wishlist</p>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
@@ -319,16 +336,57 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
         </TabsContent>
 
         <TabsContent value="wishlist" className="mt-8">
-          <div className="text-center py-12">
-            <Heart className="h-12 w-12 text-white/20 mx-auto mb-4" />
-            <p className="text-white/60 mb-4">Visit your Wishlist page to see saved items.</p>
-            <Button
-              className="bg-gradient-to-r from-purple-600 to-blue-600"
-              onClick={() => onNavigate("wishlist")}
-            >
-              View Wishlist
-            </Button>
-          </div>
+          {wishlistLoading ? (
+            <div className="text-white/60 text-center py-12">Loading wishlist...</div>
+          ) : wishlistItems.length === 0 ? (
+            <div className="text-center py-12">
+              <Heart className="h-12 w-12 text-white/20 mx-auto mb-4" />
+              <p className="text-white/60 mb-4">Your wishlist is empty.</p>
+              <Button
+                className="bg-gradient-to-r from-purple-600 to-blue-600"
+                onClick={() => onNavigate("shop")}
+              >
+                Discover Products
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-white/60">{wishlistItems.length} saved item{wishlistItems.length !== 1 ? "s" : ""}</p>
+                <Button variant="ghost" size="sm" className="text-purple-400" onClick={() => onNavigate("wishlist")}>
+                  View All →
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {wishlistItems.slice(0, 8).map((item: any) => (
+                  <div
+                    key={item.id}
+                    className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-purple-500/50 transition-all cursor-pointer group"
+                    onClick={() => onNavigate("product", item.product)}
+                  >
+                    <div className="aspect-square overflow-hidden bg-white/5">
+                      <ImageWithFallback
+                        src={item.product?.image}
+                        alt={item.product?.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-3">
+                      <p className="text-white text-sm line-clamp-2 mb-1">{item.product?.name}</p>
+                      <p className="text-purple-400 font-semibold">${Number(item.product?.price ?? 0).toFixed(2)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {wishlistItems.length > 8 && (
+                <div className="text-center mt-6">
+                  <Button variant="outline" onClick={() => onNavigate("wishlist")}>
+                    View All {wishlistItems.length} Items
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="settings" className="mt-8">

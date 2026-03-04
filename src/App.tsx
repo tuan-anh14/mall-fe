@@ -209,12 +209,10 @@ export default function App() {
       return;
     }
     try {
-      const res = await post<{ items: CartItem[] }>("/api/v1/cart/items", {
-        productId: product.id,
-        quantity,
-        selectedColor: selectedColor ?? null,
-        selectedSize: selectedSize ?? null,
-      });
+      const body: any = { productId: product.id, quantity };
+      if (selectedColor) body.color = selectedColor;
+      if (selectedSize) body.size = selectedSize;
+      const res = await post<{ items: CartItem[] }>("/api/v1/cart/items", body);
       setCartItems(res.items ?? []);
     } catch (err: any) {
       toast.error(err.message || "Failed to add to cart");
@@ -282,9 +280,10 @@ export default function App() {
         );
       case "shop":
         return (
-          <ShopPage 
-            onNavigate={navigate} 
+          <ShopPage
+            onNavigate={navigate}
             initialCategory={pageData?.category}
+            initialSearch={pageData?.search}
             onAddToCart={addToCart}
             onAddToWishlist={addToWishlist}
             isInWishlist={isInWishlist}
@@ -537,12 +536,13 @@ export default function App() {
       {showBuyerHeader && (
         <Header
           currentPage={currentPage}
-          onNavigate={navigate}
+          onNavigate={(page) => navigate(page as any)}
           cartCount={cartItems.reduce((total, item) => total + item.quantity, 0)}
           wishlistCount={wishlistItems.length}
           isAuthenticated={isAuthenticated}
           user={user}
           onLogout={handleLogout}
+          onSearch={(q) => navigate("shop", { search: q })}
         />
       )}
       

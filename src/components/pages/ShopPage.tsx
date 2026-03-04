@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { Grid, List, SlidersHorizontal } from "lucide-react";
+import { Grid, List, SlidersHorizontal, Search } from "lucide-react";
 import { Button } from "../ui/button";
 import { ProductCard } from "../ProductCard";
 import { Slider } from "../ui/slider";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Badge } from "../ui/badge";
@@ -13,6 +14,7 @@ import { get } from "../../lib/api";
 interface ShopPageProps {
   onNavigate: (page: string, data?: any) => void;
   initialCategory?: string;
+  initialSearch?: string;
   onAddToCart?: (product: any) => void;
   onAddToWishlist?: (product: any) => void;
   isInWishlist?: (productId: number) => boolean;
@@ -26,7 +28,7 @@ const SORT_MAP: Record<string, string> = {
   newest: "newest",
 };
 
-export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWishlist, isInWishlist }: ShopPageProps) {
+export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCart, onAddToWishlist, isInWishlist }: ShopPageProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [priceRange, setPriceRange] = useState([0, 3000]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -34,6 +36,7 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
   );
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("popularity");
+  const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
 
   const [products, setProducts] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
@@ -76,6 +79,9 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
         params.set("limit", "12");
         params.set("page", "1");
 
+        if (searchQuery.trim()) {
+          params.set("search", searchQuery.trim());
+        }
         if (selectedCategories.length === 1) {
           params.set("category", selectedCategories[0]);
         }
@@ -115,7 +121,7 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
     };
 
     fetchProducts();
-  }, [selectedCategories, selectedBrands, debouncedPriceRange, sortBy]);
+  }, [selectedCategories, selectedBrands, debouncedPriceRange, sortBy, searchQuery]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -136,6 +142,7 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
     setSelectedBrands([]);
     setPriceRange([0, 3000]);
     setDebouncedPriceRange([0, 3000]);
+    setSearchQuery("");
   };
 
   const FiltersContent = () => (
@@ -239,6 +246,24 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
           </p>
         </div>
 
+        {/* Search */}
+        <div className="flex gap-2 flex-1 max-w-sm">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+            <Input
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/50"
+            />
+          </div>
+          {searchQuery && (
+            <Button variant="ghost" size="sm" onClick={() => setSearchQuery("")} className="text-white/50 hover:text-white">
+              Clear
+            </Button>
+          )}
+        </div>
+
         <div className="flex items-center gap-4">
           {/* Sort */}
           <Select value={sortBy} onValueChange={setSortBy}>
@@ -294,8 +319,17 @@ export function ShopPage({ onNavigate, initialCategory, onAddToCart, onAddToWish
       </div>
 
       {/* Active Filters */}
-      {(selectedCategories.length > 0 || selectedBrands.length > 0) && (
+      {(selectedCategories.length > 0 || selectedBrands.length > 0 || searchQuery) && (
         <div className="flex flex-wrap gap-2 mb-6">
+          {searchQuery && (
+            <Badge
+              variant="secondary"
+              className="cursor-pointer"
+              onClick={() => setSearchQuery("")}
+            >
+              🔍 "{searchQuery}" ×
+            </Badge>
+          )}
           {selectedCategories.map((cat) => (
             <Badge
               key={cat}
