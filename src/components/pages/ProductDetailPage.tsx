@@ -54,6 +54,7 @@ interface ProductDetailPageProps {
   onAddToWishlist: (product: any) => void;
   onRemoveFromWishlist: (productId: string) => void;
   isInWishlist: boolean;
+  isAuthenticated?: boolean;
 }
 
 export function ProductDetailPage({
@@ -62,7 +63,8 @@ export function ProductDetailPage({
   onAddToCart,
   onAddToWishlist,
   onRemoveFromWishlist,
-  isInWishlist: initialIsInWishlist
+  isInWishlist: initialIsInWishlist,
+  isAuthenticated = false,
 }: ProductDetailPageProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -522,18 +524,28 @@ export function ProductDetailPage({
               <div className="flex items-center gap-3">
                 <Avatar>
                   <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500">
-                    {product.brand[0]}
+                    {(product.seller?.storeName?.[0] || product.brand?.[0] || "S").toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-white">{product.brand} Official Store</p>
-                  <p className="text-sm text-white/50">98% positive ratings</p>
+                  <p className="text-white">{product.seller?.storeName || `${product.brand} Store`}</p>
+                  <p className="text-sm text-white/50">
+                    {product.seller?.isVerified ? "✓ Verified Seller" : "Seller"}
+                    {product.seller?.positiveRating ? ` · ${product.seller.positiveRating}% positive` : ""}
+                  </p>
                 </div>
               </div>
-              <Button variant="outline" onClick={() => onNavigate("chat")}>
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Chat
-              </Button>
+              {product.seller?.userId && (
+                <Button variant="outline" onClick={() => onNavigate("chat", {
+                  sellerId: product.seller.userId,
+                  name: product.seller.storeName || product.brand || "Seller",
+                  productId: product.id,
+                  productName: product.name,
+                })}>
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Chat
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -557,13 +569,13 @@ export function ProductDetailPage({
         <TabsContent value="specifications" className="mt-8">
           <h3 className="text-2xl text-white mb-6">Technical Specifications</h3>
           <div className="grid md:grid-cols-2 gap-4">
-            {Object.entries(product.specifications ?? {}).map(([key, value]) => (
+            {(Array.isArray(product.specifications) ? product.specifications : Object.entries(product.specifications ?? {}).map(([key, value]) => ({ key, value }))).map((spec: any) => (
               <div
-                key={key}
+                key={spec.key}
                 className="bg-white/5 border border-white/10 rounded-lg p-4 flex justify-between"
               >
-                <span className="text-white/60">{key}</span>
-                <span className="text-white">{value as string}</span>
+                <span className="text-white/60">{spec.key}</span>
+                <span className="text-white">{spec.value}</span>
               </div>
             ))}
           </div>
@@ -571,7 +583,14 @@ export function ProductDetailPage({
 
         <TabsContent value="reviews" className="mt-8">
           {/* Write Review Button / Form */}
-          {(canReview || reviewFormOpen) && !userReview && (
+          {isAuthenticated && !userReview && !canReview && (
+            <div className="mb-8 bg-white/5 border border-white/10 rounded-2xl p-4">
+              <p className="text-white/50 text-sm text-center">
+                🛍️ Purchase and receive this product to leave a review.
+              </p>
+            </div>
+          )}
+          {isAuthenticated && canReview && !userReview && (
             <div className="mb-8 bg-white/5 border border-white/10 rounded-2xl p-6">
               {!reviewFormOpen ? (
                 <div className="flex items-center justify-between">

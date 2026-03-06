@@ -380,18 +380,60 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         </TabsContent>
 
         <TabsContent value="customers" className="mt-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
-            <Users className="h-16 w-16 text-white/20 mx-auto mb-4" />
-            <h3 className="text-2xl text-white mb-2">Customer Management</h3>
-            <p className="text-white/60 mb-4">
-              View and manage your customer base, analytics, and insights.
-            </p>
-            <Button
-              className="bg-gradient-to-r from-purple-600 to-blue-600"
-              onClick={() => onNavigate("dashboard")}
-            >
-              View All Customers
-            </Button>
+          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-white/10">
+              <h2 className="text-xl text-white">Customer Management</h2>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-white/10 hover:bg-white/5">
+                  <TableHead className="text-white/70">Customer</TableHead>
+                  <TableHead className="text-white/70">Email</TableHead>
+                  <TableHead className="text-white/70">Orders</TableHead>
+                  <TableHead className="text-white/70">Total Spent</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {(() => {
+                  const customerMap = new Map<string, { id: string; name: string; email: string; orderCount: number; totalSpent: number }>();
+                  orders.forEach((order) => {
+                    const c = order.customer;
+                    if (!customerMap.has(c.id)) {
+                      customerMap.set(c.id, { ...c, orderCount: 1, totalSpent: order.total });
+                    } else {
+                      const existing = customerMap.get(c.id)!;
+                      existing.orderCount++;
+                      existing.totalSpent += order.total;
+                    }
+                  });
+                  const customers = Array.from(customerMap.values());
+                  if (customers.length === 0) {
+                    return (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center text-white/60 py-8">
+                          No customers yet
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }
+                  return customers.map((customer) => (
+                    <TableRow key={customer.id} className="border-white/10 hover:bg-white/5">
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm">
+                            {customer.name[0]?.toUpperCase() || "?"}
+                          </div>
+                          <span className="text-white">{customer.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-white/70">{customer.email}</TableCell>
+                      <TableCell className="text-white">{customer.orderCount}</TableCell>
+                      <TableCell className="text-white">${customer.totalSpent.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ));
+                })()}
+              </TableBody>
+            </Table>
           </div>
         </TabsContent>
       </Tabs>

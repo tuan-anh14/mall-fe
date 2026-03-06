@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from "react";
-import { Grid, List, SlidersHorizontal, Search } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Grid, List, SlidersHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { ProductCard } from "../ProductCard";
 import { Slider } from "../ui/slider";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
-import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Badge } from "../ui/badge";
@@ -44,6 +43,13 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
 
   const [categories, setCategories] = useState<any[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
+
+  // Sync search query when header search navigates to shop page
+  useEffect(() => {
+    if (initialSearch !== undefined) {
+      setSearchQuery(initialSearch);
+    }
+  }, [initialSearch]);
 
   // Debounce price range to avoid firing on every slider tick
   const priceRangeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -244,24 +250,6 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
           <p className="text-white/60">
             {loading ? "Loading products..." : `Showing ${products.length} of ${total} products`}
           </p>
-        </div>
-
-        {/* Search */}
-        <div className="flex gap-2 flex-1 max-w-sm">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
-            <Input
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/50"
-            />
-          </div>
-          {searchQuery && (
-            <Button variant="ghost" size="sm" onClick={() => setSearchQuery("")} className="text-white/50 hover:text-white">
-              Clear
-            </Button>
-          )}
         </div>
 
         <div className="flex items-center gap-4">

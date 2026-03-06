@@ -1,4 +1,5 @@
-import { Package, ShoppingBag, BarChart3, LogOut, Store, Home } from "lucide-react";
+import React from "react";
+import { Package, ShoppingBag, BarChart3, LogOut, Store, Home, MessageSquare } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
@@ -60,6 +61,14 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
 
           {/* User Menu */}
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onNavigate("chat")}
+              title="Messages"
+            >
+              <MessageSquare className="h-5 w-5" />
+            </Button>
             <Button
               variant="outline"
               size="sm"

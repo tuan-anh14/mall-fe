@@ -8,6 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { get, put } from "../../lib/api";
 import { toast } from "sonner@2.0.3";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 
 interface OrderCustomer {
   id: string;
@@ -46,13 +52,14 @@ interface SellerOrdersPageProps {
   onNavigate: (page: string, data?: any) => void;
 }
 
-export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
+export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPageProps) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<OrderStats>({ total: 0, pending: 0, shipped: 0, delivered: 0 });
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -136,7 +143,7 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => onNavigate("orders")}
+                      onClick={() => setSelectedOrder(order)}
                     >
                       View Details
                     </Button>
@@ -284,6 +291,103 @@ export function SellerOrdersPage({ onNavigate }: SellerOrdersPageProps) {
           </Tabs>
         )}
       </div>
+
+      {/* Order Detail Dialog */}
+      <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+        <DialogContent className="bg-zinc-950 border-white/10 max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-white">Order Details — {selectedOrder?.id}</DialogTitle>
+          </DialogHeader>
+          {selectedOrder && (
+            <div className="space-y-6 mt-2">
+              {/* Summary */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-white/50 mb-1">Customer</p>
+                  <p className="text-white">{selectedOrder.customer.name}</p>
+                  <p className="text-white/60">{selectedOrder.customer.email}</p>
+                </div>
+                <div>
+                  <p className="text-white/50 mb-1">Order Info</p>
+                  <p className="text-white">Date: {selectedOrder.date}</p>
+                  <p className="text-white">
+                    Status:{" "}
+                    <span className={
+                      selectedOrder.status === "Delivered"
+                        ? "text-green-400"
+                        : selectedOrder.status === "Shipped"
+                        ? "text-purple-400"
+                        : "text-yellow-400"
+                    }>
+                      {selectedOrder.status}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Items */}
+              <div>
+                <p className="text-white/50 text-sm mb-3">Items ({selectedOrder.items.length})</p>
+                <div className="space-y-3">
+                  {selectedOrder.items.map((item) => (
+                    <div key={item.id} className="flex items-center gap-3 bg-white/5 rounded-lg p-3">
+                      {item.productImage && (
+                        <img
+                          src={item.productImage}
+                          alt={item.productName}
+                          className="w-14 h-14 object-cover rounded-lg flex-shrink-0"
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white text-sm truncate">{item.productName}</p>
+                        <p className="text-white/50 text-xs">
+                          {item.selectedColor ? `Color: ${item.selectedColor}` : ""}
+                          {item.selectedColor && item.selectedSize ? " · " : ""}
+                          {item.selectedSize ? `Size: ${item.selectedSize}` : ""}
+                        </p>
+                        <p className="text-white/60 text-xs mt-1">Qty: {item.quantity} × ${item.price.toFixed(2)}</p>
+                      </div>
+                      <p className="text-white text-sm font-medium flex-shrink-0">
+                        ${(item.quantity * item.price).toFixed(2)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Total */}
+              <div className="flex justify-between items-center border-t border-white/10 pt-4">
+                <span className="text-white/60">Total</span>
+                <span className="text-white text-lg">${selectedOrder.total.toFixed(2)}</span>
+              </div>
+
+              {/* Update Status */}
+              {selectedOrder.status !== "Delivered" && (
+                <div className="flex justify-end gap-2">
+                  <Button
+                    size="sm"
+                    disabled={updatingId === selectedOrder.id}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600"
+                    onClick={async () => {
+                      await handleUpdateStatus(
+                        selectedOrder.id,
+                        selectedOrder.status === "Processing" ? "Shipped" : "Delivered"
+                      );
+                      setSelectedOrder(null);
+                    }}
+                  >
+                    {updatingId === selectedOrder.id
+                      ? "Updating..."
+                      : selectedOrder.status === "Processing"
+                      ? "Mark as Shipped"
+                      : "Mark as Delivered"}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -299,6 +299,7 @@ export default function App() {
             onAddToWishlist={addToWishlist}
             onRemoveFromWishlist={removeFromWishlist}
             isInWishlist={isInWishlist(pageData?.id)}
+            isAuthenticated={isAuthenticated}
           />
         );
       case "cart":

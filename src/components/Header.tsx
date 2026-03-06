@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, ShoppingCart, User, Menu, Heart, Bell, Settings, LogOut, Package, LayoutDashboard } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, Heart, Bell, MessageCircle, Settings, LogOut, Package, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
@@ -175,6 +175,12 @@ export function Header({
                 <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
                   2
                 </Badge>
+              </Button>
+            )}
+
+            {isAuthenticated && (
+              <Button variant="ghost" size="icon" onClick={() => onNavigate("chat")} className="hidden md:flex">
+                <MessageCircle className="h-5 w-5" />
               </Button>
             )}
 
