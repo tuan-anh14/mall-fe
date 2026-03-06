@@ -23,17 +23,24 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
-  // Shipping form state
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  // Shipping form state — pre-seeded from user prop synchronously
+  const getInitialName = (part: "first" | "last") => {
+    if (!user?.name) return "";
+    const parts = user.name.trim().split(" ");
+    if (part === "first") return parts[0] || "";
+    return parts.slice(1).join(" ") || "";
+  };
+
+  const [firstName, setFirstName] = useState(() => getInitialName("first"));
+  const [lastName, setLastName] = useState(() => getInitialName("last"));
+  const [email, setEmail] = useState(() => user?.email || "");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
 
-  // Pre-fill from user profile + saved addresses
+  // Enhance pre-fill from full profile API + saved addresses
   useEffect(() => {
     const prefill = async () => {
       try {

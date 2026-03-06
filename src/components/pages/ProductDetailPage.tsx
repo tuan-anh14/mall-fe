@@ -50,7 +50,7 @@ interface RelatedProduct {
 interface ProductDetailPageProps {
   product: any;
   onNavigate: (page: string, data?: any) => void;
-  onAddToCart: (product: any, quantity: number, selectedColor?: string, selectedSize?: string) => void;
+  onAddToCart: (product: any, quantity: number, selectedColor?: string, selectedSize?: string) => Promise<void> | void;
   onAddToWishlist: (product: any) => void;
   onRemoveFromWishlist: (productId: string) => void;
   isInWishlist: boolean;
@@ -66,8 +66,10 @@ export function ProductDetailPage({
 }: ProductDetailPageProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || null);
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(
+    product.colors?.[0]?.name ?? product.colors?.[0] ?? null
+  );
+  const [selectedSize, setSelectedSize] = useState<string | null>(product.sizes?.[0] || null);
   const [isLiked, setIsLiked] = useState(initialIsInWishlist);
 
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -150,19 +152,24 @@ export function ProductDetailPage({
     fetchReviewEligibility();
   }, [product.id]);
 
-  const handleAddToCart = () => {
-    onAddToCart(product, quantity, selectedColor, selectedSize);
-    toast.success(`Added ${quantity} ${product.name} to cart`, {
-      description: `Color: ${selectedColor || 'Default'}, Size: ${selectedSize || 'Default'}`,
-    });
+  const handleAddToCart = async () => {
+    try {
+      await onAddToCart(product, quantity, selectedColor ?? undefined, selectedSize ?? undefined);
+      toast.success(`Added ${quantity} ${product.name} to cart`, {
+        description: `Color: ${selectedColor || 'Default'}, Size: ${selectedSize || 'Default'}`,
+      });
+    } catch {
+      // error already shown by addToCart
+    }
   };
 
-  const handleBuyNow = () => {
-    onAddToCart(product, quantity, selectedColor, selectedSize);
-    toast.success("Proceeding to checkout...");
-    setTimeout(() => {
+  const handleBuyNow = async () => {
+    try {
+      await onAddToCart(product, quantity, selectedColor ?? undefined, selectedSize ?? undefined);
       onNavigate("checkout");
-    }, 500);
+    } catch {
+      // error already shown by addToCart; do not navigate
+    }
   };
 
   const handleLike = () => {
@@ -269,7 +276,7 @@ export function ProductDetailPage({
         <div className="space-y-4">
           <div className="relative aspect-square bg-white/5 rounded-2xl overflow-hidden border border-white/10">
             <ImageWithFallback
-              src={product.images?.[selectedImage] || product.image}
+              src={product.images?.[selectedImage]?.url ?? product.images?.[selectedImage] ?? product.image}
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -280,19 +287,22 @@ export function ProductDetailPage({
             )}
           </div>
           <div className="grid grid-cols-4 gap-4">
-            {(product.images || [product.image]).map((img: string, i: number) => (
-              <button
-                key={i}
-                onClick={() => setSelectedImage(i)}
-                className={`aspect-square bg-white/5 rounded-xl overflow-hidden border-2 transition-all ${
-                  selectedImage === i
-                    ? "border-purple-500"
-                    : "border-white/10 hover:border-white/30"
-                }`}
-              >
-                <img src={img} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
-              </button>
-            ))}
+            {(product.images || [product.image]).map((img: any, i: number) => {
+              const imgUrl = img?.url ?? img;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setSelectedImage(i)}
+                  className={`aspect-square bg-white/5 rounded-xl overflow-hidden border-2 transition-all ${
+                    selectedImage === i
+                      ? "border-purple-500"
+                      : "border-white/10 hover:border-white/30"
+                  }`}
+                >
+                  <img src={imgUrl} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -349,19 +359,22 @@ export function ProductDetailPage({
                 Color: <span className="text-purple-400">{selectedColor}</span>
               </label>
               <div className="flex gap-2">
-                {product.colors.map((color: string) => (
-                  <button
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    className={`px-4 py-2 rounded-lg border-2 transition-all ${
-                      selectedColor === color
-                        ? "border-purple-500 bg-purple-500/20"
-                        : "border-white/10 bg-white/5 hover:border-white/30"
-                    }`}
-                  >
-                    <span className="text-white text-sm">{color}</span>
-                  </button>
-                ))}
+                {product.colors.map((color: any) => {
+                  const colorName: string = color?.name ?? color;
+                  return (
+                    <button
+                      key={colorName}
+                      onClick={() => setSelectedColor(colorName)}
+                      className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                        selectedColor === colorName
+                          ? "border-purple-500 bg-purple-500/20"
+                          : "border-white/10 bg-white/5 hover:border-white/30"
+                      }`}
+                    >
+                      <span className="text-white text-sm">{colorName}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

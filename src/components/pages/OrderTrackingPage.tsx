@@ -90,10 +90,10 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
     const fetchOrders = async () => {
       setLoading(true);
       try {
-        const res = await get<{ items: Order[]; total: number; page: number; limit: number; totalPages: number }>(
+        const res = await get<{ orders: Order[]; total: number; page: number; limit: number; totalPages: number }>(
           "/api/v1/orders?page=1&limit=20"
         );
-        const fetchedOrders = res.items ?? [];
+        const fetchedOrders = res.orders ?? [];
         setOrders(fetchedOrders);
 
         if (fetchedOrders.length > 0) {

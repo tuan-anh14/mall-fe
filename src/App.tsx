@@ -206,7 +206,7 @@ export default function App() {
     if (!isAuthenticated) {
       toast.error("Please login to add items to cart");
       navigate("login");
-      return;
+      throw new Error("Not authenticated");
     }
     try {
       const body: any = { productId: product.id, quantity };
@@ -216,6 +216,7 @@ export default function App() {
       setCartItems(res.cart?.items ?? []);
     } catch (err: any) {
       toast.error(err.message || "Failed to add to cart");
+      throw err;
     }
   };
 
