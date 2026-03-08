@@ -33,6 +33,7 @@ import { WishlistPage } from "./components/pages/WishlistPage";
 import { SettingsPage } from "./components/pages/SettingsPage";
 import { HelpPage } from "./components/pages/HelpPage";
 import { ChatPage } from "./components/pages/ChatPage";
+import { SellerProfilePage } from "./components/pages/SellerProfilePage";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner@2.0.3";
 import { get, post, del, put } from "./lib/api";
@@ -89,7 +90,8 @@ type Page =
   | "returns"
   | "shipping"
   | "cookies"
-  | "gdpr";
+  | "gdpr"
+  | "seller-profile";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
@@ -485,7 +487,7 @@ export default function App() {
             </div>
           );
         }
-        return <ChatPage onNavigate={navigate} sellerInfo={pageData} userId={user?.id} />;
+        return <ChatPage onNavigate={navigate} sellerInfo={pageData} userId={user?.id} userType={user?.userType} />;
       case "careers":
         return <CareersPage />;
       case "returns":
@@ -496,6 +498,8 @@ export default function App() {
         return <CookiesPage />;
       case "gdpr":
         return <GDPRPage />;
+      case "seller-profile":
+        return <SellerProfilePage onNavigate={navigate as any} sellerUserId={pageData?.sellerUserId} />;
       default:
         return (
           <div className="container mx-auto px-4 py-16 text-center">

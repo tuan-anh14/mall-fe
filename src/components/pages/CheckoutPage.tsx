@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CreditCard, MapPin, Package, Check } from "lucide-react";
+import { CreditCard, MapPin, Package, Check, ChevronDown } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -22,6 +22,8 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
   const [step, setStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
   // Shipping form state — pre-seeded from user prop synchronously
   const getInitialName = (part: "first" | "last") => {
@@ -59,12 +61,18 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
         if (addrRes.status === "fulfilled") {
           const addrs = addrRes.value.addresses ?? [];
-          const defaultAddr = addrs.find((a: any) => a.isDefault) ?? addrs[0];
-          if (defaultAddr) {
-            setAddress((v) => v || defaultAddr.street || "");
-            setCity((v) => v || defaultAddr.city || "");
-            setState((v) => v || defaultAddr.state || "");
-            setZip((v) => v || defaultAddr.zip || defaultAddr.zipCode || "");
+          setSavedAddresses(addrs);
+          if (addrs.length === 1) {
+            // Single address: auto-fill
+            const addr = addrs[0];
+            setAddress((v) => v || addr.street || "");
+            setCity((v) => v || addr.city || "");
+            setState((v) => v || addr.state || "");
+            setZip((v) => v || addr.zip || addr.zipCode || "");
+          } else if (addrs.length > 1) {
+            // Multiple addresses: pre-select default
+            const defaultAddr = addrs.find((a: any) => a.isDefault) ?? addrs[0];
+            if (defaultAddr) setSelectedAddressId(defaultAddr.id);
           }
         }
       } catch {
@@ -73,6 +81,14 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
     };
     prefill();
   }, []);
+
+  const applyAddress = (addr: any) => {
+    setAddress(addr.street || "");
+    setCity(addr.city || "");
+    setState(addr.state || "");
+    setZip(addr.zip || addr.zipCode || "");
+    setSelectedAddressId(addr.id);
+  };
 
   const steps = [
     { number: 1, title: "Shipping", icon: MapPin },
@@ -175,6 +191,46 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             {step === 1 && (
               <div className="space-y-6">
                 <h2 className="text-2xl text-white mb-6">Shipping Information</h2>
+
+                {/* Saved Address Selector (only when user has multiple saved addresses) */}
+                {savedAddresses.length > 1 && (
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <p className="text-white text-sm mb-3">Choose a saved address:</p>
+                    <div className="space-y-2">
+                      {savedAddresses.map((addr) => (
+                        <div
+                          key={addr.id}
+                          onClick={() => applyAddress(addr)}
+                          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                            selectedAddressId === addr.id
+                              ? "border-purple-500 bg-purple-500/10"
+                              : "border-white/10 bg-white/5 hover:border-white/20"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <p className="text-white text-sm">
+                                {addr.street}, {addr.city}
+                                {addr.state ? `, ${addr.state}` : ""} {addr.zip || addr.zipCode}
+                              </p>
+                              {addr.label && (
+                                <p className="text-white/50 text-xs mt-0.5">{addr.label}</p>
+                              )}
+                            </div>
+                            {addr.isDefault && (
+                              <span className="text-xs text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
+                                Default
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-white/40 text-xs mt-3">
+                      Or fill in a different address below:
+                    </p>
+                  </div>
+                )}
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>

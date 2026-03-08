@@ -521,7 +521,14 @@ export function ProductDetailPage({
           {/* Seller Info */}
           <div className="bg-white/5 border border-white/10 rounded-xl p-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div
+                className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => {
+                  if (product.seller?.userId) {
+                    onNavigate("seller-profile", { sellerUserId: product.seller.userId });
+                  }
+                }}
+              >
                 <Avatar>
                   <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500">
                     {(product.seller?.storeName?.[0] || product.brand?.[0] || "S").toUpperCase()}

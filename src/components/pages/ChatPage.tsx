@@ -47,7 +47,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import { get, post } from "../../lib/api";
+import { get, post, del } from "../../lib/api";
 import { API_URL } from "../../lib/api";
 
 interface ChatPageProps {
@@ -61,6 +61,7 @@ interface ChatPageProps {
     productName?: string;
   };
   userId?: string;
+  userType?: string;
 }
 
 interface Message {
@@ -82,6 +83,7 @@ interface Conversation {
   avatar: string;
   online: boolean;
   productName?: string;
+  sellerUserId?: string;
 }
 
 function formatTime(dateStr: string): string {
@@ -104,11 +106,12 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
+export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageProps) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [conversationSearch, setConversationSearch] = useState("");
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -166,16 +169,22 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
         }>;
       }>("/api/v1/conversations");
 
-      const mapped: Conversation[] = (res.conversations ?? []).map((conv) => ({
-        id: conv.id,
-        name: conv.otherUser?.name ?? "Unknown",
-        lastMessage: conv.lastMessage ?? "",
-        time: conv.lastMessageAt ? formatTime(conv.lastMessageAt) : "",
-        unread: conv.unreadCount ?? 0,
-        avatar: getInitials(conv.otherUser?.name ?? ""),
-        online: false,
-        productName: conv.product?.name,
-      }));
+      const mapped: Conversation[] = (res.conversations ?? []).map((conv) => {
+        const baseName = conv.otherUser?.name ?? "Unknown";
+        // Buyers see seller names with "Store" suffix (matching product detail page style)
+        const displayName = userType === "buyer" ? `${baseName} Store` : baseName;
+        return {
+          id: conv.id,
+          name: displayName,
+          lastMessage: conv.lastMessage ?? "",
+          time: conv.lastMessageAt ? formatTime(conv.lastMessageAt) : "",
+          unread: conv.unreadCount ?? 0,
+          avatar: getInitials(baseName),
+          online: false,
+          productName: conv.product?.name,
+          sellerUserId: conv.otherUser?.id,
+        };
+      });
 
       setConversations(mapped);
 
@@ -199,15 +208,18 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
         body
       );
       const conv = res.conversation ?? (res as any);
+      const baseName = conv.otherUser?.name ?? sellerInfo?.name ?? "Seller";
+      const displayName = userType === "buyer" ? `${baseName} Store` : baseName;
       const newConv: Conversation = {
         id: conv.id,
-        name: conv.otherUser?.name ?? sellerInfo?.name ?? "Seller",
+        name: displayName,
         lastMessage: conv.lastMessage ?? "",
         time: conv.lastMessageAt ? formatTime(conv.lastMessageAt) : "",
         unread: conv.unreadCount ?? 0,
-        avatar: getInitials(conv.otherUser?.name ?? sellerInfo?.name ?? ""),
+        avatar: getInitials(baseName),
         online: false,
         productName: conv.product?.name ?? sellerInfo?.productName,
+        sellerUserId: conv.otherUser?.id,
       };
 
       setConversations((prev) => {
@@ -232,19 +244,13 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     pollIntervalRef.current = setInterval(async () => {
       try {
-        const res = await get<{ messages: Array<any>; }>(`/api/v1/conversations/${convId}/messages?page=1&limit=50`);
+        const res = await get<{ messages: Array<{ id: string; text: string; isMine?: boolean; sender: { id: string; name: string }; attachmentUrl?: string; attachmentType?: string; createdAt: string }> }>(`/api/v1/conversations/${convId}/messages?page=1&limit=50`);
         const rawMessages = [...(res.messages ?? [])].reverse();
         setMessages((prev) => {
           // Only update if there are new messages
           if (rawMessages.length <= prev.length) return prev;
-          const conv = conversations.find((c) => c.id === convId);
           return rawMessages.map((msg) => {
-            let isUser: boolean;
-            if (userId) {
-              isUser = msg.senderId === userId;
-            } else {
-              isUser = conv ? msg.sender?.name !== conv.name : false;
-            }
+            const isUser = msg.isMine ?? (userId ? msg.sender?.id === userId : false);
             return {
               id: msg.id,
               text: msg.text,
@@ -272,7 +278,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
         messages: Array<{
           id: string;
           text: string;
-          senderId: string;
+          senderId?: string;
+          isMine?: boolean;
           sender: { id: string; name: string; avatar?: string };
           attachmentUrl?: string;
           attachmentType?: string;
@@ -289,16 +296,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
       const rawMessages = [...(res.messages ?? [])].reverse();
 
       const mapped: Message[] = rawMessages.map((msg) => {
-        // Determine if sender is current user
-        // If userId prop is available use it, else we compare senderId with the otherUser's id
-        const conv = conversations.find((c) => c.id === convId);
-        let isUser: boolean;
-        if (userId) {
-          isUser = msg.senderId === userId;
-        } else {
-          // Fallback: the otherUser is the "seller" — if msg.sender.name matches conv.name it's the seller
-          isUser = conv ? msg.sender?.name !== conv.name : false;
-        }
+        // Use isMine from backend (most reliable), fallback to sender.id comparison
+        const isUser = msg.isMine ?? (userId ? msg.sender?.id === userId : false);
         return {
           id: msg.id,
           text: msg.text,
@@ -402,7 +401,11 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
   };
 
   const handleViewProfile = () => {
-    toast.info(`Viewing ${activeConversation?.name}'s profile`);
+    if (activeConversation?.sellerUserId) {
+      onNavigate("seller-profile", { sellerUserId: activeConversation.sellerUserId });
+    } else {
+      toast.info(`No seller profile available`);
+    }
   };
 
   const handleBlockSeller = () => {
@@ -430,6 +433,16 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
 
   const handleArchiveChat = () => {
     toast.success(`${activeConversation?.name} chat archived`);
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!activeConversationId) return;
+    try {
+      await del(`/api/v1/conversations/${activeConversationId}/messages/${messageId}`);
+      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete message");
+    }
   };
 
   const EMOJIS = ["😊", "😂", "❤️", "👍", "🔥", "😍", "🎉", "👏", "😢", "😮", "🙏", "💯", "✨", "🥰", "😎", "🤔", "💪", "🎁", "⭐", "🛒"];
@@ -503,6 +516,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
                 <Input
                   placeholder="Search conversations..."
                   className="pl-10 bg-white/5 border-white/10 text-white"
+                  value={conversationSearch}
+                  onChange={(e) => setConversationSearch(e.target.value)}
                 />
               </div>
             </div>
@@ -519,7 +534,13 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
                   <p className="text-white/40 text-sm">No conversations yet</p>
                 </div>
               ) : (
-                conversations.map((conv) => (
+                conversations
+                .filter((conv) =>
+                  conversationSearch.trim() === "" ||
+                  conv.name.toLowerCase().includes(conversationSearch.toLowerCase()) ||
+                  conv.lastMessage.toLowerCase().includes(conversationSearch.toLowerCase())
+                )
+                .map((conv) => (
                   <motion.div
                     key={conv.id}
                     whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
@@ -694,7 +715,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
                         key={message.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                        className={`flex group ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                       >
                         <div
                           className={`flex gap-2 max-w-[70%] ${
@@ -712,7 +733,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
                               {message.sender === "user" ? "ME" : activeConversation.avatar}
                             </AvatarFallback>
                           </Avatar>
-                          <div>
+                          <div className="relative">
                             <div
                               className={`rounded-2xl p-3 ${
                                 message.sender === "user"
@@ -732,6 +753,16 @@ export function ChatPage({ onNavigate, sellerInfo, userId }: ChatPageProps) {
                                 <p className="text-sm text-white">{message.text}</p>
                               )}
                             </div>
+                            {/* Delete button - only for current user's messages */}
+                            {message.sender === "user" && !message.id.startsWith("temp-") && (
+                              <button
+                                onClick={() => handleDeleteMessage(message.id)}
+                                className="absolute -top-2 -left-6 opacity-0 group-hover:opacity-100 transition-opacity h-5 w-5 bg-red-600/80 rounded-full flex items-center justify-center hover:bg-red-600"
+                                title="Delete message"
+                              >
+                                <Trash2 className="h-3 w-3 text-white" />
+                              </button>
+                            )}
                             <div
                               className={`flex items-center gap-2 mt-1 ${
                                 message.sender === "user" ? "justify-end" : "justify-start"

@@ -34,6 +34,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
     initialCategory ? [initialCategory] : []
   );
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState("popularity");
   const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
 
@@ -100,6 +101,9 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
         if (debouncedPriceRange[1] < 3000) {
           params.set("maxPrice", String(debouncedPriceRange[1]));
         }
+        if (selectedRating !== null) {
+          params.set("rating", String(selectedRating));
+        }
         if (sortBy && SORT_MAP[sortBy]) {
           params.set("sort", SORT_MAP[sortBy]);
         }
@@ -127,7 +131,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
     };
 
     fetchProducts();
-  }, [selectedCategories, selectedBrands, debouncedPriceRange, sortBy, searchQuery]);
+  }, [selectedCategories, selectedBrands, selectedRating, debouncedPriceRange, sortBy, searchQuery]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -146,6 +150,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
   const clearFilters = () => {
     setSelectedCategories([]);
     setSelectedBrands([]);
+    setSelectedRating(null);
     setPriceRange([0, 3000]);
     setDebouncedPriceRange([0, 3000]);
     setSearchQuery("");
@@ -221,7 +226,12 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
           {[5, 4, 3, 2].map((rating) => (
             <button
               key={rating}
-              className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
+              onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
+              className={`flex items-center gap-2 text-sm w-full px-2 py-1 rounded-lg transition-colors ${
+                selectedRating === rating
+                  ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
+                  : "text-white/70 hover:text-white hover:bg-white/5"
+              }`}
             >
               <span>{"⭐".repeat(rating)}</span>
               <span>& Up</span>
@@ -307,7 +317,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
       </div>
 
       {/* Active Filters */}
-      {(selectedCategories.length > 0 || selectedBrands.length > 0 || searchQuery) && (
+      {(selectedCategories.length > 0 || selectedBrands.length > 0 || selectedRating !== null || searchQuery) && (
         <div className="flex flex-wrap gap-2 mb-6">
           {searchQuery && (
             <Badge
@@ -338,6 +348,15 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
               {brand} ×
             </Badge>
           ))}
+          {selectedRating !== null && (
+            <Badge
+              variant="secondary"
+              className="cursor-pointer"
+              onClick={() => setSelectedRating(null)}
+            >
+              {"⭐".repeat(selectedRating)} & Up ×
+            </Badge>
+          )}
         </div>
       )}
 

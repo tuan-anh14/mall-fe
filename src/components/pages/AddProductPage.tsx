@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Upload, X } from "lucide-react";
+import { ArrowLeft, Upload, X, Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -53,6 +53,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
     brand: "",
   });
   const [images, setImages] = useState<string[]>([]);
+  const [specifications, setSpecifications] = useState<{ key: string; value: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -78,6 +79,9 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
       brand: initialProduct.brand ?? "",
     });
     setImages((initialProduct.images ?? []).map((img) => img.url));
+    setSpecifications(
+      (initialProduct.specifications ?? []).map((s) => ({ key: s.key, value: s.value }))
+    );
   }, [initialProduct]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -135,6 +139,9 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
       sku: formData.sku || undefined,
       brand: formData.brand || undefined,
       images: images.length > 0 ? images : undefined,
+      specifications: specifications.filter((s) => s.key.trim() && s.value.trim()).length > 0
+        ? specifications.filter((s) => s.key.trim() && s.value.trim())
+        : undefined,
     };
 
     setSubmitting(true);
@@ -365,6 +372,64 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
               </div>
             )}
           </div>
+        </div>
+
+        {/* Specifications */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl text-white">Specifications</h2>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setSpecifications((prev) => [...prev, { key: "", value: "" }])}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Spec
+            </Button>
+          </div>
+
+          {specifications.length === 0 ? (
+            <p className="text-white/40 text-sm text-center py-4">
+              No specifications yet. Click "Add Spec" to add product specifications like dimensions, materials, compatibility, etc.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {specifications.map((spec, index) => (
+                <div key={index} className="flex gap-3 items-center">
+                  <Input
+                    placeholder="e.g. Weight, Color, Material"
+                    value={spec.key}
+                    onChange={(e) =>
+                      setSpecifications((prev) =>
+                        prev.map((s, i) => (i === index ? { ...s, key: e.target.value } : s))
+                      )
+                    }
+                    className="bg-white/5 border-white/10 text-white flex-1"
+                  />
+                  <Input
+                    placeholder="e.g. 200g, Red, Aluminum"
+                    value={spec.value}
+                    onChange={(e) =>
+                      setSpecifications((prev) =>
+                        prev.map((s, i) => (i === index ? { ...s, value: e.target.value } : s))
+                      )
+                    }
+                    className="bg-white/5 border-white/10 text-white flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSpecifications((prev) => prev.filter((_, i) => i !== index))
+                    }
+                    className="h-9 w-9 flex items-center justify-center text-white/40 hover:text-red-400 transition-colors flex-shrink-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
