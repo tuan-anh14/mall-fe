@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Header } from "./components/Header";
 import { SellerHeader } from "./components/SellerHeader";
@@ -60,6 +60,18 @@ export interface User {
   name: string;
   avatar?: string;
   userType: "buyer" | "seller";
+}
+
+// Redirect component that fires toast only once (avoids calling toast in render)
+function RedirectWithToast({ to, message }: { to: string; message: string }) {
+  const fired = useRef(false);
+  useEffect(() => {
+    if (!fired.current) {
+      fired.current = true;
+      toast.error(message);
+    }
+  }, [message]);
+  return <Navigate to={to} replace />;
 }
 
 // Map page name → URL path (for simple pages without dynamic segments)
@@ -348,15 +360,9 @@ export default function App() {
     currentPage !== "reset-password" &&
     !showSellerHeader;
 
-  // Helpers for protected routes
-  const authRedirect = (msg: string) => {
-    toast.error(msg);
-    return <Navigate to="/login" replace />;
-  };
-  const sellerRedirect = (msg: string) => {
-    toast.error(msg);
-    return <Navigate to="/" replace />;
-  };
+  // Helpers for protected routes — toast must be in useEffect, NOT in render
+  const authRedirect = (msg: string) => <RedirectWithToast to="/login" message={msg} />;
+  const sellerRedirect = (msg: string) => <RedirectWithToast to="/" message={msg} />;
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
