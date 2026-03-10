@@ -82,6 +82,18 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
     prefill();
   }, []);
 
+  const validateShipping = (): boolean => {
+    if (!firstName.trim()) { toast.error("First name is required"); return false; }
+    if (!lastName.trim()) { toast.error("Last name is required"); return false; }
+    if (!email.trim()) { toast.error("Email is required"); return false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { toast.error("Please enter a valid email address"); return false; }
+    if (!address.trim()) { toast.error("Street address is required"); return false; }
+    if (!city.trim()) { toast.error("City is required"); return false; }
+    if (!state.trim()) { toast.error("State is required"); return false; }
+    if (!zip.trim()) { toast.error("ZIP code is required"); return false; }
+    return true;
+  };
+
   const applyAddress = (addr: any) => {
     setAddress(addr.street || "");
     setCity(addr.city || "");
@@ -234,7 +246,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="firstName">First Name <span className="text-red-400">*</span></Label>
                     <Input
                       id="firstName"
                       className="bg-white/5 border-white/10"
@@ -243,7 +255,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     />
                   </div>
                   <div>
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="lastName">Last Name <span className="text-red-400">*</span></Label>
                     <Input
                       id="lastName"
                       className="bg-white/5 border-white/10"
@@ -254,7 +266,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                 </div>
 
                 <div>
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Email <span className="text-red-400">*</span></Label>
                   <Input
                     id="email"
                     type="email"
@@ -276,7 +288,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                 </div>
 
                 <div>
-                  <Label htmlFor="address">Street Address</Label>
+                  <Label htmlFor="address">Street Address <span className="text-red-400">*</span></Label>
                   <Input
                     id="address"
                     className="bg-white/5 border-white/10"
@@ -287,7 +299,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="city">City</Label>
+                    <Label htmlFor="city">City <span className="text-red-400">*</span></Label>
                     <Input
                       id="city"
                       className="bg-white/5 border-white/10"
@@ -296,7 +308,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     />
                   </div>
                   <div>
-                    <Label htmlFor="state">State</Label>
+                    <Label htmlFor="state">State <span className="text-red-400">*</span></Label>
                     <Input
                       id="state"
                       className="bg-white/5 border-white/10"
@@ -305,7 +317,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     />
                   </div>
                   <div>
-                    <Label htmlFor="zip">ZIP Code</Label>
+                    <Label htmlFor="zip">ZIP Code <span className="text-red-400">*</span></Label>
                     <Input
                       id="zip"
                       className="bg-white/5 border-white/10"
@@ -317,7 +329,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
                 <Button
                   size="lg"
-                  onClick={() => setStep(2)}
+                  onClick={() => { if (validateShipping()) setStep(2); }}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600"
                 >
                   Continue to Payment

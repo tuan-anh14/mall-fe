@@ -420,9 +420,17 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
     setShowClearChatDialog(true);
   };
 
-  const confirmClearChat = () => {
-    setMessages([]);
+  const confirmClearChat = async () => {
+    if (!activeConversationId) return;
     setShowClearChatDialog(false);
+    // Delete each message individually for the current user (server-side soft delete)
+    const toDelete = messages.filter((m) => !m.id.startsWith("temp-"));
+    await Promise.allSettled(
+      toDelete.map((m) =>
+        del(`/api/v1/conversations/${activeConversationId}/messages/${m.id}`)
+      )
+    );
+    setMessages([]);
     toast.success("Chat cleared successfully");
   };
 
@@ -534,47 +542,57 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                   <p className="text-white/40 text-sm">No conversations yet</p>
                 </div>
               ) : (
-                conversations
-                .filter((conv) =>
-                  conversationSearch.trim() === "" ||
-                  conv.name.toLowerCase().includes(conversationSearch.toLowerCase()) ||
-                  conv.lastMessage.toLowerCase().includes(conversationSearch.toLowerCase())
-                )
-                .map((conv) => (
-                  <motion.div
-                    key={conv.id}
-                    whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
-                    onClick={() => selectConversation(conv.id)}
-                    className={`p-4 cursor-pointer border-b border-white/5 ${
-                      conv.id === activeConversationId ? "bg-white/10" : ""
-                    }`}
-                  >
-                    <div className="flex gap-3">
-                      <div className="relative">
-                        <Avatar className="h-12 w-12">
-                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                            {conv.avatar}
-                          </AvatarFallback>
-                        </Avatar>
-                        {conv.online && (
-                          <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-black" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="text-white truncate">{conv.name}</p>
-                          <span className="text-xs text-white/50">{conv.time}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm text-white/60 truncate">{conv.lastMessage}</p>
-                          {conv.unread > 0 && (
-                            <Badge className="bg-purple-600 text-white text-xs ml-2">{conv.unread}</Badge>
-                          )}
-                        </div>
-                      </div>
+                (() => {
+                  const filtered = conversations.filter((conv) =>
+                    conversationSearch.trim() === "" ||
+                    conv.name.toLowerCase().includes(conversationSearch.toLowerCase()) ||
+                    (conv.lastMessage ?? "").toLowerCase().includes(conversationSearch.toLowerCase())
+                  );
+                  return filtered.length === 0 ? (
+                    <div className="p-8 text-center">
+                      <Search className="h-8 w-8 text-white/20 mx-auto mb-3" />
+                      <p className="text-white/40 text-sm">No conversations found</p>
                     </div>
-                  </motion.div>
-                ))
+                  ) : (
+                    <>
+                      {filtered.map((conv) => (
+                        <motion.div
+                          key={conv.id}
+                          whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+                          onClick={() => selectConversation(conv.id)}
+                          className={`p-4 cursor-pointer border-b border-white/5 ${
+                            conv.id === activeConversationId ? "bg-white/10" : ""
+                          }`}
+                        >
+                          <div className="flex gap-3">
+                            <div className="relative">
+                              <Avatar className="h-12 w-12">
+                                <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+                                  {conv.avatar}
+                                </AvatarFallback>
+                              </Avatar>
+                              {conv.online && (
+                                <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-black" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between mb-1">
+                                <p className="text-white truncate">{conv.name}</p>
+                                <span className="text-xs text-white/50">{conv.time}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <p className="text-sm text-white/60 truncate">{conv.lastMessage}</p>
+                                {conv.unread > 0 && (
+                                  <Badge className="bg-purple-600 text-white text-xs ml-2">{conv.unread}</Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </>
+                  );
+                })()
               )}
             </div>
           </div>
@@ -630,16 +648,10 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                         <Video className="h-5 w-5" />
                       </Button>
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-white hover:bg-white/10"
-                          >
-                            <MoreVertical className="h-5 w-5" />
-                          </Button>
+                        <DropdownMenuTrigger className="inline-flex items-center justify-center size-9 rounded-md text-white hover:bg-white/10 transition-colors focus:outline-none">
+                          <MoreVertical className="h-5 w-5" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56 bg-zinc-900 border-white/10">
+                        <DropdownMenuContent align="end" className="w-56 bg-zinc-900 border-white/10 z-[200]">
                           <DropdownMenuLabel className="text-white">Chat Options</DropdownMenuLabel>
                           <DropdownMenuSeparator className="bg-white/10" />
                           <DropdownMenuItem

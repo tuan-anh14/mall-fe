@@ -42,6 +42,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
   const isEditMode = !!initialProduct;
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -61,8 +62,14 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
   // Load categories
   useEffect(() => {
     get<Category[]>('/api/v1/categories')
-      .then(setCategories)
-      .catch(() => toast.error('Failed to load categories'));
+      .then((cats) => {
+        setCategories(cats);
+        setCategoriesLoaded(true);
+      })
+      .catch(() => {
+        toast.error('Failed to load categories');
+        setCategoriesLoaded(true);
+      });
   }, []);
 
   // Pre-fill form when editing
@@ -225,6 +232,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   Category <span className="text-red-400">*</span>
                 </Label>
                 <Select
+                  key={categoriesLoaded ? `cat-${formData.categoryId}` : "loading"}
                   value={formData.categoryId}
                   onValueChange={(value: string) => setFormData((prev) => ({ ...prev, categoryId: value }))}
                 >
