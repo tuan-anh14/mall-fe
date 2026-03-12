@@ -71,7 +71,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
   }, [trendingProducts, onNavigate]);
 
   const handleAddToCart = useCallback((prod: any) => {
-    onAddToCart?.(prod, 1);
+    onAddToCart?.(prod);
   }, [onAddToCart]);
 
   if (loading) {
