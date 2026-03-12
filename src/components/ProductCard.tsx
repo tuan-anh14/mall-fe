@@ -65,7 +65,7 @@ export function ProductCard({ product, onView, onAddToCart, onAddToWishlist, isI
             className="bg-white text-black hover:bg-white/90"
           >
             <Eye className="h-4 w-4 mr-2" />
-            Quick View
+            Xem nhanh
           </Button>
         </div>
       </div>
@@ -100,7 +100,7 @@ export function ProductCard({ product, onView, onAddToCart, onAddToWishlist, isI
 
         {/* Stock Status */}
         {product.stock < 10 && (
-          <p className="text-xs text-orange-400">Only {product.stock} left in stock!</p>
+          <p className="text-xs text-orange-400">Chỉ còn {product.stock} sản phẩm!</p>
         )}
 
         {/* Add to Cart Button */}
@@ -109,7 +109,7 @@ export function ProductCard({ product, onView, onAddToCart, onAddToWishlist, isI
           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
         >
           <ShoppingCart className="h-4 w-4 mr-2" />
-          Add to Cart
+          Thêm vào giỏ
         </Button>
       </div>
     </motion.div>

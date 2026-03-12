@@ -86,7 +86,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
-        <p className="text-white/60">Loading dashboard...</p>
+        <p className="text-white/60">Đang tải bảng điều khiển...</p>
       </div>
     );
   }
@@ -95,15 +95,15 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl text-white mb-2">Dashboard</h1>
-          <p className="text-white/60">Welcome back! Here's your store overview.</p>
+          <h1 className="text-4xl text-white mb-2">Bảng điều khiển</h1>
+          <p className="text-white/60">Chào mừng trở lại! Đây là tổng quan cửa hàng của bạn.</p>
         </div>
         <Button
           className="bg-gradient-to-r from-purple-600 to-blue-600"
           onClick={() => onNavigate("add-product")}
         >
           <Plus className="h-4 w-4 mr-2" />
-          Add Product
+          Thêm sản phẩm
         </Button>
       </div>
 
@@ -118,7 +118,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.revenueChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Total Revenue</p>
+          <p className="text-sm text-white/60 mb-1">Tổng doanh thu</p>
           <p className="text-3xl text-white">${((stats?.totalRevenue ?? 0) / 1000).toFixed(1)}K</p>
         </div>
 
@@ -131,7 +131,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.ordersChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Total Orders</p>
+          <p className="text-sm text-white/60 mb-1">Tổng đơn hàng</p>
           <p className="text-3xl text-white">{(stats?.totalOrders ?? 0).toLocaleString()}</p>
         </div>
 
@@ -144,7 +144,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.productsChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Products</p>
+          <p className="text-sm text-white/60 mb-1">Sản phẩm</p>
           <p className="text-3xl text-white">{stats?.totalProducts ?? 0}</p>
         </div>
 
@@ -157,7 +157,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.customersChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Customers</p>
+          <p className="text-sm text-white/60 mb-1">Khách hàng</p>
           <p className="text-3xl text-white">{((stats?.totalCustomers ?? 0) / 1000).toFixed(1)}K</p>
         </div>
       </div>
@@ -165,7 +165,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-          <h2 className="text-xl text-white mb-6">Revenue Overview</h2>
+          <h2 className="text-xl text-white mb-6">Tổng quan doanh thu</h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={salesData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -197,7 +197,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         </div>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-          <h2 className="text-xl text-white mb-6">Orders by Month</h2>
+          <h2 className="text-xl text-white mb-6">Đơn hàng theo tháng</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={salesData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -226,32 +226,32 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       {/* Tabs */}
       <Tabs defaultValue="products" className="w-full">
         <TabsList className="w-full justify-start bg-white/5 border-b border-white/10 rounded-none">
-          <TabsTrigger value="products">Products</TabsTrigger>
-          <TabsTrigger value="orders">Recent Orders</TabsTrigger>
-          <TabsTrigger value="customers">Customers</TabsTrigger>
+          <TabsTrigger value="products">Sản phẩm</TabsTrigger>
+          <TabsTrigger value="orders">Đơn hàng gần đây</TabsTrigger>
+          <TabsTrigger value="customers">Khách hàng</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products" className="mt-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
             <div className="p-4 border-b border-white/10 flex justify-between items-center">
-              <h2 className="text-xl text-white">Product Management</h2>
+              <h2 className="text-xl text-white">Quản lý sản phẩm</h2>
               <Button
                 className="bg-gradient-to-r from-purple-600 to-blue-600"
                 onClick={() => onNavigate("add-product")}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Product
+                Thêm sản phẩm
               </Button>
             </div>
             <Table>
               <TableHeader>
                 <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white/70">Product</TableHead>
-                  <TableHead className="text-white/70">Category</TableHead>
-                  <TableHead className="text-white/70">Price</TableHead>
-                  <TableHead className="text-white/70">Stock</TableHead>
-                  <TableHead className="text-white/70">Status</TableHead>
-                  <TableHead className="text-white/70">Actions</TableHead>
+                  <TableHead className="text-white/70">Sản phẩm</TableHead>
+                  <TableHead className="text-white/70">Danh mục</TableHead>
+                  <TableHead className="text-white/70">Giá</TableHead>
+                  <TableHead className="text-white/70">Tồn kho</TableHead>
+                  <TableHead className="text-white/70">Trạng thái</TableHead>
+                  <TableHead className="text-white/70">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -281,12 +281,12 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                             : "bg-red-500/20 text-red-400"
                         }
                       >
-                        {product.stock} units
+                        {product.stock} sản phẩm
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge className={product.stock > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
-                        {product.stock > 0 ? "Active" : "Out of Stock"}
+                        {product.stock > 0 ? "Đang bán" : "Hết hàng"}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -296,7 +296,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                           variant="outline"
                           onClick={() => onNavigate("edit-product", product)}
                         >
-                          Edit
+                          Sửa
                         </Button>
                         <Button
                           size="sm"
@@ -304,7 +304,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                           className="text-red-400"
                           onClick={() => onNavigate("seller-products")}
                         >
-                          Delete
+                          Xóa
                         </Button>
                       </div>
                     </TableCell>
@@ -313,7 +313,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 {products.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-white/60 py-8">
-                      No products yet
+                      Chưa có sản phẩm
                     </TableCell>
                   </TableRow>
                 )}
@@ -325,17 +325,17 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         <TabsContent value="orders" className="mt-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
             <div className="p-4 border-b border-white/10">
-              <h2 className="text-xl text-white">Recent Orders</h2>
+              <h2 className="text-xl text-white">Đơn hàng gần đây</h2>
             </div>
             <Table>
               <TableHeader>
                 <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white/70">Order ID</TableHead>
-                  <TableHead className="text-white/70">Date</TableHead>
-                  <TableHead className="text-white/70">Customer</TableHead>
-                  <TableHead className="text-white/70">Total</TableHead>
-                  <TableHead className="text-white/70">Status</TableHead>
-                  <TableHead className="text-white/70">Actions</TableHead>
+                  <TableHead className="text-white/70">Mã đơn hàng</TableHead>
+                  <TableHead className="text-white/70">Ngày</TableHead>
+                  <TableHead className="text-white/70">Khách hàng</TableHead>
+                  <TableHead className="text-white/70">Tổng</TableHead>
+                  <TableHead className="text-white/70">Trạng thái</TableHead>
+                  <TableHead className="text-white/70">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -362,7 +362,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                         variant="outline"
                         onClick={() => onNavigate("seller-orders")}
                       >
-                        View Details
+                        Xem chi tiết
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -370,7 +370,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 {orders.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-white/60 py-8">
-                      No orders yet
+                      Chưa có đơn hàng
                     </TableCell>
                   </TableRow>
                 )}
@@ -382,15 +382,15 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         <TabsContent value="customers" className="mt-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
             <div className="p-4 border-b border-white/10">
-              <h2 className="text-xl text-white">Customer Management</h2>
+              <h2 className="text-xl text-white">Quản lý khách hàng</h2>
             </div>
             <Table>
               <TableHeader>
                 <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white/70">Customer</TableHead>
+                  <TableHead className="text-white/70">Khách hàng</TableHead>
                   <TableHead className="text-white/70">Email</TableHead>
-                  <TableHead className="text-white/70">Orders</TableHead>
-                  <TableHead className="text-white/70">Total Spent</TableHead>
+                  <TableHead className="text-white/70">Đơn hàng</TableHead>
+                  <TableHead className="text-white/70">Tổng chi tiêu</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -411,7 +411,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                     return (
                       <TableRow>
                         <TableCell colSpan={4} className="text-center text-white/60 py-8">
-                          No customers yet
+                          Chưa có khách hàng
                         </TableCell>
                       </TableRow>
                     );

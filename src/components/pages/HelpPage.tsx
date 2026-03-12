@@ -16,136 +16,136 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
   const categories = [
     {
       id: "orders",
-      title: "Orders & Shipping",
+      title: "Đơn hàng & Vận chuyển",
       icon: "📦",
       questions: [
         {
-          question: "How can I track my order?",
+          question: "Làm thế nào để theo dõi đơn hàng?",
           answer:
-            "You can track your order by going to the Order Tracking page from your profile menu or by using the tracking number sent to your email. Simply enter your order number and email address to view real-time updates.",
+            "Bạn có thể theo dõi đơn hàng bằng cách vào trang Theo dõi đơn hàng từ menu hồ sơ hoặc sử dụng mã theo dõi được gửi qua email. Chỉ cần nhập số đơn hàng và địa chỉ email để xem cập nhật theo thời gian thực.",
         },
         {
-          question: "What are the shipping options?",
+          question: "Có những tùy chọn vận chuyển nào?",
           answer:
-            "We offer Standard Shipping (5-7 business days), Express Shipping (2-3 business days), and Next Day Delivery. Shipping costs vary based on your location and the selected method.",
+            "Chúng tôi cung cấp Giao hàng tiêu chuẩn (5-7 ngày làm việc), Giao hàng nhanh (2-3 ngày làm việc) và Giao hàng trong ngày. Chi phí vận chuyển thay đổi tùy theo vị trí và phương thức bạn chọn.",
         },
         {
-          question: "Can I change my shipping address after placing an order?",
+          question: "Tôi có thể thay đổi địa chỉ giao hàng sau khi đặt hàng không?",
           answer:
-            "You can change your shipping address within 2 hours of placing the order. After that, please contact our customer support team for assistance.",
+            "Bạn có thể thay đổi địa chỉ giao hàng trong vòng 2 giờ sau khi đặt hàng. Sau đó, vui lòng liên hệ đội ngũ hỗ trợ khách hàng để được hỗ trợ.",
         },
         {
-          question: "Do you ship internationally?",
+          question: "Bạn có giao hàng quốc tế không?",
           answer:
-            "Yes, we ship to over 100 countries worldwide. International shipping rates and delivery times vary by destination. Additional customs fees may apply.",
+            "Có, chúng tôi giao hàng đến hơn 100 quốc gia trên toàn thế giới. Phí và thời gian giao hàng quốc tế thay đổi tùy theo điểm đến. Có thể phát sinh thêm phí hải quan.",
         },
       ],
     },
     {
       id: "returns",
-      title: "Returns & Refunds",
+      title: "Đổi trả & Hoàn tiền",
       icon: "🔄",
       questions: [
         {
-          question: "What is your return policy?",
+          question: "Chính sách đổi trả của bạn là gì?",
           answer:
-            "We offer a 30-day return policy for most items. Products must be unused, in original packaging, and in the same condition as received. Some items like personalized products are not eligible for returns.",
+            "Chúng tôi áp dụng chính sách đổi trả trong 30 ngày cho hầu hết các sản phẩm. Sản phẩm phải chưa sử dụng, còn nguyên bao bì gốc và trong tình trạng như khi nhận hàng. Một số sản phẩm như hàng cá nhân hóa không được đổi trả.",
         },
         {
-          question: "How do I initiate a return?",
+          question: "Làm thế nào để yêu cầu đổi trả?",
           answer:
-            "Go to your order history, select the order you want to return, and click 'Request Return'. Follow the instructions to print your return label and ship the item back to us.",
+            "Vào lịch sử đơn hàng, chọn đơn hàng bạn muốn đổi trả và nhấn 'Yêu cầu đổi trả'. Làm theo hướng dẫn để in nhãn trả hàng và gửi sản phẩm về cho chúng tôi.",
         },
         {
-          question: "When will I receive my refund?",
+          question: "Khi nào tôi nhận được tiền hoàn?",
           answer:
-            "Refunds are processed within 5-7 business days after we receive and inspect the returned item. The refund will be credited to your original payment method.",
+            "Hoàn tiền được xử lý trong vòng 5-7 ngày làm việc sau khi chúng tôi nhận và kiểm tra sản phẩm trả lại. Số tiền hoàn sẽ được chuyển về phương thức thanh toán ban đầu của bạn.",
         },
         {
-          question: "Can I exchange an item?",
+          question: "Tôi có thể đổi sản phẩm không?",
           answer:
-            "Yes, we offer exchanges for different sizes or colors. Please contact customer support to arrange an exchange, or you can return the original item and place a new order.",
+            "Có, chúng tôi hỗ trợ đổi sang kích cỡ hoặc màu sắc khác. Vui lòng liên hệ hỗ trợ khách hàng để sắp xếp đổi hàng, hoặc bạn có thể trả sản phẩm cũ và đặt đơn hàng mới.",
         },
       ],
     },
     {
       id: "payment",
-      title: "Payment & Pricing",
+      title: "Thanh toán & Giá cả",
       icon: "💳",
       questions: [
         {
-          question: "What payment methods do you accept?",
+          question: "Bạn chấp nhận những phương thức thanh toán nào?",
           answer:
-            "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay, and Shop Pay. For large orders, we also offer invoice payment options.",
+            "Chúng tôi chấp nhận tất cả các thẻ tín dụng lớn (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay và Shop Pay. Đối với đơn hàng lớn, chúng tôi cũng hỗ trợ thanh toán qua hóa đơn.",
         },
         {
-          question: "Is it safe to use my credit card on your site?",
+          question: "Sử dụng thẻ tín dụng trên trang web có an toàn không?",
           answer:
-            "Yes, your payment information is completely secure. We use industry-standard SSL encryption and are PCI DSS compliant. We never store your complete credit card information on our servers.",
+            "Có, thông tin thanh toán của bạn hoàn toàn an toàn. Chúng tôi sử dụng mã hóa SSL tiêu chuẩn ngành và tuân thủ PCI DSS. Chúng tôi không bao giờ lưu trữ toàn bộ thông tin thẻ tín dụng trên máy chủ.",
         },
         {
-          question: "Do you offer price matching?",
+          question: "Bạn có hỗ trợ đối chiếu giá không?",
           answer:
-            "Yes, we offer price matching for identical products sold by authorized retailers. Contact our customer support team with proof of the lower price within 7 days of your purchase.",
+            "Có, chúng tôi hỗ trợ đối chiếu giá cho các sản phẩm giống hệt được bán bởi nhà bán lẻ ủy quyền. Liên hệ đội ngũ hỗ trợ với bằng chứng giá thấp hơn trong vòng 7 ngày kể từ ngày mua.",
         },
         {
-          question: "Can I use multiple discount codes?",
+          question: "Tôi có thể sử dụng nhiều mã giảm giá không?",
           answer:
-            "Only one discount code can be applied per order. The system will automatically apply the discount that gives you the best savings.",
+            "Chỉ có thể áp dụng một mã giảm giá cho mỗi đơn hàng. Hệ thống sẽ tự động áp dụng mã giảm giá tốt nhất cho bạn.",
         },
       ],
     },
     {
       id: "account",
-      title: "Account & Security",
+      title: "Tài khoản & Bảo mật",
       icon: "🔐",
       questions: [
         {
-          question: "How do I reset my password?",
+          question: "Làm thế nào để đặt lại mật khẩu?",
           answer:
-            "Click 'Forgot Password' on the login page and enter your email address. You'll receive a password reset link via email. Follow the link to create a new password.",
+            "Nhấn 'Quên mật khẩu' trên trang đăng nhập và nhập địa chỉ email. Bạn sẽ nhận được liên kết đặt lại mật khẩu qua email. Nhấn vào liên kết để tạo mật khẩu mới.",
         },
         {
-          question: "Can I change my email address?",
+          question: "Tôi có thể thay đổi địa chỉ email không?",
           answer:
-            "Yes, you can update your email address in the Account Settings page. You'll need to verify the new email address before it becomes active.",
+            "Có, bạn có thể cập nhật địa chỉ email trong trang Cài đặt tài khoản. Bạn cần xác minh địa chỉ email mới trước khi nó được kích hoạt.",
         },
         {
-          question: "How do I enable two-factor authentication?",
+          question: "Làm thế nào để bật xác thực hai yếu tố?",
           answer:
-            "Go to Settings > Security and enable 'Two-Factor Authentication'. You can choose to receive codes via SMS or use an authenticator app like Google Authenticator.",
+            "Vào Cài đặt > Bảo mật và bật 'Xác thực hai yếu tố'. Bạn có thể chọn nhận mã qua SMS hoặc sử dụng ứng dụng xác thực như Google Authenticator.",
         },
         {
-          question: "How do I delete my account?",
+          question: "Làm thế nào để xóa tài khoản?",
           answer:
-            "To delete your account, go to Settings > Account and scroll to the Danger Zone section. Please note that this action is irreversible and all your data will be permanently deleted.",
+            "Để xóa tài khoản, vào Cài đặt > Tài khoản và cuộn đến phần Vùng nguy hiểm. Xin lưu ý rằng hành động này không thể hoàn tác và toàn bộ dữ liệu của bạn sẽ bị xóa vĩnh viễn.",
         },
       ],
     },
     {
       id: "products",
-      title: "Products & Stock",
+      title: "Sản phẩm & Tồn kho",
       icon: "🛍️",
       questions: [
         {
-          question: "How do I know if an item is in stock?",
+          question: "Làm sao để biết sản phẩm còn hàng?",
           answer:
-            "Product availability is shown on each product page. If an item is out of stock, you can sign up for email notifications to be alerted when it's back in stock.",
+            "Tình trạng sản phẩm được hiển thị trên mỗi trang sản phẩm. Nếu sản phẩm hết hàng, bạn có thể đăng ký nhận thông báo qua email khi sản phẩm có hàng trở lại.",
         },
         {
-          question: "Are the product images accurate?",
+          question: "Hình ảnh sản phẩm có chính xác không?",
           answer:
-            "We strive to display accurate product images. However, colors may vary slightly due to monitor settings. Check the product description for detailed specifications.",
+            "Chúng tôi cố gắng hiển thị hình ảnh sản phẩm chính xác. Tuy nhiên, màu sắc có thể khác đôi chút do cài đặt màn hình. Kiểm tra mô tả sản phẩm để biết thông số chi tiết.",
         },
         {
-          question: "Do you offer warranties on products?",
+          question: "Bạn có cung cấp bảo hành sản phẩm không?",
           answer:
-            "Many of our products come with manufacturer warranties. Warranty details are listed on each product page. We also offer extended warranty options at checkout.",
+            "Nhiều sản phẩm của chúng tôi có bảo hành từ nhà sản xuất. Chi tiết bảo hành được liệt kê trên mỗi trang sản phẩm. Chúng tôi cũng cung cấp tùy chọn bảo hành mở rộng khi thanh toán.",
         },
         {
-          question: "Can I pre-order upcoming products?",
+          question: "Tôi có thể đặt trước sản phẩm sắp ra mắt không?",
           answer:
-            "Yes, pre-orders are available for select upcoming products. Pre-order items are clearly marked and will ship on or before the release date.",
+            "Có, đặt trước có sẵn cho một số sản phẩm sắp ra mắt. Sản phẩm đặt trước được đánh dấu rõ ràng và sẽ được giao vào hoặc trước ngày phát hành.",
         },
       ],
     },
@@ -163,8 +163,8 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
           <div className="h-16 w-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-4">
             <HelpCircle className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-white mb-2">How can we help you?</h1>
-          <p className="text-white/60">Find answers to common questions or contact support</p>
+          <h1 className="text-white mb-2">Chúng tôi có thể giúp gì cho bạn?</h1>
+          <p className="text-white/60">Tìm câu trả lời cho các câu hỏi phổ biến hoặc liên hệ hỗ trợ</p>
         </motion.div>
 
         {/* Search */}
@@ -177,7 +177,7 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
           <div className="relative">
             <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/50" />
             <Input
-              placeholder="Search for help..."
+              placeholder="Tìm kiếm trợ giúp..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 h-14 bg-white/5 border-white/10 text-white placeholder:text-white/50 text-lg"
@@ -197,10 +197,10 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
               <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-3">
                 <MessageCircle className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-white mb-1">Live Chat</h3>
-              <p className="text-sm text-white/60 mb-3">Chat with our support team</p>
+              <h3 className="text-white mb-1">Trò chuyện trực tiếp</h3>
+              <p className="text-sm text-white/60 mb-3">Trò chuyện với đội ngũ hỗ trợ</p>
               <Button variant="ghost" size="sm" className="text-purple-400">
-                Start Chat
+                Bắt đầu trò chuyện
               </Button>
             </CardContent>
           </Card>
@@ -210,15 +210,15 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
               <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-3">
                 <Mail className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-white mb-1">Email Support</h3>
-              <p className="text-sm text-white/60 mb-3">Get help via email</p>
+              <h3 className="text-white mb-1">Hỗ trợ qua Email</h3>
+              <p className="text-sm text-white/60 mb-3">Nhận trợ giúp qua email</p>
               <Button
                 variant="ghost"
                 size="sm"
                 className="text-purple-400"
                 onClick={() => onNavigate?.("contact")}
               >
-                Send Email
+                Gửi Email
               </Button>
             </CardContent>
           </Card>
@@ -228,10 +228,10 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
               <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-3">
                 <Phone className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-white mb-1">Phone Support</h3>
-              <p className="text-sm text-white/60 mb-3">Call us: +1 234 567 8900</p>
+              <h3 className="text-white mb-1">Hỗ trợ qua điện thoại</h3>
+              <p className="text-sm text-white/60 mb-3">Gọi cho chúng tôi: +84 234 567 890</p>
               <Button variant="ghost" size="sm" className="text-purple-400">
-                Call Now
+                Gọi ngay
               </Button>
             </CardContent>
           </Card>
@@ -243,7 +243,7 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h2 className="text-white mb-6">Frequently Asked Questions</h2>
+          <h2 className="text-white mb-6">Câu hỏi thường gặp</h2>
           <div className="space-y-6">
             {categories.map((category, index) => (
               <motion.div
@@ -292,15 +292,15 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
         >
           <Card className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border-purple-500/30">
             <CardContent className="p-8 text-center">
-              <h3 className="text-white mb-2">Still need help?</h3>
+              <h3 className="text-white mb-2">Vẫn cần trợ giúp?</h3>
               <p className="text-white/60 mb-6">
-                Our customer support team is available 24/7 to assist you
+                Đội ngũ hỗ trợ khách hàng của chúng tôi luôn sẵn sàng 24/7 để hỗ trợ bạn
               </p>
               <Button
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 onClick={() => onNavigate?.("contact")}
               >
-                Contact Support
+                Liên hệ hỗ trợ
               </Button>
             </CardContent>
           </Card>

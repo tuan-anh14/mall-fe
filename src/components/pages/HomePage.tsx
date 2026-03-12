@@ -67,7 +67,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
-          <p className="text-white/60 text-sm">Loading...</p>
+          <p className="text-white/60 text-sm">Đang tải...</p>
         </div>
       </div>
     );
@@ -87,16 +87,16 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
               transition={{ duration: 0.6 }}
             >
               <Badge className="mb-4 bg-purple-500/20 text-purple-300 border-purple-500/30">
-                New Arrival
+                Hàng mới về
               </Badge>
               <h1 className="text-5xl md:text-6xl lg:text-7xl text-white mb-6">
-                Premium Products
+                Sản Phẩm Cao Cấp
                 <span className="block bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                  Exceptional Quality
+                  Chất Lượng Vượt Trội
                 </span>
               </h1>
               <p className="text-xl text-white/70 mb-8 max-w-lg">
-                Discover our curated collection of premium electronics, fashion, and home essentials. Limited time offers up to 50% off!
+                Khám phá bộ sưu tập điện tử, thời trang và đồ gia dụng cao cấp được tuyển chọn. Ưu đãi có hạn giảm đến 50%!
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button
@@ -104,11 +104,11 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                   onClick={() => onNavigate("shop")}
                   className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  Shop Now
+                  Mua ngay
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button size="lg" variant="outline" onClick={() => onNavigate("about")}>
-                  Learn More
+                  Tìm hiểu thêm
                 </Button>
               </div>
             </motion.div>
@@ -125,7 +125,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                     <motion.img
                       key={currentFeaturedIndex}
                       src={currentProduct.image}
-                      alt="Featured Product"
+                      alt="Sản phẩm nổi bật"
                       className="w-full h-[500px] object-cover rounded-2xl"
                       initial={{ opacity: 0, scale: 1.1 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -135,7 +135,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                   </AnimatePresence>
                   <div className="absolute bottom-12 left-12 right-12 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-sm text-purple-400">Featured Product</p>
+                      <p className="text-sm text-purple-400">Sản phẩm nổi bật</p>
                       <div className="flex gap-1">
                         {featuredProductsForHero.map((_, index) => (
                           <button
@@ -166,7 +166,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                             onClick={() => onNavigate("product", currentProduct)}
                             className="bg-gradient-to-r from-purple-600 to-blue-600"
                           >
-                            View Details
+                            Xem chi tiết
                           </Button>
                         </div>
                       </motion.div>
@@ -184,10 +184,10 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { icon: Truck, title: "Free Shipping", desc: "On orders over $50" },
-              { icon: Shield, title: "Secure Payment", desc: "100% protected" },
-              { icon: Zap, title: "Fast Delivery", desc: "2-3 business days" },
-              { icon: Headphones, title: "24/7 Support", desc: "Always here to help" },
+              { icon: Truck, title: "Miễn phí vận chuyển", desc: "Đơn hàng trên $50" },
+              { icon: Shield, title: "Thanh toán an toàn", desc: "Bảo mật 100%" },
+              { icon: Zap, title: "Giao hàng nhanh", desc: "2-3 ngày làm việc" },
+              { icon: Headphones, title: "Hỗ trợ 24/7", desc: "Luôn sẵn sàng hỗ trợ" },
             ].map((feature, i) => (
               <motion.div
                 key={i}
@@ -211,11 +211,11 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
       <section className="py-16 container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl text-white mb-2">Shop by Category</h2>
-            <p className="text-white/60">Explore our wide range of products</p>
+            <h2 className="text-3xl text-white mb-2">Danh mục sản phẩm</h2>
+            <p className="text-white/60">Khám phá đa dạng sản phẩm của chúng tôi</p>
           </div>
           <Button variant="ghost" onClick={() => onNavigate("shop")}>
-            View All
+            Xem tất cả
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
@@ -230,31 +230,31 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
               className="group relative bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all"
             >
               <div className="text-4xl mb-3">
-                {cat.name === "Electronics" && "💻"}
-                {cat.name === "Fashion" && "👕"}
-                {cat.name === "Home" && "🏠"}
-                {cat.name === "Sports" && "⚽"}
-                {cat.name === "Beauty" && "💄"}
-                {cat.name === "Books" && "📚"}
+                {cat.name === "Điện tử" && "💻"}
+                {cat.name === "Thời trang" && "👕"}
+                {cat.name === "Nhà cửa" && "🏠"}
+                {cat.name === "Thể thao" && "⚽"}
+                {cat.name === "Làm đẹp" && "💄"}
+                {cat.name === "Sách" && "📚"}
               </div>
               <h3 className="text-white group-hover:text-purple-400 transition-colors">
                 {cat.name}
               </h3>
-              <p className="text-xs text-white/50 mt-1">{cat.productCount} items</p>
+              <p className="text-xs text-white/50 mt-1">{cat.productCount} sản phẩm</p>
             </motion.button>
           ))}
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Sản phẩm nổi bậts */}
       <section className="py-16 container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl text-white mb-2">Featured Products</h2>
-            <p className="text-white/60">Hand-picked items just for you</p>
+            <h2 className="text-3xl text-white mb-2">Sản phẩm nổi bật</h2>
+            <p className="text-white/60">Sản phẩm được tuyển chọn dành cho bạn</p>
           </div>
           <Button variant="ghost" onClick={() => onNavigate("shop")}>
-            View All
+            Xem tất cả
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
@@ -278,18 +278,18 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600 to-blue-600 p-12">
           <div className="relative z-10 max-w-2xl">
             <Badge className="mb-4 bg-white/20 text-white border-white/30">
-              Limited Time Offer
+              Ưu đãi có hạn
             </Badge>
-            <h2 className="text-4xl text-white mb-4">Black Friday Sale</h2>
+            <h2 className="text-4xl text-white mb-4">Khuyến mãi Black Friday</h2>
             <p className="text-xl text-white/90 mb-6">
-              Get up to 50% off on selected items. Don't miss out on this amazing opportunity!
+              Giảm đến 50% cho các sản phẩm được chọn. Đừng bỏ lỡ cơ hội tuyệt vời này!
             </p>
             <Button
               size="lg"
               onClick={() => onNavigate("shop")}
               className="bg-white text-purple-600 hover:bg-white/90"
             >
-              Shop Sale
+              Mua khuyến mãi
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
@@ -303,8 +303,8 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
       <section className="py-16 container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl text-white mb-2">Trending Now</h2>
-            <p className="text-white/60">Most popular items this week</p>
+            <h2 className="text-3xl text-white mb-2">Xu hướng hiện tại</h2>
+            <p className="text-white/60">Sản phẩm phổ biến nhất tuần này</p>
           </div>
         </div>
 

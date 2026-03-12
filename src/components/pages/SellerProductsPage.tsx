@@ -64,7 +64,7 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
       setProducts(res.data);
       setStats(res.stats);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to load products');
+      toast.error(err.message || 'Không thể tải sản phẩm');
     } finally {
       setLoading(false);
     }
@@ -96,12 +96,12 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
     setDeleting(true);
     try {
       await del(`/api/v1/seller/products/${selectedProduct.id}`);
-      toast.success(`Product "${selectedProduct.name}" deleted successfully`);
+      toast.success(`Đã xóa sản phẩm "${selectedProduct.name}" thành công`);
       setDeleteDialogOpen(false);
       setSelectedProduct(null);
       fetchProducts(searchQuery || undefined);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to delete product');
+      toast.error(err.message || 'Không thể xóa sản phẩm');
     } finally {
       setDeleting(false);
     }
@@ -112,15 +112,15 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-4xl text-white mb-2">Product Management</h1>
-          <p className="text-white/60">Manage your product inventory and listings</p>
+          <h1 className="text-4xl text-white mb-2">Quản lý sản phẩm</h1>
+          <p className="text-white/60">Quản lý kho hàng và danh sách sản phẩm</p>
         </div>
         <Button
           className="bg-gradient-to-r from-purple-600 to-blue-600"
           onClick={() => onNavigate("add-product")}
         >
           <Plus className="h-4 w-4 mr-2" />
-          Add New Product
+          Thêm sản phẩm mới
         </Button>
       </div>
 
@@ -129,28 +129,28 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
         <div className="bg-white/5 border border-white/10 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <Package className="h-5 w-5 text-purple-400" />
-            <p className="text-sm text-white/60">Total Products</p>
+            <p className="text-sm text-white/60">Tổng sản phẩm</p>
           </div>
           <p className="text-3xl text-white">{stats.total}</p>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <Package className="h-5 w-5 text-green-400" />
-            <p className="text-sm text-white/60">In Stock</p>
+            <p className="text-sm text-white/60">Còn hàng</p>
           </div>
           <p className="text-3xl text-white">{stats.inStock}</p>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <Package className="h-5 w-5 text-yellow-400" />
-            <p className="text-sm text-white/60">Low Stock</p>
+            <p className="text-sm text-white/60">Sắp hết</p>
           </div>
           <p className="text-3xl text-white">{stats.lowStock}</p>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <Package className="h-5 w-5 text-red-400" />
-            <p className="text-sm text-white/60">Out of Stock</p>
+            <p className="text-sm text-white/60">Hết hàng</p>
           </div>
           <p className="text-3xl text-white">{stats.outOfStock}</p>
         </div>
@@ -159,11 +159,11 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
       {/* Products Table */}
       <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
         <div className="p-4 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h2 className="text-xl text-white">All Products</h2>
+          <h2 className="text-xl text-white">Tất cả sản phẩm</h2>
           <div className="relative w-full md:w-auto">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
             <Input
-              placeholder="Search products..."
+              placeholder="Tìm kiếm sản phẩm..."
               className="pl-10 bg-white/5 border-white/10 w-full md:w-[300px]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -173,17 +173,17 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
 
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="text-center text-white/60 py-12">Loading products...</div>
+            <div className="text-center text-white/60 py-12">Đang tải sản phẩm...</div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white/70">Product</TableHead>
-                  <TableHead className="text-white/70">Category</TableHead>
-                  <TableHead className="text-white/70">Price</TableHead>
-                  <TableHead className="text-white/70">Stock</TableHead>
-                  <TableHead className="text-white/70">Status</TableHead>
-                  <TableHead className="text-white/70 text-right">Actions</TableHead>
+                  <TableHead className="text-white/70">Sản phẩm</TableHead>
+                  <TableHead className="text-white/70">Danh mục</TableHead>
+                  <TableHead className="text-white/70">Giá</TableHead>
+                  <TableHead className="text-white/70">Tồn kho</TableHead>
+                  <TableHead className="text-white/70">Trạng thái</TableHead>
+                  <TableHead className="text-white/70 text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -216,7 +216,7 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                               : "bg-red-500/20 text-red-400 border-red-500/30"
                           }
                         >
-                          {product.stock} units
+                          {product.stock} sản phẩm
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -230,12 +230,12 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                           }
                         >
                           {product.status === "ACTIVE"
-                            ? "Active"
+                            ? "Đang bán"
                             : product.status === "INACTIVE"
-                            ? "Inactive"
+                            ? "Ngừng bán"
                             : product.status === "OUT_OF_STOCK"
-                            ? "Out of Stock"
-                            : "Draft"}
+                            ? "Hết hàng"
+                            : "Nháp"}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -282,7 +282,7 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-white/60 py-8">
-                      {searchQuery ? `No products found matching "${searchQuery}"` : "No products yet"}
+                      {searchQuery ? `Không tìm thấy sản phẩm phù hợp "${searchQuery}"` : "Chưa có sản phẩm"}
                     </TableCell>
                   </TableRow>
                 )}
@@ -296,21 +296,21 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-black border border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Delete Product</AlertDialogTitle>
+            <AlertDialogTitle className="text-white">Xóa sản phẩm</AlertDialogTitle>
             <AlertDialogDescription className="text-white/60">
-              Are you sure you want to delete "{selectedProduct?.name}"? This action cannot be undone.
+              Bạn có chắc chắn muốn xóa "{selectedProduct?.name}"? Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
-              Cancel
+              Hủy
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirm}
               disabled={deleting}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              {deleting ? "Deleting..." : "Delete"}
+              {deleting ? "Đang xóa..." : "Xóa"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

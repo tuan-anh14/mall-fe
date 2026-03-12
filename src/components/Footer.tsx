@@ -18,7 +18,7 @@ export function Footer({ onNavigate }: FooterProps) {
               <span className="text-xl text-white">ShopHub</span>
             </div>
             <p className="text-sm text-white/60 mb-4 max-w-sm">
-              Your premium destination for quality products. We bring you the best selection of electronics, fashion, and home goods.
+              Điểm đến cao cấp cho các sản phẩm chất lượng. Chúng tôi mang đến cho bạn bộ sưu tập tốt nhất về điện tử, thời trang và đồ gia dụng.
             </p>
             <div className="flex gap-2">
               <Button size="icon" variant="ghost" className="hover:bg-white/5">
@@ -38,26 +38,26 @@ export function Footer({ onNavigate }: FooterProps) {
 
           {/* Quick Links */}
           <div>
-            <h3 className="mb-4 text-white">Quick Links</h3>
+            <h3 className="mb-4 text-white">Liên kết nhanh</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <button onClick={() => onNavigate("about")} className="text-white/60 hover:text-white transition-colors">
-                  About Us
+                  Giới thiệu
                 </button>
               </li>
               <li>
                 <button onClick={() => onNavigate("shop")} className="text-white/60 hover:text-white transition-colors">
-                  Shop
+                  Cửa hàng
                 </button>
               </li>
               <li>
                 <button onClick={() => onNavigate("contact")} className="text-white/60 hover:text-white transition-colors">
-                  Contact
+                  Liên hệ
                 </button>
               </li>
               <li>
                 <button onClick={() => onNavigate("careers")} className="text-white/60 hover:text-white transition-colors">
-                  Careers
+                  Tuyển dụng
                 </button>
               </li>
             </ul>
@@ -65,26 +65,26 @@ export function Footer({ onNavigate }: FooterProps) {
 
           {/* Customer Service */}
           <div>
-            <h3 className="mb-4 text-white">Customer Service</h3>
+            <h3 className="mb-4 text-white">Dịch vụ khách hàng</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <button onClick={() => onNavigate("help")} className="text-white/60 hover:text-white transition-colors">
-                  Help Center
+                  Trung tâm hỗ trợ
                 </button>
               </li>
               <li>
                 <button onClick={() => onNavigate("orders")} className="text-white/60 hover:text-white transition-colors">
-                  Track Order
+                  Theo dõi đơn hàng
                 </button>
               </li>
               <li>
                 <button onClick={() => onNavigate("returns")} className="text-white/60 hover:text-white transition-colors">
-                  Returns
+                  Đổi trả
                 </button>
               </li>
               <li>
                 <button onClick={() => onNavigate("shipping")} className="text-white/60 hover:text-white transition-colors">
-                  Shipping Info
+                  Thông tin vận chuyển
                 </button>
               </li>
             </ul>
@@ -92,21 +92,21 @@ export function Footer({ onNavigate }: FooterProps) {
 
           {/* Legal */}
           <div>
-            <h3 className="mb-4 text-white">Legal</h3>
+            <h3 className="mb-4 text-white">Pháp lý</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <button onClick={() => onNavigate("privacy")} className="text-white/60 hover:text-white transition-colors">
-                  Privacy Policy
+                  Chính sách bảo mật
                 </button>
               </li>
               <li>
                 <button onClick={() => onNavigate("terms")} className="text-white/60 hover:text-white transition-colors">
-                  Terms of Service
+                  Điều khoản dịch vụ
                 </button>
               </li>
               <li>
                 <button onClick={() => onNavigate("cookies")} className="text-white/60 hover:text-white transition-colors">
-                  Cookie Policy
+                  Chính sách Cookie
                 </button>
               </li>
               <li>
@@ -122,18 +122,18 @@ export function Footer({ onNavigate }: FooterProps) {
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-              <h3 className="text-white mb-1">Subscribe to our newsletter</h3>
-              <p className="text-sm text-white/60">Get the latest updates on new products and upcoming sales</p>
+              <h3 className="text-white mb-1">Đăng ký nhận bản tin</h3>
+              <p className="text-sm text-white/60">Nhận thông tin cập nhật mới nhất về sản phẩm mới và khuyến mãi sắp tới</p>
             </div>
             <div className="flex w-full md:w-auto gap-2">
               <Input
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Nhập email của bạn"
                 className="bg-white/5 border-white/10 text-white placeholder:text-white/50 md:w-64"
               />
               <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
                 <Mail className="h-4 w-4 mr-2" />
-                Subscribe
+                Đăng ký
               </Button>
             </div>
           </div>
@@ -141,7 +141,7 @@ export function Footer({ onNavigate }: FooterProps) {
 
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-white/60">
-          <p>&copy; 2025 ShopHub. All rights reserved.</p>
+          <p>&copy; 2025 ShopHub. Tất cả quyền được bảo lưu.</p>
         </div>
       </div>
     </footer>

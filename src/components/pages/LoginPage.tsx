@@ -27,14 +27,14 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginEmail || !loginPassword) {
-      toast.error("Please fill in all fields");
+      toast.error("Vui lòng điền đầy đủ thông tin");
       return;
     }
     setIsLoading(true);
     try {
       await onLogin(loginEmail, loginPassword);
     } catch (err: any) {
-      toast.error(err.message || "Login failed");
+      toast.error(err.message || "Đăng nhập thất bại");
     } finally {
       setIsLoading(false);
     }
@@ -43,22 +43,22 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!registerName || !registerEmail || !registerPassword || !registerConfirm) {
-      toast.error("Please fill in all fields");
+      toast.error("Vui lòng điền đầy đủ thông tin");
       return;
     }
     if (registerPassword !== registerConfirm) {
-      toast.error("Passwords do not match");
+      toast.error("Mật khẩu không khớp");
       return;
     }
     if (registerPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error("Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
     setIsLoading(true);
     try {
       await onRegister(registerName, registerEmail, registerPassword, userType);
     } catch (err: any) {
-      toast.error(err.message || "Registration failed");
+      toast.error(err.message || "Đăng ký thất bại");
     } finally {
       setIsLoading(false);
     }
@@ -79,29 +79,29 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                 <span className="text-3xl text-white">ShopHub</span>
               </div>
               <h2 className="text-4xl text-white mb-4">
-                Welcome to the Future of Shopping
+                Chào mừng đến với Tương lai Mua sắm
               </h2>
               <p className="text-xl text-white/70 mb-8">
-                Join thousands of sellers and buyers in our premium marketplace.
+                Tham gia cùng hàng nghìn người bán và người mua trên sàn thương mại cao cấp của chúng tôi.
               </p>
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">✓</span>
                   </div>
-                  <p className="text-white/80">Secure payments & data protection</p>
+                  <p className="text-white/80">Thanh toán an toàn & bảo vệ dữ liệu</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">✓</span>
                   </div>
-                  <p className="text-white/80">Fast shipping & easy returns</p>
+                  <p className="text-white/80">Giao hàng nhanh & đổi trả dễ dàng</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">✓</span>
                   </div>
-                  <p className="text-white/80">24/7 customer support</p>
+                  <p className="text-white/80">Hỗ trợ khách hàng 24/7</p>
                 </div>
               </div>
             </div>
@@ -112,15 +112,15 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
         <div>
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-white/5 p-1">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
+              <TabsTrigger value="login">Đăng nhập</TabsTrigger>
+              <TabsTrigger value="register">Đăng ký</TabsTrigger>
             </TabsList>
 
             {/* Login Tab */}
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="bg-white/5 border border-white/10 rounded-2xl p-8">
-                <h2 className="text-2xl text-white mb-2">Welcome Back</h2>
-                <p className="text-white/60 mb-6">Sign in to your account</p>
+                <h2 className="text-2xl text-white mb-2">Chào mừng trở lại</h2>
+                <p className="text-white/60 mb-6">Đăng nhập vào tài khoản</p>
 
                 <div className="space-y-4">
                   <div>
@@ -140,13 +140,13 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <Label htmlFor="login-password">Password</Label>
+                      <Label htmlFor="login-password">Mật khẩu</Label>
                       <button
                         type="button"
                         className="text-sm text-purple-400 hover:text-purple-300"
                         onClick={() => onNavigate("forgot-password")}
                       >
-                        Forgot password?
+                        Quên mật khẩu?
                       </button>
                     </div>
                     <div className="relative">
@@ -168,14 +168,14 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                     disabled={isLoading}
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   >
-                    {isLoading ? "Signing in..." : "Sign In"}
+                    {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
                   </Button>
                 </div>
 
                 <div className="relative my-6">
                   <Separator className="bg-white/10" />
                   <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-950 px-3 text-sm text-white/60">
-                    or continue with
+                    hoặc tiếp tục với
                   </span>
                 </div>
 
@@ -224,8 +224,8 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
             {/* Register Tab */}
             <TabsContent value="register">
               <form onSubmit={handleRegister} className="bg-white/5 border border-white/10 rounded-2xl p-8">
-                <h2 className="text-2xl text-white mb-2">Create Account</h2>
-                <p className="text-white/60 mb-6">Join ShopHub today</p>
+                <h2 className="text-2xl text-white mb-2">Tạo tài khoản</h2>
+                <p className="text-white/60 mb-6">Tham gia ShopHub ngay hôm nay</p>
 
                 {/* User Type Selection */}
                 <div className="grid grid-cols-2 gap-3 mb-6">
@@ -239,7 +239,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                     }`}
                   >
                     <ShoppingCart className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-                    <p className="text-white text-sm">I'm a Buyer</p>
+                    <p className="text-white text-sm">Tôi là Người mua</p>
                   </button>
                   <button
                     type="button"
@@ -251,18 +251,18 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                     }`}
                   >
                     <User className="h-6 w-6 text-blue-400 mx-auto mb-2" />
-                    <p className="text-white text-sm">I'm a Seller</p>
+                    <p className="text-white text-sm">Tôi là Người bán</p>
                   </button>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="register-name">Full Name</Label>
+                    <Label htmlFor="register-name">Họ và tên</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
                       <Input
                         id="register-name"
-                        placeholder="John Doe"
+                        placeholder="Nguyễn Văn A"
                         className="pl-10 bg-white/5 border-white/10"
                         value={registerName}
                         onChange={(e) => setRegisterName(e.target.value)}
@@ -286,7 +286,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   </div>
 
                   <div>
-                    <Label htmlFor="register-password">Password</Label>
+                    <Label htmlFor="register-password">Mật khẩu</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
                       <Input
@@ -301,7 +301,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   </div>
 
                   <div>
-                    <Label htmlFor="register-confirm">Confirm Password</Label>
+                    <Label htmlFor="register-confirm">Xác nhận mật khẩu</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
                       <Input
@@ -321,18 +321,18 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                     disabled={isLoading}
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   >
-                    {isLoading ? "Creating account..." : "Create Account"}
+                    {isLoading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
                   </Button>
                 </div>
 
                 <p className="text-center text-sm text-white/60 mt-6">
-                  By signing up, you agree to our{" "}
+                  Bằng việc đăng ký, bạn đồng ý với{" "}
                   <button type="button" className="text-purple-400 hover:text-purple-300" onClick={() => onNavigate("terms")}>
-                    Terms of Service
+                    Điều khoản dịch vụ
                   </button>{" "}
-                  and{" "}
+                  và{" "}
                   <button type="button" className="text-purple-400 hover:text-purple-300" onClick={() => onNavigate("privacy")}>
-                    Privacy Policy
+                    Chính sách bảo mật
                   </button>
                 </p>
               </form>

@@ -203,7 +203,7 @@ export default function App() {
     setUser(me);
     setIsAuthenticated(true);
     await fetchCartAndWishlist();
-    toast.success(`Welcome back, ${me.name}!`);
+    toast.success(`Chào mừng trở lại, ${me.name}!`);
     if (me.userType === "seller") {
       navigate("dashboard");
     } else {
@@ -226,7 +226,7 @@ export default function App() {
     setUser(me);
     setIsAuthenticated(true);
     await fetchCartAndWishlist();
-    toast.success(`Welcome, ${me.name}!`);
+    toast.success(`Chào mừng, ${me.name}!`);
     if (me.userType === "seller") {
       navigate("dashboard");
     } else {
@@ -244,13 +244,13 @@ export default function App() {
     setIsAuthenticated(false);
     setCartItems([]);
     setWishlistItems([]);
-    toast.success("Logged out successfully");
+    toast.success("Đã đăng xuất thành công");
     navigate("home");
   };
 
-  const requireAuth = (action: () => void, actionName: string = "perform this action") => {
+  const requireAuth = (action: () => void, actionName: string = "thực hiện thao tác này") => {
     if (!isAuthenticated) {
-      toast.error(`Please login to ${actionName}`);
+      toast.error(`Vui lòng đăng nhập để ${actionName}`);
       navigate("login");
       return false;
     }
@@ -260,7 +260,7 @@ export default function App() {
 
   const addToCart = async (product: any, quantity: number, selectedColor?: string, selectedSize?: string) => {
     if (!isAuthenticated) {
-      toast.error("Please login to add items to cart");
+      toast.error("Vui lòng đăng nhập để thêm vào giỏ hàng");
       navigate("login");
       throw new Error("Not authenticated");
     }
@@ -271,7 +271,7 @@ export default function App() {
       const res = await post<{ cart: { items: CartItem[] } }>("/api/v1/cart/items", body);
       setCartItems(res.cart?.items ?? []);
     } catch (err: any) {
-      toast.error(err.message || "Failed to add to cart");
+      toast.error(err.message || "Không thể thêm vào giỏ hàng");
       throw err;
     }
   };
@@ -281,7 +281,7 @@ export default function App() {
       const res = await del<{ cart: { items: CartItem[] } }>(`/api/v1/cart/items/${itemId}`);
       setCartItems(res.cart?.items ?? []);
     } catch (err: any) {
-      toast.error(err.message || "Failed to remove from cart");
+      toast.error(err.message || "Không thể xóa khỏi giỏ hàng");
     }
   };
 
@@ -290,13 +290,13 @@ export default function App() {
       const res = await put<{ cart: { items: CartItem[] } }>(`/api/v1/cart/items/${itemId}`, { quantity });
       setCartItems(res.cart?.items ?? []);
     } catch (err: any) {
-      toast.error(err.message || "Failed to update cart");
+      toast.error(err.message || "Không thể cập nhật giỏ hàng");
     }
   };
 
   const addToWishlist = async (product: any) => {
     if (!isAuthenticated) {
-      toast.error("Please login to add items to wishlist");
+      toast.error("Vui lòng đăng nhập để thêm vào danh sách yêu thích");
       navigate("login");
       return;
     }
@@ -307,7 +307,7 @@ export default function App() {
       });
       setWishlistItems(res.items ?? []);
     } catch (err: any) {
-      toast.error(err.message || "Failed to add to wishlist");
+      toast.error(err.message || "Không thể thêm vào danh sách yêu thích");
     }
   };
 
@@ -316,7 +316,7 @@ export default function App() {
       const res = await del<{ items: WishlistItem[] }>(`/api/v1/wishlist/${productId}`);
       setWishlistItems(res.items ?? []);
     } catch (err: any) {
-      toast.error(err.message || "Failed to remove from wishlist");
+      toast.error(err.message || "Không thể xóa khỏi danh sách yêu thích");
     }
   };
 
@@ -346,7 +346,7 @@ export default function App() {
   if (isAuthLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white/40 text-sm">Loading...</div>
+        <div className="text-white/40 text-sm">Đang tải...</div>
       </div>
     );
   }
@@ -480,7 +480,7 @@ export default function App() {
             path="/cart"
             element={
               !isAuthenticated
-                ? authRedirect("Please login to view your cart")
+                ? authRedirect("Vui lòng đăng nhập để xem giỏ hàng")
                 : <CartPage onNavigate={navigate} cartItems={cartItems} onRemoveItem={removeFromCart} onUpdateQuantity={updateCartQuantity} />
             }
           />
@@ -488,7 +488,7 @@ export default function App() {
             path="/checkout"
             element={
               !isAuthenticated
-                ? authRedirect("Please login to checkout")
+                ? authRedirect("Vui lòng đăng nhập để thanh toán")
                 : <CheckoutPage onNavigate={navigate} cartItems={cartItems} onOrderPlaced={() => setCartItems([])} user={user} />
             }
           />
@@ -496,7 +496,7 @@ export default function App() {
             path="/orders"
             element={
               !isAuthenticated
-                ? authRedirect("Please login to view your orders")
+                ? authRedirect("Vui lòng đăng nhập để xem đơn hàng")
                 : <OrderTrackingPage onNavigate={navigate} orderId={new URLSearchParams(location.search).get("orderId") ?? undefined} />
             }
           />
@@ -504,7 +504,7 @@ export default function App() {
             path="/profile"
             element={
               !isAuthenticated
-                ? authRedirect("Please login to view your profile")
+                ? authRedirect("Vui lòng đăng nhập để xem hồ sơ")
                 : <ProfilePage onNavigate={navigate} onLogout={handleLogout} user={user} />
             }
           />
@@ -512,7 +512,7 @@ export default function App() {
             path="/notifications"
             element={
               !isAuthenticated
-                ? authRedirect("Please login to view notifications")
+                ? authRedirect("Vui lòng đăng nhập để xem thông báo")
                 : <NotificationsPage onNavigate={navigate} />
             }
           />
@@ -520,7 +520,7 @@ export default function App() {
             path="/wishlist"
             element={
               !isAuthenticated
-                ? authRedirect("Please login to view your wishlist")
+                ? authRedirect("Vui lòng đăng nhập để xem danh sách yêu thích")
                 : <WishlistPage onNavigate={navigate} wishlistItems={wishlistItems} onRemoveItem={removeFromWishlist} onAddToCart={addToCart} />
             }
           />
@@ -528,7 +528,7 @@ export default function App() {
             path="/settings"
             element={
               !isAuthenticated
-                ? authRedirect("Please login to access settings")
+                ? authRedirect("Vui lòng đăng nhập để truy cập cài đặt")
                 : <SettingsPage onNavigate={navigate} onLogout={handleLogout} />
             }
           />
@@ -536,7 +536,7 @@ export default function App() {
             path="/chat"
             element={
               !isAuthenticated
-                ? authRedirect("Please login to chat with sellers")
+                ? authRedirect("Vui lòng đăng nhập để trò chuyện với người bán")
                 : <ChatPage onNavigate={navigate} sellerInfo={chatData} userId={user?.id} userType={user?.userType} />
             }
           />
@@ -546,7 +546,7 @@ export default function App() {
             path="/dashboard"
             element={
               !isAuthenticated || user?.userType !== "seller"
-                ? sellerRedirect("Access denied. Seller account required.")
+                ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.")
                 : <DashboardPage onNavigate={navigate} />
             }
           />
@@ -554,7 +554,7 @@ export default function App() {
             path="/seller/products"
             element={
               !isAuthenticated || user?.userType !== "seller"
-                ? sellerRedirect("Access denied. Seller account required.")
+                ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.")
                 : <SellerProductsPage onNavigate={navigate} />
             }
           />
@@ -562,7 +562,7 @@ export default function App() {
             path="/seller/orders"
             element={
               !isAuthenticated || user?.userType !== "seller"
-                ? sellerRedirect("Access denied. Seller account required.")
+                ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.")
                 : <SellerOrdersPage onNavigate={navigate} />
             }
           />
@@ -570,7 +570,7 @@ export default function App() {
             path="/seller/add-product"
             element={
               !isAuthenticated || user?.userType !== "seller"
-                ? sellerRedirect("Access denied. Seller account required.")
+                ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.")
                 : <AddProductPage onNavigate={navigate} />
             }
           />
@@ -578,7 +578,7 @@ export default function App() {
             path="/seller/edit-product"
             element={
               !isAuthenticated || user?.userType !== "seller"
-                ? sellerRedirect("Access denied. Seller account required.")
+                ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.")
                 : <AddProductPage onNavigate={navigate} initialProduct={editProductData} />
             }
           />
@@ -588,10 +588,10 @@ export default function App() {
             path="*"
             element={
               <div className="container mx-auto px-4 py-16 text-center">
-                <h1 className="text-4xl text-white mb-4">Page Under Construction</h1>
-                <p className="text-white/60 mb-8">This page is coming soon!</p>
+                <h1 className="text-4xl text-white mb-4">Trang Đang Xây Dựng</h1>
+                <p className="text-white/60 mb-8">Trang này sẽ sớm ra mắt!</p>
                 <button onClick={() => navigate("home")} className="text-purple-400 hover:text-purple-300">
-                  ← Back to Home
+                  ← Quay về Trang chủ
                 </button>
               </div>
             }

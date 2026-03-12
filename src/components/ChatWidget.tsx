@@ -26,8 +26,8 @@ export function ChatWidget() {
                   <AvatarFallback className="bg-white/20 text-white">CS</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-white">Customer Support</p>
-                  <p className="text-xs text-white/80">Online</p>
+                  <p className="text-white">Hỗ trợ khách hàng</p>
+                  <p className="text-xs text-white/80">Trực tuyến</p>
                 </div>
               </div>
               <Button
@@ -48,7 +48,7 @@ export function ChatWidget() {
                 </Avatar>
                 <div className="bg-white/5 rounded-2xl rounded-tl-sm p-3 max-w-[80%]">
                   <p className="text-sm text-white/90">
-                    Hello! Welcome to ShopHub. How can I help you today?
+                    Xin chào! Chào mừng bạn đến với ShopHub. Tôi có thể giúp gì cho bạn hôm nay?
                   </p>
                   <p className="text-xs text-white/50 mt-1">10:30 AM</p>
                 </div>
@@ -57,7 +57,7 @@ export function ChatWidget() {
               <div className="flex gap-3 justify-end">
                 <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl rounded-tr-sm p-3 max-w-[80%]">
                   <p className="text-sm text-white">
-                    Hi! I have a question about my recent order.
+                    Xin chào! Tôi có câu hỏi về đơn hàng gần đây.
                   </p>
                   <p className="text-xs text-white/70 mt-1">10:31 AM</p>
                 </div>
@@ -69,7 +69,7 @@ export function ChatWidget() {
                 </Avatar>
                 <div className="bg-white/5 rounded-2xl rounded-tl-sm p-3 max-w-[80%]">
                   <p className="text-sm text-white/90">
-                    I'd be happy to help! Please provide your order number and I'll check the status for you.
+                    Tôi rất vui được giúp bạn! Vui lòng cung cấp mã đơn hàng và tôi sẽ kiểm tra trạng thái cho bạn.
                   </p>
                   <p className="text-xs text-white/50 mt-1">10:31 AM</p>
                 </div>
@@ -80,7 +80,7 @@ export function ChatWidget() {
             <div className="p-4 border-t border-white/10">
               <div className="flex gap-2">
                 <Input
-                  placeholder="Type your message..."
+                  placeholder="Nhập tin nhắn..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/50"

@@ -157,8 +157,8 @@ export function ProductDetailPage({
   const handleAddToCart = async () => {
     try {
       await onAddToCart(product, quantity, selectedColor ?? undefined, selectedSize ?? undefined);
-      toast.success(`Added ${quantity} ${product.name} to cart`, {
-        description: `Color: ${selectedColor || 'Default'}, Size: ${selectedSize || 'Default'}`,
+      toast.success(`Đã thêm ${quantity} ${product.name} vào giỏ hàng`, {
+        description: `Màu: ${selectedColor || 'Mặc định'}, Kích cỡ: ${selectedSize || 'Mặc định'}`,
       });
     } catch {
       // error already shown by addToCart
@@ -178,11 +178,11 @@ export function ProductDetailPage({
     if (!isLiked) {
       onAddToWishlist(product);
       setIsLiked(true);
-      toast.success("Added to wishlist");
+      toast.success("Đã thêm vào danh sách yêu thích");
     } else {
       onRemoveFromWishlist(product.id);
       setIsLiked(false);
-      toast.success("Removed from wishlist");
+      toast.success("Đã xóa khỏi danh sách yêu thích");
     }
   };
 
@@ -191,17 +191,17 @@ export function ProductDetailPage({
       try {
         await navigator.share({
           title: product.name,
-          text: `Check out ${product.name} for $${product.price}`,
+          text: `Xem ngay ${product.name} chỉ với $${product.price}`,
           url: window.location.href,
         });
       } catch (err) {
         if ((err as Error).name !== 'AbortError') {
-          toast.success("Link copied to clipboard!");
+          toast.success("Đã sao chép liên kết!");
         }
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied to clipboard!");
+      toast.success("Đã sao chép liên kết!");
     }
   };
 
@@ -222,10 +222,10 @@ export function ProductDetailPage({
       });
       const json = await res.json();
       const url = json?.data?.urls?.[0] ?? null;
-      if (!url) throw new Error("Upload failed");
+      if (!url) throw new Error("Tải lên thất bại");
       setReviewImages((prev) => [...prev, url]);
     } catch (err: any) {
-      toast.error(err.message || "Failed to upload image");
+      toast.error(err.message || "Không thể tải ảnh lên");
     } finally {
       setIsUploadingReviewImage(false);
       if (reviewImageInputRef.current) reviewImageInputRef.current.value = "";
@@ -234,7 +234,7 @@ export function ProductDetailPage({
 
   const handleSubmitReview = async () => {
     if (!reviewComment.trim()) {
-      toast.error("Please write a review comment");
+      toast.error("Vui lòng viết nhận xét đánh giá");
       return;
     }
     setIsSubmittingReview(true);
@@ -256,9 +256,9 @@ export function ProductDetailPage({
       setReviewRating(5);
       setReviewImages([]);
       setReviewEmoji("");
-      toast.success("Review submitted successfully!");
+      toast.success("Đã gửi đánh giá thành công!");
     } catch (err: any) {
-      toast.error(err.message || "Failed to submit review");
+      toast.error(err.message || "Không thể gửi đánh giá");
     } finally {
       setIsSubmittingReview(false);
     }
@@ -301,7 +301,7 @@ export function ProductDetailPage({
                       : "border-white/10 hover:border-white/30"
                   }`}
                 >
-                  <img src={imgUrl} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
+                  <img src={imgUrl} alt={`Ảnh ${i + 1}`} className="w-full h-full object-cover" />
                 </button>
               );
             })}
@@ -313,7 +313,7 @@ export function ProductDetailPage({
           <div>
             <Badge className="mb-3">{product.category}</Badge>
             <h1 className="text-4xl text-white mb-2">{product.name}</h1>
-            <p className="text-white/60">by {product.brand}</p>
+            <p className="text-white/60">bởi {product.brand}</p>
           </div>
 
           {/* Rating */}
@@ -331,7 +331,7 @@ export function ProductDetailPage({
               ))}
             </div>
             <span className="text-white">{product.rating}</span>
-            <span className="text-white/50">({product.reviews} reviews)</span>
+            <span className="text-white/50">({product.reviews} đánh giá)</span>
           </div>
 
           {/* Price */}
@@ -344,7 +344,7 @@ export function ProductDetailPage({
             )}
             {product.discount && (
               <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                Save {product.discount}%
+                Tiết kiệm {product.discount}%
               </Badge>
             )}
           </div>
@@ -358,7 +358,7 @@ export function ProductDetailPage({
           {product.colors && product.colors.length > 0 && (
             <div>
               <label className="text-white mb-2 block">
-                Color: <span className="text-purple-400">{selectedColor}</span>
+                Màu sắc: <span className="text-purple-400">{selectedColor}</span>
               </label>
               <div className="flex gap-2">
                 {product.colors.map((color: any) => {
@@ -385,7 +385,7 @@ export function ProductDetailPage({
           {product.sizes && product.sizes.length > 0 && (
             <div>
               <label className="text-white mb-2 block">
-                Size: <span className="text-purple-400">{selectedSize}</span>
+                Kích cỡ: <span className="text-purple-400">{selectedSize}</span>
               </label>
               <div className="flex gap-2">
                 {product.sizes.map((size: string) => (
@@ -409,14 +409,14 @@ export function ProductDetailPage({
           {product.stock < 10 && (
             <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
               <p className="text-orange-400 text-sm">
-                ⚡ Only {product.stock} left in stock - order soon!
+                ⚡ Chỉ còn {product.stock} sản phẩm - đặt hàng ngay!
               </p>
             </div>
           )}
 
           {/* Quantity */}
           <div>
-            <label className="text-white mb-2 block">Quantity</label>
+            <label className="text-white mb-2 block">Số lượng</label>
             <div className="flex items-center gap-3">
               <div className="flex items-center bg-white/5 border border-white/10 rounded-lg">
                 <Button
@@ -438,7 +438,7 @@ export function ProductDetailPage({
                 </Button>
               </div>
               <span className="text-white/50 text-sm">
-                ({product.stock} available)
+                (còn {product.stock} sản phẩm)
               </span>
             </div>
           </div>
@@ -450,7 +450,7 @@ export function ProductDetailPage({
               className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               onClick={handleAddToCart}
             >
-              Add to Cart
+              Thêm vào giỏ
             </Button>
             <Button
               size="lg"
@@ -475,7 +475,7 @@ export function ProductDetailPage({
             className="w-full"
             onClick={handleBuyNow}
           >
-            Buy Now
+            Mua ngay
           </Button>
 
           {/* Features */}
@@ -485,8 +485,8 @@ export function ProductDetailPage({
                 <Truck className="h-5 w-5 text-purple-400" />
               </div>
               <div>
-                <p className="text-white">Free Shipping</p>
-                <p className="text-white/50 text-xs">On orders over $50</p>
+                <p className="text-white">Miễn phí vận chuyển</p>
+                <p className="text-white/50 text-xs">Đơn hàng trên $50</p>
               </div>
             </div>
             <div className="flex items-center gap-3 text-sm">
@@ -494,8 +494,8 @@ export function ProductDetailPage({
                 <Shield className="h-5 w-5 text-purple-400" />
               </div>
               <div>
-                <p className="text-white">Secure Payment</p>
-                <p className="text-white/50 text-xs">100% protected</p>
+                <p className="text-white">Thanh toán an toàn</p>
+                <p className="text-white/50 text-xs">Bảo mật 100%</p>
               </div>
             </div>
             <div className="flex items-center gap-3 text-sm">
@@ -503,8 +503,8 @@ export function ProductDetailPage({
                 <RotateCcw className="h-5 w-5 text-purple-400" />
               </div>
               <div>
-                <p className="text-white">Easy Returns</p>
-                <p className="text-white/50 text-xs">30-day return policy</p>
+                <p className="text-white">Đổi trả dễ dàng</p>
+                <p className="text-white/50 text-xs">Chính sách đổi trả 30 ngày</p>
               </div>
             </div>
             <div className="flex items-center gap-3 text-sm">
@@ -512,8 +512,8 @@ export function ProductDetailPage({
                 <MessageCircle className="h-5 w-5 text-purple-400" />
               </div>
               <div>
-                <p className="text-white">24/7 Support</p>
-                <p className="text-white/50 text-xs">Always here to help</p>
+                <p className="text-white">Hỗ trợ 24/7</p>
+                <p className="text-white/50 text-xs">Luôn sẵn sàng hỗ trợ</p>
               </div>
             </div>
           </div>
@@ -537,20 +537,20 @@ export function ProductDetailPage({
                 <div>
                   <p className="text-white">{product.seller?.storeName || `${product.brand} Store`}</p>
                   <p className="text-sm text-white/50">
-                    {product.seller?.isVerified ? "✓ Verified Seller" : "Seller"}
-                    {product.seller?.positiveRating ? ` · ${product.seller.positiveRating}% positive` : ""}
+                    {product.seller?.isVerified ? "✓ Người bán đã xác minh" : "Người bán"}
+                    {product.seller?.positiveRating ? ` · ${product.seller.positiveRating}% tích cực` : ""}
                   </p>
                 </div>
               </div>
               {product.seller?.userId && (
                 <Button variant="outline" onClick={() => onNavigate("chat", {
                   sellerId: product.seller.userId,
-                  name: product.seller.storeName || product.brand || "Seller",
+                  name: product.seller.storeName || product.brand || "Người bán",
                   productId: product.id,
                   productName: product.name,
                 })}>
                   <MessageCircle className="h-4 w-4 mr-2" />
-                  Chat
+                  Nhắn tin
                 </Button>
               )}
             </div>
@@ -561,20 +561,20 @@ export function ProductDetailPage({
       {/* Tabs Section */}
       <Tabs defaultValue="description" className="w-full">
         <TabsList className="w-full justify-start bg-white/5 border-b border-white/10 rounded-none">
-          <TabsTrigger value="description">Description</TabsTrigger>
-          <TabsTrigger value="specifications">Specifications</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
+          <TabsTrigger value="description">Mô tả</TabsTrigger>
+          <TabsTrigger value="specifications">Thông số kỹ thuật</TabsTrigger>
+          <TabsTrigger value="reviews">Đánh giá ({reviews.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="description" className="mt-8">
           <div className="prose prose-invert max-w-none">
-            <h3 className="text-2xl text-white mb-4">Product Description</h3>
+            <h3 className="text-2xl text-white mb-4">Mô tả sản phẩm</h3>
             <p className="text-white/70">{product.description}</p>
           </div>
         </TabsContent>
 
         <TabsContent value="specifications" className="mt-8">
-          <h3 className="text-2xl text-white mb-6">Technical Specifications</h3>
+          <h3 className="text-2xl text-white mb-6">Thông số kỹ thuật chi tiết</h3>
           <div className="grid md:grid-cols-2 gap-4">
             {(Array.isArray(product.specifications) ? product.specifications : Object.entries(product.specifications ?? {}).map(([key, value]) => ({ key, value }))).map((spec: any) => (
               <div
@@ -593,7 +593,7 @@ export function ProductDetailPage({
           {isAuthenticated && !userReview && !canReview && (
             <div className="mb-8 bg-white/5 border border-white/10 rounded-2xl p-4">
               <p className="text-white/50 text-sm text-center">
-                🛍️ Purchase and receive this product to leave a review.
+                🛍️ Mua và nhận sản phẩm này để viết đánh giá.
               </p>
             </div>
           )}
@@ -601,38 +601,38 @@ export function ProductDetailPage({
             <div className="mb-8 bg-white/5 border border-white/10 rounded-2xl p-6">
               {!reviewFormOpen ? (
                 <div className="flex items-center justify-between">
-                  <p className="text-white/70">You purchased this product. Share your experience!</p>
+                  <p className="text-white/70">Bạn đã mua sản phẩm này. Hãy chia sẻ trải nghiệm!</p>
                   <Button
                     onClick={() => setReviewFormOpen(true)}
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   >
-                    Write a Review
+                    Viết đánh giá
                   </Button>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <h3 className="text-white text-lg">Write Your Review</h3>
+                  <h3 className="text-white text-lg">Viết đánh giá của bạn</h3>
 
                   {/* Star Rating */}
                   <div>
-                    <label className="text-white/70 text-sm mb-2 block">Rating *</label>
+                    <label className="text-white/70 text-sm mb-2 block">Đánh giá *</label>
                     <div className="flex gap-1">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button key={star} onClick={() => setReviewRating(star)}>
                           <Star className={`h-8 w-8 transition-colors ${star <= reviewRating ? "fill-yellow-400 text-yellow-400" : "text-white/20"}`} />
                         </button>
                       ))}
-                      <span className="ml-2 text-white/60 self-center">{reviewRating}/5 stars</span>
+                      <span className="ml-2 text-white/60 self-center">{reviewRating}/5 sao</span>
                     </div>
                   </div>
 
                   {/* Emoji Reaction */}
                   <div>
-                    <label className="text-white/70 text-sm mb-2 block">Reaction Emoji (optional)</label>
+                    <label className="text-white/70 text-sm mb-2 block">Biểu tượng cảm xúc (tùy chọn)</label>
                     <div className="flex items-center gap-2">
                       {reviewEmoji && <span className="text-3xl">{reviewEmoji}</span>}
                       <Button variant="ghost" size="sm" className="text-white/60 border border-white/10" onClick={() => setShowReviewEmojiPicker((v) => !v)}>
-                        <Smile className="h-4 w-4 mr-1" /> Pick Emoji
+                        <Smile className="h-4 w-4 mr-1" /> Chọn biểu tượng
                       </Button>
                       {reviewEmoji && (
                         <Button variant="ghost" size="sm" className="text-white/40" onClick={() => setReviewEmoji("")}>
@@ -653,11 +653,11 @@ export function ProductDetailPage({
 
                   {/* Review Comment */}
                   <div>
-                    <label className="text-white/70 text-sm mb-2 block">Review Comment *</label>
+                    <label className="text-white/70 text-sm mb-2 block">Nhận xét *</label>
                     <textarea
                       value={reviewComment}
                       onChange={(e) => setReviewComment(e.target.value)}
-                      placeholder="Share your experience with this product..."
+                      placeholder="Chia sẻ trải nghiệm của bạn với sản phẩm này..."
                       rows={4}
                       className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white placeholder:text-white/40 resize-none focus:outline-none focus:border-purple-500"
                     />
@@ -665,7 +665,7 @@ export function ProductDetailPage({
 
                   {/* Image Upload */}
                   <div>
-                    <label className="text-white/70 text-sm mb-2 block">Review Images (optional)</label>
+                    <label className="text-white/70 text-sm mb-2 block">Hình ảnh đánh giá (tùy chọn)</label>
                     <input ref={reviewImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleReviewImageUpload} />
                     <div className="flex flex-wrap gap-3">
                       {reviewImages.map((url, i) => (
@@ -686,7 +686,7 @@ export function ProductDetailPage({
                           className="w-20 h-20 border-2 border-dashed border-white/20 rounded-lg flex flex-col items-center justify-center text-white/40 hover:border-purple-500 hover:text-purple-400 transition-colors"
                         >
                           <Upload className="h-5 w-5 mb-1" />
-                          <span className="text-xs">{isUploadingReviewImage ? "..." : "Add"}</span>
+                          <span className="text-xs">{isUploadingReviewImage ? "..." : "Thêm"}</span>
                         </button>
                       )}
                     </div>
@@ -699,10 +699,10 @@ export function ProductDetailPage({
                       disabled={isSubmittingReview || !reviewComment.trim()}
                       className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                     >
-                      {isSubmittingReview ? "Submitting..." : "Submit Review"}
+                      {isSubmittingReview ? "Đang gửi..." : "Gửi đánh giá"}
                     </Button>
                     <Button variant="ghost" onClick={() => setReviewFormOpen(false)} className="text-white/60">
-                      Cancel
+                      Hủy
                     </Button>
                   </div>
                 </div>
@@ -712,7 +712,7 @@ export function ProductDetailPage({
 
           {userReview && (
             <div className="mb-8 bg-purple-500/10 border border-purple-500/30 rounded-2xl p-4">
-              <p className="text-purple-300 text-sm">✓ You have already reviewed this product.</p>
+              <p className="text-purple-300 text-sm">✓ Bạn đã đánh giá sản phẩm này rồi.</p>
             </div>
           )}
 
@@ -733,7 +733,7 @@ export function ProductDetailPage({
                     />
                   ))}
                 </div>
-                <p className="text-white/60">Based on {product.reviews} reviews</p>
+                <p className="text-white/60">Dựa trên {product.reviews} đánh giá</p>
               </div>
               <div className="space-y-3">
                 {[5, 4, 3, 2, 1].map((star) => (
@@ -752,11 +752,11 @@ export function ProductDetailPage({
             <div className="lg:col-span-2 space-y-6">
               {reviewsLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <p className="text-white/50">Loading reviews...</p>
+                  <p className="text-white/50">Đang tải đánh giá...</p>
                 </div>
               ) : reviews.length === 0 ? (
                 <div className="flex items-center justify-center py-12">
-                  <p className="text-white/50">No reviews yet.</p>
+                  <p className="text-white/50">Chưa có đánh giá.</p>
                 </div>
               ) : (
                 reviews.map((review) => (
@@ -803,7 +803,7 @@ export function ProductDetailPage({
                           <img
                             key={i}
                             src={url}
-                            alt={`Review image ${i + 1}`}
+                            alt={`Ảnh đánh giá ${i + 1}`}
                             className="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
                             onClick={() => window.open(url, "_blank")}
                           />
@@ -811,7 +811,7 @@ export function ProductDetailPage({
                       </div>
                     )}
                     <Button variant="ghost" size="sm" className="text-white/50 hover:text-white">
-                      👍 Helpful ({review.helpful})
+                      👍 Hữu ích ({review.helpful})
                     </Button>
                   </div>
                 ))
@@ -824,7 +824,7 @@ export function ProductDetailPage({
       {/* Related Products */}
       {!relatedLoading && relatedProducts.length > 0 && (
         <div className="mt-16">
-          <h2 className="text-2xl text-white mb-8">Related Products</h2>
+          <h2 className="text-2xl text-white mb-8">Sản phẩm liên quan</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {relatedProducts.map((related) => (
               <div

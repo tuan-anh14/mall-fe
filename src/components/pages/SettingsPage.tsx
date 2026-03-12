@@ -98,7 +98,7 @@ const defaultAddressForm: AddressFormState = {
   city: "",
   state: "",
   zip: "",
-  country: "United States",
+  country: "Việt Nam",
 };
 
 export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
@@ -166,7 +166,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
       setEmail(res.user.email ?? "");
       setPhone(res.user.phone ?? "");
     } catch (err: any) {
-      toast.error(err.message || "Failed to load profile");
+      toast.error(err.message || "Không thể tải hồ sơ");
     }
   };
 
@@ -176,7 +176,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
       const res = await get<{ addresses: Address[] }>("/api/v1/users/me/addresses");
       setAddresses(res.addresses ?? []);
     } catch (err: any) {
-      toast.error(err.message || "Failed to load addresses");
+      toast.error(err.message || "Không thể tải địa chỉ");
     } finally {
       setIsLoadingAddresses(false);
     }
@@ -195,7 +195,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
         loginAlerts: false,
       });
     } catch (err: any) {
-      toast.error(err.message || "Failed to load notification settings");
+      toast.error(err.message || "Không thể tải cài đặt thông báo");
     }
   };
 
@@ -203,9 +203,9 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
     setIsSavingProfile(true);
     try {
       await put("/api/v1/users/me", { firstName, lastName, phone });
-      toast.success("Profile updated successfully!");
+      toast.success("Cập nhật hồ sơ thành công!");
     } catch (err: any) {
-      toast.error(err.message || "Failed to save profile");
+      toast.error(err.message || "Không thể lưu hồ sơ");
     } finally {
       setIsSavingProfile(false);
     }
@@ -234,11 +234,11 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
 
   const handleSaveAddress = async () => {
     if (!addressForm.firstName || !addressForm.lastName) {
-      toast.error("Please fill in first name and last name");
+      toast.error("Vui lòng nhập họ và tên");
       return;
     }
     if (!addressForm.street || !addressForm.city || !addressForm.state || !addressForm.zip) {
-      toast.error("Please fill in all required address fields");
+      toast.error("Vui lòng điền đầy đủ các trường địa chỉ bắt buộc");
       return;
     }
     setIsSavingAddress(true);
@@ -251,15 +251,15 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
         setAddresses((prev) =>
           prev.map((a) => (a.id === editingAddress.id ? result.address : a))
         );
-        toast.success("Address updated!");
+        toast.success("Đã cập nhật địa chỉ!");
       } else {
         const result = await post<{ address: Address }>("/api/v1/users/me/addresses", addressForm);
         setAddresses((prev) => [...prev, result.address]);
-        toast.success("Address added!");
+        toast.success("Đã thêm địa chỉ!");
       }
       setAddressDialogOpen(false);
     } catch (err: any) {
-      toast.error(err.message || "Failed to save address");
+      toast.error(err.message || "Không thể lưu địa chỉ");
     } finally {
       setIsSavingAddress(false);
     }
@@ -269,9 +269,9 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
     try {
       await del(`/api/v1/users/me/addresses/${id}`);
       setAddresses((prev) => prev.filter((a) => a.id !== id));
-      toast.success("Address deleted successfully!");
+      toast.success("Đã xóa địa chỉ thành công!");
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete address");
+      toast.error(err.message || "Không thể xóa địa chỉ");
     }
   };
 
@@ -285,9 +285,9 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
         priceDropAlerts: notifSettings.newsletter,
         twoFactorEnabled: notifSettings.twoFactorAuth,
       });
-      toast.success("Notification preferences saved!");
+      toast.success("Đã lưu tùy chọn thông báo!");
     } catch (err: any) {
-      toast.error(err.message || "Failed to save notification settings");
+      toast.error(err.message || "Không thể lưu cài đặt thông báo");
     } finally {
       setIsSavingNotif(false);
     }
@@ -304,32 +304,32 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
   };
 
   const handleSavePayment = () => {
-    toast.success(editingPayment ? "Payment method updated!" : "Payment method added!");
+    toast.success(editingPayment ? "Đã cập nhật phương thức thanh toán!" : "Đã thêm phương thức thanh toán!");
     setPaymentDialogOpen(false);
   };
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error("Please fill in all password fields");
+      toast.error("Vui lòng điền đầy đủ các trường mật khẩu");
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error("New passwords do not match");
+      toast.error("Mật khẩu mới không khớp");
       return;
     }
     if (newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters");
+      toast.error("Mật khẩu mới phải có ít nhất 6 ký tự");
       return;
     }
     setIsChangingPassword(true);
     try {
       await put("/api/v1/users/me/password", { currentPassword, newPassword });
-      toast.success("Password changed successfully!");
+      toast.success("Đổi mật khẩu thành công!");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: any) {
-      toast.error(err.message || "Failed to change password");
+      toast.error(err.message || "Không thể đổi mật khẩu");
     } finally {
       setIsChangingPassword(false);
     }
@@ -339,7 +339,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
     setIsDeleting(true);
     try {
       await del("/api/v1/users/me");
-      toast.success("Account deleted successfully");
+      toast.success("Đã xóa tài khoản thành công");
       setDeleteDialogOpen(false);
       // Call logout to clear session cookie + update app state
       if (onLogout) {
@@ -348,7 +348,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
         onNavigate("home");
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete account");
+      toast.error(err.message || "Không thể xóa tài khoản");
     } finally {
       setIsDeleting(false);
     }
@@ -376,8 +376,8 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               <Settings className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-white">Settings</h1>
-              <p className="text-sm text-white/60">Manage your account preferences</p>
+              <h1 className="text-white">Cài đặt</h1>
+              <p className="text-sm text-white/60">Quản lý tùy chọn tài khoản</p>
             </div>
           </div>
         </motion.div>
@@ -385,10 +385,10 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
         {/* Settings Tabs */}
         <Tabs defaultValue="account" className="w-full">
           <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-8 bg-white/5">
-            <TabsTrigger value="account">Account</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
-            <TabsTrigger value="preferences">Preferences</TabsTrigger>
+            <TabsTrigger value="account">Tài khoản</TabsTrigger>
+            <TabsTrigger value="notifications">Thông báo</TabsTrigger>
+            <TabsTrigger value="security">Bảo mật</TabsTrigger>
+            <TabsTrigger value="preferences">Tùy chọn</TabsTrigger>
           </TabsList>
 
           {/* Account Settings */}
@@ -403,16 +403,16 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <User className="h-5 w-5" />
-                    Personal Information
+                    Thông tin cá nhân
                   </CardTitle>
                   <CardDescription className="text-white/60">
-                    Update your personal details and contact information
+                    Cập nhật thông tin cá nhân và liên hệ
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName" className="text-white/80">First Name</Label>
+                      <Label htmlFor="firstName" className="text-white/80">Họ</Label>
                       <Input
                         id="firstName"
                         value={firstName}
@@ -421,7 +421,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName" className="text-white/80">Last Name</Label>
+                      <Label htmlFor="lastName" className="text-white/80">Tên</Label>
                       <Input
                         id="lastName"
                         value={lastName}
@@ -431,7 +431,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-white/80">Email Address</Label>
+                    <Label htmlFor="email" className="text-white/80">Địa chỉ email</Label>
                     <Input
                       id="email"
                       type="email"
@@ -441,7 +441,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-white/80">Phone Number</Label>
+                    <Label htmlFor="phone" className="text-white/80">Số điện thoại</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -455,7 +455,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                     onClick={handleSaveProfile}
                     disabled={isSavingProfile}
                   >
-                    {isSavingProfile ? "Saving..." : "Save Changes"}
+                    {isSavingProfile ? "Đang lưu..." : "Lưu thay đổi"}
                   </Button>
                 </CardContent>
               </Card>
@@ -465,10 +465,10 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <CreditCard className="h-5 w-5" />
-                    Payment Methods
+                    Phương thức thanh toán
                   </CardTitle>
                   <CardDescription className="text-white/60">
-                    Manage your saved payment methods
+                    Quản lý phương thức thanh toán đã lưu
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -479,8 +479,8 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                           <CreditCard className="h-5 w-5 text-white" />
                         </div>
                         <div>
-                          <p className="text-white">Visa ending in 4242</p>
-                          <p className="text-sm text-white/60">Expires 12/25</p>
+                          <p className="text-white">Visa kết thúc bằng 4242</p>
+                          <p className="text-sm text-white/60">Hết hạn 12/25</p>
                         </div>
                       </div>
                       <Button
@@ -497,7 +497,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                       onClick={handleAddPayment}
                     >
                       <Plus className="h-4 w-4 mr-2" />
-                      Add Payment Method
+                      Thêm phương thức thanh toán
                     </Button>
                   </div>
                 </CardContent>
@@ -508,21 +508,21 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
-                    Shipping Addresses
+                    Địa chỉ giao hàng
                   </CardTitle>
                   <CardDescription className="text-white/60">
-                    Manage your delivery addresses
+                    Quản lý địa chỉ giao hàng
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {isLoadingAddresses ? (
                       <div className="text-center py-4 text-white/40 text-sm">
-                        Loading addresses...
+                        Đang tải địa chỉ...
                       </div>
                     ) : addresses.length === 0 ? (
                       <div className="text-center py-4 text-white/40 text-sm">
-                        No addresses saved yet
+                        Chưa có địa chỉ nào được lưu
                       </div>
                     ) : (
                       addresses.map((address) => (
@@ -539,7 +539,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                                 <p className="text-white">{address.label}</p>
                                 {address.isDefault && (
                                   <span className="text-xs px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full">
-                                    Default
+                                    Mặc định
                                   </span>
                                 )}
                               </div>
@@ -579,7 +579,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                       onClick={handleAddAddress}
                     >
                       <Plus className="h-4 w-4 mr-2" />
-                      Add New Address
+                      Thêm địa chỉ mới
                     </Button>
                   </div>
                 </CardContent>
@@ -597,17 +597,17 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Bell className="h-5 w-5" />
-                    Notification Preferences
+                    Tùy chọn thông báo
                   </CardTitle>
                   <CardDescription className="text-white/60">
-                    Choose what notifications you want to receive
+                    Chọn loại thông báo bạn muốn nhận
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Email Notifications</Label>
-                      <p className="text-sm text-white/60">Receive notifications via email</p>
+                      <Label className="text-white">Thông báo email</Label>
+                      <p className="text-sm text-white/60">Nhận thông báo qua email</p>
                     </div>
                     <Switch
                       checked={notifSettings.emailNotifications}
@@ -617,8 +617,8 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                   <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Order Updates</Label>
-                      <p className="text-sm text-white/60">Get updates about your orders</p>
+                      <Label className="text-white">Cập nhật đơn hàng</Label>
+                      <p className="text-sm text-white/60">Nhận cập nhật về đơn hàng</p>
                     </div>
                     <Switch
                       checked={notifSettings.orderUpdates}
@@ -628,8 +628,8 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                   <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Promotional Emails</Label>
-                      <p className="text-sm text-white/60">Receive special offers and promotions</p>
+                      <Label className="text-white">Email khuyến mãi</Label>
+                      <p className="text-sm text-white/60">Nhận ưu đãi đặc biệt và khuyến mãi</p>
                     </div>
                     <Switch
                       checked={notifSettings.promotions}
@@ -639,8 +639,8 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                   <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Price Drop Alerts</Label>
-                      <p className="text-sm text-white/60">Get notified when wishlist items go on sale</p>
+                      <Label className="text-white">Thông báo giảm giá</Label>
+                      <p className="text-sm text-white/60">Nhận thông báo khi sản phẩm yêu thích giảm giá</p>
                     </div>
                     <Switch
                       checked={notifSettings.newsletter}
@@ -650,8 +650,8 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                   <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Login Alerts</Label>
-                      <p className="text-sm text-white/60">Get notified of new login activity</p>
+                      <Label className="text-white">Cảnh báo đăng nhập</Label>
+                      <p className="text-sm text-white/60">Nhận thông báo về hoạt động đăng nhập mới</p>
                     </div>
                     <Switch
                       checked={notifSettings.loginAlerts}
@@ -663,7 +663,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                     onClick={handleSaveNotifSettings}
                     disabled={isSavingNotif}
                   >
-                    {isSavingNotif ? "Saving..." : "Save Preferences"}
+                    {isSavingNotif ? "Đang lưu..." : "Lưu tùy chọn"}
                   </Button>
                 </CardContent>
               </Card>
@@ -681,15 +681,15 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Lock className="h-5 w-5" />
-                    Change Password
+                    Đổi mật khẩu
                   </CardTitle>
                   <CardDescription className="text-white/60">
-                    Update your password to keep your account secure
+                    Cập nhật mật khẩu để giữ tài khoản an toàn
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="currentPassword" className="text-white/80">Current Password</Label>
+                    <Label htmlFor="currentPassword" className="text-white/80">Mật khẩu hiện tại</Label>
                     <Input
                       id="currentPassword"
                       type="password"
@@ -699,7 +699,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="newPassword" className="text-white/80">New Password</Label>
+                    <Label htmlFor="newPassword" className="text-white/80">Mật khẩu mới</Label>
                     <Input
                       id="newPassword"
                       type="password"
@@ -709,7 +709,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-white/80">Confirm New Password</Label>
+                    <Label htmlFor="confirmPassword" className="text-white/80">Xác nhận mật khẩu mới</Label>
                     <Input
                       id="confirmPassword"
                       type="password"
@@ -723,7 +723,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                     onClick={handleChangePassword}
                     disabled={isChangingPassword}
                   >
-                    {isChangingPassword ? "Updating..." : "Update Password"}
+                    {isChangingPassword ? "Đang cập nhật..." : "Cập nhật mật khẩu"}
                   </Button>
                 </CardContent>
               </Card>
@@ -732,10 +732,10 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Shield className="h-5 w-5" />
-                    Two-Factor Authentication
+                    Xác thực hai yếu tố
                   </CardTitle>
                   <CardDescription className="text-white/60">
-                    Add an extra layer of security to your account
+                    Thêm lớp bảo mật bổ sung cho tài khoản
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -743,9 +743,9 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                     <div className="flex items-center gap-3">
                       <Smartphone className="h-5 w-5 text-white/60" />
                       <div>
-                        <p className="text-white">Authenticator App</p>
+                        <p className="text-white">Ứng dụng xác thực</p>
                         <p className="text-sm text-white/60">
-                          {notifSettings.twoFactorAuth ? "Enabled" : "Not enabled"}
+                          {notifSettings.twoFactorAuth ? "Đã bật" : "Chưa bật"}
                         </p>
                       </div>
                     </div>
@@ -754,19 +754,19 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                       className="border-white/10 text-white hover:bg-white/5"
                       onClick={() => toggleNotif("twoFactorAuth")}
                     >
-                      {notifSettings.twoFactorAuth ? "Disable" : "Enable"}
+                      {notifSettings.twoFactorAuth ? "Tắt" : "Bật"}
                     </Button>
                   </div>
                   <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
                     <div className="flex items-center gap-3">
                       <Mail className="h-5 w-5 text-white/60" />
                       <div>
-                        <p className="text-white">Email Verification</p>
-                        <p className="text-sm text-white/60">Enabled</p>
+                        <p className="text-white">Xác minh email</p>
+                        <p className="text-sm text-white/60">Đã bật</p>
                       </div>
                     </div>
                     <Button variant="outline" className="border-white/10 text-white hover:bg-white/5">
-                      Disable
+                      Tắt
                     </Button>
                   </div>
                 </CardContent>
@@ -776,26 +776,26 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Eye className="h-5 w-5" />
-                    Active Sessions
+                    Phiên đăng nhập
                   </CardTitle>
                   <CardDescription className="text-white/60">
-                    Manage your active login sessions
+                    Quản lý phiên đăng nhập đang hoạt động
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
                     <div>
-                      <p className="text-white">Chrome on Windows</p>
-                      <p className="text-sm text-white/60">Last active: 2 minutes ago</p>
+                      <p className="text-white">Chrome trên Windows</p>
+                      <p className="text-sm text-white/60">Hoạt động gần nhất: 2 phút trước</p>
                     </div>
-                    <Button variant="ghost" size="sm">Revoke</Button>
+                    <Button variant="ghost" size="sm">Thu hồi</Button>
                   </div>
                   <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
                     <div>
-                      <p className="text-white">Safari on iPhone</p>
-                      <p className="text-sm text-white/60">Last active: 2 days ago</p>
+                      <p className="text-white">Safari trên iPhone</p>
+                      <p className="text-sm text-white/60">Hoạt động gần nhất: 2 ngày trước</p>
                     </div>
-                    <Button variant="ghost" size="sm">Revoke</Button>
+                    <Button variant="ghost" size="sm">Thu hồi</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -812,30 +812,30 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Globe className="h-5 w-5" />
-                    General Preferences
+                    Tùy chọn chung
                   </CardTitle>
                   <CardDescription className="text-white/60">
-                    Customize your shopping experience
+                    Tùy chỉnh trải nghiệm mua sắm
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label className="text-white/80">Language</Label>
+                    <Label className="text-white/80">Ngôn ngữ</Label>
                     <Select defaultValue="en">
                       <SelectTrigger className="bg-white/5 border-white/10 text-white">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-zinc-950 border-white/10">
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="es">Spanish</SelectItem>
-                        <SelectItem value="fr">French</SelectItem>
-                        <SelectItem value="de">German</SelectItem>
+                        <SelectItem value="en">Tiếng Anh</SelectItem>
+                        <SelectItem value="es">Tiếng Tây Ban Nha</SelectItem>
+                        <SelectItem value="fr">Tiếng Pháp</SelectItem>
+                        <SelectItem value="de">Tiếng Đức</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <Separator className="bg-white/10" />
                   <div className="space-y-2">
-                    <Label className="text-white/80">Currency</Label>
+                    <Label className="text-white/80">Tiền tệ</Label>
                     <Select defaultValue="usd">
                       <SelectTrigger className="bg-white/5 border-white/10 text-white">
                         <SelectValue />
@@ -853,25 +853,25 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                     <div className="space-y-0.5">
                       <Label className="text-white flex items-center gap-2">
                         <Moon className="h-4 w-4" />
-                        Dark Mode
+                        Chế độ tối
                       </Label>
-                      <p className="text-sm text-white/60">Use dark theme across the site</p>
+                      <p className="text-sm text-white/60">Sử dụng giao diện tối trên toàn trang</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
                   <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Show Product Recommendations</Label>
-                      <p className="text-sm text-white/60">Get personalized product suggestions</p>
+                      <Label className="text-white">Hiển thị gợi ý sản phẩm</Label>
+                      <p className="text-sm text-white/60">Nhận gợi ý sản phẩm cá nhân hóa</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
                   <Button
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                    onClick={() => toast.success("Preferences saved!")}
+                    onClick={() => toast.success("Đã lưu tùy chọn!")}
                   >
-                    Save Preferences
+                    Lưu tùy chọn
                   </Button>
                 </CardContent>
               </Card>
@@ -888,20 +888,20 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
         >
           <Card className="bg-red-500/10 border-red-500/30">
             <CardHeader>
-              <CardTitle className="text-red-400">Danger Zone</CardTitle>
+              <CardTitle className="text-red-400">Vùng nguy hiểm</CardTitle>
               <CardDescription className="text-white/60">
-                Irreversible actions - proceed with caution
+                Hành động không thể hoàn tác - hãy cẩn thận
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white">Delete Account</p>
+                  <p className="text-white">Xóa tài khoản</p>
                   <p className="text-sm text-white/60">
-                    Permanently delete your account and all data
+                    Xóa vĩnh viễn tài khoản và tất cả dữ liệu
                   </p>
                 </div>
-                <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>Delete Account</Button>
+                <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>Xóa tài khoản</Button>
               </div>
             </CardContent>
           </Card>
@@ -912,21 +912,21 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-black border border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Delete Account</AlertDialogTitle>
+            <AlertDialogTitle className="text-white">Xóa tài khoản</AlertDialogTitle>
             <AlertDialogDescription className="text-white/60">
-              Are you sure you want to permanently delete your account? All your data, orders, and settings will be removed. This action cannot be undone.
+              Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản? Tất cả dữ liệu, đơn hàng và cài đặt sẽ bị xóa. Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
-              Cancel
+              Hủy
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAccount}
               disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              {isDeleting ? "Deleting..." : "Delete Account"}
+              {isDeleting ? "Đang xóa..." : "Xóa tài khoản"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -936,16 +936,16 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
       <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
         <DialogContent className="bg-black border-white/10 text-white">
           <DialogHeader>
-            <DialogTitle>{editingPayment ? "Edit Payment Method" : "Add Payment Method"}</DialogTitle>
+            <DialogTitle>{editingPayment ? "Chỉnh sửa phương thức thanh toán" : "Thêm phương thức thanh toán"}</DialogTitle>
             <DialogDescription className="text-white/60">
               {editingPayment
-                ? "Update your payment method details"
-                : "Add a new payment method to your account"}
+                ? "Cập nhật thông tin phương thức thanh toán"
+                : "Thêm phương thức thanh toán mới vào tài khoản"}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="cardNumber" className="text-white/80">Card Number</Label>
+              <Label htmlFor="cardNumber" className="text-white/80">Số thẻ</Label>
               <Input
                 id="cardNumber"
                 placeholder="1234 5678 9012 3456"
@@ -955,7 +955,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="expiry" className="text-white/80">Expiry Date</Label>
+                <Label htmlFor="expiry" className="text-white/80">Ngày hết hạn</Label>
                 <Input
                   id="expiry"
                   placeholder="MM/YY"
@@ -974,10 +974,10 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cardName" className="text-white/80">Cardholder Name</Label>
+              <Label htmlFor="cardName" className="text-white/80">Tên chủ thẻ</Label>
               <Input
                 id="cardName"
-                placeholder="John Doe"
+                placeholder="Nguyễn Văn A"
                 className="bg-white/5 border-white/10 text-white"
               />
             </div>
@@ -988,13 +988,13 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               onClick={() => setPaymentDialogOpen(false)}
               className="border-white/10 text-white hover:bg-white/5"
             >
-              Cancel
+              Hủy
             </Button>
             <Button
               onClick={handleSavePayment}
               className="bg-gradient-to-r from-purple-600 to-blue-600"
             >
-              {editingPayment ? "Update" : "Add"} Payment Method
+              {editingPayment ? "Cập nhật" : "Thêm"} phương thức thanh toán
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1005,31 +1005,31 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
         <DialogContent className="bg-black border-white/10 text-white max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {editingAddress ? "Edit Shipping Address" : "Add Shipping Address"}
+              {editingAddress ? "Chỉnh sửa địa chỉ giao hàng" : "Thêm địa chỉ giao hàng"}
             </DialogTitle>
             <DialogDescription className="text-white/60">
               {editingAddress
-                ? "Update your shipping address details"
-                : "Add a new shipping address to your account"}
+                ? "Cập nhật thông tin địa chỉ giao hàng"
+                : "Thêm địa chỉ giao hàng mới vào tài khoản"}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="addrFirstName" className="text-white/80">First Name <span className="text-red-400">*</span></Label>
+                <Label htmlFor="addrFirstName" className="text-white/80">Họ <span className="text-red-400">*</span></Label>
                 <Input
                   id="addrFirstName"
-                  placeholder="John"
+                  placeholder="Nguyễn"
                   value={addressForm.firstName}
                   onChange={(e) => updateAddressForm("firstName", e.target.value)}
                   className="bg-white/5 border-white/10 text-white"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="addrLastName" className="text-white/80">Last Name <span className="text-red-400">*</span></Label>
+                <Label htmlFor="addrLastName" className="text-white/80">Tên <span className="text-red-400">*</span></Label>
                 <Input
                   id="addrLastName"
-                  placeholder="Doe"
+                  placeholder="Văn A"
                   value={addressForm.lastName}
                   onChange={(e) => updateAddressForm("lastName", e.target.value)}
                   className="bg-white/5 border-white/10 text-white"
@@ -1037,20 +1037,20 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="addressLabel" className="text-white/80">Address Label</Label>
+              <Label htmlFor="addressLabel" className="text-white/80">Nhãn địa chỉ</Label>
               <Input
                 id="addressLabel"
-                placeholder="Home, Office, etc."
+                placeholder="Nhà, Văn phòng, v.v."
                 value={addressForm.label}
                 onChange={(e) => updateAddressForm("label", e.target.value)}
                 className="bg-white/5 border-white/10 text-white"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="street" className="text-white/80">Street Address</Label>
+              <Label htmlFor="street" className="text-white/80">Địa chỉ</Label>
               <Input
                 id="street"
-                placeholder="123 Main Street"
+                placeholder="123 Nguyễn Huệ"
                 value={addressForm.street}
                 onChange={(e) => updateAddressForm("street", e.target.value)}
                 className="bg-white/5 border-white/10 text-white"
@@ -1058,20 +1058,20 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="city" className="text-white/80">City</Label>
+                <Label htmlFor="city" className="text-white/80">Thành phố</Label>
                 <Input
                   id="city"
-                  placeholder="New York"
+                  placeholder="Hồ Chí Minh"
                   value={addressForm.city}
                   onChange={(e) => updateAddressForm("city", e.target.value)}
                   className="bg-white/5 border-white/10 text-white"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="state" className="text-white/80">State/Province</Label>
+                <Label htmlFor="state" className="text-white/80">Tỉnh/Thành</Label>
                 <Input
                   id="state"
-                  placeholder="NY"
+                  placeholder="HCM"
                   value={addressForm.state}
                   onChange={(e) => updateAddressForm("state", e.target.value)}
                   className="bg-white/5 border-white/10 text-white"
@@ -1080,7 +1080,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="zip" className="text-white/80">ZIP/Postal Code</Label>
+                <Label htmlFor="zip" className="text-white/80">Mã bưu chính</Label>
                 <Input
                   id="zip"
                   placeholder="10001"
@@ -1090,10 +1090,10 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="country" className="text-white/80">Country</Label>
+                <Label htmlFor="country" className="text-white/80">Quốc gia</Label>
                 <Input
                   id="country"
-                  placeholder="United States"
+                  placeholder="Việt Nam"
                   value={addressForm.country}
                   onChange={(e) => updateAddressForm("country", e.target.value)}
                   className="bg-white/5 border-white/10 text-white"
@@ -1107,14 +1107,14 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               onClick={() => setAddressDialogOpen(false)}
               className="border-white/10 text-white hover:bg-white/5"
             >
-              Cancel
+              Hủy
             </Button>
             <Button
               onClick={handleSaveAddress}
               disabled={isSavingAddress}
               className="bg-gradient-to-r from-purple-600 to-blue-600"
             >
-              {isSavingAddress ? "Saving..." : editingAddress ? "Update" : "Add"} Address
+              {isSavingAddress ? "Đang lưu..." : editingAddress ? "Cập nhật" : "Thêm"} địa chỉ
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -39,9 +39,9 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
       );
       setCouponDiscount(res.couponDiscount ?? 0);
       setCouponApplied(res.couponCode ?? couponCode);
-      toast.success(`Coupon applied! You saved $${(res.couponDiscount ?? 0).toFixed(2)}`);
+      toast.success(`Đã áp dụng mã giảm giá! Bạn tiết kiệm $${(res.couponDiscount ?? 0).toFixed(2)}`);
     } catch (err: any) {
-      toast.error(err.message || "Invalid coupon code");
+      toast.error(err.message || "Mã giảm giá không hợp lệ");
     } finally {
       setApplyingCoupon(false);
     }
@@ -57,18 +57,18 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl text-white mb-8">Shopping Cart</h1>
+      <h1 className="text-4xl text-white mb-8">Giỏ hàng</h1>
 
       {cartItems.length === 0 ? (
         <div className="text-center py-16">
           <ShoppingBag className="h-24 w-24 text-white/20 mx-auto mb-4" />
-          <h2 className="text-2xl text-white mb-2">Your cart is empty</h2>
-          <p className="text-white/60 mb-6">Add some products to get started!</p>
+          <h2 className="text-2xl text-white mb-2">Giỏ hàng trống</h2>
+          <p className="text-white/60 mb-6">Hãy thêm sản phẩm để bắt đầu!</p>
           <Button
             onClick={() => onNavigate("shop")}
             className="bg-gradient-to-r from-purple-600 to-blue-600"
           >
-            Continue Shopping
+            Tiếp tục mua sắm
           </Button>
         </div>
       ) : (
@@ -102,10 +102,10 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                         {(item.selectedColor || item.selectedSize) && (
                           <div className="flex gap-2 mt-1">
                             {item.selectedColor && (
-                              <span className="text-xs text-white/50">Color: {item.selectedColor}</span>
+                              <span className="text-xs text-white/50">Màu: {item.selectedColor}</span>
                             )}
                             {item.selectedSize && (
-                              <span className="text-xs text-white/50">Size: {item.selectedSize}</span>
+                              <span className="text-xs text-white/50">Kích cỡ: {item.selectedSize}</span>
                             )}
                           </div>
                         )}
@@ -146,7 +146,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                         </p>
                         {item.quantity > 1 && (
                           <p className="text-sm text-white/50">
-                            ${item.product.price} each
+                            ${item.product.price} / sản phẩm
                           </p>
                         )}
                       </div>
@@ -161,24 +161,24 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
               onClick={() => onNavigate("shop")}
               className="w-full"
             >
-              Continue Shopping
+              Tiếp tục mua sắm
             </Button>
           </div>
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
-              <h2 className="text-2xl text-white">Order Summary</h2>
+              <h2 className="text-2xl text-white">Tóm tắt đơn hàng</h2>
 
               {/* Coupon Code */}
               <div>
                 <label className="text-sm text-white/70 mb-2 block">
-                  Coupon Code
+                  Mã giảm giá
                 </label>
                 {couponApplied ? (
                   <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
                     <span className="text-sm text-green-400 flex-1">
-                      "{couponApplied}" applied — -${couponDiscount.toFixed(2)}
+                      "{couponApplied}" đã áp dụng — -${couponDiscount.toFixed(2)}
                     </span>
                     <Button
                       size="sm"
@@ -192,7 +192,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                 ) : (
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Enter code"
+                      placeholder="Nhập mã"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
                       className="bg-white/5 border-white/10"
@@ -203,7 +203,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                       onClick={handleApplyCoupon}
                       disabled={applyingCoupon || !couponCode.trim()}
                     >
-                      {applyingCoupon ? "..." : "Apply"}
+                      {applyingCoupon ? "..." : "Áp dụng"}
                     </Button>
                   </div>
                 )}
@@ -214,21 +214,21 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
               {/* Price Breakdown */}
               <div className="space-y-3">
                 <div className="flex justify-between text-white/70">
-                  <span>Subtotal ({cartItems.length} items)</span>
+                  <span>Tạm tính ({cartItems.length} sản phẩm)</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
                 {couponDiscount > 0 && (
                   <div className="flex justify-between text-green-400">
-                    <span>Coupon discount</span>
+                    <span>Giảm giá coupon</span>
                     <span>-${couponDiscount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-white/70">
-                  <span>Shipping</span>
+                  <span>Vận chuyển</span>
                   <span>
                     {shipping === 0 ? (
                       <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                        FREE
+                        MIỄN PHÍ
                       </Badge>
                     ) : (
                       `$${shipping.toFixed(2)}`
@@ -236,14 +236,14 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                   </span>
                 </div>
                 <div className="flex justify-between text-white/70">
-                  <span>Tax (10%)</span>
+                  <span>Thuế (10%)</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>
 
                 {shipping > 0 && subtotal < 50 && (
                   <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
                     <p className="text-sm text-purple-400">
-                      Add ${(50 - subtotal).toFixed(2)} more to get free shipping!
+                      Thêm ${(50 - subtotal).toFixed(2)} nữa để được miễn phí vận chuyển!
                     </p>
                   </div>
                 )}
@@ -253,7 +253,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
 
               {/* Total */}
               <div className="flex justify-between items-center">
-                <span className="text-xl text-white">Total</span>
+                <span className="text-xl text-white">Tổng cộng</span>
                 <span className="text-3xl text-white">${total.toFixed(2)}</span>
               </div>
 
@@ -262,7 +262,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                 className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 onClick={() => onNavigate("checkout")}
               >
-                Proceed to Checkout
+                Tiến hành thanh toán
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
 
@@ -270,15 +270,15 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
               <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/10">
                 <div className="text-center">
                   <div className="text-2xl mb-1">🔒</div>
-                  <p className="text-xs text-white/60">Secure Payment</p>
+                  <p className="text-xs text-white/60">Thanh toán an toàn</p>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl mb-1">📦</div>
-                  <p className="text-xs text-white/60">Fast Delivery</p>
+                  <p className="text-xs text-white/60">Giao hàng nhanh</p>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl mb-1">↩️</div>
-                  <p className="text-xs text-white/60">Easy Returns</p>
+                  <p className="text-xs text-white/60">Đổi trả dễ dàng</p>
                 </div>
               </div>
             </div>

@@ -16,12 +16,12 @@ interface WishlistPageProps {
 export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToCart }: WishlistPageProps) {
   const removeFromWishlist = (productId: string) => {
     onRemoveItem(productId);
-    toast.success("Removed from wishlist");
+    toast.success("Đã xóa khỏi danh sách yêu thích");
   };
 
   const addToCart = (item: WishlistItem) => {
     onAddToCart(item.product, 1);
-    toast.success(`${item.product.name} added to cart!`);
+    toast.success(`${item.product.name} đã thêm vào giỏ hàng!`);
   };
 
   return (
@@ -39,9 +39,9 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                 <Heart className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-white">My Wishlist</h1>
+                <h1 className="text-white">Danh sách yêu thích</h1>
                 <p className="text-sm text-white/60">
-                  {wishlistItems.length} {wishlistItems.length === 1 ? "item" : "items"} saved
+                  {wishlistItems.length} sản phẩm đã lưu
                 </p>
               </div>
             </div>
@@ -51,10 +51,10 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                 size="sm"
                 onClick={() => {
                   wishlistItems.forEach((item) => onRemoveItem(item.productId));
-                  toast.success("Wishlist cleared");
+                  toast.success("Đã xóa danh sách yêu thích");
                 }}
               >
-                Clear all
+                Xóa tất cả
               </Button>
             )}
           </div>
@@ -148,7 +148,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                           onClick={() => addToCart(item)}
                         >
                           <ShoppingCart className="h-4 w-4 mr-2" />
-                          Add to Cart
+                          Thêm vào giỏ
                         </Button>
                         <Button
                           variant="ghost"
@@ -175,15 +175,15 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
             <div className="h-32 w-32 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
               <Heart className="h-16 w-16 text-white/40" />
             </div>
-            <h2 className="text-white/80 mb-2">Your wishlist is empty</h2>
+            <h2 className="text-white/80 mb-2">Danh sách yêu thích trống</h2>
             <p className="text-white/60 text-sm mb-8">
-              Start adding products you love to your wishlist!
+              Hãy thêm sản phẩm yêu thích vào danh sách!
             </p>
             <Button
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               onClick={() => onNavigate("shop")}
             >
-              Continue Shopping
+              Tiếp tục mua sắm
             </Button>
           </motion.div>
         )}

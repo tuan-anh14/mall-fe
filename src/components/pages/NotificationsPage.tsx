@@ -45,11 +45,11 @@ function formatRelativeTime(dateStr: string): string {
   const diffHours = Math.floor(diffMins / 60);
   const diffDays = Math.floor(diffHours / 24);
 
-  if (diffSecs < 60) return "just now";
-  if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? "s" : ""} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
-  if (diffDays === 1) return "1 day ago";
-  if (diffDays < 30) return `${diffDays} days ago`;
+  if (diffSecs < 60) return "vừa xong";
+  if (diffMins < 60) return `${diffMins} phút trước`;
+  if (diffHours < 24) return `${diffHours} giờ trước`;
+  if (diffDays === 1) return "1 ngày trước";
+  if (diffDays < 30) return `${diffDays} ngày trước`;
   return date.toLocaleDateString();
 }
 
@@ -84,14 +84,14 @@ function getActionPageForType(actionType?: string): string {
 function getActionTextForType(actionType?: string): string {
   switch (actionType?.toUpperCase()) {
     case "ORDER":
-      return "View Order";
+      return "Xem đơn hàng";
     case "WISHLIST":
-      return "View Wishlist";
+      return "Xem yêu thích";
     case "PROMOTION":
     case "SALE":
-      return "Shop Now";
+      return "Mua ngay";
     default:
-      return "View";
+      return "Xem";
   }
 }
 
@@ -158,7 +158,7 @@ function NotificationCard({
                   size="sm"
                   className="text-white/40 hover:text-red-400 h-6 w-6 p-0"
                   onClick={() => onDelete(notification.id)}
-                  title="Delete notification"
+                  title="Xóa thông báo"
                 >
                   &times;
                 </Button>
@@ -175,7 +175,7 @@ function NotificationCard({
                     className="text-white/50 hover:text-white/80 text-xs"
                     onClick={() => onMarkRead(notification.id)}
                   >
-                    Mark read
+                    Đánh dấu đã đọc
                   </Button>
                 )}
                 <Button
@@ -219,7 +219,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
       setNotifications(mapped);
       setUnreadCount(res.unreadCount ?? mapped.filter((n) => !n.isRead).length);
     } catch (err: any) {
-      toast.error(err.message || "Failed to load notifications");
+      toast.error(err.message || "Không thể tải thông báo");
     } finally {
       setIsLoading(false);
     }
@@ -233,7 +233,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (err: any) {
-      toast.error(err.message || "Failed to mark as read");
+      toast.error(err.message || "Không thể đánh dấu đã đọc");
     }
   };
 
@@ -242,9 +242,9 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
       await put("/api/v1/notifications/read-all");
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
-      toast.success("All notifications marked as read");
+      toast.success("Đã đánh dấu tất cả đã đọc");
     } catch (err: any) {
-      toast.error(err.message || "Failed to mark all as read");
+      toast.error(err.message || "Không thể đánh dấu tất cả đã đọc");
     }
   };
 
@@ -257,7 +257,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
         setUnreadCount((prev) => Math.max(0, prev - 1));
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete notification");
+      toast.error(err.message || "Không thể xóa thông báo");
     }
   };
 
@@ -270,7 +270,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
     if (isLoading) {
       return (
         <div className="text-center py-8 text-white/40">
-          Loading notifications...
+          Đang tải thông báo...
         </div>
       );
     }
@@ -278,7 +278,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
       return (
         <div className="text-center py-8">
           <Bell className="h-10 w-10 text-white/20 mx-auto mb-3" />
-          <p className="text-white/40 text-sm">No notifications in this category</p>
+          <p className="text-white/40 text-sm">Không có thông báo trong danh mục này</p>
         </div>
       );
     }
@@ -314,17 +314,17 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
                 <Bell className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-white">Notifications</h1>
+                <h1 className="text-white">Thông báo</h1>
                 {unreadCount > 0 && (
                   <p className="text-sm text-white/60">
-                    You have {unreadCount} unread notification{unreadCount !== 1 ? "s" : ""}
+                    Bạn có {unreadCount} thông báo chưa đọc
                   </p>
                 )}
               </div>
             </div>
             {unreadCount > 0 && (
               <Button variant="ghost" size="sm" onClick={markAllAsRead}>
-                Mark all as read
+                Đánh dấu tất cả đã đọc
               </Button>
             )}
           </div>
@@ -334,15 +334,15 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-3 mb-8 bg-white/5">
             <TabsTrigger value="all">
-              All
+              Tất cả
               {unreadCount > 0 && (
                 <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
                   {unreadCount}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="promotions">Promotions</TabsTrigger>
+            <TabsTrigger value="orders">Đơn hàng</TabsTrigger>
+            <TabsTrigger value="promotions">Khuyến mãi</TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="space-y-4">
@@ -364,8 +364,8 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
             <div className="h-20 w-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
               <Bell className="h-10 w-10 text-white/40" />
             </div>
-            <h2 className="text-white/80 mb-2">No notifications</h2>
-            <p className="text-white/60 text-sm">You're all caught up!</p>
+            <h2 className="text-white/80 mb-2">Không có thông báo</h2>
+            <p className="text-white/60 text-sm">Bạn đã xem hết thông báo!</p>
           </div>
         )}
       </div>

@@ -54,7 +54,7 @@ export function Header({
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-center">
         <p className="text-sm text-white">
-          🎉 Black Friday Sale - Up to 50% OFF on selected items! Limited time only
+          🎉 Sale Black Friday - Giảm đến 50% cho các sản phẩm được chọn! Chỉ trong thời gian có hạn
         </p>
       </div>
 
@@ -75,28 +75,28 @@ export function Header({
                   className="justify-start"
                   onClick={() => onNavigate("home")}
                 >
-                  Home
+                  Trang chủ
                 </Button>
                 <Button
                   variant={currentPage === "shop" ? "default" : "ghost"}
                   className="justify-start"
                   onClick={() => onNavigate("shop")}
                 >
-                  Shop
+                  Cửa hàng
                 </Button>
                 <Button
                   variant={currentPage === "about" ? "default" : "ghost"}
                   className="justify-start"
                   onClick={() => onNavigate("about")}
                 >
-                  About
+                  Giới thiệu
                 </Button>
                 <Button
                   variant={currentPage === "contact" ? "default" : "ghost"}
                   className="justify-start"
                   onClick={() => onNavigate("contact")}
                 >
-                  Contact
+                  Liên hệ
                 </Button>
               </nav>
             </SheetContent>
@@ -116,25 +116,25 @@ export function Header({
               variant={currentPage === "home" ? "default" : "ghost"}
               onClick={() => onNavigate("home")}
             >
-              Home
+              Trang chủ
             </Button>
             <Button
               variant={currentPage === "shop" ? "default" : "ghost"}
               onClick={() => onNavigate("shop")}
             >
-              Shop
+              Cửa hàng
             </Button>
             <Button
               variant={currentPage === "about" ? "default" : "ghost"}
               onClick={() => onNavigate("about")}
             >
-              About
+              Giới thiệu
             </Button>
             <Button
               variant={currentPage === "contact" ? "default" : "ghost"}
               onClick={() => onNavigate("contact")}
             >
-              Contact
+              Liên hệ
             </Button>
             {user?.userType === "seller" && (
               <Button
@@ -143,7 +143,7 @@ export function Header({
                 className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30"
               >
                 <LayoutDashboard className="h-4 w-4 mr-2" />
-                Seller Dashboard
+                Bảng điều khiển
               </Button>
             )}
           </nav>
@@ -154,7 +154,7 @@ export function Header({
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
                 <Input
-                  placeholder="Search products..."
+                  placeholder="Tìm kiếm sản phẩm..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleSearchKeyDown}
@@ -223,7 +223,7 @@ export function Header({
                   className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
                   <User className="h-4 w-4 mr-2" />
-                  Login
+                  Đăng nhập
                 </Button>
               )}
             </div>

@@ -12,9 +12,9 @@ interface SellerHeaderProps {
 
 export function SellerHeader({ currentPage, onNavigate, onLogout, user }: SellerHeaderProps) {
   const navItems = [
-    { id: "dashboard", label: "Dashboard", icon: BarChart3 },
-    { id: "seller-products", label: "Products", icon: Package },
-    { id: "seller-orders", label: "Orders", icon: ShoppingBag },
+    { id: "dashboard", label: "Tổng quan", icon: BarChart3 },
+    { id: "seller-products", label: "Sản phẩm", icon: Package },
+    { id: "seller-orders", label: "Đơn hàng", icon: ShoppingBag },
   ];
 
   return (
@@ -30,8 +30,8 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
               <Store className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl text-white">Seller Portal</h1>
-              <p className="text-xs text-white/60">Manage your store</p>
+              <h1 className="text-xl text-white">Kênh Người Bán</h1>
+              <p className="text-xs text-white/60">Quản lý cửa hàng</p>
             </div>
           </div>
 
@@ -65,7 +65,7 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
               variant="ghost"
               size="icon"
               onClick={() => onNavigate("chat")}
-              title="Messages"
+              title="Tin nhắn"
             >
               <MessageSquare className="h-5 w-5" />
             </Button>
@@ -76,11 +76,11 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
               className="hidden md:flex"
             >
               <Home className="h-4 w-4 mr-2" />
-              Browse Shop
+              Xem cửa hàng
             </Button>
             <div className="hidden sm:block text-right">
               <p className="text-sm text-white">{user?.name || "Seller"}</p>
-              <p className="text-xs text-white/60">Seller Account</p>
+              <p className="text-xs text-white/60">Tài khoản Người bán</p>
             </div>
             <Avatar 
               className="h-10 w-10 cursor-pointer border-2 border-white/10"
@@ -97,7 +97,7 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
               className="hidden md:flex"
             >
               <LogOut className="h-4 w-4 mr-2" />
-              Logout
+              Đăng xuất
             </Button>
           </div>
         </div>
@@ -132,7 +132,7 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
             onClick={() => onNavigate("home")}
           >
             <Home className="h-4 w-4" />
-            Browse Shop
+            Xem cửa hàng
           </Button>
         </nav>
       </div>

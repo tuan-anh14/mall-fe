@@ -48,7 +48,7 @@ function formatMemberSince(dateStr?: string): string {
   if (!dateStr) return "";
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return dateStr;
-  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  return d.toLocaleDateString("vi-VN", { month: "long", year: "numeric" });
 }
 
 function getStatusBadgeClass(status: string): string {
@@ -135,14 +135,14 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
   }).length;
 
   const handleDeleteAccount = () => {
-    toast.error("Account deletion is not available in demo mode");
+    toast.error("Không thể xóa tài khoản trong chế độ demo");
   };
 
   const handleLogoutClick = () => {
     if (onLogout) {
       onLogout();
     } else {
-      toast.error("Logout function not available");
+      toast.error("Chức năng đăng xuất không khả dụng");
     }
   };
 
@@ -158,15 +158,15 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
           </Avatar>
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-3xl text-white mb-2">
-              {profileLoading ? "Loading..." : displayName}
+              {profileLoading ? "Đang tải..." : displayName}
             </h1>
             <p className="text-white/60 mb-1">{displayEmail}</p>
             {displayMemberSince && (
-              <p className="text-sm text-white/50">Member since {displayMemberSince}</p>
+              <p className="text-sm text-white/50">Thành viên từ {displayMemberSince}</p>
             )}
             {displayUserType && (
               <Badge className="mt-2 bg-purple-500/20 text-purple-400 border-purple-500/30">
-                {displayUserType === "seller" ? "Seller Account" : "Buyer Account"}
+                {displayUserType === "seller" ? "Tài khoản Người bán" : "Tài khoản Người mua"}
               </Badge>
             )}
           </div>
@@ -177,12 +177,12 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                 onClick={() => onNavigate("dashboard")}
               >
                 <LayoutDashboard className="h-4 w-4 mr-2" />
-                Seller Dashboard
+                Bảng điều khiển
               </Button>
             )}
             <Button variant="outline" onClick={() => onNavigate("settings")}>
               <Settings className="h-4 w-4 mr-2" />
-              Edit Profile
+              Chỉnh sửa hồ sơ
             </Button>
           </div>
         </div>
@@ -195,21 +195,21 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
           <p className="text-3xl text-white mb-1">
             {ordersLoading ? "—" : ordersTotal}
           </p>
-          <p className="text-sm text-white/60">Total Orders</p>
+          <p className="text-sm text-white/60">Tổng đơn hàng</p>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
           <Package className="h-8 w-8 text-blue-400 mx-auto mb-2" />
           <p className="text-3xl text-white mb-1">
             {ordersLoading ? "—" : inTransitCount}
           </p>
-          <p className="text-sm text-white/60">In Transit</p>
+          <p className="text-sm text-white/60">Đang giao</p>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
           <Heart className="h-8 w-8 text-pink-400 mx-auto mb-2" />
           <p className="text-3xl text-white mb-1">
             {wishlistLoading ? "—" : wishlistItems.length}
           </p>
-          <p className="text-sm text-white/60">Wishlist</p>
+          <p className="text-sm text-white/60">Yêu thích</p>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
           <span className="text-3xl mb-2 block">💰</span>
@@ -218,30 +218,30 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
               ? "—"
               : `$${orders.reduce((sum, o) => sum + Number(o.total), 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
           </p>
-          <p className="text-sm text-white/60">Total Spent</p>
+          <p className="text-sm text-white/60">Tổng chi tiêu</p>
         </div>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="orders" className="w-full">
         <TabsList className="w-full justify-start bg-white/5 border-b border-white/10 rounded-none">
-          <TabsTrigger value="orders">Order History</TabsTrigger>
-          <TabsTrigger value="wishlist">Wishlist</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="orders">Lịch sử đơn hàng</TabsTrigger>
+          <TabsTrigger value="wishlist">Yêu thích</TabsTrigger>
+          <TabsTrigger value="settings">Cài đặt</TabsTrigger>
         </TabsList>
 
         <TabsContent value="orders" className="mt-8">
           {ordersLoading ? (
-            <div className="text-white/60 text-center py-12">Loading orders...</div>
+            <div className="text-white/60 text-center py-12">Đang tải đơn hàng...</div>
           ) : orders.length === 0 ? (
             <div className="text-center py-12">
               <Package className="h-12 w-12 text-white/20 mx-auto mb-4" />
-              <p className="text-white/60 mb-4">No orders yet.</p>
+              <p className="text-white/60 mb-4">Chưa có đơn hàng.</p>
               <Button
                 className="bg-gradient-to-r from-purple-600 to-blue-600"
                 onClick={() => onNavigate("shop")}
               >
-                Start Shopping
+                Bắt đầu mua sắm
               </Button>
             </div>
           ) : (
@@ -249,7 +249,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
               {orders.map((order) => {
                 const orderDate = order.date ?? order.createdAt;
                 const formattedDate = orderDate
-                  ? new Date(orderDate).toLocaleDateString("en-US", {
+                  ? new Date(orderDate).toLocaleDateString("vi-VN", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -264,8 +264,8 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                   >
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                       <div>
-                        <h3 className="text-xl text-white mb-1">Order {order.id}</h3>
-                        <p className="text-sm text-white/60">Placed on {formattedDate}</p>
+                        <h3 className="text-xl text-white mb-1">Đơn hàng {order.id}</h3>
+                        <p className="text-sm text-white/60">Đặt ngày {formattedDate}</p>
                       </div>
                       <Badge className={getStatusBadgeClass(order.status)}>
                         {order.status}
@@ -275,7 +275,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                     <div className="flex gap-4 mb-4">
                       {order.items.slice(0, 3).map((item) => {
                         const imgSrc = item.productImage ?? item.product?.image;
-                        const imgAlt = item.productName ?? item.product?.name ?? "Product";
+                        const imgAlt = item.productName ?? item.product?.name ?? "Sản phẩm";
                         return (
                           <div
                             key={item.id}
@@ -300,7 +300,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
 
                     <div className="flex justify-between items-center">
                       <div>
-                        <span className="text-sm text-white/60">Total: </span>
+                        <span className="text-sm text-white/60">Tổng: </span>
                         <span className="text-xl text-white">${Number(order.total).toFixed(2)}</span>
                       </div>
                       <div className="flex gap-2">
@@ -313,7 +313,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                               onNavigate("orders", { orderId: order.id });
                             }}
                           >
-                            Track Order
+                            Theo dõi đơn hàng
                           </Button>
                         )}
                         <Button
@@ -324,7 +324,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                             onNavigate("orders", { orderId: order.id });
                           }}
                         >
-                          View Details
+                          Xem chi tiết
                         </Button>
                       </div>
                     </div>
@@ -337,24 +337,24 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
 
         <TabsContent value="wishlist" className="mt-8">
           {wishlistLoading ? (
-            <div className="text-white/60 text-center py-12">Loading wishlist...</div>
+            <div className="text-white/60 text-center py-12">Đang tải yêu thích...</div>
           ) : wishlistItems.length === 0 ? (
             <div className="text-center py-12">
               <Heart className="h-12 w-12 text-white/20 mx-auto mb-4" />
-              <p className="text-white/60 mb-4">Your wishlist is empty.</p>
+              <p className="text-white/60 mb-4">Danh sách yêu thích trống.</p>
               <Button
                 className="bg-gradient-to-r from-purple-600 to-blue-600"
                 onClick={() => onNavigate("shop")}
               >
-                Discover Products
+                Khám phá sản phẩm
               </Button>
             </div>
           ) : (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <p className="text-white/60">{wishlistItems.length} saved item{wishlistItems.length !== 1 ? "s" : ""}</p>
+                <p className="text-white/60">{wishlistItems.length} sản phẩm đã lưu</p>
                 <Button variant="ghost" size="sm" className="text-purple-400" onClick={() => onNavigate("wishlist")}>
-                  View All →
+                  Xem tất cả →
                 </Button>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -381,7 +381,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
               {wishlistItems.length > 8 && (
                 <div className="text-center mt-6">
                   <Button variant="outline" onClick={() => onNavigate("wishlist")}>
-                    View All {wishlistItems.length} Items
+                    Xem tất cả {wishlistItems.length} sản phẩm
                   </Button>
                 </div>
               )}
@@ -393,44 +393,44 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
           <div className="max-w-2xl">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
               <div>
-                <h3 className="text-xl text-white mb-4">Account Settings</h3>
+                <h3 className="text-xl text-white mb-4">Cài đặt tài khoản</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg">
                     <div>
-                      <p className="text-white">Email Notifications</p>
+                      <p className="text-white">Thông báo email</p>
                       <p className="text-sm text-white/60">
-                        Receive updates about your orders
+                        Nhận cập nhật về đơn hàng của bạn
                       </p>
                     </div>
                     <Button variant="outline" size="sm" onClick={() => onNavigate("settings")}>
-                      Configure
+                      Cấu hình
                     </Button>
                   </div>
                   <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg">
                     <div>
-                      <p className="text-white">Password</p>
-                      <p className="text-sm text-white/60">Change your password</p>
+                      <p className="text-white">Mật khẩu</p>
+                      <p className="text-sm text-white/60">Đổi mật khẩu</p>
                     </div>
                     <Button variant="outline" size="sm" onClick={() => onNavigate("settings")}>
-                      Update
+                      Cập nhật
                     </Button>
                   </div>
                   <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg">
                     <div>
-                      <p className="text-white">Payment Methods</p>
-                      <p className="text-sm text-white/60">Manage saved cards</p>
+                      <p className="text-white">Phương thức thanh toán</p>
+                      <p className="text-sm text-white/60">Quản lý thẻ đã lưu</p>
                     </div>
                     <Button variant="outline" size="sm" onClick={() => onNavigate("settings")}>
-                      Manage
+                      Quản lý
                     </Button>
                   </div>
                   <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg">
                     <div>
-                      <p className="text-white">Shipping Addresses</p>
-                      <p className="text-sm text-white/60">Manage delivery addresses</p>
+                      <p className="text-white">Địa chỉ giao hàng</p>
+                      <p className="text-sm text-white/60">Quản lý địa chỉ giao hàng</p>
                     </div>
                     <Button variant="outline" size="sm" onClick={() => onNavigate("settings")}>
-                      Manage
+                      Quản lý
                     </Button>
                   </div>
                 </div>
@@ -439,7 +439,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
               <Separator className="bg-white/10" />
 
               <div>
-                <h3 className="text-xl text-white mb-4">Danger Zone</h3>
+                <h3 className="text-xl text-white mb-4">Vùng nguy hiểm</h3>
                 <div className="space-y-2">
                   <Button
                     variant="outline"
@@ -447,14 +447,14 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                     onClick={handleLogoutClick}
                   >
                     <LogOut className="h-4 w-4 mr-2" />
-                    Logout
+                    Đăng xuất
                   </Button>
                   <Button
                     variant="outline"
                     className="w-full text-red-400 border-red-500/30 hover:bg-red-500/10"
                     onClick={handleDeleteAccount}
                   >
-                    Delete Account
+                    Xóa tài khoản
                   </Button>
                 </div>
               </div>

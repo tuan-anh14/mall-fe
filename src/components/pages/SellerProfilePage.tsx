@@ -19,7 +19,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
 
   useEffect(() => {
     if (!sellerUserId) {
-      toast.error("Seller not found");
+      toast.error("Không tìm thấy người bán");
       onNavigate("shop");
       return;
     }
@@ -33,7 +33,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
         setSeller(res.seller);
         setProducts(res.products ?? []);
       } catch (err: any) {
-        toast.error(err.message || "Failed to load seller profile");
+        toast.error(err.message || "Không thể tải hồ sơ người bán");
         onNavigate("shop");
       } finally {
         setLoading(false);
@@ -48,7 +48,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
       <div className="container mx-auto px-4 py-16 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
-          <p className="text-white/60">Loading seller profile...</p>
+          <p className="text-white/60">Đang tải hồ sơ người bán...</p>
         </div>
       </div>
     );
@@ -69,7 +69,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
         onClick={() => onNavigate("shop")}
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Shop
+        Quay lại cửa hàng
       </Button>
 
       {/* Seller Header */}
@@ -79,7 +79,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
           <div className="h-48 overflow-hidden">
             <img
               src={seller.bannerImage}
-              alt="Store banner"
+              alt="Ảnh bìa cửa hàng"
               className="w-full h-full object-cover"
             />
           </div>
@@ -102,11 +102,11 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
 
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-3xl text-white">{seller.storeName} Store</h1>
+                <h1 className="text-3xl text-white">Cửa hàng {seller.storeName}</h1>
                 {seller.isVerified && (
                   <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
                     <Shield className="h-3 w-3 mr-1" />
-                    Verified
+                    Đã xác minh
                   </Badge>
                 )}
               </div>
@@ -115,15 +115,15 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
                 {seller.positiveRating > 0 && (
                   <div className="flex items-center gap-1">
                     <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                    <span>{seller.positiveRating}% positive rating</span>
+                    <span>{seller.positiveRating}% đánh giá tích cực</span>
                   </div>
                 )}
                 <div className="flex items-center gap-1">
                   <Package className="h-4 w-4" />
-                  <span>{seller.totalProducts} products</span>
+                  <span>{seller.totalProducts} sản phẩm</span>
                 </div>
                 {memberSince && (
-                  <span>Member since {memberSince}</span>
+                  <span>Thành viên từ {memberSince}</span>
                 )}
               </div>
 
@@ -142,7 +142,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 flex-shrink-0"
             >
               <MessageCircle className="h-4 w-4 mr-2" />
-              Contact Seller
+              Liên hệ người bán
             </Button>
           </div>
         </div>
@@ -151,13 +151,13 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
       {/* Products Grid */}
       <div>
         <h2 className="text-2xl text-white mb-6">
-          Products ({seller.totalProducts})
+          Sản phẩm ({seller.totalProducts})
         </h2>
 
         {products.length === 0 ? (
           <div className="text-center py-12">
             <Package className="h-12 w-12 text-white/20 mx-auto mb-3" />
-            <p className="text-white/40">No products available</p>
+            <p className="text-white/40">Chưa có sản phẩm</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

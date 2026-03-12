@@ -67,7 +67,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
         setCategoriesLoaded(true);
       })
       .catch(() => {
-        toast.error('Failed to load categories');
+        toast.error('Không thể tải danh mục');
         setCategoriesLoaded(true);
       });
   }, []);
@@ -111,13 +111,13 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
         body: fd,
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.error?.message || 'Upload failed');
+      if (!res.ok) throw new Error(json?.error?.message || 'Tải lên thất bại');
 
       const urls: string[] = json.data?.urls ?? [];
       setImages((prev) => [...prev, ...urls]);
-      toast.success('Images uploaded successfully');
+      toast.success('Đã tải ảnh lên thành công');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to upload images');
+      toast.error(err.message || 'Không thể tải ảnh lên');
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -132,7 +132,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
     e.preventDefault();
 
     if (!formData.name || !formData.categoryId || !formData.price || !formData.stock) {
-      toast.error("Please fill in all required fields");
+      toast.error("Vui lòng điền đầy đủ các trường bắt buộc");
       return;
     }
 
@@ -155,14 +155,14 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
     try {
       if (isEditMode) {
         await put(`/api/v1/seller/products/${initialProduct!.id}`, payload);
-        toast.success("Product updated successfully!");
+        toast.success("Cập nhật sản phẩm thành công!");
       } else {
         await post('/api/v1/seller/products', payload);
-        toast.success("Product added successfully!");
+        toast.success("Thêm sản phẩm thành công!");
       }
       onNavigate("seller-products");
     } catch (err: any) {
-      toast.error(err.message || (isEditMode ? 'Failed to update product' : 'Failed to add product'));
+      toast.error(err.message || (isEditMode ? 'Không thể cập nhật sản phẩm' : 'Không thể thêm sản phẩm'));
     } finally {
       setSubmitting(false);
     }
@@ -178,32 +178,32 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
           onClick={() => onNavigate("seller-products")}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Products
+          Quay lại sản phẩm
         </Button>
         <h1 className="text-4xl text-white mb-2">
-          {isEditMode ? "Edit Product" : "Add New Product"}
+          {isEditMode ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}
         </h1>
         <p className="text-white/60">
-          {isEditMode ? "Update your product listing" : "Create a new product listing for your store"}
+          {isEditMode ? "Cập nhật thông tin sản phẩm" : "Tạo sản phẩm mới cho cửa hàng của bạn"}
         </p>
       </div>
 
       <form onSubmit={handleSubmit}>
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
-          <h2 className="text-2xl text-white mb-6">Product Information</h2>
+          <h2 className="text-2xl text-white mb-6">Thông tin sản phẩm</h2>
 
           <div className="space-y-6">
             {/* Product Name */}
             <div>
               <Label htmlFor="name" className="text-white mb-2 block">
-                Product Name <span className="text-red-400">*</span>
+                Tên sản phẩm <span className="text-red-400">*</span>
               </Label>
               <Input
                 id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                placeholder="Enter product name"
+                placeholder="Nhập tên sản phẩm"
                 className="bg-white/5 border-white/10 text-white"
                 required
               />
@@ -212,14 +212,14 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             {/* Description */}
             <div>
               <Label htmlFor="description" className="text-white mb-2 block">
-                Description
+                Mô tả
               </Label>
               <Textarea
                 id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                placeholder="Enter product description"
+                placeholder="Nhập mô tả sản phẩm"
                 className="bg-white/5 border-white/10 text-white min-h-[120px]"
                 rows={5}
               />
@@ -229,7 +229,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="categoryId" className="text-white mb-2 block">
-                  Category <span className="text-red-400">*</span>
+                  Danh mục <span className="text-red-400">*</span>
                 </Label>
                 <Select
                   key={categoriesLoaded ? `cat-${formData.categoryId}` : "loading"}
@@ -237,7 +237,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   onValueChange={(value: string) => setFormData((prev) => ({ ...prev, categoryId: value }))}
                 >
                   <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder="Chọn danh mục" />
                   </SelectTrigger>
                   <SelectContent className="bg-black border-white/10">
                     {categories.map((cat) => (
@@ -251,14 +251,14 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
 
               <div>
                 <Label htmlFor="brand" className="text-white mb-2 block">
-                  Brand
+                  Thương hiệu
                 </Label>
                 <Input
                   id="brand"
                   name="brand"
                   value={formData.brand}
                   onChange={handleInputChange}
-                  placeholder="Enter brand name"
+                  placeholder="Nhập tên thương hiệu"
                   className="bg-white/5 border-white/10 text-white"
                 />
               </div>
@@ -268,7 +268,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="price" className="text-white mb-2 block">
-                  Price ($) <span className="text-red-400">*</span>
+                  Giá (₫) <span className="text-red-400">*</span>
                 </Label>
                 <Input
                   id="price"
@@ -286,7 +286,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
 
               <div>
                 <Label htmlFor="originalPrice" className="text-white mb-2 block">
-                  Original Price ($)
+                  Giá gốc (₫)
                 </Label>
                 <Input
                   id="originalPrice"
@@ -296,7 +296,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   min="0"
                   value={formData.originalPrice}
                   onChange={handleInputChange}
-                  placeholder="0.00 (optional, for discount)"
+                  placeholder="0 (tùy chọn, dùng cho giảm giá)"
                   className="bg-white/5 border-white/10 text-white"
                 />
               </div>
@@ -306,7 +306,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="stock" className="text-white mb-2 block">
-                  Stock Quantity <span className="text-red-400">*</span>
+                  Số lượng tồn kho <span className="text-red-400">*</span>
                 </Label>
                 <Input
                   id="stock"
@@ -340,7 +340,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
 
         {/* Product Images */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
-          <h2 className="text-2xl text-white mb-6">Product Images</h2>
+          <h2 className="text-2xl text-white mb-6">Hình ảnh sản phẩm</h2>
 
           <div className="space-y-4">
             <input
@@ -358,9 +358,9 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             >
               <Upload className="h-12 w-12 text-white/40 mx-auto mb-4" />
               <p className="text-white mb-2">
-                {uploading ? "Uploading..." : "Click to upload product images"}
+                {uploading ? "Đang tải lên..." : "Nhấn để tải lên hình ảnh sản phẩm"}
               </p>
-              <p className="text-sm text-white/60">PNG, JPG up to 10MB</p>
+              <p className="text-sm text-white/60">PNG, JPG tối đa 10MB</p>
             </div>
 
             {images.length > 0 && (
@@ -385,7 +385,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
         {/* Specifications */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl text-white">Specifications</h2>
+            <h2 className="text-2xl text-white">Thông số kỹ thuật</h2>
             <Button
               type="button"
               variant="outline"
@@ -393,20 +393,20 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
               onClick={() => setSpecifications((prev) => [...prev, { key: "", value: "" }])}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Spec
+              Thêm thông số
             </Button>
           </div>
 
           {specifications.length === 0 ? (
             <p className="text-white/40 text-sm text-center py-4">
-              No specifications yet. Click "Add Spec" to add product specifications like dimensions, materials, compatibility, etc.
+              Chưa có thông số kỹ thuật. Nhấn "Thêm thông số" để thêm các thông số như kích thước, chất liệu, tương thích, v.v.
             </p>
           ) : (
             <div className="space-y-3">
               {specifications.map((spec, index) => (
                 <div key={index} className="flex gap-3 items-center">
                   <Input
-                    placeholder="e.g. Weight, Color, Material"
+                    placeholder="VD: Trọng lượng, Màu sắc, Chất liệu"
                     value={spec.key}
                     onChange={(e) =>
                       setSpecifications((prev) =>
@@ -416,7 +416,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                     className="bg-white/5 border-white/10 text-white flex-1"
                   />
                   <Input
-                    placeholder="e.g. 200g, Red, Aluminum"
+                    placeholder="VD: 200g, Đỏ, Nhôm"
                     value={spec.value}
                     onChange={(e) =>
                       setSpecifications((prev) =>
@@ -448,7 +448,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             onClick={() => onNavigate("seller-products")}
             className="sm:w-auto w-full"
           >
-            Cancel
+            Hủy
           </Button>
           <Button
             type="submit"
@@ -456,8 +456,8 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             className="bg-gradient-to-r from-purple-600 to-blue-600 sm:w-auto w-full"
           >
             {submitting
-              ? isEditMode ? "Saving..." : "Adding..."
-              : isEditMode ? "Save Changes" : "Add Product"}
+              ? isEditMode ? "Đang lưu..." : "Đang thêm..."
+              : isEditMode ? "Lưu thay đổi" : "Thêm sản phẩm"}
           </Button>
         </div>
       </form>

@@ -21,22 +21,22 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
     e.preventDefault();
 
     if (!password || !confirmPassword) {
-      toast.error("Please fill in all fields");
+      toast.error("Vui lòng điền đầy đủ thông tin");
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error("Mật khẩu không khớp");
       return;
     }
 
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error("Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
 
     if (!token) {
-      toast.error("Invalid or missing reset token");
+      toast.error("Token đặt lại không hợp lệ hoặc bị thiếu");
       return;
     }
 
@@ -44,9 +44,9 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
     try {
       await post("/api/v1/auth/reset-password", { token, password });
       setSubmitted(true);
-      toast.success("Password reset successfully!");
+      toast.success("Đặt lại mật khẩu thành công!");
     } catch (err: any) {
-      toast.error(err.message || "Reset failed");
+      toast.error(err.message || "Đặt lại thất bại");
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +62,7 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
             className="mb-8"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Login
+            Quay lại đăng nhập
           </Button>
         )}
 
@@ -73,15 +73,15 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
                 <div className="h-16 w-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-4">
                   <Lock className="h-8 w-8 text-white" />
                 </div>
-                <h2 className="text-2xl text-white mb-2">Reset Password</h2>
+                <h2 className="text-2xl text-white mb-2">Đặt lại mật khẩu</h2>
                 <p className="text-white/60">
-                  Enter your new password below
+                  Nhập mật khẩu mới bên dưới
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="password">New Password</Label>
+                  <Label htmlFor="password">Mật khẩu mới</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
                     <Input
@@ -94,12 +94,12 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
                     />
                   </div>
                   <p className="text-xs text-white/50 mt-1">
-                    Must be at least 6 characters
+                    Phải có ít nhất 6 ký tự
                   </p>
                 </div>
 
                 <div>
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                  <Label htmlFor="confirm-password">Xác nhận mật khẩu</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
                     <Input
@@ -119,7 +119,7 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
                   disabled={isLoading}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  {isLoading ? "Resetting..." : "Reset Password"}
+                  {isLoading ? "Đang đặt lại..." : "Đặt lại mật khẩu"}
                 </Button>
               </form>
             </>
@@ -128,16 +128,16 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
               <div className="h-16 w-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-green-400" />
               </div>
-              <h2 className="text-2xl text-white mb-2">Password Reset!</h2>
+              <h2 className="text-2xl text-white mb-2">Đã đặt lại mật khẩu!</h2>
               <p className="text-white/60 mb-6">
-                Your password has been successfully reset. You can now sign in with your new password.
+                Mật khẩu đã được đặt lại thành công. Bạn có thể đăng nhập bằng mật khẩu mới.
               </p>
               <Button
                 size="lg"
                 className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 onClick={() => onNavigate("login")}
               >
-                Sign In
+                Đăng nhập
               </Button>
             </div>
           )}

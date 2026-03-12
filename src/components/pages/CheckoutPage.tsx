@@ -83,14 +83,14 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
   }, []);
 
   const validateShipping = (): boolean => {
-    if (!firstName.trim()) { toast.error("First name is required"); return false; }
-    if (!lastName.trim()) { toast.error("Last name is required"); return false; }
-    if (!email.trim()) { toast.error("Email is required"); return false; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { toast.error("Please enter a valid email address"); return false; }
-    if (!address.trim()) { toast.error("Street address is required"); return false; }
-    if (!city.trim()) { toast.error("City is required"); return false; }
-    if (!state.trim()) { toast.error("State is required"); return false; }
-    if (!zip.trim()) { toast.error("ZIP code is required"); return false; }
+    if (!firstName.trim()) { toast.error("Vui lòng nhập họ"); return false; }
+    if (!lastName.trim()) { toast.error("Vui lòng nhập tên"); return false; }
+    if (!email.trim()) { toast.error("Vui lòng nhập email"); return false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { toast.error("Vui lòng nhập địa chỉ email hợp lệ"); return false; }
+    if (!address.trim()) { toast.error("Vui lòng nhập địa chỉ"); return false; }
+    if (!city.trim()) { toast.error("Vui lòng nhập thành phố"); return false; }
+    if (!state.trim()) { toast.error("Vui lòng nhập tỉnh/thành"); return false; }
+    if (!zip.trim()) { toast.error("Vui lòng nhập mã bưu chính"); return false; }
     return true;
   };
 
@@ -103,9 +103,9 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
   };
 
   const steps = [
-    { number: 1, title: "Shipping", icon: MapPin },
-    { number: 2, title: "Payment", icon: CreditCard },
-    { number: 3, title: "Review", icon: Package },
+    { number: 1, title: "Vận chuyển", icon: MapPin },
+    { number: 2, title: "Thanh toán", icon: CreditCard },
+    { number: 3, title: "Xác nhận", icon: Package },
   ];
 
   const subtotal = cartItems.reduce(
@@ -138,13 +138,13 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
           selectedSize: item.selectedSize,
         })),
       });
-      toast.success("Order placed successfully!");
+      toast.success("Đặt hàng thành công!");
       if (onOrderPlaced) {
         onOrderPlaced();
       }
       onNavigate("orders", { orderId: order?.id ?? order?.order?.id });
     } catch (err: any) {
-      toast.error(err.message || "Failed to place order. Please try again.");
+      toast.error(err.message || "Đặt hàng thất bại. Vui lòng thử lại.");
     } finally {
       setIsPlacingOrder(false);
     }
@@ -152,7 +152,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl text-white mb-8">Checkout</h1>
+      <h1 className="text-4xl text-white mb-8">Thanh toán</h1>
 
       {/* Progress Steps */}
       <div className="mb-12">
@@ -202,12 +202,12 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             {/* Step 1: Shipping */}
             {step === 1 && (
               <div className="space-y-6">
-                <h2 className="text-2xl text-white mb-6">Shipping Information</h2>
+                <h2 className="text-2xl text-white mb-6">Thông tin vận chuyển</h2>
 
                 {/* Saved Address Selector (only when user has multiple saved addresses) */}
                 {savedAddresses.length > 1 && (
                   <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                    <p className="text-white text-sm mb-3">Choose a saved address:</p>
+                    <p className="text-white text-sm mb-3">Chọn địa chỉ đã lưu:</p>
                     <div className="space-y-2">
                       {savedAddresses.map((addr) => (
                         <div
@@ -231,7 +231,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                             </div>
                             {addr.isDefault && (
                               <span className="text-xs text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
-                                Default
+                                Mặc định
                               </span>
                             )}
                           </div>
@@ -239,14 +239,14 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       ))}
                     </div>
                     <p className="text-white/40 text-xs mt-3">
-                      Or fill in a different address below:
+                      Hoặc điền địa chỉ khác bên dưới:
                     </p>
                   </div>
                 )}
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="firstName">First Name <span className="text-red-400">*</span></Label>
+                    <Label htmlFor="firstName">Họ <span className="text-red-400">*</span></Label>
                     <Input
                       id="firstName"
                       className="bg-white/5 border-white/10"
@@ -255,7 +255,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     />
                   </div>
                   <div>
-                    <Label htmlFor="lastName">Last Name <span className="text-red-400">*</span></Label>
+                    <Label htmlFor="lastName">Tên <span className="text-red-400">*</span></Label>
                     <Input
                       id="lastName"
                       className="bg-white/5 border-white/10"
@@ -277,7 +277,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone Number</Label>
+                  <Label htmlFor="phone">Số điện thoại</Label>
                   <Input
                     id="phone"
                     type="tel"
@@ -288,7 +288,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                 </div>
 
                 <div>
-                  <Label htmlFor="address">Street Address <span className="text-red-400">*</span></Label>
+                  <Label htmlFor="address">Địa chỉ <span className="text-red-400">*</span></Label>
                   <Input
                     id="address"
                     className="bg-white/5 border-white/10"
@@ -299,7 +299,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="city">City <span className="text-red-400">*</span></Label>
+                    <Label htmlFor="city">Thành phố <span className="text-red-400">*</span></Label>
                     <Input
                       id="city"
                       className="bg-white/5 border-white/10"
@@ -308,7 +308,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     />
                   </div>
                   <div>
-                    <Label htmlFor="state">State <span className="text-red-400">*</span></Label>
+                    <Label htmlFor="state">Tỉnh/Thành <span className="text-red-400">*</span></Label>
                     <Input
                       id="state"
                       className="bg-white/5 border-white/10"
@@ -317,7 +317,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     />
                   </div>
                   <div>
-                    <Label htmlFor="zip">ZIP Code <span className="text-red-400">*</span></Label>
+                    <Label htmlFor="zip">Mã bưu chính <span className="text-red-400">*</span></Label>
                     <Input
                       id="zip"
                       className="bg-white/5 border-white/10"
@@ -332,7 +332,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   onClick={() => { if (validateShipping()) setStep(2); }}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600"
                 >
-                  Continue to Payment
+                  Tiếp tục thanh toán
                 </Button>
               </div>
             )}
@@ -340,7 +340,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             {/* Step 2: Payment */}
             {step === 2 && (
               <div className="space-y-6">
-                <h2 className="text-2xl text-white mb-6">Payment Method</h2>
+                <h2 className="text-2xl text-white mb-6">Phương thức thanh toán</h2>
 
                 <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
                   <div className="space-y-3">
@@ -354,7 +354,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       <RadioGroupItem value="card" id="card" />
                       <Label htmlFor="card" className="flex-1 cursor-pointer">
                         <div className="flex items-center justify-between">
-                          <span className="text-white">Credit/Debit Card</span>
+                          <span className="text-white">Thẻ tín dụng/ghi nợ</span>
                           <div className="flex gap-2">
                             <span className="text-2xl">💳</span>
                           </div>
@@ -388,7 +388,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       <RadioGroupItem value="crypto" id="crypto" />
                       <Label htmlFor="crypto" className="flex-1 cursor-pointer">
                         <div className="flex items-center justify-between">
-                          <span className="text-white">Cryptocurrency</span>
+                          <span className="text-white">Tiền điện tử</span>
                           <span className="text-2xl">₿</span>
                         </div>
                       </Label>
@@ -399,7 +399,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                 {paymentMethod === "card" && (
                   <div className="space-y-4 pt-4">
                     <div>
-                      <Label htmlFor="cardNumber">Card Number</Label>
+                      <Label htmlFor="cardNumber">Số thẻ</Label>
                       <Input
                         id="cardNumber"
                         placeholder="1234 5678 9012 3456"
@@ -409,7 +409,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="expiry">Expiry Date</Label>
+                        <Label htmlFor="expiry">Ngày hết hạn</Label>
                         <Input
                           id="expiry"
                           placeholder="MM/YY"
@@ -427,10 +427,10 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     </div>
 
                     <div>
-                      <Label htmlFor="cardName">Cardholder Name</Label>
+                      <Label htmlFor="cardName">Tên chủ thẻ</Label>
                       <Input
                         id="cardName"
-                        placeholder="John Doe"
+                        placeholder="Nguyễn Văn A"
                         className="bg-white/5 border-white/10"
                       />
                     </div>
@@ -439,14 +439,14 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
                 <div className="flex gap-3">
                   <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
-                    Back
+                    Quay lại
                   </Button>
                   <Button
                     size="lg"
                     onClick={() => setStep(3)}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600"
                   >
-                    Review Order
+                    Xem lại đơn hàng
                   </Button>
                 </div>
               </div>
@@ -455,11 +455,11 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             {/* Step 3: Review */}
             {step === 3 && (
               <div className="space-y-6">
-                <h2 className="text-2xl text-white mb-6">Review Order</h2>
+                <h2 className="text-2xl text-white mb-6">Xem lại đơn hàng</h2>
 
                 <div className="space-y-4">
                   <div className="bg-white/5 rounded-lg p-4">
-                    <h3 className="text-white mb-2">Shipping Address</h3>
+                    <h3 className="text-white mb-2">Địa chỉ giao hàng</h3>
                     <p className="text-white/70 text-sm">
                       {firstName} {lastName}<br />
                       {address}<br />
@@ -469,17 +469,17 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   </div>
 
                   <div className="bg-white/5 rounded-lg p-4">
-                    <h3 className="text-white mb-2">Payment Method</h3>
+                    <h3 className="text-white mb-2">Phương thức thanh toán</h3>
                     <p className="text-white/70 text-sm">
-                      {paymentMethod === "card" && "Credit/Debit Card"}
+                      {paymentMethod === "card" && "Thẻ tín dụng/ghi nợ"}
                       {paymentMethod === "paypal" && "PayPal"}
-                      {paymentMethod === "crypto" && "Cryptocurrency (Bitcoin)"}
+                      {paymentMethod === "crypto" && "Tiền điện tử (Bitcoin)"}
                     </p>
                   </div>
 
                   {/* Items review */}
                   <div className="bg-white/5 rounded-lg p-4">
-                    <h3 className="text-white mb-3">Items ({cartItems.length})</h3>
+                    <h3 className="text-white mb-3">Sản phẩm ({cartItems.length})</h3>
                     <div className="space-y-3">
                       {cartItems.map((item) => (
                         <div key={item.id} className="flex items-center gap-3">
@@ -493,7 +493,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                           <div className="flex-1 min-w-0">
                             <p className="text-white text-sm truncate">{item.product?.name}</p>
                             <p className="text-white/50 text-xs">
-                              Qty: {item.quantity}
+                              SL: {item.quantity}
                               {item.selectedColor && ` · ${item.selectedColor}`}
                               {item.selectedSize && ` · ${item.selectedSize}`}
                             </p>
@@ -509,7 +509,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
                 <div className="flex gap-3">
                   <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
-                    Back
+                    Quay lại
                   </Button>
                   <Button
                     size="lg"
@@ -517,7 +517,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     disabled={isPlacingOrder}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600"
                   >
-                    {isPlacingOrder ? "Placing Order..." : "Place Order"}
+                    {isPlacingOrder ? "Đang đặt hàng..." : "Đặt hàng"}
                   </Button>
                 </div>
               </div>
@@ -528,7 +528,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
         {/* Order Summary Sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-24 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-            <h2 className="text-xl text-white">Order Summary</h2>
+            <h2 className="text-xl text-white">Tóm tắt đơn hàng</h2>
 
             <Separator className="bg-white/10" />
 
@@ -566,26 +566,26 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             )}
 
             {cartItems.length === 0 && (
-              <p className="text-white/40 text-sm text-center py-4">No items in cart</p>
+              <p className="text-white/40 text-sm text-center py-4">Không có sản phẩm trong giỏ</p>
             )}
 
             <Separator className="bg-white/10" />
 
             <div className="space-y-3">
               <div className="flex justify-between text-white/70">
-                <span>Subtotal ({cartItems.reduce((s, i) => s + i.quantity, 0)} items)</span>
+                <span>Tạm tính ({cartItems.reduce((s, i) => s + i.quantity, 0)} sản phẩm)</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-white/70">
-                <span>Shipping</span>
+                <span>Vận chuyển</span>
                 {shipping === 0 ? (
-                  <Badge variant="secondary" className="bg-green-500/20 text-green-400">FREE</Badge>
+                  <Badge variant="secondary" className="bg-green-500/20 text-green-400">MIỄN PHÍ</Badge>
                 ) : (
                   <span>${shipping.toFixed(2)}</span>
                 )}
               </div>
               <div className="flex justify-between text-white/70">
-                <span>Tax (10%)</span>
+                <span>Thuế (10%)</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
             </div>
@@ -593,7 +593,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             <Separator className="bg-white/10" />
 
             <div className="flex justify-between items-center">
-              <span className="text-xl text-white">Total</span>
+              <span className="text-xl text-white">Tổng cộng</span>
               <span className="text-3xl text-white">
                 ${total.toFixed(2)}
               </span>
@@ -602,7 +602,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             {shipping === 0 && subtotal > 0 && (
               <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
                 <p className="text-sm text-green-400">
-                  Free shipping on orders over $50!
+                  Miễn phí vận chuyển cho đơn hàng trên $50!
                 </p>
               </div>
             )}

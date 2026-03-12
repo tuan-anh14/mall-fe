@@ -18,7 +18,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
-      toast.error("Please enter your email address");
+      toast.error("Vui lòng nhập địa chỉ email");
       return;
     }
     setIsLoading(true);
@@ -26,7 +26,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
       await post("/api/v1/auth/forgot-password", { email });
       setSubmitted(true);
     } catch (err: any) {
-      toast.error(err.message || "Something went wrong");
+      toast.error(err.message || "Đã xảy ra lỗi");
     } finally {
       setIsLoading(false);
     }
@@ -41,7 +41,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
           className="mb-8"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Login
+          Quay lại đăng nhập
         </Button>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
@@ -51,15 +51,15 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                 <div className="h-16 w-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-4">
                   <Mail className="h-8 w-8 text-white" />
                 </div>
-                <h2 className="text-2xl text-white mb-2">Forgot Password?</h2>
+                <h2 className="text-2xl text-white mb-2">Quên mật khẩu?</h2>
                 <p className="text-white/60">
-                  No worries! Enter your email and we'll send you reset instructions.
+                  Đừng lo! Nhập email và chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu.
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email">Địa chỉ email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
                     <Input
@@ -79,7 +79,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                   disabled={isLoading}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  {isLoading ? "Sending..." : "Send Reset Link"}
+                  {isLoading ? "Đang gửi..." : "Gửi liên kết đặt lại"}
                 </Button>
               </form>
             </>
@@ -88,18 +88,18 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
               <div className="h-16 w-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-green-400" />
               </div>
-              <h2 className="text-2xl text-white mb-2">Check Your Email</h2>
+              <h2 className="text-2xl text-white mb-2">Kiểm tra email</h2>
               <p className="text-white/60 mb-6">
-                We've sent a password reset link to <strong className="text-white">{email}</strong>
+                Chúng tôi đã gửi liên kết đặt lại mật khẩu đến <strong className="text-white">{email}</strong>
               </p>
               <p className="text-sm text-white/50 mb-6">
-                Didn't receive the email? Check your spam folder or{" "}
+                Chưa nhận được email? Kiểm tra thư mục spam hoặc{" "}
                 <button
                   type="button"
                   className="text-purple-400 hover:text-purple-300"
                   onClick={() => setSubmitted(false)}
                 >
-                  try another email
+                  thử email khác
                 </button>
               </p>
               <Button
@@ -107,7 +107,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                 className="w-full"
                 onClick={() => onNavigate("login")}
               >
-                Back to Login
+                Quay lại đăng nhập
               </Button>
             </div>
           )}

@@ -9,37 +9,37 @@ export function AboutPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl text-white mb-6">About ShopHub</h1>
+        <h1 className="text-5xl text-white mb-6">Giới thiệu ShopHub</h1>
         <p className="text-xl text-white/70 mb-12">
-          Your premium destination for quality products since 2024.
+          Điểm đến cao cấp cho các sản phẩm chất lượng từ 2024.
         </p>
 
         <div className="prose prose-invert max-w-none space-y-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-3xl text-white mb-4">Our Story</h2>
+            <h2 className="text-3xl text-white mb-4">Câu chuyện của chúng tôi</h2>
             <p className="text-white/70 mb-4">
-              ShopHub was founded with a simple mission: to create a premium e-commerce platform that connects quality products with discerning customers. We believe that shopping online should be an enjoyable, seamless experience.
+              ShopHub được thành lập với sứ mệnh đơn giản: tạo ra một nền tảng thương mại điện tử cao cấp kết nối các sản phẩm chất lượng với những khách hàng sành điệu. Chúng tôi tin rằng mua sắm trực tuyến nên là một trải nghiệm thú vị và liền mạch.
             </p>
             <p className="text-white/70">
-              Today, we serve thousands of customers worldwide, offering carefully curated products across electronics, fashion, home goods, and more. Our commitment to excellence drives everything we do.
+              Ngày nay, chúng tôi phục vụ hàng nghìn khách hàng trên toàn thế giới, cung cấp các sản phẩm được tuyển chọn kỹ lưỡng trong lĩnh vực điện tử, thời trang, đồ gia dụng và nhiều hơn nữa. Cam kết xuất sắc là động lực cho mọi việc chúng tôi làm.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
               <div className="text-4xl mb-3">🌟</div>
-              <h3 className="text-2xl text-white mb-2">Premium Quality</h3>
-              <p className="text-white/60">Only the best products make it to our platform</p>
+              <h3 className="text-2xl text-white mb-2">Chất lượng cao cấp</h3>
+              <p className="text-white/60">Chỉ những sản phẩm tốt nhất mới có trên nền tảng của chúng tôi</p>
             </div>
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
               <div className="text-4xl mb-3">🚚</div>
-              <h3 className="text-2xl text-white mb-2">Fast Shipping</h3>
-              <p className="text-white/60">Get your orders delivered in 2-3 days</p>
+              <h3 className="text-2xl text-white mb-2">Giao hàng nhanh</h3>
+              <p className="text-white/60">Nhận đơn hàng trong 2-3 ngày</p>
             </div>
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
               <div className="text-4xl mb-3">🔒</div>
-              <h3 className="text-2xl text-white mb-2">Secure Payments</h3>
-              <p className="text-white/60">Your data is protected with us</p>
+              <h3 className="text-2xl text-white mb-2">Thanh toán an toàn</h3>
+              <p className="text-white/60">Dữ liệu của bạn được bảo vệ với chúng tôi</p>
             </div>
           </div>
         </div>
@@ -52,18 +52,18 @@ export function ContactPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-5xl text-white mb-6 text-center">Contact Us</h1>
+        <h1 className="text-5xl text-white mb-6 text-center">Liên hệ với chúng tôi</h1>
         <p className="text-xl text-white/70 mb-12 text-center">
-          Have questions? We'd love to hear from you.
+          Có câu hỏi? Chúng tôi rất muốn nghe từ bạn.
         </p>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Contact Form */}
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-6">Send us a message</h2>
+            <h2 className="text-2xl text-white mb-6">Gửi tin nhắn cho chúng tôi</h2>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Tên</Label>
                 <Input id="name" className="bg-white/5 border-white/10" />
               </div>
               <div>
@@ -71,11 +71,11 @@ export function ContactPage() {
                 <Input id="email" type="email" className="bg-white/5 border-white/10" />
               </div>
               <div>
-                <Label htmlFor="subject">Subject</Label>
+                <Label htmlFor="subject">Chủ đề</Label>
                 <Input id="subject" className="bg-white/5 border-white/10" />
               </div>
               <div>
-                <Label htmlFor="message">Message</Label>
+                <Label htmlFor="message">Nội dung</Label>
                 <Textarea
                   id="message"
                   rows={5}
@@ -86,7 +86,7 @@ export function ContactPage() {
                 size="lg"
                 className="w-full bg-gradient-to-r from-purple-600 to-blue-600"
               >
-                Send Message
+                Gửi tin nhắn
               </Button>
             </div>
           </div>
@@ -112,7 +112,7 @@ export function ContactPage() {
                   <Phone className="h-6 w-6 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl text-white mb-1">Phone</h3>
+                  <h3 className="text-xl text-white mb-1">Điện thoại</h3>
                   <p className="text-white/70">+1 (555) 123-4567</p>
                   <p className="text-white/70">+1 (555) 987-6543</p>
                 </div>
@@ -125,7 +125,7 @@ export function ContactPage() {
                   <MapPin className="h-6 w-6 text-pink-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl text-white mb-1">Address</h3>
+                  <h3 className="text-xl text-white mb-1">Địa chỉ</h3>
                   <p className="text-white/70">123 Shopping Street</p>
                   <p className="text-white/70">New York, NY 10001</p>
                 </div>
@@ -138,9 +138,9 @@ export function ContactPage() {
                   <Clock className="h-6 w-6 text-orange-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl text-white mb-1">Business Hours</h3>
-                  <p className="text-white/70">Monday - Friday: 9am - 6pm</p>
-                  <p className="text-white/70">Saturday - Sunday: 10am - 4pm</p>
+                  <h3 className="text-xl text-white mb-1">Giờ làm việc</h3>
+                  <p className="text-white/70">Thứ Hai - Thứ Sáu: 9h - 18h</p>
+                  <p className="text-white/70">Thứ Bảy - Chủ Nhật: 10h - 16h</p>
                 </div>
               </div>
             </div>
@@ -155,28 +155,28 @@ export function TermsPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl text-white mb-6">Terms of Service</h1>
-        <p className="text-white/60 mb-8">Last updated: November 10, 2025</p>
+        <h1 className="text-5xl text-white mb-6">Điều khoản dịch vụ</h1>
+        <p className="text-white/60 mb-8">Cập nhật lần cuối: 10 tháng 11, 2025</p>
 
         <div className="prose prose-invert max-w-none space-y-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">1. Acceptance of Terms</h2>
+            <h2 className="text-2xl text-white mb-4">1. Chấp nhận điều khoản</h2>
             <p className="text-white/70">
-              By accessing and using ShopHub, you accept and agree to be bound by the terms and provision of this agreement.
+              Bằng việc truy cập và sử dụng ShopHub, bạn chấp nhận và đồng ý tuân theo các điều khoản và quy định của thỏa thuận này.
             </p>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">2. Use License</h2>
+            <h2 className="text-2xl text-white mb-4">2. Giấy phép sử dụng</h2>
             <p className="text-white/70">
-              Permission is granted to temporarily download one copy of the materials on ShopHub for personal, non-commercial transitory viewing only.
+              Được cấp phép tải xuống tạm thời một bản sao tài liệu trên ShopHub chỉ để xem cá nhân, phi thương mại.
             </p>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">3. Disclaimer</h2>
+            <h2 className="text-2xl text-white mb-4">3. Tuyên bố miễn trừ</h2>
             <p className="text-white/70">
-              The materials on ShopHub are provided on an 'as is' basis. ShopHub makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties.
+              Các tài liệu trên ShopHub được cung cấp trên cơ sở 'nguyên trạng'. ShopHub không đưa ra bảo đảm nào, dù rõ ràng hay ngụ ý.
             </p>
           </div>
         </div>
@@ -189,28 +189,28 @@ export function PrivacyPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl text-white mb-6">Privacy Policy</h1>
-        <p className="text-white/60 mb-8">Last updated: November 10, 2025</p>
+        <h1 className="text-5xl text-white mb-6">Chính sách bảo mật</h1>
+        <p className="text-white/60 mb-8">Cập nhật lần cuối: 10 tháng 11, 2025</p>
 
         <div className="prose prose-invert max-w-none space-y-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Information We Collect</h2>
+            <h2 className="text-2xl text-white mb-4">Thông tin chúng tôi thu thập</h2>
             <p className="text-white/70">
-              We collect information you provide directly to us, such as when you create an account, make a purchase, or contact customer support.
+              Chúng tôi thu thập thông tin bạn cung cấp trực tiếp, như khi bạn tạo tài khoản, mua hàng hoặc liên hệ hỗ trợ.
             </p>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">How We Use Your Information</h2>
+            <h2 className="text-2xl text-white mb-4">Cách chúng tôi sử dụng thông tin</h2>
             <p className="text-white/70">
-              We use the information we collect to provide, maintain, and improve our services, process transactions, and communicate with you.
+              Chúng tôi sử dụng thông tin thu thập để cung cấp, duy trì và cải thiện dịch vụ, xử lý giao dịch và liên lạc với bạn.
             </p>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Information Sharing</h2>
+            <h2 className="text-2xl text-white mb-4">Chia sẻ thông tin</h2>
             <p className="text-white/70">
-              We do not share your personal information with third parties except as described in this policy or with your consent.
+              Chúng tôi không chia sẻ thông tin cá nhân của bạn với bên thứ ba trừ khi được mô tả trong chính sách này hoặc có sự đồng ý của bạn.
             </p>
           </div>
         </div>
@@ -223,62 +223,62 @@ export function CareersPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl text-white mb-6">Careers at ShopHub</h1>
+        <h1 className="text-5xl text-white mb-6">Tuyển dụng tại ShopHub</h1>
         <p className="text-xl text-white/70 mb-12">
-          Join our team and help us build the future of e-commerce.
+          Tham gia đội ngũ và cùng xây dựng tương lai thương mại điện tử.
         </p>
 
         <div className="space-y-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Why Work With Us?</h2>
+            <h2 className="text-2xl text-white mb-4">Tại sao làm việc với chúng tôi?</h2>
             <p className="text-white/70 mb-6">
-              At ShopHub, we're building more than just an e-commerce platform. We're creating experiences that delight customers and empower sellers. Join us in this journey!
+              Tại ShopHub, chúng tôi không chỉ xây dựng một nền tảng thương mại điện tử. Chúng tôi đang tạo ra những trải nghiệm làm hài lòng khách hàng và trao quyền cho người bán. Hãy tham gia cùng chúng tôi!
             </p>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
                 <div className="text-3xl mb-2">💼</div>
-                <h3 className="text-white mb-1">Competitive Pay</h3>
-                <p className="text-sm text-white/60">Industry-leading compensation</p>
+                <h3 className="text-white mb-1">Lương cạnh tranh</h3>
+                <p className="text-sm text-white/60">Mức lương hàng đầu ngành</p>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
                 <div className="text-3xl mb-2">🏖️</div>
-                <h3 className="text-white mb-1">Work-Life Balance</h3>
-                <p className="text-sm text-white/60">Flexible hours & remote options</p>
+                <h3 className="text-white mb-1">Cân bằng công việc-cuộc sống</h3>
+                <p className="text-sm text-white/60">Giờ linh hoạt & làm việc từ xa</p>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
                 <div className="text-3xl mb-2">📈</div>
-                <h3 className="text-white mb-1">Growth</h3>
-                <p className="text-sm text-white/60">Career development opportunities</p>
+                <h3 className="text-white mb-1">Phát triển</h3>
+                <p className="text-sm text-white/60">Cơ hội phát triển sự nghiệp</p>
               </div>
             </div>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Open Positions</h2>
+            <h2 className="text-2xl text-white mb-4">Vị trí tuyển dụng</h2>
             <div className="space-y-4">
               <div className="border border-white/10 rounded-xl p-6 hover:bg-white/5 transition-colors">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="text-xl text-white">Senior Frontend Developer</h3>
-                  <span className="text-purple-400">Remote</span>
+                  <span className="text-purple-400">Từ xa</span>
                 </div>
-                <p className="text-white/60 mb-4">Build beautiful, responsive user interfaces using React and modern web technologies.</p>
-                <Button className="bg-gradient-to-r from-purple-600 to-blue-600">Apply Now</Button>
+                <p className="text-white/60 mb-4">Xây dựng giao diện người dùng đẹp, responsive bằng React và các công nghệ web hiện đại.</p>
+                <Button className="bg-gradient-to-r from-purple-600 to-blue-600">Ứng tuyển ngay</Button>
               </div>
               <div className="border border-white/10 rounded-xl p-6 hover:bg-white/5 transition-colors">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="text-xl text-white">Product Designer</h3>
                   <span className="text-purple-400">New York, NY</span>
                 </div>
-                <p className="text-white/60 mb-4">Design intuitive and delightful experiences for millions of users.</p>
-                <Button className="bg-gradient-to-r from-purple-600 to-blue-600">Apply Now</Button>
+                <p className="text-white/60 mb-4">Thiết kế trải nghiệm trực quan và thú vị cho hàng triệu người dùng.</p>
+                <Button className="bg-gradient-to-r from-purple-600 to-blue-600">Ứng tuyển ngay</Button>
               </div>
               <div className="border border-white/10 rounded-xl p-6 hover:bg-white/5 transition-colors">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="text-xl text-white">Customer Success Manager</h3>
-                  <span className="text-purple-400">Remote</span>
+                  <span className="text-purple-400">Từ xa</span>
                 </div>
-                <p className="text-white/60 mb-4">Help our customers succeed and build lasting relationships.</p>
-                <Button className="bg-gradient-to-r from-purple-600 to-blue-600">Apply Now</Button>
+                <p className="text-white/60 mb-4">Giúp khách hàng thành công và xây dựng mối quan hệ bền vững.</p>
+                <Button className="bg-gradient-to-r from-purple-600 to-blue-600">Ứng tuyển ngay</Button>
               </div>
             </div>
           </div>
@@ -292,67 +292,67 @@ export function ReturnsPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl text-white mb-6">Returns & Refunds</h1>
+        <h1 className="text-5xl text-white mb-6">Đổi trả & Hoàn tiền</h1>
         <p className="text-xl text-white/70 mb-12">
-          We want you to be completely satisfied with your purchase.
+          Chúng tôi muốn bạn hoàn toàn hài lòng với đơn hàng.
         </p>
 
         <div className="space-y-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Our Return Policy</h2>
+            <h2 className="text-2xl text-white mb-4">Chính sách đổi trả</h2>
             <p className="text-white/70 mb-4">
-              We offer a 30-day return policy on most items. If you're not satisfied with your purchase, you can return it for a full refund or exchange.
+              Chúng tôi cung cấp chính sách đổi trả 30 ngày cho hầu hết các sản phẩm. Nếu bạn không hài lòng với đơn hàng, bạn có thể trả lại để được hoàn tiền đầy đủ hoặc đổi sản phẩm.
             </p>
             <ul className="space-y-2 text-white/70">
-              <li>• Items must be unused and in original packaging</li>
-              <li>• Return shipping is free for defective items</li>
-              <li>• Refunds processed within 5-7 business days</li>
-              <li>• Some items may not be eligible for returns</li>
+              <li>• Sản phẩm phải chưa sử dụng và còn nguyên bao bì</li>
+              <li>• Miễn phí vận chuyển đổi trả cho sản phẩm lỗi</li>
+              <li>• Hoàn tiền được xử lý trong 5-7 ngày làm việc</li>
+              <li>• Một số sản phẩm có thể không đủ điều kiện đổi trả</li>
             </ul>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">How to Return an Item</h2>
+            <h2 className="text-2xl text-white mb-4">Cách đổi trả sản phẩm</h2>
             <div className="space-y-4">
               <div className="flex gap-4">
                 <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0 text-purple-400">1</div>
                 <div>
-                  <h3 className="text-white mb-1">Request a Return</h3>
-                  <p className="text-white/60">Go to your order history and select the item you want to return</p>
+                  <h3 className="text-white mb-1">Yêu cầu đổi trả</h3>
+                  <p className="text-white/60">Vào lịch sử đơn hàng và chọn sản phẩm bạn muốn đổi trả</p>
                 </div>
               </div>
               <div className="flex gap-4">
                 <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0 text-purple-400">2</div>
                 <div>
-                  <h3 className="text-white mb-1">Print Return Label</h3>
-                  <p className="text-white/60">We'll email you a prepaid return shipping label</p>
+                  <h3 className="text-white mb-1">In nhãn đổi trả</h3>
+                  <p className="text-white/60">Chúng tôi sẽ gửi email nhãn vận chuyển trả hàng miễn phí cho bạn</p>
                 </div>
               </div>
               <div className="flex gap-4">
                 <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0 text-purple-400">3</div>
                 <div>
-                  <h3 className="text-white mb-1">Ship It Back</h3>
-                  <p className="text-white/60">Pack the item securely and drop it off at any carrier location</p>
+                  <h3 className="text-white mb-1">Gửi hàng trả lại</h3>
+                  <p className="text-white/60">Đóng gói sản phẩm cẩn thận và gửi tại bất kỳ điểm vận chuyển nào</p>
                 </div>
               </div>
               <div className="flex gap-4">
                 <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0 text-purple-400">4</div>
                 <div>
-                  <h3 className="text-white mb-1">Get Your Refund</h3>
-                  <p className="text-white/60">Once we receive the item, your refund will be processed</p>
+                  <h3 className="text-white mb-1">Nhận hoàn tiền</h3>
+                  <p className="text-white/60">Khi chúng tôi nhận được sản phẩm, hoàn tiền sẽ được xử lý</p>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Non-Returnable Items</h2>
-            <p className="text-white/70 mb-4">The following items cannot be returned:</p>
+            <h2 className="text-2xl text-white mb-4">Sản phẩm không đổi trả</h2>
+            <p className="text-white/70 mb-4">Các sản phẩm sau không thể đổi trả:</p>
             <ul className="space-y-2 text-white/70">
-              <li>• Personalized or custom-made items</li>
-              <li>• Health and personal care items</li>
-              <li>• Gift cards</li>
-              <li>• Downloadable software products</li>
+              <li>• Sản phẩm cá nhân hóa hoặc đặt làm riêng</li>
+              <li>• Sản phẩm chăm sóc sức khỏe và cá nhân</li>
+              <li>• Thẻ quà tặng</li>
+              <li>• Phần mềm tải xuống</li>
             </ul>
           </div>
         </div>
@@ -365,59 +365,59 @@ export function ShippingPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl text-white mb-6">Shipping Information</h1>
+        <h1 className="text-5xl text-white mb-6">Thông tin vận chuyển</h1>
         <p className="text-xl text-white/70 mb-12">
-          Fast, reliable shipping to your doorstep.
+          Vận chuyển nhanh, đáng tin cậy đến tận nhà.
         </p>
 
         <div className="space-y-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Shipping Options</h2>
+            <h2 className="text-2xl text-white mb-4">Các phương thức vận chuyển</h2>
             <div className="space-y-4">
               <div className="border border-white/10 rounded-xl p-6">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-xl text-white">Standard Shipping</h3>
+                  <h3 className="text-xl text-white">Vận chuyển tiêu chuẩn</h3>
                   <span className="text-purple-400">$4.99</span>
                 </div>
-                <p className="text-white/60">Delivery in 5-7 business days</p>
+                <p className="text-white/60">Giao hàng trong 5-7 ngày làm việc</p>
               </div>
               <div className="border border-white/10 rounded-xl p-6">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-xl text-white">Express Shipping</h3>
+                  <h3 className="text-xl text-white">Vận chuyển nhanh</h3>
                   <span className="text-purple-400">$9.99</span>
                 </div>
-                <p className="text-white/60">Delivery in 2-3 business days</p>
+                <p className="text-white/60">Giao hàng trong 2-3 ngày làm việc</p>
               </div>
               <div className="border border-white/10 rounded-xl p-6">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-xl text-white">Next Day Delivery</h3>
+                  <h3 className="text-xl text-white">Giao hàng ngày hôm sau</h3>
                   <span className="text-purple-400">$19.99</span>
                 </div>
-                <p className="text-white/60">Order by 2pm for next day delivery</p>
+                <p className="text-white/60">Đặt trước 14h để nhận hàng ngày hôm sau</p>
               </div>
             </div>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Free Shipping</h2>
+            <h2 className="text-2xl text-white mb-4">Miễn phí vận chuyển</h2>
             <p className="text-white/70 mb-4">
-              Enjoy free standard shipping on orders over $50! No code needed, discount applied automatically at checkout.
+              Miễn phí vận chuyển tiêu chuẩn cho đơn hàng trên $50! Không cần mã giảm giá, tự động áp dụng khi thanh toán.
             </p>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">International Shipping</h2>
+            <h2 className="text-2xl text-white mb-4">Vận chuyển quốc tế</h2>
             <p className="text-white/70 mb-4">
-              We ship to over 100 countries worldwide. International shipping rates and delivery times vary by destination. Additional customs fees may apply.
+              Chúng tôi giao hàng đến hơn 100 quốc gia trên toàn thế giới. Phí vận chuyển quốc tế và thời gian giao hàng thay đổi theo điểm đến. Có thể phát sinh phí hải quan bổ sung.
             </p>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Order Tracking</h2>
+            <h2 className="text-2xl text-white mb-4">Theo dõi đơn hàng</h2>
             <p className="text-white/70 mb-4">
-              Track your order anytime by visiting the Order Tracking page or clicking the tracking link in your shipping confirmation email.
+              Theo dõi đơn hàng bất cứ lúc nào bằng cách truy cập trang Theo dõi đơn hàng hoặc nhấp vào liên kết theo dõi trong email xác nhận vận chuyển.
             </p>
-            <Button className="bg-gradient-to-r from-purple-600 to-blue-600">Track Order</Button>
+            <Button className="bg-gradient-to-r from-purple-600 to-blue-600">Theo dõi đơn hàng</Button>
           </div>
         </div>
       </div>
@@ -429,32 +429,32 @@ export function CookiesPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl text-white mb-6">Cookie Policy</h1>
-        <p className="text-white/60 mb-8">Last updated: November 10, 2025</p>
+        <h1 className="text-5xl text-white mb-6">Chính sách Cookie</h1>
+        <p className="text-white/60 mb-8">Cập nhật lần cuối: 10 tháng 11, 2025</p>
 
         <div className="space-y-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">What Are Cookies?</h2>
+            <h2 className="text-2xl text-white mb-4">Cookie là gì?</h2>
             <p className="text-white/70">
-              Cookies are small text files that are stored on your device when you visit our website. They help us provide you with a better experience by remembering your preferences and understanding how you use our site.
+              Cookie là các tệp văn bản nhỏ được lưu trữ trên thiết bị của bạn khi bạn truy cập trang web của chúng tôi. Chúng giúp chúng tôi cung cấp trải nghiệm tốt hơn bằng cách ghi nhớ tùy chọn của bạn và hiểu cách bạn sử dụng trang web.
             </p>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">How We Use Cookies</h2>
-            <p className="text-white/70 mb-4">We use cookies for various purposes:</p>
+            <h2 className="text-2xl text-white mb-4">Cách chúng tôi sử dụng Cookie</h2>
+            <p className="text-white/70 mb-4">Chúng tôi sử dụng cookie cho nhiều mục đích:</p>
             <ul className="space-y-2 text-white/70">
-              <li>• <strong className="text-white">Essential Cookies:</strong> Required for the website to function properly</li>
-              <li>• <strong className="text-white">Performance Cookies:</strong> Help us understand how visitors interact with our site</li>
-              <li>• <strong className="text-white">Functional Cookies:</strong> Remember your preferences and settings</li>
-              <li>• <strong className="text-white">Marketing Cookies:</strong> Used to deliver relevant advertisements</li>
+              <li>• <strong className="text-white">Cookie thiết yếu:</strong> Cần thiết để trang web hoạt động bình thường</li>
+              <li>• <strong className="text-white">Cookie hiệu suất:</strong> Giúp chúng tôi hiểu cách khách truy cập tương tác với trang web</li>
+              <li>• <strong className="text-white">Cookie chức năng:</strong> Ghi nhớ tùy chọn và cài đặt của bạn</li>
+              <li>• <strong className="text-white">Cookie tiếp thị:</strong> Được sử dụng để hiển thị quảng cáo phù hợp</li>
             </ul>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Managing Cookies</h2>
+            <h2 className="text-2xl text-white mb-4">Quản lý Cookie</h2>
             <p className="text-white/70">
-              You can control and manage cookies in your browser settings. Please note that removing or blocking cookies may impact your user experience and some features may not function properly.
+              Bạn có thể kiểm soát và quản lý cookie trong cài đặt trình duyệt. Xin lưu ý rằng việc xóa hoặc chặn cookie có thể ảnh hưởng đến trải nghiệm người dùng và một số tính năng có thể không hoạt động bình thường.
             </p>
           </div>
         </div>
@@ -467,43 +467,43 @@ export function GDPRPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl text-white mb-6">GDPR Compliance</h1>
-        <p className="text-white/60 mb-8">Last updated: November 10, 2025</p>
+        <h1 className="text-5xl text-white mb-6">Tuân thủ GDPR</h1>
+        <p className="text-white/60 mb-8">Cập nhật lần cuối: 10 tháng 11, 2025</p>
 
         <div className="space-y-6">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Your Rights Under GDPR</h2>
+            <h2 className="text-2xl text-white mb-4">Quyền của bạn theo GDPR</h2>
             <p className="text-white/70 mb-4">
-              If you are a resident of the European Economic Area (EEA), you have certain data protection rights under the General Data Protection Regulation (GDPR).
+              Nếu bạn là cư dân của Khu vực Kinh tế Châu Âu (EEA), bạn có một số quyền bảo vệ dữ liệu theo Quy định Bảo vệ Dữ liệu Chung (GDPR).
             </p>
             <ul className="space-y-2 text-white/70">
-              <li>• <strong className="text-white">Right to Access:</strong> You can request copies of your personal data</li>
-              <li>• <strong className="text-white">Right to Rectification:</strong> You can request correction of inaccurate data</li>
-              <li>• <strong className="text-white">Right to Erasure:</strong> You can request deletion of your personal data</li>
-              <li>• <strong className="text-white">Right to Restrict Processing:</strong> You can request limitation of data processing</li>
-              <li>• <strong className="text-white">Right to Data Portability:</strong> You can request transfer of your data</li>
-              <li>• <strong className="text-white">Right to Object:</strong> You can object to processing of your data</li>
+              <li>• <strong className="text-white">Quyền truy cập:</strong> Bạn có thể yêu cầu bản sao dữ liệu cá nhân của mình</li>
+              <li>• <strong className="text-white">Quyền chỉnh sửa:</strong> Bạn có thể yêu cầu sửa dữ liệu không chính xác</li>
+              <li>• <strong className="text-white">Quyền xóa:</strong> Bạn có thể yêu cầu xóa dữ liệu cá nhân của mình</li>
+              <li>• <strong className="text-white">Quyền hạn chế xử lý:</strong> Bạn có thể yêu cầu giới hạn việc xử lý dữ liệu</li>
+              <li>• <strong className="text-white">Quyền chuyển dữ liệu:</strong> Bạn có thể yêu cầu chuyển dữ liệu của mình</li>
+              <li>• <strong className="text-white">Quyền phản đối:</strong> Bạn có thể phản đối việc xử lý dữ liệu của mình</li>
             </ul>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">How to Exercise Your Rights</h2>
+            <h2 className="text-2xl text-white mb-4">Cách thực hiện quyền của bạn</h2>
             <p className="text-white/70 mb-4">
-              To exercise any of your GDPR rights, please contact our Data Protection Officer at privacy@shophub.com. We will respond to your request within 30 days.
+              Để thực hiện bất kỳ quyền GDPR nào, vui lòng liên hệ Nhân viên Bảo vệ Dữ liệu của chúng tôi tại privacy@shophub.com. Chúng tôi sẽ phản hồi yêu cầu của bạn trong vòng 30 ngày.
             </p>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Data Security</h2>
+            <h2 className="text-2xl text-white mb-4">Bảo mật dữ liệu</h2>
             <p className="text-white/70">
-              We implement appropriate technical and organizational measures to protect your personal data against unauthorized or unlawful processing, accidental loss, destruction, or damage.
+              Chúng tôi áp dụng các biện pháp kỹ thuật và tổ chức phù hợp để bảo vệ dữ liệu cá nhân của bạn khỏi việc xử lý trái phép hoặc bất hợp pháp, mất mát, hủy hoại hoặc hư hỏng ngẫu nhiên.
             </p>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h2 className="text-2xl text-white mb-4">Contact Us</h2>
+            <h2 className="text-2xl text-white mb-4">Liên hệ với chúng tôi</h2>
             <p className="text-white/70">
-              If you have any questions about our GDPR compliance or data protection practices, please contact us at privacy@shophub.com.
+              Nếu bạn có bất kỳ câu hỏi nào về việc tuân thủ GDPR hoặc các hoạt động bảo vệ dữ liệu của chúng tôi, vui lòng liên hệ tại privacy@shophub.com.
             </p>
           </div>
         </div>

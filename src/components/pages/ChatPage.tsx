@@ -94,8 +94,8 @@ function formatTime(dateStr: string): string {
   if (diffDays === 0) {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays === 1) return "Hôm qua";
+  if (diffDays < 7) return `${diffDays} ngày trước`;
   return date.toLocaleDateString();
 }
 
@@ -170,9 +170,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       }>("/api/v1/conversations");
 
       const mapped: Conversation[] = (res.conversations ?? []).map((conv) => {
-        const baseName = conv.otherUser?.name ?? "Unknown";
-        // Buyers see seller names with "Store" suffix (matching product detail page style)
-        const displayName = userType === "buyer" ? `${baseName} Store` : baseName;
+        const baseName = conv.otherUser?.name ?? "Không xác định";
+        const displayName = userType === "buyer" ? `${baseName}` : baseName;
         return {
           id: conv.id,
           name: displayName,
@@ -193,7 +192,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
         selectConversation(mapped[0].id);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to load conversations");
+      toast.error(err.message || "Không thể tải cuộc trò chuyện");
     } finally {
       setIsLoadingConversations(false);
     }
@@ -208,8 +207,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
         body
       );
       const conv = res.conversation ?? (res as any);
-      const baseName = conv.otherUser?.name ?? sellerInfo?.name ?? "Seller";
-      const displayName = userType === "buyer" ? `${baseName} Store` : baseName;
+      const baseName = conv.otherUser?.name ?? sellerInfo?.name ?? "Người bán";
+      const displayName = userType === "buyer" ? `${baseName}` : baseName;
       const newConv: Conversation = {
         id: conv.id,
         name: displayName,
@@ -229,7 +228,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       });
       selectConversation(newConv.id);
     } catch (err: any) {
-      toast.error(err.message || "Failed to create conversation");
+      toast.error(err.message || "Không thể tạo cuộc trò chuyện");
     }
   };
 
@@ -312,7 +311,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       setMessages(mapped);
       startPolling(convId);
     } catch (err: any) {
-      toast.error(err.message || "Failed to load messages");
+      toast.error(err.message || "Không thể tải tin nhắn");
     } finally {
       setIsLoadingMessages(false);
     }
@@ -372,12 +371,12 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       setConversations((prev) =>
         prev.map((c) =>
           c.id === activeConversationId
-            ? { ...c, lastMessage: content, time: "just now" }
+            ? { ...c, lastMessage: content, time: "vừa xong" }
             : c
         )
       );
     } catch (err: any) {
-      toast.error(err.message || "Failed to send message");
+      toast.error(err.message || "Không thể gửi tin nhắn");
       // Remove temp message on failure
       setMessages((prev) => prev.filter((m) => m.id !== tempId));
     } finally {
@@ -404,16 +403,16 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
     if (activeConversation?.sellerUserId) {
       onNavigate("seller-profile", { sellerUserId: activeConversation.sellerUserId });
     } else {
-      toast.info(`No seller profile available`);
+      toast.info(`Không có hồ sơ người bán`);
     }
   };
 
   const handleBlockSeller = () => {
-    toast.success(`${activeConversation?.name} has been blocked`);
+    toast.success(`Đã chặn ${activeConversation?.name}`);
   };
 
   const handleReportConversation = () => {
-    toast.success("Conversation reported. Our team will review it shortly.");
+    toast.success("Đã báo cáo cuộc trò chuyện. Đội ngũ của chúng tôi sẽ xem xét sớm.");
   };
 
   const handleClearChat = () => {
@@ -431,16 +430,16 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       )
     );
     setMessages([]);
-    toast.success("Chat cleared successfully");
+    toast.success("Đã xóa trò chuyện thành công");
   };
 
   const handleToggleMute = () => {
     setIsMuted(!isMuted);
-    toast.success(isMuted ? "Notifications enabled" : "Notifications muted");
+    toast.success(isMuted ? "Đã bật thông báo" : "Đã tắt thông báo");
   };
 
   const handleArchiveChat = () => {
-    toast.success(`${activeConversation?.name} chat archived`);
+    toast.success(`Đã lưu trữ trò chuyện với ${activeConversation?.name}`);
   };
 
   const handleDeleteMessage = async (messageId: string) => {
@@ -449,7 +448,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       await del(`/api/v1/conversations/${activeConversationId}/messages/${messageId}`);
       setMessages((prev) => prev.filter((m) => m.id !== messageId));
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete message");
+      toast.error(err.message || "Không thể xóa tin nhắn");
     }
   };
 
@@ -474,7 +473,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       });
       const uploadJson = await uploadRes.json();
       const imageUrl = uploadJson?.data?.urls?.[0] ?? null;
-      if (!imageUrl) throw new Error("Upload failed");
+      if (!imageUrl) throw new Error("Tải lên thất bại");
 
       // Send as attachment message
       const tempId = `temp-img-${Date.now()}`;
@@ -490,7 +489,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       setMessages((prev) => [...prev, tempMsg]);
 
       const res = await post<{ message: any }>(`/api/v1/conversations/${activeConversationId}/messages`, {
-        text: "📷 Image",
+        text: "📷 Hình ảnh",
         attachmentUrl: imageUrl,
         attachmentType: "image",
       });
@@ -502,9 +501,9 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
             : m
         )
       );
-      toast.success("Image sent!");
+      toast.success("Đã gửi ảnh!");
     } catch (err: any) {
-      toast.error(err.message || "Failed to upload image");
+      toast.error(err.message || "Không thể tải ảnh lên");
     } finally {
       setIsUploadingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -522,7 +521,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                 <Input
-                  placeholder="Search conversations..."
+                  placeholder="Tìm kiếm cuộc trò chuyện..."
                   className="pl-10 bg-white/5 border-white/10 text-white"
                   value={conversationSearch}
                   onChange={(e) => setConversationSearch(e.target.value)}
@@ -534,12 +533,12 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
             <div className="flex-1 overflow-y-auto">
               {isLoadingConversations ? (
                 <div className="p-8 text-center text-white/40 text-sm">
-                  Loading conversations...
+                  Đang tải cuộc trò chuyện...
                 </div>
               ) : conversations.length === 0 ? (
                 <div className="p-8 text-center">
                   <MessageSquare className="h-10 w-10 text-white/20 mx-auto mb-3" />
-                  <p className="text-white/40 text-sm">No conversations yet</p>
+                  <p className="text-white/40 text-sm">Chưa có cuộc trò chuyện</p>
                 </div>
               ) : (
                 (() => {
@@ -551,7 +550,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                   return filtered.length === 0 ? (
                     <div className="p-8 text-center">
                       <Search className="h-8 w-8 text-white/20 mx-auto mb-3" />
-                      <p className="text-white/40 text-sm">No conversations found</p>
+                      <p className="text-white/40 text-sm">Không tìm thấy cuộc trò chuyện</p>
                     </div>
                   ) : (
                     <>
@@ -626,7 +625,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                       <div>
                         <p className="text-white">{activeConversation.name}</p>
                         <p className="text-sm text-white/60">
-                          {activeConversation.online ? "Online" : "Offline"}
+                          {activeConversation.online ? "Trực tuyến" : "Ngoại tuyến"}
                         </p>
                       </div>
                     </div>
@@ -652,28 +651,28 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                           <MoreVertical className="h-5 w-5" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56 bg-zinc-900 border-white/10 z-[200]">
-                          <DropdownMenuLabel className="text-white">Chat Options</DropdownMenuLabel>
+                          <DropdownMenuLabel className="text-white">Tùy chọn trò chuyện</DropdownMenuLabel>
                           <DropdownMenuSeparator className="bg-white/10" />
                           <DropdownMenuItem
                             onClick={handleViewProfile}
                             className="text-white hover:bg-white/10 cursor-pointer"
                           >
                             <UserCircle className="mr-2 h-4 w-4" />
-                            View Seller Profile
+                            Xem hồ sơ người bán
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={handleToggleMute}
                             className="text-white hover:bg-white/10 cursor-pointer"
                           >
                             <BellOff className="mr-2 h-4 w-4" />
-                            {isMuted ? "Unmute" : "Mute"} Notifications
+                            {isMuted ? "Bật" : "Tắt"} thông báo
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={handleArchiveChat}
                             className="text-white hover:bg-white/10 cursor-pointer"
                           >
                             <Archive className="mr-2 h-4 w-4" />
-                            Archive Chat
+                            Lưu trữ trò chuyện
                           </DropdownMenuItem>
                           <DropdownMenuSeparator className="bg-white/10" />
                           <DropdownMenuItem
@@ -681,21 +680,21 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                             className="text-white hover:bg-white/10 cursor-pointer"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Clear Chat
+                            Xóa trò chuyện
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={handleBlockSeller}
                             className="text-red-400 hover:bg-red-500/10 cursor-pointer"
                           >
                             <Ban className="mr-2 h-4 w-4" />
-                            Block Seller
+                            Chặn người bán
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={handleReportConversation}
                             className="text-red-400 hover:bg-red-500/10 cursor-pointer"
                           >
                             <Flag className="mr-2 h-4 w-4" />
-                            Report Conversation
+                            Báo cáo cuộc trò chuyện
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -705,7 +704,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                   {/* Product Info */}
                   {activeConversation.productName && (
                     <div className="mt-3 p-3 bg-white/5 rounded-lg">
-                      <p className="text-xs text-white/50 mb-1">Discussing about:</p>
+                      <p className="text-xs text-white/50 mb-1">Đang thảo luận về:</p>
                       <p className="text-sm text-white">{activeConversation.productName}</p>
                     </div>
                   )}
@@ -715,11 +714,11 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {isLoadingMessages ? (
                     <div className="text-center text-white/40 text-sm py-8">
-                      Loading messages...
+                      Đang tải tin nhắn...
                     </div>
                   ) : messages.length === 0 ? (
                     <div className="text-center text-white/40 text-sm py-8">
-                      No messages yet. Say hello!
+                      Chưa có tin nhắn. Hãy gửi lời chào!
                     </div>
                   ) : (
                     messages.map((message) => (
@@ -756,12 +755,12 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                               {message.attachmentType === "image" && message.attachmentUrl ? (
                                 <img
                                   src={message.attachmentUrl}
-                                  alt="Image"
+                                  alt="Hình ảnh"
                                   className="max-w-[200px] max-h-[200px] rounded-lg object-cover cursor-pointer"
                                   onClick={() => window.open(message.attachmentUrl, "_blank")}
                                 />
                               ) : null}
-                              {message.text && message.text !== "📷 Image" && (
+                              {message.text && message.text !== "📷 Hình ảnh" && (
                                 <p className="text-sm text-white">{message.text}</p>
                               )}
                             </div>
@@ -770,7 +769,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                               <button
                                 onClick={() => handleDeleteMessage(message.id)}
                                 className="absolute -top-2 -left-6 opacity-0 group-hover:opacity-100 transition-opacity h-5 w-5 bg-red-600/80 rounded-full flex items-center justify-center hover:bg-red-600"
-                                title="Delete message"
+                                title="Xóa tin nhắn"
                               >
                                 <Trash2 className="h-3 w-3 text-white" />
                               </button>
@@ -857,7 +856,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                       <ImageIcon className="h-5 w-5" />
                     </Button>
                     <Input
-                      placeholder="Type a message..."
+                      placeholder="Nhập tin nhắn..."
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       onKeyDown={handleKeyPress}
@@ -887,7 +886,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
               /* No conversation selected */
               <div className="flex-1 flex flex-col items-center justify-center text-white/40">
                 <MessageSquare className="h-16 w-16 mb-4 opacity-30" />
-                <p className="text-lg">Select a conversation to start chatting</p>
+                <p className="text-lg">Chọn cuộc trò chuyện để bắt đầu nhắn tin</p>
               </div>
             )}
           </div>
@@ -898,9 +897,9 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       <Dialog open={showCallDialog} onOpenChange={setShowCallDialog}>
         <DialogContent className="bg-zinc-900 border-white/10">
           <DialogHeader>
-            <DialogTitle className="text-white">Voice Call</DialogTitle>
+            <DialogTitle className="text-white">Cuộc gọi thoại</DialogTitle>
             <DialogDescription className="text-white/60">
-              Calling {activeConversation?.name}...
+              Đang gọi {activeConversation?.name}...
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center py-8 gap-6">
@@ -911,7 +910,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
             </Avatar>
             <div className="text-center">
               <p className="text-white text-xl mb-2">{activeConversation?.name}</p>
-              <p className="text-white/60 text-sm">Ringing...</p>
+              <p className="text-white/60 text-sm">Đang đổ chuông...</p>
             </div>
             <div className="flex gap-4">
               <Button
@@ -919,7 +918,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                 size="icon"
                 onClick={() => {
                   setShowCallDialog(false);
-                  toast.info("Call ended");
+                  toast.info("Cuộc gọi kết thúc");
                 }}
                 className="h-14 w-14 rounded-full"
               >
@@ -934,9 +933,9 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       <Dialog open={showVideoDialog} onOpenChange={setShowVideoDialog}>
         <DialogContent className="bg-zinc-900 border-white/10">
           <DialogHeader>
-            <DialogTitle className="text-white">Video Call</DialogTitle>
+            <DialogTitle className="text-white">Cuộc gọi video</DialogTitle>
             <DialogDescription className="text-white/60">
-              Starting video call with {activeConversation?.name}...
+              Bắt đầu cuộc gọi video với {activeConversation?.name}...
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center py-8 gap-6">
@@ -947,7 +946,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
             </Avatar>
             <div className="text-center">
               <p className="text-white text-xl mb-2">{activeConversation?.name}</p>
-              <p className="text-white/60 text-sm">Connecting...</p>
+              <p className="text-white/60 text-sm">Đang kết nối...</p>
             </div>
             <div className="flex gap-4">
               <Button
@@ -955,7 +954,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                 size="icon"
                 onClick={() => {
                   setShowVideoDialog(false);
-                  toast.info("Video call ended");
+                  toast.info("Cuộc gọi video kết thúc");
                 }}
                 className="h-14 w-14 rounded-full"
               >
@@ -970,20 +969,20 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
       <AlertDialog open={showClearChatDialog} onOpenChange={setShowClearChatDialog}>
         <AlertDialogContent className="bg-zinc-900 border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Clear Chat History?</AlertDialogTitle>
+            <AlertDialogTitle className="text-white">Xóa lịch sử trò chuyện?</AlertDialogTitle>
             <AlertDialogDescription className="text-white/60">
-              This will permanently delete all messages with {activeConversation?.name}. This action cannot be undone.
+              Thao tác này sẽ xóa vĩnh viễn tất cả tin nhắn với {activeConversation?.name}. Không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
-              Cancel
+              Hủy
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmClearChat}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Clear Chat
+              Xóa trò chuyện
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

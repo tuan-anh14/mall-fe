@@ -160,7 +160,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
     <div className="space-y-6">
       {/* Categories */}
       <div>
-        <h3 className="text-white mb-4">Categories</h3>
+        <h3 className="text-white mb-4">Danh mục</h3>
         <div className="space-y-3">
           {categories.map((cat) => (
             <div key={cat.name} className="flex items-center space-x-2">
@@ -182,7 +182,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
 
       {/* Price Range */}
       <div>
-        <h3 className="text-white mb-4">Price Range</h3>
+        <h3 className="text-white mb-4">Khoảng giá</h3>
         <Slider
           min={0}
           max={3000}
@@ -199,7 +199,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
 
       {/* Brands */}
       <div>
-        <h3 className="text-white mb-4">Brands</h3>
+        <h3 className="text-white mb-4">Thương hiệu</h3>
         <div className="space-y-3">
           {brands.slice(0, 8).map((brand) => (
             <div key={brand} className="flex items-center space-x-2">
@@ -221,7 +221,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
 
       {/* Rating */}
       <div>
-        <h3 className="text-white mb-4">Rating</h3>
+        <h3 className="text-white mb-4">Đánh giá</h3>
         <div className="space-y-2">
           {[5, 4, 3, 2].map((rating) => (
             <button
@@ -234,7 +234,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
               }`}
             >
               <span>{"⭐".repeat(rating)}</span>
-              <span>& Up</span>
+              <span>trở lên</span>
             </button>
           ))}
         </div>
@@ -246,7 +246,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
         className="w-full"
         onClick={clearFilters}
       >
-        Clear All Filters
+        Xóa tất cả bộ lọc
       </Button>
     </div>
   );
@@ -256,9 +256,9 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl text-white mb-2">All Products</h1>
+          <h1 className="text-3xl text-white mb-2">Tất cả sản phẩm</h1>
           <p className="text-white/60">
-            {loading ? "Loading products..." : `Showing ${products.length} of ${total} products`}
+            {loading ? "Đang tải sản phẩm..." : `Hiển thị ${products.length} trên ${total} sản phẩm`}
           </p>
         </div>
 
@@ -266,14 +266,14 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
           {/* Sort */}
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-[180px] bg-white/5 border-white/10">
-              <SelectValue placeholder="Sort by" />
+              <SelectValue placeholder="Sắp xếp" />
             </SelectTrigger>
             <SelectContent className="bg-zinc-950 border-white/10">
-              <SelectItem value="popularity">Most Popular</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
-              <SelectItem value="rating">Highest Rated</SelectItem>
-              <SelectItem value="newest">Newest</SelectItem>
+              <SelectItem value="popularity">Phổ biến nhất</SelectItem>
+              <SelectItem value="price-low">Giá: Thấp đến Cao</SelectItem>
+              <SelectItem value="price-high">Giá: Cao đến Thấp</SelectItem>
+              <SelectItem value="rating">Đánh giá cao nhất</SelectItem>
+              <SelectItem value="newest">Mới nhất</SelectItem>
             </SelectContent>
           </Select>
 
@@ -306,7 +306,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
             </SheetTrigger>
             <SheetContent side="left" className="bg-zinc-950 border-white/10 w-80">
               <SheetHeader>
-                <SheetTitle className="text-white">Filters</SheetTitle>
+                <SheetTitle className="text-white">Bộ lọc</SheetTitle>
               </SheetHeader>
               <div className="mt-6">
                 <FiltersContent />
@@ -354,7 +354,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
               className="cursor-pointer"
               onClick={() => setSelectedRating(null)}
             >
-              {"⭐".repeat(selectedRating)} & Up ×
+              {"⭐".repeat(selectedRating)} trở lên ×
             </Badge>
           )}
         </div>
@@ -367,7 +367,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
           <div className="sticky top-24 bg-white/5 border border-white/10 rounded-2xl p-6">
             <h2 className="text-xl text-white mb-6 flex items-center gap-2">
               <SlidersHorizontal className="h-5 w-5" />
-              Filters
+              Bộ lọc
             </h2>
             <FiltersContent />
           </div>
@@ -379,14 +379,14 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
             <div className="flex items-center justify-center py-24">
               <div className="flex flex-col items-center gap-4">
                 <div className="w-10 h-10 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
-                <p className="text-white/60 text-sm">Loading products...</p>
+                <p className="text-white/60 text-sm">Đang tải sản phẩm...</p>
               </div>
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-xl text-white/60">No products found</p>
+              <p className="text-xl text-white/60">Không tìm thấy sản phẩm</p>
               <Button className="mt-4" onClick={clearFilters}>
-                Clear Filters
+                Xóa bộ lọc
               </Button>
             </div>
           ) : (

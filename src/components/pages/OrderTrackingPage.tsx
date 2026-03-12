@@ -118,7 +118,7 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto flex items-center justify-center py-32">
-          <div className="text-white/60 text-lg">Loading orders...</div>
+          <div className="text-white/60 text-lg">Đang tải đơn hàng...</div>
         </div>
       </div>
     );
@@ -130,18 +130,18 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <Button variant="ghost" onClick={() => onNavigate("profile")}>
-              ← Back to Orders
+              ← Quay lại đơn hàng
             </Button>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-2xl p-16 text-center">
             <Package className="h-16 w-16 text-white/20 mx-auto mb-4" />
-            <h2 className="text-2xl text-white mb-2">No Orders Yet</h2>
-            <p className="text-white/60 mb-6">You haven't placed any orders yet. Start shopping!</p>
+            <h2 className="text-2xl text-white mb-2">Chưa có đơn hàng</h2>
+            <p className="text-white/60 mb-6">Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm!</p>
             <Button
               className="bg-gradient-to-r from-purple-600 to-blue-600"
               onClick={() => onNavigate("shop")}
             >
-              Start Shopping
+              Bắt đầu mua sắm
             </Button>
           </div>
         </div>
@@ -156,14 +156,14 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <Button variant="ghost" onClick={() => onNavigate("profile")}>
-            ← Back to Orders
+            ← Quay lại đơn hàng
           </Button>
         </div>
 
         {/* Order List */}
         {orders.length > 1 && (
           <div className="mb-6 space-y-2">
-            <h2 className="text-white/70 text-sm uppercase tracking-wider mb-3">Select Order</h2>
+            <h2 className="text-white/70 text-sm uppercase tracking-wider mb-3">Chọn đơn hàng</h2>
             <div className="flex flex-wrap gap-2">
               {orders.map((order) => (
                 <button
@@ -187,8 +187,8 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
             <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-8">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
-                  <h1 className="text-3xl text-white mb-2">Order Tracking</h1>
-                  <p className="text-white/60">Order ID: {currentOrder.id}</p>
+                  <h1 className="text-3xl text-white mb-2">Theo dõi đơn hàng</h1>
+                  <p className="text-white/60">Mã đơn hàng: {currentOrder.id}</p>
                 </div>
                 <Badge className="bg-gradient-to-r from-purple-600 to-blue-600">
                   {currentOrder.status}
@@ -198,10 +198,10 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
               {/* Order Details */}
               <div className="grid md:grid-cols-2 gap-4 mb-8">
                 <div className="bg-white/5 rounded-lg p-4">
-                  <p className="text-sm text-white/60 mb-1">Order Date</p>
+                  <p className="text-sm text-white/60 mb-1">Ngày đặt hàng</p>
                   <p className="text-white">
                     {currentOrder.date
-                      ? new Date(currentOrder.date).toLocaleDateString("en-US", {
+                      ? new Date(currentOrder.date).toLocaleDateString("vi-VN", {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
@@ -210,8 +210,8 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                   </p>
                 </div>
                 <div className="bg-white/5 rounded-lg p-4">
-                  <p className="text-sm text-white/60 mb-1">Estimated Delivery</p>
-                  <p className="text-white">Today by 6:00 PM</p>
+                  <p className="text-sm text-white/60 mb-1">Dự kiến giao hàng</p>
+                  <p className="text-white">Hôm nay trước 18:00</p>
                 </div>
               </div>
 
@@ -262,7 +262,7 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                           </h3>
                           <p className="text-sm text-white/60">
                             {step.date
-                              ? new Date(step.date).toLocaleDateString("en-US", {
+                              ? new Date(step.date).toLocaleDateString("vi-VN", {
                                   year: "numeric",
                                   month: "long",
                                   day: "numeric",
@@ -276,7 +276,7 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                           )}
                           {isCurrent && (
                             <Badge className="mt-2 bg-purple-500/20 text-purple-400 border-purple-500/30">
-                              Current Status
+                              Trạng thái hiện tại
                             </Badge>
                           )}
                         </div>
@@ -285,29 +285,29 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                   })}
                 </div>
               ) : (
-                <div className="text-white/50 text-sm py-4">No tracking information available.</div>
+                <div className="text-white/50 text-sm py-4">Không có thông tin theo dõi.</div>
               )}
 
               {/* Delivery Map Placeholder */}
               <div className="mt-8 bg-white/5 rounded-xl p-8 text-center border-2 border-dashed border-white/10">
                 <MapPin className="h-12 w-12 text-purple-400 mx-auto mb-3" />
-                <h3 className="text-xl text-white mb-2">Track on Map</h3>
+                <h3 className="text-xl text-white mb-2">Theo dõi trên bản đồ</h3>
                 <p className="text-white/60 mb-4">
-                  Your package is on its way! Track the delivery driver in real-time.
+                  Gói hàng của bạn đang trên đường! Theo dõi người giao hàng theo thời gian thực.
                 </p>
                 <Button className="bg-gradient-to-r from-purple-600 to-blue-600">
-                  View Live Tracking
+                  Xem theo dõi trực tiếp
                 </Button>
               </div>
             </div>
 
             {/* Order Items */}
             <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-              <h2 className="text-2xl text-white mb-6">Order Items</h2>
+              <h2 className="text-2xl text-white mb-6">Sản phẩm trong đơn</h2>
 
               <div className="space-y-4">
                 {currentOrder.items.map((item) => {
-                  const name = item.productName ?? item.product?.name ?? "Product";
+                  const name = item.productName ?? item.product?.name ?? "Sản phẩm";
                   const image = item.productImage ?? item.product?.image;
 
                   return (
@@ -324,12 +324,12 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                       </div>
                       <div className="flex-1">
                         <h3 className="text-white mb-1">{name}</h3>
-                        <p className="text-sm text-white/60">Quantity: {item.quantity}</p>
+                        <p className="text-sm text-white/60">Số lượng: {item.quantity}</p>
                         {item.selectedColor && (
-                          <p className="text-sm text-white/60">Color: {item.selectedColor}</p>
+                          <p className="text-sm text-white/60">Màu: {item.selectedColor}</p>
                         )}
                         {item.selectedSize && (
-                          <p className="text-sm text-white/60">Size: {item.selectedSize}</p>
+                          <p className="text-sm text-white/60">Kích cỡ: {item.selectedSize}</p>
                         )}
                       </div>
                       <div className="text-right">
@@ -346,24 +346,24 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
 
               <div className="space-y-2">
                 <div className="flex justify-between text-white/70">
-                  <span>Subtotal</span>
+                  <span>Tạm tính</span>
                   <span>${(currentOrder.subtotal ?? currentOrder.total).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-white/70">
-                  <span>Shipping</span>
+                  <span>Vận chuyển</span>
                   <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                    FREE
+                    MIỄN PHÍ
                   </Badge>
                 </div>
                 {currentOrder.tax != null && currentOrder.tax > 0 && (
                   <div className="flex justify-between text-white/70">
-                    <span>Tax</span>
+                    <span>Thuế</span>
                     <span>${Number(currentOrder.tax).toFixed(2)}</span>
                   </div>
                 )}
                 <Separator className="bg-white/10" />
                 <div className="flex justify-between items-center">
-                  <span className="text-xl text-white">Total</span>
+                  <span className="text-xl text-white">Tổng cộng</span>
                   <span className="text-2xl text-white">
                     ${Number(currentOrder.total).toFixed(2)}
                   </span>
@@ -378,13 +378,13 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                 className="flex-1"
                 onClick={() => onNavigate("help")}
               >
-                Contact Support
+                Liên hệ hỗ trợ
               </Button>
               <Button
                 className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600"
                 onClick={() => onNavigate("shop")}
               >
-                Continue Shopping
+                Tiếp tục mua sắm
               </Button>
             </div>
           </>
