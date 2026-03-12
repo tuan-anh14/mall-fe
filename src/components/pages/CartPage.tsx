@@ -5,9 +5,9 @@ import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
-import { CartItem } from "../../App";
+import { CartItem } from "../../types";
 import { post } from "../../lib/api";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface CartPageProps {
   onNavigate: (page: string) => void;

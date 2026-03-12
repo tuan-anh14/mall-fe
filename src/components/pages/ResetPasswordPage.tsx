@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, ArrowLeft, CheckCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import { post } from "../../lib/api";
+import { resetPasswordSchema, ResetPasswordFormData } from "../../lib/schemas";
 
 interface ResetPasswordPageProps {
   onNavigate: (page: string) => void;
@@ -12,45 +15,26 @@ interface ResetPasswordPageProps {
 }
 
 export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps) {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: { password: "", confirmPassword: "" },
+  });
 
-    if (!password || !confirmPassword) {
-      toast.error("Vui lòng điền đầy đủ thông tin");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error("Mật khẩu không khớp");
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error("Mật khẩu phải có ít nhất 6 ký tự");
-      return;
-    }
-
+  const onSubmit = handleSubmit(async (data) => {
     if (!token) {
       toast.error("Token đặt lại không hợp lệ hoặc bị thiếu");
       return;
     }
-
-    setIsLoading(true);
     try {
-      await post("/api/v1/auth/reset-password", { token, password });
+      await post("/api/v1/auth/reset-password", { token, password: data.password });
       setSubmitted(true);
       toast.success("Đặt lại mật khẩu thành công!");
     } catch (err: any) {
       toast.error(err.message || "Đặt lại thất bại");
-    } finally {
-      setIsLoading(false);
     }
-  };
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
@@ -74,12 +58,10 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
                   <Lock className="h-8 w-8 text-white" />
                 </div>
                 <h2 className="text-2xl text-white mb-2">Đặt lại mật khẩu</h2>
-                <p className="text-white/60">
-                  Nhập mật khẩu mới bên dưới
-                </p>
+                <p className="text-white/60">Nhập mật khẩu mới bên dưới</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={onSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="password">Mật khẩu mới</Label>
                   <div className="relative">
@@ -89,13 +71,12 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
                       type="password"
                       placeholder="••••••••"
                       className="pl-10 bg-white/5 border-white/10"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      {...register("password")}
                     />
                   </div>
-                  <p className="text-xs text-white/50 mt-1">
-                    Phải có ít nhất 6 ký tự
-                  </p>
+                  {errors.password && (
+                    <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>
+                  )}
                 </div>
 
                 <div>
@@ -107,19 +88,21 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
                       type="password"
                       placeholder="••••••••"
                       className="pl-10 bg-white/5 border-white/10"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      {...register("confirmPassword")}
                     />
                   </div>
+                  {errors.confirmPassword && (
+                    <p className="text-xs text-red-400 mt-1">{errors.confirmPassword.message}</p>
+                  )}
                 </div>
 
                 <Button
                   type="submit"
                   size="lg"
-                  disabled={isLoading}
+                  disabled={isSubmitting}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  {isLoading ? "Đang đặt lại..." : "Đặt lại mật khẩu"}
+                  {isSubmitting ? "Đang đặt lại..." : "Đặt lại mật khẩu"}
                 </Button>
               </form>
             </>

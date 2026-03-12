@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 import { Grid, List, SlidersHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { ProductCard } from "../ProductCard";
@@ -9,6 +9,125 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Badge } from "../ui/badge";
 import { get } from "../../lib/api";
+
+interface FiltersContentProps {
+  categories: any[];
+  selectedCategories: string[];
+  toggleCategory: (cat: string) => void;
+  priceRange: number[];
+  handlePriceRangeChange: (value: number[]) => void;
+  brands: string[];
+  selectedBrands: string[];
+  toggleBrand: (brand: string) => void;
+  selectedRating: number | null;
+  setSelectedRating: React.Dispatch<React.SetStateAction<number | null>>;
+  clearFilters: () => void;
+}
+
+const FiltersContent = memo(function FiltersContent({
+  categories,
+  selectedCategories,
+  toggleCategory,
+  priceRange,
+  handlePriceRangeChange,
+  brands,
+  selectedBrands,
+  toggleBrand,
+  selectedRating,
+  setSelectedRating,
+  clearFilters,
+}: FiltersContentProps) {
+  return (
+    <div className="space-y-6">
+      {/* Categories */}
+      <div>
+        <h3 className="text-white mb-4">Danh mục</h3>
+        <div className="space-y-3">
+          {categories.map((cat) => (
+            <div key={cat.name} className="flex items-center space-x-2">
+              <Checkbox
+                id={`cat-${cat.name}`}
+                checked={selectedCategories.includes(cat.name)}
+                onCheckedChange={() => toggleCategory(cat.name)}
+              />
+              <Label
+                htmlFor={`cat-${cat.name}`}
+                className="text-sm text-white/70 cursor-pointer"
+              >
+                {cat.name} ({cat.productCount})
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Price Range */}
+      <div>
+        <h3 className="text-white mb-4">Khoảng giá</h3>
+        <Slider
+          min={0}
+          max={3000}
+          step={50}
+          value={priceRange}
+          onValueChange={handlePriceRangeChange}
+          className="mb-4"
+        />
+        <div className="flex items-center justify-between text-sm text-white/70">
+          <span>${priceRange[0]}</span>
+          <span>${priceRange[1]}</span>
+        </div>
+      </div>
+
+      {/* Brands */}
+      <div>
+        <h3 className="text-white mb-4">Thương hiệu</h3>
+        <div className="space-y-3">
+          {brands.slice(0, 8).map((brand) => (
+            <div key={brand} className="flex items-center space-x-2">
+              <Checkbox
+                id={`brand-${brand}`}
+                checked={selectedBrands.includes(brand)}
+                onCheckedChange={() => toggleBrand(brand)}
+              />
+              <Label
+                htmlFor={`brand-${brand}`}
+                className="text-sm text-white/70 cursor-pointer"
+              >
+                {brand}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Rating */}
+      <div>
+        <h3 className="text-white mb-4">Đánh giá</h3>
+        <div className="space-y-2">
+          {[5, 4, 3, 2].map((rating) => (
+            <button
+              key={rating}
+              onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
+              className={`flex items-center gap-2 text-sm w-full px-2 py-1 rounded-lg transition-colors ${
+                selectedRating === rating
+                  ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
+                  : "text-white/70 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <span>{"⭐".repeat(rating)}</span>
+              <span>trở lên</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Clear Filters */}
+      <Button variant="outline" className="w-full" onClick={clearFilters}>
+        Xóa tất cả bộ lọc
+      </Button>
+    </div>
+  );
+});
 
 interface ShopPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -133,123 +252,36 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
     fetchProducts();
   }, [selectedCategories, selectedBrands, selectedRating, debouncedPriceRange, sortBy, searchQuery]);
 
-  const toggleCategory = (category: string) => {
+  const toggleCategory = useCallback((category: string) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((c) => c !== category)
         : [...prev, category]
     );
-  };
+  }, []);
 
-  const toggleBrand = (brand: string) => {
+  const toggleBrand = useCallback((brand: string) => {
     setSelectedBrands((prev) =>
       prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
     );
-  };
+  }, []);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setSelectedCategories([]);
     setSelectedBrands([]);
     setSelectedRating(null);
     setPriceRange([0, 3000]);
     setDebouncedPriceRange([0, 3000]);
     setSearchQuery("");
-  };
+  }, []);
 
-  const FiltersContent = () => (
-    <div className="space-y-6">
-      {/* Categories */}
-      <div>
-        <h3 className="text-white mb-4">Danh mục</h3>
-        <div className="space-y-3">
-          {categories.map((cat) => (
-            <div key={cat.name} className="flex items-center space-x-2">
-              <Checkbox
-                id={`cat-${cat.name}`}
-                checked={selectedCategories.includes(cat.name)}
-                onCheckedChange={() => toggleCategory(cat.name)}
-              />
-              <Label
-                htmlFor={`cat-${cat.name}`}
-                className="text-sm text-white/70 cursor-pointer"
-              >
-                {cat.name} ({cat.productCount})
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
+  const handleViewProduct = useCallback((id: string | number) => {
+    onNavigate("product", products.find((p) => p.id === id));
+  }, [products, onNavigate]);
 
-      {/* Price Range */}
-      <div>
-        <h3 className="text-white mb-4">Khoảng giá</h3>
-        <Slider
-          min={0}
-          max={3000}
-          step={50}
-          value={priceRange}
-          onValueChange={handlePriceRangeChange}
-          className="mb-4"
-        />
-        <div className="flex items-center justify-between text-sm text-white/70">
-          <span>${priceRange[0]}</span>
-          <span>${priceRange[1]}</span>
-        </div>
-      </div>
-
-      {/* Brands */}
-      <div>
-        <h3 className="text-white mb-4">Thương hiệu</h3>
-        <div className="space-y-3">
-          {brands.slice(0, 8).map((brand) => (
-            <div key={brand} className="flex items-center space-x-2">
-              <Checkbox
-                id={`brand-${brand}`}
-                checked={selectedBrands.includes(brand)}
-                onCheckedChange={() => toggleBrand(brand)}
-              />
-              <Label
-                htmlFor={`brand-${brand}`}
-                className="text-sm text-white/70 cursor-pointer"
-              >
-                {brand}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Rating */}
-      <div>
-        <h3 className="text-white mb-4">Đánh giá</h3>
-        <div className="space-y-2">
-          {[5, 4, 3, 2].map((rating) => (
-            <button
-              key={rating}
-              onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
-              className={`flex items-center gap-2 text-sm w-full px-2 py-1 rounded-lg transition-colors ${
-                selectedRating === rating
-                  ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
-                  : "text-white/70 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <span>{"⭐".repeat(rating)}</span>
-              <span>trở lên</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Clear Filters */}
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={clearFilters}
-      >
-        Xóa tất cả bộ lọc
-      </Button>
-    </div>
-  );
+  const handleAddToCart = useCallback((prod: any) => {
+    onAddToCart?.(prod, 1);
+  }, [onAddToCart]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -309,7 +341,19 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
                 <SheetTitle className="text-white">Bộ lọc</SheetTitle>
               </SheetHeader>
               <div className="mt-6">
-                <FiltersContent />
+                <FiltersContent
+                  categories={categories}
+                  selectedCategories={selectedCategories}
+                  toggleCategory={toggleCategory}
+                  priceRange={priceRange}
+                  handlePriceRangeChange={handlePriceRangeChange}
+                  brands={brands}
+                  selectedBrands={selectedBrands}
+                  toggleBrand={toggleBrand}
+                  selectedRating={selectedRating}
+                  setSelectedRating={setSelectedRating}
+                  clearFilters={clearFilters}
+                />
               </div>
             </SheetContent>
           </Sheet>
@@ -369,7 +413,19 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
               <SlidersHorizontal className="h-5 w-5" />
               Bộ lọc
             </h2>
-            <FiltersContent />
+            <FiltersContent
+              categories={categories}
+              selectedCategories={selectedCategories}
+              toggleCategory={toggleCategory}
+              priceRange={priceRange}
+              handlePriceRangeChange={handlePriceRangeChange}
+              brands={brands}
+              selectedBrands={selectedBrands}
+              toggleBrand={toggleBrand}
+              selectedRating={selectedRating}
+              setSelectedRating={setSelectedRating}
+              clearFilters={clearFilters}
+            />
           </div>
         </aside>
 
@@ -401,10 +457,8 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
                 <ProductCard
                   key={product.id}
                   product={product}
-                  onView={(id) =>
-                    onNavigate("product", products.find((p) => p.id === id))
-                  }
-                  onAddToCart={(prod) => onAddToCart?.(prod, 1)}
+                  onView={handleViewProduct}
+                  onAddToCart={handleAddToCart}
                   onAddToWishlist={onAddToWishlist}
                   isInWishlist={isInWishlist?.(product.id)}
                 />

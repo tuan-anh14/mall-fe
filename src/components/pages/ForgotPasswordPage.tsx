@@ -1,36 +1,36 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { toast } from "sonner";
 import { post } from "../../lib/api";
+import { forgotPasswordSchema, ForgotPasswordFormData } from "../../lib/schemas";
 
 interface ForgotPasswordPageProps {
   onNavigate: (page: string) => void;
 }
 
 export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
-  const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) {
-      toast.error("Vui lòng nhập địa chỉ email");
-      return;
-    }
-    setIsLoading(true);
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: "" },
+  });
+
+  const onSubmit = handleSubmit(async (data) => {
     try {
-      await post("/api/v1/auth/forgot-password", { email });
+      await post("/api/v1/auth/forgot-password", { email: data.email });
+      setSubmittedEmail(data.email);
       setSubmitted(true);
     } catch (err: any) {
       toast.error(err.message || "Đã xảy ra lỗi");
-    } finally {
-      setIsLoading(false);
     }
-  };
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
@@ -57,7 +57,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={onSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="email">Địa chỉ email</Label>
                   <div className="relative">
@@ -67,19 +67,21 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                       type="email"
                       placeholder="you@example.com"
                       className="pl-10 bg-white/5 border-white/10"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      {...register("email")}
                     />
                   </div>
+                  {errors.email && (
+                    <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
+                  )}
                 </div>
 
                 <Button
                   type="submit"
                   size="lg"
-                  disabled={isLoading}
+                  disabled={isSubmitting}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
-                  {isLoading ? "Đang gửi..." : "Gửi liên kết đặt lại"}
+                  {isSubmitting ? "Đang gửi..." : "Gửi liên kết đặt lại"}
                 </Button>
               </form>
             </>
@@ -90,7 +92,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
               </div>
               <h2 className="text-2xl text-white mb-2">Kiểm tra email</h2>
               <p className="text-white/60 mb-6">
-                Chúng tôi đã gửi liên kết đặt lại mật khẩu đến <strong className="text-white">{email}</strong>
+                Chúng tôi đã gửi liên kết đặt lại mật khẩu đến <strong className="text-white">{submittedEmail}</strong>
               </p>
               <p className="text-sm text-white/50 mb-6">
                 Chưa nhận được email? Kiểm tra thư mục spam hoặc{" "}

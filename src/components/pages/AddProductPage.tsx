@@ -7,7 +7,7 @@ import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { get, post, put } from "../../lib/api";
 import { API_URL } from "../../lib/api";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface Category {
   id: string;

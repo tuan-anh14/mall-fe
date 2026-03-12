@@ -7,8 +7,8 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
-import { CartItem } from "../../App";
-import { toast } from "sonner@2.0.3";
+import { CartItem } from "../../types";
+import { toast } from "sonner";
 import { get, post } from "../../lib/api";
 
 interface CheckoutPageProps {

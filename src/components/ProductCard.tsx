@@ -1,29 +1,26 @@
+import { memo } from "react";
 import { Star, Heart, ShoppingCart, Eye } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { motion } from "motion/react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { Product } from "../types";
 
 interface ProductCardProps {
-  product: {
-    id: string | number;
-    name: string;
-    category: string;
-    price: number;
-    originalPrice?: number;
-    rating: number;
-    reviews: number;
-    image: string;
-    discount?: number;
-    stock: number;
-  };
+  product: Product;
   onView: (id: string | number) => void;
-  onAddToCart: (product: any) => void;
-  onAddToWishlist?: (product: any) => void;
+  onAddToCart: (product: Product) => void;
+  onAddToWishlist?: (product: Product) => void;
   isInWishlist?: boolean;
 }
 
-export function ProductCard({ product, onView, onAddToCart, onAddToWishlist, isInWishlist }: ProductCardProps) {
+export const ProductCard = memo(function ProductCard({
+  product,
+  onView,
+  onAddToCart,
+  onAddToWishlist,
+  isInWishlist,
+}: ProductCardProps) {
   return (
     <motion.div
       whileHover={{ y: -8 }}
@@ -45,7 +42,7 @@ export function ProductCard({ product, onView, onAddToCart, onAddToWishlist, isI
           onClick={() => onAddToWishlist(product)}
           className="absolute top-3 right-3 z-10 bg-black/50 backdrop-blur-sm hover:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          <Heart className={`h-4 w-4 ${isInWishlist ? 'fill-red-500 text-red-500' : ''}`} />
+          <Heart className={`h-4 w-4 ${isInWishlist ? "fill-red-500 text-red-500" : ""}`} />
         </Button>
       )}
 
@@ -56,7 +53,7 @@ export function ProductCard({ product, onView, onAddToCart, onAddToWishlist, isI
           alt={product.name}
           className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        
+
         {/* Quick View Overlay */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
           <Button
@@ -114,4 +111,4 @@ export function ProductCard({ product, onView, onAddToCart, onAddToWishlist, isI
       </div>
     </motion.div>
   );
-}
+});

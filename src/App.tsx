@@ -1,65 +1,59 @@
-import { useState, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Header } from "./components/Header";
 import { SellerHeader } from "./components/SellerHeader";
 import { Footer } from "./components/Footer";
 import { ChatWidget } from "./components/ChatWidget";
-import { HomePage } from "./components/pages/HomePage";
-import { ShopPage } from "./components/pages/ShopPage";
-import { ProductDetailPage } from "./components/pages/ProductDetailPage";
-import { CartPage } from "./components/pages/CartPage";
-import { CheckoutPage } from "./components/pages/CheckoutPage";
-import { OrderTrackingPage } from "./components/pages/OrderTrackingPage";
-import { ProfilePage } from "./components/pages/ProfilePage";
-import { DashboardPage } from "./components/pages/DashboardPage";
-import { SellerProductsPage } from "./components/pages/SellerProductsPage";
-import { SellerOrdersPage } from "./components/pages/SellerOrdersPage";
-import { AddProductPage } from "./components/pages/AddProductPage";
-import { LoginPage } from "./components/pages/LoginPage";
-import { ForgotPasswordPage } from "./components/pages/ForgotPasswordPage";
-import { ResetPasswordPage } from "./components/pages/ResetPasswordPage";
-import {
-  AboutPage,
-  ContactPage,
-  TermsPage,
-  PrivacyPage,
-  CareersPage,
-  ReturnsPage,
-  ShippingPage,
-  CookiesPage,
-  GDPRPage,
-} from "./components/pages/StaticPages";
-import { NotificationsPage } from "./components/pages/NotificationsPage";
-import { WishlistPage } from "./components/pages/WishlistPage";
-import { SettingsPage } from "./components/pages/SettingsPage";
-import { HelpPage } from "./components/pages/HelpPage";
-import { ChatPage } from "./components/pages/ChatPage";
-import { SellerProfilePage } from "./components/pages/SellerProfilePage";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
-import { get, post, del, put } from "./lib/api";
+import { useAuth } from "./hooks/useAuth";
+import { useCart } from "./hooks/useCart";
+import { useWishlist } from "./hooks/useWishlist";
+import { PAGE_TO_PATH, SELLER_PAGES, getPageFromPathname } from "./constants/routes";
 
-export interface CartItem {
-  id: string;
-  productId: string;
-  product: any;
-  quantity: number;
-  selectedColor?: string | null;
-  selectedSize?: string | null;
-}
+// Re-export types so existing imports keep working
+export type { CartItem, WishlistItem, User } from "./types";
 
-export interface WishlistItem {
-  id: string;
-  productId: string;
-  product: any;
-}
+// ─── Lazy page imports ────────────────────────────────────────────────────────
+const HomePage           = lazy(() => import("./components/pages/HomePage").then(m => ({ default: m.HomePage })));
+const ShopPage           = lazy(() => import("./components/pages/ShopPage").then(m => ({ default: m.ShopPage })));
+const ProductDetailPage  = lazy(() => import("./components/pages/ProductDetailPage").then(m => ({ default: m.ProductDetailPage })));
+const CartPage           = lazy(() => import("./components/pages/CartPage").then(m => ({ default: m.CartPage })));
+const CheckoutPage       = lazy(() => import("./components/pages/CheckoutPage").then(m => ({ default: m.CheckoutPage })));
+const OrderTrackingPage  = lazy(() => import("./components/pages/OrderTrackingPage").then(m => ({ default: m.OrderTrackingPage })));
+const ProfilePage        = lazy(() => import("./components/pages/ProfilePage").then(m => ({ default: m.ProfilePage })));
+const DashboardPage      = lazy(() => import("./components/pages/DashboardPage").then(m => ({ default: m.DashboardPage })));
+const SellerProductsPage = lazy(() => import("./components/pages/SellerProductsPage").then(m => ({ default: m.SellerProductsPage })));
+const SellerOrdersPage   = lazy(() => import("./components/pages/SellerOrdersPage").then(m => ({ default: m.SellerOrdersPage })));
+const AddProductPage     = lazy(() => import("./components/pages/AddProductPage").then(m => ({ default: m.AddProductPage })));
+const LoginPage          = lazy(() => import("./components/pages/LoginPage").then(m => ({ default: m.LoginPage })));
+const ForgotPasswordPage = lazy(() => import("./components/pages/ForgotPasswordPage").then(m => ({ default: m.ForgotPasswordPage })));
+const ResetPasswordPage  = lazy(() => import("./components/pages/ResetPasswordPage").then(m => ({ default: m.ResetPasswordPage })));
+const NotificationsPage  = lazy(() => import("./components/pages/NotificationsPage").then(m => ({ default: m.NotificationsPage })));
+const WishlistPage       = lazy(() => import("./components/pages/WishlistPage").then(m => ({ default: m.WishlistPage })));
+const SettingsPage       = lazy(() => import("./components/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
+const HelpPage           = lazy(() => import("./components/pages/HelpPage").then(m => ({ default: m.HelpPage })));
+const ChatPage           = lazy(() => import("./components/pages/ChatPage").then(m => ({ default: m.ChatPage })));
+const SellerProfilePage  = lazy(() => import("./components/pages/SellerProfilePage").then(m => ({ default: m.SellerProfilePage })));
 
-export interface User {
-  id?: string;
-  email: string;
-  name: string;
-  avatar?: string;
-  userType: "buyer" | "seller";
+// Static pages — one chunk for the whole module
+const AboutPage    = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.AboutPage })));
+const ContactPage  = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.ContactPage })));
+const TermsPage    = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.TermsPage })));
+const PrivacyPage  = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.PrivacyPage })));
+const CareersPage  = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.CareersPage })));
+const ReturnsPage  = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.ReturnsPage })));
+const ShippingPage = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.ShippingPage })));
+const CookiesPage  = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.CookiesPage })));
+const GDPRPage     = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.GDPRPage })));
+
+// ─── Page loading fallback ────────────────────────────────────────────────────
+function PageLoader() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="w-10 h-10 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
+    </div>
+  );
 }
 
 // Redirect component that fires toast only once (avoids calling toast in render)
@@ -74,96 +68,35 @@ function RedirectWithToast({ to, message }: { to: string; message: string }) {
   return <Navigate to={to} replace />;
 }
 
-// Map page name → URL path (for simple pages without dynamic segments)
-const PAGE_TO_PATH: Record<string, string> = {
-  home: "/",
-  shop: "/shop",
-  product: "/product",
-  cart: "/cart",
-  checkout: "/checkout",
-  orders: "/orders",
-  profile: "/profile",
-  dashboard: "/dashboard",
-  "seller-products": "/seller/products",
-  "seller-orders": "/seller/orders",
-  "add-product": "/seller/add-product",
-  "edit-product": "/seller/edit-product",
-  login: "/login",
-  "forgot-password": "/forgot-password",
-  "reset-password": "/reset-password",
-  about: "/about",
-  contact: "/contact",
-  terms: "/terms",
-  privacy: "/privacy",
-  help: "/help",
-  wishlist: "/wishlist",
-  notifications: "/notifications",
-  chat: "/chat",
-  settings: "/settings",
-  careers: "/careers",
-  returns: "/returns",
-  shipping: "/shipping",
-  cookies: "/cookies",
-  gdpr: "/gdpr",
-  "seller-profile": "/seller-profile",
-};
-
-// Derive the Page name from a pathname (for header/footer logic)
-const PATHNAME_TO_PAGE: Record<string, string> = Object.fromEntries(
-  Object.entries(PAGE_TO_PATH).map(([page, path]) => [path, page])
-);
-
-function getPageFromPathname(pathname: string): string {
-  if (pathname.startsWith("/product/")) return "product";
-  return PATHNAME_TO_PAGE[pathname] ?? "home";
-}
-
 export default function App() {
   const reactNavigate = useNavigate();
   const location = useLocation();
 
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const { user, isAuthenticated, isAuthLoading, checkAuth, login, register, logout } = useAuth();
+  const { cartItems, fetchCart, addToCart: cartAdd, removeFromCart, updateCartQuantity, clearCart } = useCart();
+  const { wishlistItems, fetchWishlist, addToWishlist: wishlistAdd, removeFromWishlist, isInWishlist, clearWishlist } = useWishlist();
 
-  // Derive current page from URL
   const currentPage = getPageFromPathname(location.pathname);
 
-  // Apply dark mode to html element
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
 
-  // Restore session on mount + handle reset-password token in URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const resetToken = params.get("token");
     if (resetToken) {
-      // Move token from query string into route state for security
       reactNavigate("/reset-password", { state: { token: resetToken }, replace: true });
     }
-
-    get<{ user: User }>("/api/v1/auth/me")
-      .then(async ({ user: me }) => {
-        setUser(me);
-        setIsAuthenticated(true);
-        await fetchCartAndWishlist();
-      })
-      .catch(() => {
-        // Not authenticated, stay as guest
-      })
-      .finally(() => setIsAuthLoading(false));
+    checkAuth().then((authenticated) => {
+      if (authenticated) fetchCartAndWishlist();
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // navigate() keeps the same string signature as before so no child component changes
   const navigate = (page: string, data?: any) => {
     window.scrollTo(0, 0);
-
     if (page === "product" && data?.id) {
-      // Cache product so the page survives F5
       try { sessionStorage.setItem(`product_${data.id}`, JSON.stringify(data)); } catch {}
       reactNavigate(`/product/${data.id}`, { state: data });
     } else if (page === "shop") {
@@ -177,11 +110,9 @@ export default function App() {
     } else if (page === "seller-profile" && data?.sellerUserId) {
       reactNavigate(`/seller-profile?userId=${encodeURIComponent(data.sellerUserId)}`);
     } else if (page === "chat") {
-      // Cache sellerInfo so chat survives F5
       if (data) { try { sessionStorage.setItem("chat_seller", JSON.stringify(data)); } catch {} }
       reactNavigate("/chat", { state: data });
     } else if (page === "edit-product") {
-      // Cache product data so edit form survives F5
       if (data) { try { sessionStorage.setItem("edit_product", JSON.stringify(data)); } catch {} }
       reactNavigate("/seller/edit-product", { state: data });
     } else {
@@ -190,25 +121,13 @@ export default function App() {
   };
 
   const fetchCartAndWishlist = async () => {
-    const [cartRes, wishlistRes] = await Promise.allSettled([
-      get<{ cart: { items: CartItem[] } }>("/api/v1/cart"),
-      get<{ items: WishlistItem[] }>("/api/v1/wishlist"),
-    ]);
-    if (cartRes.status === "fulfilled") setCartItems(cartRes.value.cart?.items ?? []);
-    if (wishlistRes.status === "fulfilled") setWishlistItems(wishlistRes.value.items ?? []);
+    await Promise.allSettled([fetchCart(), fetchWishlist()]);
   };
 
   const handleLogin = async (email: string, password: string) => {
-    const { user: me } = await post<{ user: User }>("/api/v1/auth/login", { email, password });
-    setUser(me);
-    setIsAuthenticated(true);
+    const me = await login(email, password);
     await fetchCartAndWishlist();
-    toast.success(`Chào mừng trở lại, ${me.name}!`);
-    if (me.userType === "seller") {
-      navigate("dashboard");
-    } else {
-      navigate("home");
-    }
+    navigate(me.userType === "seller" ? "dashboard" : "home");
   };
 
   const handleRegister = async (
@@ -217,80 +136,29 @@ export default function App() {
     password: string,
     userType: "buyer" | "seller"
   ) => {
-    const { user: me } = await post<{ user: User }>("/api/v1/auth/register", {
-      name,
-      email,
-      password,
-      userType,
-    });
-    setUser(me);
-    setIsAuthenticated(true);
+    const me = await register(name, email, password, userType);
     await fetchCartAndWishlist();
-    toast.success(`Chào mừng, ${me.name}!`);
-    if (me.userType === "seller") {
-      navigate("dashboard");
-    } else {
-      navigate("home");
-    }
+    navigate(me.userType === "seller" ? "dashboard" : "home");
   };
 
   const handleLogout = async () => {
-    try {
-      await post("/api/v1/auth/logout");
-    } catch {
-      // Session may have already expired
-    }
-    setUser(null);
-    setIsAuthenticated(false);
-    setCartItems([]);
-    setWishlistItems([]);
-    toast.success("Đã đăng xuất thành công");
+    await logout();
+    clearCart();
+    clearWishlist();
     navigate("home");
   };
 
-  const requireAuth = (action: () => void, actionName: string = "thực hiện thao tác này") => {
-    if (!isAuthenticated) {
-      toast.error(`Vui lòng đăng nhập để ${actionName}`);
-      navigate("login");
-      return false;
-    }
-    action();
-    return true;
-  };
-
-  const addToCart = async (product: any, quantity: number, selectedColor?: string, selectedSize?: string) => {
+  const addToCart = async (product: any, quantity: number = 1, selectedColor?: string, selectedSize?: string) => {
     if (!isAuthenticated) {
       toast.error("Vui lòng đăng nhập để thêm vào giỏ hàng");
       navigate("login");
       throw new Error("Not authenticated");
     }
     try {
-      const body: any = { productId: product.id, quantity };
-      if (selectedColor) body.color = selectedColor;
-      if (selectedSize) body.size = selectedSize;
-      const res = await post<{ cart: { items: CartItem[] } }>("/api/v1/cart/items", body);
-      setCartItems(res.cart?.items ?? []);
+      await cartAdd(product.id, quantity, selectedColor, selectedSize);
     } catch (err: any) {
       toast.error(err.message || "Không thể thêm vào giỏ hàng");
       throw err;
-    }
-  };
-
-  const removeFromCart = async (itemId: string) => {
-    try {
-      const res = await del<{ cart: { items: CartItem[] } }>(`/api/v1/cart/items/${itemId}`);
-      setCartItems(res.cart?.items ?? []);
-    } catch (err: any) {
-      toast.error(err.message || "Không thể xóa khỏi giỏ hàng");
-    }
-  };
-
-  const updateCartQuantity = async (itemId: string, quantity: number) => {
-    try {
-      const res = await put<{ cart: { items: CartItem[] } }>(`/api/v1/cart/items/${itemId}`, { quantity });
-      setCartItems(res.cart?.items ?? []);
-    } catch (err: any) {
-      toast.error(err.message || "Không thể cập nhật giỏ hàng");
     }
   };
 
@@ -302,46 +170,20 @@ export default function App() {
     }
     if (wishlistItems.some((item) => item.productId === product.id)) return;
     try {
-      const res = await post<{ items: WishlistItem[] }>("/api/v1/wishlist", {
-        productId: product.id,
-      });
-      setWishlistItems(res.items ?? []);
+      await wishlistAdd(product.id);
     } catch (err: any) {
       toast.error(err.message || "Không thể thêm vào danh sách yêu thích");
     }
   };
 
-  const removeFromWishlist = async (productId: string) => {
-    try {
-      const res = await del<{ items: WishlistItem[] }>(`/api/v1/wishlist/${productId}`);
-      setWishlistItems(res.items ?? []);
-    } catch (err: any) {
-      toast.error(err.message || "Không thể xóa khỏi danh sách yêu thích");
-    }
-  };
-
-  const isInWishlist = (productId: string | number) => {
-    return wishlistItems.some((item) => item.productId === String(productId));
-  };
-
-  // --- sessionStorage fallback helpers ---
   const readSession = (key: string): any => {
     try { const v = sessionStorage.getItem(key); return v ? JSON.parse(v) : null; } catch { return null; }
   };
 
-  // Resolve data for pages that pass objects via location.state (survives F5 via sessionStorage)
   const productId = location.pathname.match(/^\/product\/(.+)$/)?.[1];
   const productData = (location.state as any) ?? (productId ? readSession(`product_${productId}`) : null);
-
-  const chatData =
-    location.pathname === "/chat"
-      ? ((location.state as any) ?? readSession("chat_seller"))
-      : null;
-
-  const editProductData =
-    location.pathname === "/seller/edit-product"
-      ? ((location.state as any) ?? readSession("edit_product"))
-      : null;
+  const chatData = location.pathname === "/chat" ? ((location.state as any) ?? readSession("chat_seller")) : null;
+  const editProductData = location.pathname === "/seller/edit-product" ? ((location.state as any) ?? readSession("edit_product")) : null;
 
   if (isAuthLoading) {
     return (
@@ -351,7 +193,7 @@ export default function App() {
     );
   }
 
-  const isSellerPage = ["dashboard", "seller-products", "seller-orders", "add-product", "edit-product"].includes(currentPage);
+  const isSellerPage = SELLER_PAGES.includes(currentPage);
   const isSeller = user?.userType === "seller";
   const showSellerHeader = isAuthenticated && isSeller && isSellerPage;
   const showBuyerHeader =
@@ -360,21 +202,14 @@ export default function App() {
     currentPage !== "reset-password" &&
     !showSellerHeader;
 
-  // Helpers for protected routes — toast must be in useEffect, NOT in render
   const authRedirect = (msg: string) => <RedirectWithToast to="/login" message={msg} />;
   const sellerRedirect = (msg: string) => <RedirectWithToast to="/" message={msg} />;
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       {showSellerHeader && (
-        <SellerHeader
-          currentPage={currentPage}
-          onNavigate={navigate}
-          onLogout={handleLogout}
-          user={user}
-        />
+        <SellerHeader currentPage={currentPage} onNavigate={navigate} onLogout={handleLogout} user={user} />
       )}
-
       {showBuyerHeader && (
         <Header
           currentPage={currentPage}
@@ -389,214 +224,113 @@ export default function App() {
       )}
 
       <main className="flex-1">
-        <Routes>
-          {/* Public pages */}
-          <Route
-            path="/"
-            element={
-              <HomePage
-                onNavigate={navigate}
-                onAddToCart={addToCart}
-                onAddToWishlist={addToWishlist}
-                isInWishlist={isInWishlist}
-              />
-            }
-          />
-          <Route
-            path="/shop"
-            element={
-              <ShopPage
-                onNavigate={navigate}
-                initialCategory={new URLSearchParams(location.search).get("category") ?? undefined}
-                initialSearch={new URLSearchParams(location.search).get("search") ?? undefined}
-                onAddToCart={addToCart}
-                onAddToWishlist={addToWishlist}
-                isInWishlist={isInWishlist}
-              />
-            }
-          />
-          <Route
-            path="/product/:id"
-            element={
-              productData ? (
-                <ProductDetailPage
-                  product={productData}
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* Public pages */}
+            <Route path="/" element={<HomePage onNavigate={navigate} onAddToCart={addToCart} onAddToWishlist={addToWishlist} isInWishlist={isInWishlist} />} />
+            <Route
+              path="/shop"
+              element={
+                <ShopPage
                   onNavigate={navigate}
+                  initialCategory={new URLSearchParams(location.search).get("category") ?? undefined}
+                  initialSearch={new URLSearchParams(location.search).get("search") ?? undefined}
                   onAddToCart={addToCart}
                   onAddToWishlist={addToWishlist}
-                  onRemoveFromWishlist={removeFromWishlist}
-                  isInWishlist={isInWishlist(productData?.id)}
-                  isAuthenticated={isAuthenticated}
+                  isInWishlist={isInWishlist}
                 />
-              ) : (
-                <Navigate to="/shop" replace />
-              )
-            }
-          />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/help" element={<HelpPage onNavigate={navigate} />} />
-          <Route path="/careers" element={<CareersPage />} />
-          <Route path="/returns" element={<ReturnsPage />} />
-          <Route path="/shipping" element={<ShippingPage />} />
-          <Route path="/cookies" element={<CookiesPage />} />
-          <Route path="/gdpr" element={<GDPRPage />} />
-          <Route
-            path="/seller-profile"
-            element={
-              <SellerProfilePage
-                onNavigate={navigate as any}
-                sellerUserId={new URLSearchParams(location.search).get("userId") ?? undefined}
-              />
-            }
-          />
+              }
+            />
+            <Route
+              path="/product/:id"
+              element={
+                productData ? (
+                  <ProductDetailPage
+                    product={productData}
+                    onNavigate={navigate}
+                    onAddToCart={addToCart}
+                    onAddToWishlist={addToWishlist}
+                    onRemoveFromWishlist={removeFromWishlist}
+                    isInWishlist={isInWishlist(productData?.id)}
+                    isAuthenticated={isAuthenticated}
+                  />
+                ) : (
+                  <Navigate to="/shop" replace />
+                )
+              }
+            />
+            <Route path="/about"    element={<AboutPage />} />
+            <Route path="/contact"  element={<ContactPage />} />
+            <Route path="/terms"    element={<TermsPage />} />
+            <Route path="/privacy"  element={<PrivacyPage />} />
+            <Route path="/help"     element={<HelpPage onNavigate={navigate} />} />
+            <Route path="/careers"  element={<CareersPage />} />
+            <Route path="/returns"  element={<ReturnsPage />} />
+            <Route path="/shipping" element={<ShippingPage />} />
+            <Route path="/cookies"  element={<CookiesPage />} />
+            <Route path="/gdpr"     element={<GDPRPage />} />
+            <Route
+              path="/seller-profile"
+              element={
+                <SellerProfilePage
+                  onNavigate={navigate as any}
+                  sellerUserId={new URLSearchParams(location.search).get("userId") ?? undefined}
+                />
+              }
+            />
 
-          {/* Auth pages */}
-          <Route
-            path="/login"
-            element={
-              isAuthenticated ? (
-                <Navigate to={user?.userType === "seller" ? "/dashboard" : "/"} replace />
-              ) : (
-                <LoginPage onNavigate={navigate} onLogin={handleLogin} onRegister={handleRegister} />
-              )
-            }
-          />
-          <Route path="/forgot-password" element={<ForgotPasswordPage onNavigate={navigate} />} />
-          <Route
-            path="/reset-password"
-            element={
-              <ResetPasswordPage
-                onNavigate={navigate}
-                token={(location.state as any)?.token ?? new URLSearchParams(location.search).get("token")}
-              />
-            }
-          />
+            {/* Auth pages */}
+            <Route
+              path="/login"
+              element={
+                isAuthenticated
+                  ? <Navigate to={user?.userType === "seller" ? "/dashboard" : "/"} replace />
+                  : <LoginPage onNavigate={navigate} onLogin={handleLogin} onRegister={handleRegister} />
+              }
+            />
+            <Route path="/forgot-password" element={<ForgotPasswordPage onNavigate={navigate} />} />
+            <Route
+              path="/reset-password"
+              element={
+                <ResetPasswordPage
+                  onNavigate={navigate}
+                  token={(location.state as any)?.token ?? new URLSearchParams(location.search).get("token")}
+                />
+              }
+            />
 
-          {/* Buyer protected pages */}
-          <Route
-            path="/cart"
-            element={
-              !isAuthenticated
-                ? authRedirect("Vui lòng đăng nhập để xem giỏ hàng")
-                : <CartPage onNavigate={navigate} cartItems={cartItems} onRemoveItem={removeFromCart} onUpdateQuantity={updateCartQuantity} />
-            }
-          />
-          <Route
-            path="/checkout"
-            element={
-              !isAuthenticated
-                ? authRedirect("Vui lòng đăng nhập để thanh toán")
-                : <CheckoutPage onNavigate={navigate} cartItems={cartItems} onOrderPlaced={() => setCartItems([])} user={user} />
-            }
-          />
-          <Route
-            path="/orders"
-            element={
-              !isAuthenticated
-                ? authRedirect("Vui lòng đăng nhập để xem đơn hàng")
-                : <OrderTrackingPage onNavigate={navigate} orderId={new URLSearchParams(location.search).get("orderId") ?? undefined} />
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              !isAuthenticated
-                ? authRedirect("Vui lòng đăng nhập để xem hồ sơ")
-                : <ProfilePage onNavigate={navigate} onLogout={handleLogout} user={user} />
-            }
-          />
-          <Route
-            path="/notifications"
-            element={
-              !isAuthenticated
-                ? authRedirect("Vui lòng đăng nhập để xem thông báo")
-                : <NotificationsPage onNavigate={navigate} />
-            }
-          />
-          <Route
-            path="/wishlist"
-            element={
-              !isAuthenticated
-                ? authRedirect("Vui lòng đăng nhập để xem danh sách yêu thích")
-                : <WishlistPage onNavigate={navigate} wishlistItems={wishlistItems} onRemoveItem={removeFromWishlist} onAddToCart={addToCart} />
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              !isAuthenticated
-                ? authRedirect("Vui lòng đăng nhập để truy cập cài đặt")
-                : <SettingsPage onNavigate={navigate} onLogout={handleLogout} />
-            }
-          />
-          <Route
-            path="/chat"
-            element={
-              !isAuthenticated
-                ? authRedirect("Vui lòng đăng nhập để trò chuyện với người bán")
-                : <ChatPage onNavigate={navigate} sellerInfo={chatData} userId={user?.id} userType={user?.userType} />
-            }
-          />
+            {/* Buyer protected pages */}
+            <Route path="/cart"          element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để xem giỏ hàng")            : <CartPage onNavigate={navigate} cartItems={cartItems} onRemoveItem={removeFromCart} onUpdateQuantity={updateCartQuantity} />} />
+            <Route path="/checkout"      element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để thanh toán")               : <CheckoutPage onNavigate={navigate} cartItems={cartItems} onOrderPlaced={() => clearCart()} user={user} />} />
+            <Route path="/orders"        element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để xem đơn hàng")             : <OrderTrackingPage onNavigate={navigate} orderId={new URLSearchParams(location.search).get("orderId") ?? undefined} />} />
+            <Route path="/profile"       element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để xem hồ sơ")                : <ProfilePage onNavigate={navigate} onLogout={handleLogout} user={user} />} />
+            <Route path="/notifications" element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để xem thông báo")            : <NotificationsPage onNavigate={navigate} />} />
+            <Route path="/wishlist"      element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để xem danh sách yêu thích")  : <WishlistPage onNavigate={navigate} wishlistItems={wishlistItems} onRemoveItem={removeFromWishlist} onAddToCart={addToCart} />} />
+            <Route path="/settings"      element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để truy cập cài đặt")         : <SettingsPage onNavigate={navigate} onLogout={handleLogout} />} />
+            <Route path="/chat"          element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để trò chuyện với người bán") : <ChatPage onNavigate={navigate} sellerInfo={chatData} userId={user?.id} userType={user?.userType} />} />
 
-          {/* Seller protected pages */}
-          <Route
-            path="/dashboard"
-            element={
-              !isAuthenticated || user?.userType !== "seller"
-                ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.")
-                : <DashboardPage onNavigate={navigate} />
-            }
-          />
-          <Route
-            path="/seller/products"
-            element={
-              !isAuthenticated || user?.userType !== "seller"
-                ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.")
-                : <SellerProductsPage onNavigate={navigate} />
-            }
-          />
-          <Route
-            path="/seller/orders"
-            element={
-              !isAuthenticated || user?.userType !== "seller"
-                ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.")
-                : <SellerOrdersPage onNavigate={navigate} />
-            }
-          />
-          <Route
-            path="/seller/add-product"
-            element={
-              !isAuthenticated || user?.userType !== "seller"
-                ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.")
-                : <AddProductPage onNavigate={navigate} />
-            }
-          />
-          <Route
-            path="/seller/edit-product"
-            element={
-              !isAuthenticated || user?.userType !== "seller"
-                ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.")
-                : <AddProductPage onNavigate={navigate} initialProduct={editProductData} />
-            }
-          />
+            {/* Seller protected pages */}
+            <Route path="/dashboard"           element={!isAuthenticated || user?.userType !== "seller" ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <DashboardPage onNavigate={navigate} />} />
+            <Route path="/seller/products"     element={!isAuthenticated || user?.userType !== "seller" ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerProductsPage onNavigate={navigate} />} />
+            <Route path="/seller/orders"       element={!isAuthenticated || user?.userType !== "seller" ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerOrdersPage onNavigate={navigate} />} />
+            <Route path="/seller/add-product"  element={!isAuthenticated || user?.userType !== "seller" ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <AddProductPage onNavigate={navigate} />} />
+            <Route path="/seller/edit-product" element={!isAuthenticated || user?.userType !== "seller" ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <AddProductPage onNavigate={navigate} initialProduct={editProductData} />} />
 
-          {/* 404 fallback */}
-          <Route
-            path="*"
-            element={
-              <div className="container mx-auto px-4 py-16 text-center">
-                <h1 className="text-4xl text-white mb-4">Trang Đang Xây Dựng</h1>
-                <p className="text-white/60 mb-8">Trang này sẽ sớm ra mắt!</p>
-                <button onClick={() => navigate("home")} className="text-purple-400 hover:text-purple-300">
-                  ← Quay về Trang chủ
-                </button>
-              </div>
-            }
-          />
-        </Routes>
+            {/* 404 fallback */}
+            <Route
+              path="*"
+              element={
+                <div className="container mx-auto px-4 py-16 text-center">
+                  <h1 className="text-4xl text-white mb-4">Trang Đang Xây Dựng</h1>
+                  <p className="text-white/60 mb-8">Trang này sẽ sớm ra mắt!</p>
+                  <button onClick={() => navigate("home")} className="text-purple-400 hover:text-purple-300">
+                    ← Quay về Trang chủ
+                  </button>
+                </div>
+              }
+            />
+          </Routes>
+        </Suspense>
       </main>
 
       {showBuyerHeader && (

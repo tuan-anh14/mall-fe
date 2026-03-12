@@ -49,7 +49,7 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { motion } from "motion/react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import { get, put, post, del } from "../../lib/api";
 
 interface SettingsPageProps {

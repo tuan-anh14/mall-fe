@@ -6,7 +6,7 @@ import { Badge } from "../ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { get, del } from "../../lib/api";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,

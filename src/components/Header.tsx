@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { User as UserType } from "../App";
+import { User as UserType } from "../types";
 
 interface HeaderProps {
   currentPage: string;

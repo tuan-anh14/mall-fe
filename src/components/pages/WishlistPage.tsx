@@ -3,8 +3,8 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { motion } from "motion/react";
-import { toast } from "sonner@2.0.3";
-import { WishlistItem } from "../../App";
+import { toast } from "sonner";
+import { WishlistItem } from "../../types";
 
 interface WishlistPageProps {
   onNavigate: (page: string, data?: any) => void;

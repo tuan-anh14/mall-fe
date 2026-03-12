@@ -5,7 +5,7 @@ import { Badge } from "../ui/badge";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { get } from "../../lib/api";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface SellerProfilePageProps {
   onNavigate: (page: string, data?: any) => void;

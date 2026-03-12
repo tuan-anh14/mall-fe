@@ -6,7 +6,7 @@ import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { motion } from "motion/react";
 import { get, put, del } from "../../lib/api";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface NotificationsPageProps {
   onNavigate: (page: string, data?: any) => void;

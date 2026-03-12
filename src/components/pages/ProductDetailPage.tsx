@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Progress } from "../ui/progress";
 import { Separator } from "../ui/separator";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import { get, post } from "../../lib/api";
 import { API_URL } from "../../lib/api";
 

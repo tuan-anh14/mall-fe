@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ArrowRight, Zap, Shield, Truck, Headphones } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
@@ -61,6 +61,18 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
   }, [featuredProductsForHero.length]);
 
   const currentProduct = featuredProductsForHero[currentFeaturedIndex];
+
+  const handleViewFeatured = useCallback((id: string | number) => {
+    onNavigate("product", featuredProducts.find((p) => p.id === id));
+  }, [featuredProducts, onNavigate]);
+
+  const handleViewTrending = useCallback((id: string | number) => {
+    onNavigate("product", trendingProducts.find((p) => p.id === id));
+  }, [trendingProducts, onNavigate]);
+
+  const handleAddToCart = useCallback((prod: any) => {
+    onAddToCart?.(prod, 1);
+  }, [onAddToCart]);
 
   if (loading) {
     return (
@@ -264,8 +276,8 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
             <ProductCard
               key={product.id}
               product={product}
-              onView={(id) => onNavigate("product", featuredProducts.find((p) => p.id === id))}
-              onAddToCart={(prod) => onAddToCart?.(prod, 1)}
+              onView={handleViewFeatured}
+              onAddToCart={handleAddToCart}
               onAddToWishlist={onAddToWishlist}
               isInWishlist={isInWishlist?.(product.id)}
             />
@@ -313,8 +325,8 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
             <ProductCard
               key={product.id}
               product={product}
-              onView={(id) => onNavigate("product", trendingProducts.find((p) => p.id === id))}
-              onAddToCart={(prod) => onAddToCart?.(prod, 1)}
+              onView={handleViewTrending}
+              onAddToCart={handleAddToCart}
               onAddToWishlist={onAddToWishlist}
               isInWishlist={isInWishlist?.(product.id)}
             />
