@@ -1,5 +1,18 @@
 import React, { useState } from "react";
-import { Search, ShoppingCart, User, Menu, Heart, Bell, MessageCircle, Settings, LogOut, Package, LayoutDashboard } from "lucide-react";
+import {
+  Search,
+  ShoppingCart,
+  User,
+  Menu,
+  Heart,
+  Bell,
+  MessageCircle,
+  Settings,
+  LogOut,
+  Package,
+  Store,
+  Shield,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
@@ -10,6 +23,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "./ui/dialog";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { User as UserType } from "../types";
 
@@ -22,6 +42,7 @@ interface HeaderProps {
   user?: UserType | null;
   onLogout?: () => void;
   onSearch?: (query: string) => void;
+  onBecomeSellerRequest?: (message?: string) => Promise<void>;
 }
 
 export function Header({
@@ -33,8 +54,12 @@ export function Header({
   user = null,
   onLogout,
   onSearch,
+  onBecomeSellerRequest,
 }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSellerDialog, setShowSellerDialog] = useState(false);
+  const [sellerMessage, setSellerMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSearch = () => {
     const q = searchQuery.trim();
@@ -49,174 +74,274 @@ export function Header({
     if (e.key === "Enter") handleSearch();
   };
 
+  const handleSellerSubmit = async () => {
+    if (!onBecomeSellerRequest) return;
+    setIsSubmitting(true);
+    try {
+      await onBecomeSellerRequest(sellerMessage || undefined);
+      setShowSellerDialog(false);
+      setSellerMessage("");
+    } catch {
+      // error toast handled by hook
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isBuyer = user?.userType === "buyer";
+  const isAdmin = user?.userType === "admin";
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl">
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-center">
-        <p className="text-sm text-white">
-          🎉 Sale Black Friday - Giảm đến 50% cho các sản phẩm được chọn! Chỉ trong thời gian có hạn
-        </p>
-      </div>
+    <>
+      <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl">
+        {/* Top Banner */}
+        <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-center">
+          <p className="text-sm text-white">
+            🎉 Sale Black Friday - Giảm đến 50% cho các sản phẩm được chọn! Chỉ trong thời gian có hạn
+          </p>
+        </div>
 
-      {/* Main Header */}
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between gap-4">
-          {/* Mobile Menu */}
-          <Sheet>
-            <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] bg-zinc-950 border-white/10">
-              <nav className="flex flex-col gap-4 mt-8">
-                <Button
-                  variant={currentPage === "home" ? "default" : "ghost"}
-                  className="justify-start"
-                  onClick={() => onNavigate("home")}
-                >
-                  Trang chủ
+        {/* Main Header */}
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-between gap-4">
+            {/* Mobile Menu */}
+            <Sheet>
+              <SheetTrigger asChild className="lg:hidden">
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
                 </Button>
-                <Button
-                  variant={currentPage === "shop" ? "default" : "ghost"}
-                  className="justify-start"
-                  onClick={() => onNavigate("shop")}
-                >
-                  Cửa hàng
-                </Button>
-                <Button
-                  variant={currentPage === "about" ? "default" : "ghost"}
-                  className="justify-start"
-                  onClick={() => onNavigate("about")}
-                >
-                  Giới thiệu
-                </Button>
-                <Button
-                  variant={currentPage === "contact" ? "default" : "ghost"}
-                  className="justify-start"
-                  onClick={() => onNavigate("contact")}
-                >
-                  Liên hệ
-                </Button>
-              </nav>
-            </SheetContent>
-          </Sheet>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[300px] bg-zinc-950 border-white/10">
+                <nav className="flex flex-col gap-4 mt-8">
+                  <Button
+                    variant={currentPage === "home" ? "default" : "ghost"}
+                    className="justify-start"
+                    onClick={() => onNavigate("home")}
+                  >
+                    Trang chủ
+                  </Button>
+                  <Button
+                    variant={currentPage === "shop" ? "default" : "ghost"}
+                    className="justify-start"
+                    onClick={() => onNavigate("shop")}
+                  >
+                    Cửa hàng
+                  </Button>
+                  <Button
+                    variant={currentPage === "about" ? "default" : "ghost"}
+                    className="justify-start"
+                    onClick={() => onNavigate("about")}
+                  >
+                    Giới thiệu
+                  </Button>
+                  <Button
+                    variant={currentPage === "contact" ? "default" : "ghost"}
+                    className="justify-start"
+                    onClick={() => onNavigate("contact")}
+                  >
+                    Liên hệ
+                  </Button>
+                  {isBuyer && (
+                    <Button
+                      variant="ghost"
+                      className="justify-start text-purple-400"
+                      onClick={() => setShowSellerDialog(true)}
+                    >
+                      <Store className="h-4 w-4 mr-2" />
+                      Trở thành Người bán
+                    </Button>
+                  )}
+                  {isAdmin && (
+                    <Button
+                      variant="ghost"
+                      className="justify-start text-red-400"
+                      onClick={() => onNavigate("admin-dashboard")}
+                    >
+                      <Shield className="h-4 w-4 mr-2" />
+                      Admin Dashboard
+                    </Button>
+                  )}
+                </nav>
+              </SheetContent>
+            </Sheet>
 
-          {/* Logo */}
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate("home")}>
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-              <ShoppingCart className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl tracking-tight text-white">ShopHub</span>
-          </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
-            <Button
-              variant={currentPage === "home" ? "default" : "ghost"}
-              onClick={() => onNavigate("home")}
-            >
-              Trang chủ
-            </Button>
-            <Button
-              variant={currentPage === "shop" ? "default" : "ghost"}
-              onClick={() => onNavigate("shop")}
-            >
-              Cửa hàng
-            </Button>
-            <Button
-              variant={currentPage === "about" ? "default" : "ghost"}
-              onClick={() => onNavigate("about")}
-            >
-              Giới thiệu
-            </Button>
-            <Button
-              variant={currentPage === "contact" ? "default" : "ghost"}
-              onClick={() => onNavigate("contact")}
-            >
-              Liên hệ
-            </Button>
-            {user?.userType === "seller" && (
-              <Button
-                variant={currentPage === "dashboard" ? "default" : "ghost"}
-                onClick={() => onNavigate("dashboard")}
-                className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30"
-              >
-                <LayoutDashboard className="h-4 w-4 mr-2" />
-                Bảng điều khiển
-              </Button>
-            )}
-          </nav>
-
-          {/* Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-md">
-            <div className="relative w-full flex gap-1">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
-                <Input
-                  placeholder="Tìm kiếm sản phẩm..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={handleSearchKeyDown}
-                  className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/50"
-                />
+            {/* Logo */}
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate("home")}>
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                <ShoppingCart className="h-5 w-5 text-white" />
               </div>
-              <Button size="sm" onClick={handleSearch} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-3">
-                <Search className="h-4 w-4" />
-              </Button>
+              <span className="text-xl tracking-tight text-white">ShopHub</span>
             </div>
-          </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            {isAuthenticated && (
-              <Button variant="ghost" size="icon" onClick={() => onNavigate("notifications")} className="hidden md:flex relative">
-                <Bell className="h-5 w-5" />
-                <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-                  2
-                </Badge>
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center gap-1">
+              <Button
+                variant={currentPage === "home" ? "default" : "ghost"}
+                onClick={() => onNavigate("home")}
+              >
+                Trang chủ
               </Button>
-            )}
-
-            {isAuthenticated && (
-              <Button variant="ghost" size="icon" onClick={() => onNavigate("chat")} className="hidden md:flex">
-                <MessageCircle className="h-5 w-5" />
+              <Button
+                variant={currentPage === "shop" ? "default" : "ghost"}
+                onClick={() => onNavigate("shop")}
+              >
+                Cửa hàng
               </Button>
-            )}
+              <Button
+                variant={currentPage === "about" ? "default" : "ghost"}
+                onClick={() => onNavigate("about")}
+              >
+                Giới thiệu
+              </Button>
+              <Button
+                variant={currentPage === "contact" ? "default" : "ghost"}
+                onClick={() => onNavigate("contact")}
+              >
+                Liên hệ
+              </Button>
+              {isBuyer && (
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowSellerDialog(true)}
+                  className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 border border-purple-500/30"
+                >
+                  <Store className="h-4 w-4 mr-2" />
+                  Trở thành Người bán
+                </Button>
+              )}
+              {isAdmin && (
+                <Button
+                  variant={currentPage.startsWith("admin") ? "default" : "ghost"}
+                  onClick={() => onNavigate("admin-dashboard")}
+                  className="bg-gradient-to-r from-red-600/20 to-orange-600/20 hover:from-red-600/30 hover:to-orange-600/30 text-red-400 hover:text-red-300 border border-red-500/30"
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  Admin
+                </Button>
+              )}
+            </nav>
 
-            {isAuthenticated && (
-              <Button variant="ghost" size="icon" onClick={() => onNavigate("wishlist")} className="hidden md:flex relative">
-                <Heart className="h-5 w-5" />
-                {wishlistCount > 0 && (
+            {/* Search Bar */}
+            <div className="hidden md:flex flex-1 max-w-md">
+              <div className="relative w-full flex gap-1">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                  <Input
+                    placeholder="Tìm kiếm sản phẩm..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
+                    className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/50"
+                  />
+                </div>
+                <Button size="sm" onClick={handleSearch} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-3">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              {isAuthenticated && (
+                <Button variant="ghost" size="icon" onClick={() => onNavigate("notifications")} className="hidden md:flex relative">
+                  <Bell className="h-5 w-5" />
                   <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-                    {wishlistCount}
+                    2
+                  </Badge>
+                </Button>
+              )}
+
+              {isAuthenticated && (
+                <Button variant="ghost" size="icon" onClick={() => onNavigate("chat")} className="hidden md:flex">
+                  <MessageCircle className="h-5 w-5" />
+                </Button>
+              )}
+
+              {isAuthenticated && (
+                <Button variant="ghost" size="icon" onClick={() => onNavigate("wishlist")} className="hidden md:flex relative">
+                  <Heart className="h-5 w-5" />
+                  {wishlistCount > 0 && (
+                    <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                      {wishlistCount}
+                    </Badge>
+                  )}
+                </Button>
+              )}
+
+              <Button variant="ghost" size="icon" onClick={() => onNavigate("cart")} className="relative">
+                <ShoppingCart className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                    {cartCount}
                   </Badge>
                 )}
               </Button>
-            )}
 
-            <Button variant="ghost" size="icon" onClick={() => onNavigate("cart")} className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
-                <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-                  {cartCount}
-                </Badge>
-              )}
-            </Button>
-
-            <div className="relative">
+              {/* User Dropdown */}
               {isAuthenticated ? (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => onNavigate("profile")}
-                  className="relative"
-                >
-                  <User className="h-5 w-5" />
-                  <div className="absolute -bottom-0.5 -right-0.5 h-2 w-2 bg-green-500 rounded-full border border-black" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="relative">
+                      <User className="h-5 w-5" />
+                      <div className="absolute -bottom-0.5 -right-0.5 h-2 w-2 bg-green-500 rounded-full border border-black" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-52 bg-zinc-900 border-white/10">
+                    <div className="px-3 py-2">
+                      <p className="text-sm font-medium text-white">{user?.name}</p>
+                      <p className="text-xs text-white/50">{user?.email}</p>
+                      <span className={`text-xs px-1.5 py-0.5 rounded mt-1 inline-block ${
+                        isAdmin ? "bg-red-500/20 text-red-400" : "bg-purple-500/20 text-purple-400"
+                      }`}>
+                        {isAdmin ? "Admin" : "Người mua"}
+                      </span>
+                    </div>
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuItem onClick={() => onNavigate("profile")} className="text-white/80 hover:text-white cursor-pointer">
+                      <User className="h-4 w-4 mr-2" />
+                      Hồ sơ cá nhân
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onNavigate("orders")} className="text-white/80 hover:text-white cursor-pointer">
+                      <Package className="h-4 w-4 mr-2" />
+                      Đơn hàng của tôi
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onNavigate("settings")} className="text-white/80 hover:text-white cursor-pointer">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Cài đặt
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuSeparator className="bg-white/10" />
+                        <DropdownMenuItem
+                          onClick={() => onNavigate("admin-dashboard")}
+                          className="text-red-400 hover:text-red-300 cursor-pointer"
+                        >
+                          <Shield className="h-4 w-4 mr-2" />
+                          Admin Dashboard
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    {isBuyer && (
+                      <>
+                        <DropdownMenuSeparator className="bg-white/10" />
+                        <DropdownMenuItem
+                          onClick={() => setShowSellerDialog(true)}
+                          className="text-purple-400 hover:text-purple-300 cursor-pointer"
+                        >
+                          <Store className="h-4 w-4 mr-2" />
+                          Trở thành Người bán
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuItem onClick={onLogout} className="text-red-400 hover:text-red-300 cursor-pointer">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Đăng xuất
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
-                <Button 
+                <Button
                   variant="default"
                   size="sm"
                   onClick={() => onNavigate("login")}
@@ -229,7 +354,53 @@ export function Header({
             </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Become Seller Dialog */}
+      <Dialog open={showSellerDialog} onOpenChange={setShowSellerDialog}>
+        <DialogContent className="bg-zinc-900 border-white/10 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Store className="h-5 w-5 text-purple-400" />
+              Đăng ký trở thành Người bán
+            </DialogTitle>
+            <DialogDescription className="text-white/60">
+              Yêu cầu của bạn sẽ được Admin xem xét và phê duyệt. Bạn sẽ được thông báo sau khi có kết quả.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <label className="text-sm text-white/70 mb-1.5 block">
+                Lý do muốn trở thành người bán <span className="text-white/30">(tuỳ chọn)</span>
+              </label>
+              <textarea
+                value={sellerMessage}
+                onChange={(e) => setSellerMessage(e.target.value)}
+                placeholder="Ví dụ: Tôi muốn bán đồ điện tử, phụ kiện công nghệ..."
+                rows={3}
+                className="w-full rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/30 px-3 py-2 text-sm resize-none focus:outline-none focus:border-purple-500/50"
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="ghost"
+                className="flex-1 border border-white/10"
+                onClick={() => setShowSellerDialog(false)}
+                disabled={isSubmitting}
+              >
+                Hủy
+              </Button>
+              <Button
+                className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                onClick={handleSellerSubmit}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Đang gửi..." : "Gửi yêu cầu"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

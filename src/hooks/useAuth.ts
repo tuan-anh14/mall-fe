@@ -33,9 +33,8 @@ export function useAuth() {
     name: string,
     email: string,
     password: string,
-    userType: "buyer" | "seller"
   ): Promise<User> => {
-    const { user: me } = await authService.register(name, email, password, userType);
+    const { user: me } = await authService.register(name, email, password);
     setUser(me);
     setIsAuthenticated(true);
     toast.success(`Chào mừng, ${me.name}!`);
@@ -53,6 +52,11 @@ export function useAuth() {
     toast.success("Đã đăng xuất thành công");
   };
 
+  const becomeSellerRequest = async (message?: string): Promise<void> => {
+    const { message: msg } = await authService.becomeSellerRequest(message);
+    toast.success(msg);
+  };
+
   return {
     user,
     isAuthenticated,
@@ -61,5 +65,6 @@ export function useAuth() {
     login,
     register,
     logout,
+    becomeSellerRequest,
   };
 }

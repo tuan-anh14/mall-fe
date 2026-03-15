@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef } from "react";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Header } from "./components/Header";
 import { SellerHeader } from "./components/SellerHeader";
+import { AdminHeader } from "./components/AdminHeader";
 import { Footer } from "./components/Footer";
 import { ChatWidget } from "./components/ChatWidget";
 import { Toaster } from "./components/ui/sonner";
@@ -9,7 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "./hooks/useAuth";
 import { useCart } from "./hooks/useCart";
 import { useWishlist } from "./hooks/useWishlist";
-import { PAGE_TO_PATH, SELLER_PAGES, getPageFromPathname } from "./constants/routes";
+import { PAGE_TO_PATH, SELLER_PAGES, ADMIN_PAGES, getPageFromPathname } from "./constants/routes";
 
 // Re-export types so existing imports keep working
 export type { CartItem, WishlistItem, User } from "./types";
@@ -25,6 +26,7 @@ const ProfilePage        = lazy(() => import("./components/pages/ProfilePage").t
 const DashboardPage      = lazy(() => import("./components/pages/DashboardPage").then(m => ({ default: m.DashboardPage })));
 const SellerProductsPage = lazy(() => import("./components/pages/SellerProductsPage").then(m => ({ default: m.SellerProductsPage })));
 const SellerOrdersPage   = lazy(() => import("./components/pages/SellerOrdersPage").then(m => ({ default: m.SellerOrdersPage })));
+const SellerReviewsPage  = lazy(() => import("./components/pages/SellerReviewsPage").then(m => ({ default: m.SellerReviewsPage })));
 const AddProductPage     = lazy(() => import("./components/pages/AddProductPage").then(m => ({ default: m.AddProductPage })));
 const LoginPage          = lazy(() => import("./components/pages/LoginPage").then(m => ({ default: m.LoginPage })));
 const ForgotPasswordPage = lazy(() => import("./components/pages/ForgotPasswordPage").then(m => ({ default: m.ForgotPasswordPage })));
@@ -35,6 +37,15 @@ const SettingsPage       = lazy(() => import("./components/pages/SettingsPage").
 const HelpPage           = lazy(() => import("./components/pages/HelpPage").then(m => ({ default: m.HelpPage })));
 const ChatPage           = lazy(() => import("./components/pages/ChatPage").then(m => ({ default: m.ChatPage })));
 const SellerProfilePage  = lazy(() => import("./components/pages/SellerProfilePage").then(m => ({ default: m.SellerProfilePage })));
+
+// Admin pages
+const AdminDashboardPage       = lazy(() => import("./components/pages/AdminDashboardPage").then(m => ({ default: m.AdminDashboardPage })));
+const AdminAccountsPage        = lazy(() => import("./components/pages/AdminAccountsPage").then(m => ({ default: m.AdminAccountsPage })));
+const AdminCategoriesPage      = lazy(() => import("./components/pages/AdminCategoriesPage").then(m => ({ default: m.AdminCategoriesPage })));
+const AdminCouponsPage         = lazy(() => import("./components/pages/AdminCouponsPage").then(m => ({ default: m.AdminCouponsPage })));
+const AdminReviewsPage         = lazy(() => import("./components/pages/AdminReviewsPage").then(m => ({ default: m.AdminReviewsPage })));
+const AdminSellerRequestsPage  = lazy(() => import("./components/pages/AdminSellerRequestsPage").then(m => ({ default: m.AdminSellerRequestsPage })));
+const AdminStatsPage           = lazy(() => import("./components/pages/AdminStatsPage").then(m => ({ default: m.AdminStatsPage })));
 
 // Static pages — one chunk for the whole module
 const AboutPage    = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.AboutPage })));
@@ -72,7 +83,7 @@ export default function App() {
   const reactNavigate = useNavigate();
   const location = useLocation();
 
-  const { user, isAuthenticated, isAuthLoading, checkAuth, login, register, logout } = useAuth();
+  const { user, isAuthenticated, isAuthLoading, checkAuth, login, register, logout, becomeSellerRequest } = useAuth();
   const { cartItems, fetchCart, addToCart: cartAdd, removeFromCart, updateCartQuantity, clearCart } = useCart();
   const { wishlistItems, fetchWishlist, addToWishlist: wishlistAdd, removeFromWishlist, isInWishlist, clearWishlist } = useWishlist();
 
@@ -127,18 +138,19 @@ export default function App() {
   const handleLogin = async (email: string, password: string) => {
     const me = await login(email, password);
     await fetchCartAndWishlist();
-    navigate(me.userType === "seller" ? "dashboard" : "home");
+    if (me.userType === "admin") navigate("admin-dashboard");
+    else if (me.userType === "seller") navigate("dashboard");
+    else navigate("home");
   };
 
   const handleRegister = async (
     name: string,
     email: string,
     password: string,
-    userType: "buyer" | "seller"
   ) => {
-    const me = await register(name, email, password, userType);
+    await register(name, email, password);
     await fetchCartAndWishlist();
-    navigate(me.userType === "seller" ? "dashboard" : "home");
+    navigate("home");
   };
 
   const handleLogout = async () => {
@@ -194,21 +206,29 @@ export default function App() {
   }
 
   const isSellerPage = SELLER_PAGES.includes(currentPage);
+  const isAdminPage = ADMIN_PAGES.includes(currentPage);
   const isSeller = user?.userType === "seller";
+  const isAdmin = user?.userType === "admin";
   const showSellerHeader = isAuthenticated && isSeller && isSellerPage;
+  const showAdminHeader = isAuthenticated && isAdmin && isAdminPage;
   const showBuyerHeader =
     currentPage !== "login" &&
     currentPage !== "forgot-password" &&
     currentPage !== "reset-password" &&
-    !showSellerHeader;
+    !showSellerHeader &&
+    !showAdminHeader;
 
   const authRedirect = (msg: string) => <RedirectWithToast to="/login" message={msg} />;
   const sellerRedirect = (msg: string) => <RedirectWithToast to="/" message={msg} />;
+  const adminRedirect = (msg: string) => <RedirectWithToast to="/" message={msg} />;
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       {showSellerHeader && (
         <SellerHeader currentPage={currentPage} onNavigate={navigate} onLogout={handleLogout} user={user} />
+      )}
+      {showAdminHeader && (
+        <AdminHeader currentPage={currentPage} onNavigate={navigate} onLogout={handleLogout} user={user} />
       )}
       {showBuyerHeader && (
         <Header
@@ -220,6 +240,7 @@ export default function App() {
           user={user}
           onLogout={handleLogout}
           onSearch={(q) => navigate("shop", { search: q })}
+          onBecomeSellerRequest={becomeSellerRequest}
         />
       )}
 
@@ -284,7 +305,7 @@ export default function App() {
               path="/login"
               element={
                 isAuthenticated
-                  ? <Navigate to={user?.userType === "seller" ? "/dashboard" : "/"} replace />
+                  ? <Navigate to={isAdmin ? "/admin" : isSeller ? "/dashboard" : "/"} replace />
                   : <LoginPage onNavigate={navigate} onLogin={handleLogin} onRegister={handleRegister} />
               }
             />
@@ -310,11 +331,21 @@ export default function App() {
             <Route path="/chat"          element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để trò chuyện với người bán") : <ChatPage onNavigate={navigate} sellerInfo={chatData} userId={user?.id} userType={user?.userType} />} />
 
             {/* Seller protected pages */}
-            <Route path="/dashboard"           element={!isAuthenticated || user?.userType !== "seller" ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <DashboardPage onNavigate={navigate} />} />
-            <Route path="/seller/products"     element={!isAuthenticated || user?.userType !== "seller" ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerProductsPage onNavigate={navigate} />} />
-            <Route path="/seller/orders"       element={!isAuthenticated || user?.userType !== "seller" ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerOrdersPage onNavigate={navigate} />} />
-            <Route path="/seller/add-product"  element={!isAuthenticated || user?.userType !== "seller" ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <AddProductPage onNavigate={navigate} />} />
-            <Route path="/seller/edit-product" element={!isAuthenticated || user?.userType !== "seller" ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <AddProductPage onNavigate={navigate} initialProduct={editProductData} />} />
+            <Route path="/dashboard"           element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <DashboardPage onNavigate={navigate} />} />
+            <Route path="/seller/products"     element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerProductsPage onNavigate={navigate} />} />
+            <Route path="/seller/orders"       element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerOrdersPage onNavigate={navigate} />} />
+            <Route path="/seller/reviews"      element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerReviewsPage onNavigate={navigate} />} />
+            <Route path="/seller/add-product"  element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <AddProductPage onNavigate={navigate} />} />
+            <Route path="/seller/edit-product" element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <AddProductPage onNavigate={navigate} initialProduct={editProductData} />} />
+
+            {/* Admin protected pages */}
+            <Route path="/admin"                   element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminDashboardPage onNavigate={navigate} />} />
+            <Route path="/admin/accounts"          element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminAccountsPage />} />
+            <Route path="/admin/categories"        element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminCategoriesPage />} />
+            <Route path="/admin/coupons"           element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminCouponsPage />} />
+            <Route path="/admin/reviews"           element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminReviewsPage />} />
+            <Route path="/admin/seller-requests"   element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminSellerRequestsPage />} />
+            <Route path="/admin/stats"             element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminStatsPage />} />
 
             {/* 404 fallback */}
             <Route
@@ -336,7 +367,7 @@ export default function App() {
       {showBuyerHeader && (
         <>
           <Footer onNavigate={navigate} />
-          {isAuthenticated && !isSeller && <ChatWidget />}
+          {isAuthenticated && !isSeller && !isAdmin && <ChatWidget />}
         </>
       )}
 

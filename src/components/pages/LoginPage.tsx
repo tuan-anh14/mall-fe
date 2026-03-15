@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, User, ShoppingCart } from "lucide-react";
@@ -19,12 +18,10 @@ import {
 interface LoginPageProps {
   onNavigate: (page: string) => void;
   onLogin: (email: string, password: string) => Promise<void>;
-  onRegister: (name: string, email: string, password: string, userType: "buyer" | "seller") => Promise<void>;
+  onRegister: (name: string, email: string, password: string) => Promise<void>;
 }
 
 export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
-  const [userType, setUserType] = useState<"buyer" | "seller">("buyer");
-
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
@@ -45,7 +42,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
 
   const handleRegister = registerForm.handleSubmit(async (data) => {
     try {
-      await onRegister(data.name, data.email, data.password, userType);
+      await onRegister(data.name, data.email, data.password);
     } catch (err: any) {
       toast.error(err.message || "Đăng ký thất bại");
     }
@@ -206,32 +203,12 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                 <h2 className="text-2xl text-white mb-2">Tạo tài khoản</h2>
                 <p className="text-white/60 mb-6">Tham gia ShopHub ngay hôm nay</p>
 
-                {/* User Type Selection */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  <button
-                    type="button"
-                    onClick={() => setUserType("buyer")}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      userType === "buyer"
-                        ? "border-purple-500 bg-purple-500/10"
-                        : "border-white/10 bg-white/5 hover:border-white/30"
-                    }`}
-                  >
-                    <ShoppingCart className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-                    <p className="text-white text-sm">Tôi là Người mua</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setUserType("seller")}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      userType === "seller"
-                        ? "border-purple-500 bg-purple-500/10"
-                        : "border-white/10 bg-white/5 hover:border-white/30"
-                    }`}
-                  >
-                    <User className="h-6 w-6 text-blue-400 mx-auto mb-2" />
-                    <p className="text-white text-sm">Tôi là Người bán</p>
-                  </button>
+                <div className="flex items-center gap-3 mb-6 p-4 rounded-xl border border-purple-500/30 bg-purple-500/10">
+                  <ShoppingCart className="h-6 w-6 text-purple-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-white text-sm font-medium">Tài khoản Người mua</p>
+                    <p className="text-white/50 text-xs mt-0.5">Bạn có thể đăng ký trở thành người bán sau khi có tài khoản</p>
+                  </div>
                 </div>
 
                 <div className="space-y-4">

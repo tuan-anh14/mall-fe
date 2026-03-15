@@ -1,5 +1,5 @@
 import React from "react";
-import { Package, ShoppingBag, BarChart3, LogOut, Store, Home, MessageSquare } from "lucide-react";
+import { Package, ShoppingBag, BarChart3, LogOut, Store, Home, MessageSquare, Star } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
@@ -15,6 +15,7 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
     { id: "dashboard", label: "Tổng quan", icon: BarChart3 },
     { id: "seller-products", label: "Sản phẩm", icon: Package },
     { id: "seller-orders", label: "Đơn hàng", icon: ShoppingBag },
+    { id: "seller-reviews", label: "Đánh giá", icon: Star },
   ];
 
   return (

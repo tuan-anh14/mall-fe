@@ -10,11 +10,22 @@ export const PAGE_TO_PATH: Record<string, string> = {
   dashboard: "/dashboard",
   "seller-products": "/seller/products",
   "seller-orders": "/seller/orders",
+  "seller-reviews": "/seller/reviews",
   "add-product": "/seller/add-product",
   "edit-product": "/seller/edit-product",
+  // Admin pages
+  "admin-dashboard": "/admin",
+  "admin-accounts": "/admin/accounts",
+  "admin-categories": "/admin/categories",
+  "admin-coupons": "/admin/coupons",
+  "admin-reviews": "/admin/reviews",
+  "admin-seller-requests": "/admin/seller-requests",
+  "admin-stats": "/admin/stats",
+  // Auth
   login: "/login",
   "forgot-password": "/forgot-password",
   "reset-password": "/reset-password",
+  // Static
   about: "/about",
   contact: "/contact",
   terms: "/terms",
@@ -36,8 +47,19 @@ export const SELLER_PAGES = [
   "dashboard",
   "seller-products",
   "seller-orders",
+  "seller-reviews",
   "add-product",
   "edit-product",
+];
+
+export const ADMIN_PAGES = [
+  "admin-dashboard",
+  "admin-accounts",
+  "admin-categories",
+  "admin-coupons",
+  "admin-reviews",
+  "admin-seller-requests",
+  "admin-stats",
 ];
 
 // Derive the Page name from a pathname (for header/footer logic)
@@ -47,5 +69,8 @@ const PATHNAME_TO_PAGE: Record<string, string> = Object.fromEntries(
 
 export function getPageFromPathname(pathname: string): string {
   if (pathname.startsWith("/product/")) return "product";
+  if (pathname.startsWith("/admin")) {
+    return PATHNAME_TO_PAGE[pathname] ?? "admin-dashboard";
+  }
   return PATHNAME_TO_PAGE[pathname] ?? "home";
 }

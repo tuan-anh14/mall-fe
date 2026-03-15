@@ -14,17 +14,19 @@ export const authService = {
     name: string,
     email: string,
     password: string,
-    userType: "buyer" | "seller"
   ): Promise<{ user: User }> {
     return post<{ user: User }>("/api/v1/auth/register", {
       name,
       email,
       password,
-      userType,
     });
   },
 
   logout(): Promise<void> {
     return post("/api/v1/auth/logout");
+  },
+
+  becomeSellerRequest(message?: string): Promise<{ message: string }> {
+    return post("/api/v1/auth/become-seller", { message });
   },
 };

@@ -63,5 +63,5 @@ export interface User {
   email: string;
   name: string;
   avatar?: string;
-  userType: "buyer" | "seller";
+  userType: "buyer" | "seller" | "admin";
 }
