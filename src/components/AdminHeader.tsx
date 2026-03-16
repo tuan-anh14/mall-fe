@@ -9,6 +9,7 @@ import {
   LogOut,
   ShoppingCart,
   Menu,
+  History,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
@@ -29,6 +30,7 @@ const navItems = [
   { page: "admin-reviews", label: "Đánh giá", icon: Star },
   { page: "admin-seller-requests", label: "Duyệt Seller", icon: UserCheck },
   { page: "admin-stats", label: "Thống kê", icon: BarChart3 },
+  { page: "admin-audit-log", label: "Audit Log", icon: History },
 ];
 
 export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHeaderProps) {

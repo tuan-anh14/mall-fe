@@ -38,11 +38,13 @@ interface HeaderProps {
   onNavigate: (page: string) => void;
   cartCount?: number;
   wishlistCount?: number;
+  notificationCount?: number;
   isAuthenticated?: boolean;
   user?: UserType | null;
   onLogout?: () => void;
   onSearch?: (query: string) => void;
   onBecomeSellerRequest?: (message?: string) => Promise<void>;
+  onNotificationsOpen?: () => void;
 }
 
 export function Header({
@@ -50,11 +52,13 @@ export function Header({
   onNavigate,
   cartCount = 0,
   wishlistCount = 0,
+  notificationCount = 0,
   isAuthenticated = false,
   user = null,
   onLogout,
   onSearch,
   onBecomeSellerRequest,
+  onNotificationsOpen,
 }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSellerDialog, setShowSellerDialog] = useState(false);
@@ -90,6 +94,8 @@ export function Header({
 
   const isBuyer = user?.userType === "buyer";
   const isAdmin = user?.userType === "admin";
+  const hasPendingRequest = user?.sellerRequestStatus === "PENDING";
+  const hasRejectedRequest = user?.sellerRequestStatus === "REJECTED";
 
   return (
     <>
@@ -142,14 +148,25 @@ export function Header({
                     Liên hệ
                   </Button>
                   {isBuyer && (
-                    <Button
-                      variant="ghost"
-                      className="justify-start text-purple-400"
-                      onClick={() => setShowSellerDialog(true)}
-                    >
-                      <Store className="h-4 w-4 mr-2" />
-                      Trở thành Người bán
-                    </Button>
+                    hasPendingRequest ? (
+                      <Button
+                        variant="ghost"
+                        disabled
+                        className="justify-start text-yellow-400/60 opacity-70 cursor-not-allowed"
+                      >
+                        <Store className="h-4 w-4 mr-2" />
+                        Đã gửi yêu cầu
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        className="justify-start text-purple-400"
+                        onClick={() => setShowSellerDialog(true)}
+                      >
+                        <Store className="h-4 w-4 mr-2" />
+                        {hasRejectedRequest ? "Gửi lại yêu cầu" : "Trở thành Người bán"}
+                      </Button>
+                    )
                   )}
                   {isAdmin && (
                     <Button
@@ -200,14 +217,25 @@ export function Header({
                 Liên hệ
               </Button>
               {isBuyer && (
-                <Button
-                  variant="ghost"
-                  onClick={() => setShowSellerDialog(true)}
-                  className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 border border-purple-500/30"
-                >
-                  <Store className="h-4 w-4 mr-2" />
-                  Trở thành Người bán
-                </Button>
+                hasPendingRequest ? (
+                  <Button
+                    variant="ghost"
+                    disabled
+                    className="text-yellow-400/60 border border-yellow-500/20 opacity-70 cursor-not-allowed"
+                  >
+                    <Store className="h-4 w-4 mr-2" />
+                    Đã gửi yêu cầu
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    onClick={() => setShowSellerDialog(true)}
+                    className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 border border-purple-500/30"
+                  >
+                    <Store className="h-4 w-4 mr-2" />
+                    {hasRejectedRequest ? "Gửi lại yêu cầu" : "Trở thành Người bán"}
+                  </Button>
+                )
               )}
               {isAdmin && (
                 <Button
@@ -243,11 +271,18 @@ export function Header({
             {/* Actions */}
             <div className="flex items-center gap-2">
               {isAuthenticated && (
-                <Button variant="ghost" size="icon" onClick={() => onNavigate("notifications")} className="hidden md:flex relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => { onNotificationsOpen?.(); onNavigate("notifications"); }}
+                  className="hidden md:flex relative"
+                >
                   <Bell className="h-5 w-5" />
-                  <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-                    2
-                  </Badge>
+                  {notificationCount > 0 && (
+                    <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                      {notificationCount > 99 ? "99+" : notificationCount}
+                    </Badge>
+                  )}
                 </Button>
               )}
 
@@ -324,13 +359,23 @@ export function Header({
                     {isBuyer && (
                       <>
                         <DropdownMenuSeparator className="bg-white/10" />
-                        <DropdownMenuItem
-                          onClick={() => setShowSellerDialog(true)}
-                          className="text-purple-400 hover:text-purple-300 cursor-pointer"
-                        >
-                          <Store className="h-4 w-4 mr-2" />
-                          Trở thành Người bán
-                        </DropdownMenuItem>
+                        {hasPendingRequest ? (
+                          <DropdownMenuItem
+                            disabled
+                            className="text-yellow-400/60 opacity-70 cursor-not-allowed"
+                          >
+                            <Store className="h-4 w-4 mr-2" />
+                            Đã gửi yêu cầu bán hàng
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => setShowSellerDialog(true)}
+                            className="text-purple-400 hover:text-purple-300 cursor-pointer"
+                          >
+                            <Store className="h-4 w-4 mr-2" />
+                            {hasRejectedRequest ? "Gửi lại yêu cầu bán hàng" : "Trở thành Người bán"}
+                          </DropdownMenuItem>
+                        )}
                       </>
                     )}
                     <DropdownMenuSeparator className="bg-white/10" />

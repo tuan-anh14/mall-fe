@@ -55,6 +55,8 @@ export function useAuth() {
   const becomeSellerRequest = async (message?: string): Promise<void> => {
     const { message: msg } = await authService.becomeSellerRequest(message);
     toast.success(msg);
+    // Refresh user to update sellerRequestStatus so the button is blocked
+    await checkAuth();
   };
 
   return {

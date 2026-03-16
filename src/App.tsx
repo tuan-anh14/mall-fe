@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "./hooks/useAuth";
 import { useCart } from "./hooks/useCart";
 import { useWishlist } from "./hooks/useWishlist";
+import { useNotificationStream } from "./hooks/useNotificationStream";
 import { PAGE_TO_PATH, SELLER_PAGES, ADMIN_PAGES, getPageFromPathname } from "./constants/routes";
 
 // Re-export types so existing imports keep working
@@ -27,6 +28,7 @@ const DashboardPage      = lazy(() => import("./components/pages/DashboardPage")
 const SellerProductsPage = lazy(() => import("./components/pages/SellerProductsPage").then(m => ({ default: m.SellerProductsPage })));
 const SellerOrdersPage   = lazy(() => import("./components/pages/SellerOrdersPage").then(m => ({ default: m.SellerOrdersPage })));
 const SellerReviewsPage  = lazy(() => import("./components/pages/SellerReviewsPage").then(m => ({ default: m.SellerReviewsPage })));
+const SellerCouponsPage  = lazy(() => import("./components/pages/SellerCouponsPage").then(m => ({ default: m.SellerCouponsPage })));
 const AddProductPage     = lazy(() => import("./components/pages/AddProductPage").then(m => ({ default: m.AddProductPage })));
 const LoginPage          = lazy(() => import("./components/pages/LoginPage").then(m => ({ default: m.LoginPage })));
 const ForgotPasswordPage = lazy(() => import("./components/pages/ForgotPasswordPage").then(m => ({ default: m.ForgotPasswordPage })));
@@ -46,6 +48,7 @@ const AdminCouponsPage         = lazy(() => import("./components/pages/AdminCoup
 const AdminReviewsPage         = lazy(() => import("./components/pages/AdminReviewsPage").then(m => ({ default: m.AdminReviewsPage })));
 const AdminSellerRequestsPage  = lazy(() => import("./components/pages/AdminSellerRequestsPage").then(m => ({ default: m.AdminSellerRequestsPage })));
 const AdminStatsPage           = lazy(() => import("./components/pages/AdminStatsPage").then(m => ({ default: m.AdminStatsPage })));
+const AdminAuditLogPage        = lazy(() => import("./components/pages/AdminAuditLogPage").then(m => ({ default: m.AdminAuditLogPage })));
 
 // Static pages — one chunk for the whole module
 const AboutPage    = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.AboutPage })));
@@ -86,12 +89,23 @@ export default function App() {
   const { user, isAuthenticated, isAuthLoading, checkAuth, login, register, logout, becomeSellerRequest } = useAuth();
   const { cartItems, fetchCart, addToCart: cartAdd, removeFromCart, updateCartQuantity, clearCart } = useCart();
   const { wishlistItems, fetchWishlist, addToWishlist: wishlistAdd, removeFromWishlist, isInWishlist, clearWishlist } = useWishlist();
+  const { unreadCount: notificationCount, latestNotification, clearUnread } = useNotificationStream(isAuthenticated);
 
   const currentPage = getPageFromPathname(location.pathname);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
+
+  // Show toast for new real-time notifications
+  useEffect(() => {
+    if (latestNotification) {
+      toast(latestNotification.title, {
+        description: latestNotification.message,
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [latestNotification]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -236,11 +250,13 @@ export default function App() {
           onNavigate={navigate}
           cartCount={cartItems.reduce((total, item) => total + item.quantity, 0)}
           wishlistCount={wishlistItems.length}
+          notificationCount={notificationCount}
           isAuthenticated={isAuthenticated}
           user={user}
           onLogout={handleLogout}
           onSearch={(q) => navigate("shop", { search: q })}
           onBecomeSellerRequest={becomeSellerRequest}
+          onNotificationsOpen={clearUnread}
         />
       )}
 
@@ -335,6 +351,7 @@ export default function App() {
             <Route path="/seller/products"     element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerProductsPage onNavigate={navigate} />} />
             <Route path="/seller/orders"       element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerOrdersPage onNavigate={navigate} />} />
             <Route path="/seller/reviews"      element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerReviewsPage onNavigate={navigate} />} />
+            <Route path="/seller/coupons"      element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <SellerCouponsPage />} />
             <Route path="/seller/add-product"  element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <AddProductPage onNavigate={navigate} />} />
             <Route path="/seller/edit-product" element={!isAuthenticated || !isSeller ? sellerRedirect("Truy cập bị từ chối. Cần tài khoản người bán.") : <AddProductPage onNavigate={navigate} initialProduct={editProductData} />} />
 
@@ -346,6 +363,7 @@ export default function App() {
             <Route path="/admin/reviews"           element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminReviewsPage />} />
             <Route path="/admin/seller-requests"   element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminSellerRequestsPage />} />
             <Route path="/admin/stats"             element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminStatsPage />} />
+            <Route path="/admin/audit-log"         element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminAuditLogPage />} />
 
             {/* 404 fallback */}
             <Route

@@ -20,6 +20,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
   const [couponCode, setCouponCode] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState("");
+  const [couponSellerName, setCouponSellerName] = useState<string | null>(null);
   const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   const updateQuantity = (itemId: string, delta: number) => {
@@ -33,13 +34,15 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
     if (!couponCode.trim()) return;
     setApplyingCoupon(true);
     try {
-      const res = await post<{ couponDiscount: number; couponCode: string }>(
+      const res = await post<{ discount: number; coupon: { code: string; sellerId?: string | null; sellerName?: string | null } }>(
         "/api/v1/cart/coupon",
-        { couponCode: couponCode.trim() }
+        { code: couponCode.trim() }
       );
-      setCouponDiscount(res.couponDiscount ?? 0);
-      setCouponApplied(res.couponCode ?? couponCode);
-      toast.success(`Đã áp dụng mã giảm giá! Bạn tiết kiệm $${(res.couponDiscount ?? 0).toFixed(2)}`);
+      setCouponDiscount(res.discount ?? 0);
+      setCouponApplied(res.coupon?.code ?? couponCode);
+      setCouponSellerName(res.coupon?.sellerName ?? null);
+      const sellerInfo = res.coupon?.sellerName ? ` (shop: ${res.coupon.sellerName})` : "";
+      toast.success(`Đã áp dụng mã giảm giá${sellerInfo}! Tiết kiệm $${(res.discount ?? 0).toFixed(2)}`);
     } catch (err: any) {
       toast.error(err.message || "Mã giảm giá không hợp lệ");
     } finally {
@@ -176,18 +179,25 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                   Mã giảm giá
                 </label>
                 {couponApplied ? (
-                  <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                    <span className="text-sm text-green-400 flex-1">
-                      "{couponApplied}" đã áp dụng — -${couponDiscount.toFixed(2)}
-                    </span>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-white/50 hover:text-white h-6 px-2"
-                      onClick={() => { setCouponApplied(""); setCouponDiscount(0); setCouponCode(""); }}
-                    >
-                      ×
-                    </Button>
+                  <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-green-400 flex-1 font-mono font-bold">{couponApplied}</span>
+                      <span className="text-sm text-green-400">-${couponDiscount.toFixed(2)}</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-white/50 hover:text-white h-6 px-2"
+                        onClick={() => { setCouponApplied(""); setCouponDiscount(0); setCouponCode(""); setCouponSellerName(null); }}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                    {couponSellerName && (
+                      <p className="text-xs text-green-400/70 mt-1">Áp dụng cho sản phẩm của shop: {couponSellerName}</p>
+                    )}
+                    {!couponSellerName && (
+                      <p className="text-xs text-green-400/70 mt-1">Mã giảm giá toàn sàn</p>
+                    )}
                   </div>
                 ) : (
                   <div className="flex gap-2">

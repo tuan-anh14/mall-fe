@@ -4654,6 +4654,24 @@ html {
   }
 }
 
+/* ── Global cursor fix ─────────────────────────────────────────────────────── */
+button,
+[role="button"],
+[type="button"],
+[type="submit"],
+[type="reset"],
+label[for],
+select,
+summary,
+a,
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"],
+input[type="range"],
+.cursor-pointer {
+  cursor: pointer;
+}
+
 @keyframes accordion-down {
   from {
     height: 0;

@@ -64,4 +64,5 @@ export interface User {
   name: string;
   avatar?: string;
   userType: "buyer" | "seller" | "admin";
+  sellerRequestStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
 }
