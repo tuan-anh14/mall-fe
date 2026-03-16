@@ -265,22 +265,22 @@ export function AdminAccountsPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[750px]">
               <thead>
                 <tr className="border-b border-white/10 text-left">
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Người dùng</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Loại</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Email</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Đơn hàng</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Reviews</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Ngày tạo</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium text-right">Hành động</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Người dùng</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Loại</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Email</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Đơn hàng</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Reviews</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Ngày tạo</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium text-right">Hành động</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {accounts.map((acc) => (
                   <tr key={acc.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <div>
                         <p className="text-white text-sm font-medium">{acc.firstName} {acc.lastName}</p>
                         {acc.sellerProfile && (
@@ -293,8 +293,8 @@ export function AdminAccountsPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3">{typeBadge(acc.userType)}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">{typeBadge(acc.userType)}</td>
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-1.5">
                         <span className="text-white/60 text-xs">{acc.email}</span>
                         {acc.isEmailVerified && (
@@ -302,12 +302,12 @@ export function AdminAccountsPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-white/70 text-sm">{acc._count.orders}</td>
-                    <td className="px-4 py-3 text-white/70 text-sm">{acc._count.reviews}</td>
-                    <td className="px-4 py-3 text-white/50 text-xs">
+                    <td className="px-6 py-4 text-white/70 text-sm">{acc._count.orders}</td>
+                    <td className="px-6 py-4 text-white/70 text-sm">{acc._count.reviews}</td>
+                    <td className="px-6 py-4 text-white/50 text-xs">
                       {new Date(acc.createdAt).toLocaleDateString("vi-VN")}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-1">
                         <Button
                           variant="ghost"

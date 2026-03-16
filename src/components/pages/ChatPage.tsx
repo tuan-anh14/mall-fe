@@ -123,37 +123,40 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const sellerConvInitiatedRef = useRef<string | null>(null);
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId) ?? null;
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom only when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, activeConversationId]);
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   // Load conversations on mount
   useEffect(() => {
     loadConversations();
   }, []);
 
-  // If sellerInfo is passed, create/find the conversation with that seller
+  // If sellerInfo is passed, find or create the conversation with that seller (once per sellerId)
   useEffect(() => {
-    if (sellerInfo?.sellerId && conversations.length > 0) {
-      // Try to find existing conversation with this seller (by name match as heuristic)
-      const existing = conversations.find(
-        (c) => c.name.toLowerCase() === sellerInfo.name?.toLowerCase()
-      );
-      if (existing) {
-        selectConversation(existing.id);
-      } else {
-        createConversation(sellerInfo.sellerId, sellerInfo.productId);
-      }
-    } else if (sellerInfo?.sellerId && conversations.length === 0 && !isLoadingConversations) {
+    if (!sellerInfo?.sellerId) return;
+    if (isLoadingConversations) return;
+    if (sellerConvInitiatedRef.current === sellerInfo.sellerId) return;
+
+    const existing = conversations.find((c) => c.sellerUserId === sellerInfo.sellerId);
+    if (existing) {
+      sellerConvInitiatedRef.current = sellerInfo.sellerId;
+      selectConversation(existing.id);
+    } else {
+      sellerConvInitiatedRef.current = sellerInfo.sellerId;
       createConversation(sellerInfo.sellerId, sellerInfo.productId);
     }
-  }, [sellerInfo, conversations.length, isLoadingConversations]);
+  }, [sellerInfo?.sellerId, isLoadingConversations, conversations]);
 
   const loadConversations = async () => {
     setIsLoadingConversations(true);
@@ -658,7 +661,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                             className="text-white hover:bg-white/10 cursor-pointer"
                           >
                             <UserCircle className="mr-2 h-4 w-4" />
-                            Xem hồ sơ người bán
+                            {userType?.toUpperCase() === "SELLER" ? "Xem hồ sơ người mua" : "Xem hồ sơ người bán"}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={handleToggleMute}
@@ -687,7 +690,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                             className="text-red-400 hover:bg-red-500/10 cursor-pointer"
                           >
                             <Ban className="mr-2 h-4 w-4" />
-                            Chặn người bán
+                            {userType?.toUpperCase() === "SELLER" ? "Chặn người mua" : "Chặn người bán"}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={handleReportConversation}
@@ -701,17 +704,10 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                     </div>
                   </div>
 
-                  {/* Product Info */}
-                  {activeConversation.productName && (
-                    <div className="mt-3 p-3 bg-white/5 rounded-lg">
-                      <p className="text-xs text-white/50 mb-1">Đang thảo luận về:</p>
-                      <p className="text-sm text-white">{activeConversation.productName}</p>
-                    </div>
-                  )}
                 </div>
 
                 {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
                   {isLoadingMessages ? (
                     <div className="text-center text-white/40 text-sm py-8">
                       Đang tải tin nhắn...
@@ -820,7 +816,14 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                 </div>
 
                 {/* Message Input */}
-                <div className="p-4 border-t border-white/10 bg-white/5">
+                <div className="border-t border-white/10 bg-white/5">
+                  {activeConversation.productName && (
+                    <div className="px-4 pt-3 pb-1 flex items-center gap-2">
+                      <span className="text-xs text-white/40">Thảo luận về:</span>
+                      <span className="text-xs text-purple-400/80 truncate max-w-[240px]">{activeConversation.productName}</span>
+                    </div>
+                  )}
+                <div className="p-4">
                   {/* Emoji Picker */}
                   {showEmojiPicker && (
                     <div className="mb-3 p-3 bg-zinc-900 border border-white/10 rounded-xl">
@@ -880,6 +883,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                       <Send className="h-5 w-5" />
                     </Button>
                   </div>
+                </div>
                 </div>
               </>
             ) : (

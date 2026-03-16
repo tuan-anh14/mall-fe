@@ -166,12 +166,12 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
             )}
             {displayUserType && (
               <Badge className="mt-2 bg-purple-500/20 text-purple-400 border-purple-500/30">
-                {displayUserType === "seller" ? "Tài khoản Người bán" : "Tài khoản Người mua"}
+                {displayUserType?.toUpperCase() === "SELLER" ? "Tài khoản Người bán" : "Tài khoản Người mua"}
               </Badge>
             )}
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
-            {displayUserType === "seller" && (
+            {displayUserType?.toUpperCase() === "SELLER" && (
               <Button
                 className="bg-gradient-to-r from-purple-600 to-blue-600"
                 onClick={() => onNavigate("dashboard")}

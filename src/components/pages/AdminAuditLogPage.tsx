@@ -170,23 +170,23 @@ export function AdminAuditLogPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[700px]">
               <thead>
                 <tr className="border-b border-white/10 text-left">
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Thời gian</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Admin</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Hành động</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Đối tượng</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Chi tiết</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Thời gian</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Admin</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Hành động</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Đối tượng</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Chi tiết</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {logs.map((log) => (
                   <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3 text-white/50 text-xs whitespace-nowrap">
+                    <td className="px-6 py-4 text-white/50 text-xs whitespace-nowrap">
                       {new Date(log.createdAt).toLocaleString("vi-VN")}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <Shield className="h-3.5 w-3.5 text-red-400/70" />
                         <div>
@@ -195,12 +195,12 @@ export function AdminAuditLogPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <Badge className={`border-0 ${ACTION_COLORS[log.action] ?? "bg-white/10 text-white/60"}`}>
                         {log.action}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <div>
                         <p className="text-white/80 text-sm">{RESOURCE_LABELS[log.resource] ?? log.resource}</p>
                         {log.resourceId && (
@@ -208,7 +208,7 @@ export function AdminAuditLogPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-white/50 text-xs max-w-xs truncate">
+                    <td className="px-6 py-4 text-white/50 text-xs max-w-xs truncate">
                       {log.details ? JSON.stringify(log.details) : "—"}
                     </td>
                   </tr>

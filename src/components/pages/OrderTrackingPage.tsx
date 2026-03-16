@@ -44,6 +44,8 @@ interface Order {
   shippingCost?: number;
   tax?: number;
   total: number;
+  couponCode?: string;
+  couponDiscount?: number | null;
   items: OrderItem[];
   tracking: OrderTracking;
   shippingAddress?: {
@@ -355,6 +357,12 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                     MIỄN PHÍ
                   </Badge>
                 </div>
+                {currentOrder.couponDiscount != null && currentOrder.couponDiscount > 0 && (
+                  <div className="flex justify-between text-green-400">
+                    <span>Giảm giá {currentOrder.couponCode ? `(${currentOrder.couponCode})` : ""}</span>
+                    <span>-${Number(currentOrder.couponDiscount).toFixed(2)}</span>
+                  </div>
+                )}
                 {currentOrder.tax != null && currentOrder.tax > 0 && (
                   <div className="flex justify-between text-white/70">
                     <span>Thuế</span>

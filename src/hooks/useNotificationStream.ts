@@ -24,7 +24,7 @@ export function useNotificationStream(isAuthenticated: boolean) {
       });
       if (res.ok) {
         const json = await res.json();
-        setUnreadCount(json.data?.unreadCount ?? 0);
+        setUnreadCount(json.unreadCount ?? 0);
       }
     } catch {
       // ignore
