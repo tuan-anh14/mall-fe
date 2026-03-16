@@ -56,8 +56,8 @@ export function SellerReviewsPage({ onNavigate }: SellerReviewsPageProps) {
 
   // Fetch seller products for filter dropdown
   useEffect(() => {
-    get<{ products: SellerProduct[] }>("/api/v1/seller/products")
-      .then((data) => setProducts(data.products))
+    get<{ data: SellerProduct[] }>("/api/v1/seller/products")
+      .then((data) => setProducts(data.data ?? []))
       .catch(() => {});
   }, []);
 

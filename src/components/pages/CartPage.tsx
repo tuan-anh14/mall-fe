@@ -38,11 +38,17 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
         "/api/v1/cart/coupon",
         { code: couponCode.trim() }
       );
-      setCouponDiscount(res.discount ?? 0);
-      setCouponApplied(res.coupon?.code ?? couponCode);
-      setCouponSellerName(res.coupon?.sellerName ?? null);
-      const sellerInfo = res.coupon?.sellerName ? ` (shop: ${res.coupon.sellerName})` : "";
-      toast.success(`Đã áp dụng mã giảm giá${sellerInfo}! Tiết kiệm $${(res.discount ?? 0).toFixed(2)}`);
+      const discount = res.discount ?? 0;
+      const code = res.coupon?.code ?? couponCode;
+      const sellerName = res.coupon?.sellerName ?? null;
+      setCouponDiscount(discount);
+      setCouponApplied(code);
+      setCouponSellerName(sellerName);
+      try {
+        sessionStorage.setItem("applied_coupon", JSON.stringify({ code, discount, sellerName }));
+      } catch {}
+      const sellerInfo = sellerName ? ` (shop: ${sellerName})` : "";
+      toast.success(`Đã áp dụng mã giảm giá${sellerInfo}! Tiết kiệm $${discount.toFixed(2)}`);
     } catch (err: any) {
       toast.error(err.message || "Mã giảm giá không hợp lệ");
     } finally {
@@ -187,7 +193,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                         size="sm"
                         variant="ghost"
                         className="text-white/50 hover:text-white h-6 px-2"
-                        onClick={() => { setCouponApplied(""); setCouponDiscount(0); setCouponCode(""); setCouponSellerName(null); }}
+                        onClick={() => { setCouponApplied(""); setCouponDiscount(0); setCouponCode(""); setCouponSellerName(null); try { sessionStorage.removeItem("applied_coupon"); } catch {} }}
                       >
                         ×
                       </Button>

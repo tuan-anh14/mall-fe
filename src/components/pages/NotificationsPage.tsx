@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
-import { Bell, Package, Heart, TrendingUp } from "lucide-react";
+import { Bell, Package, Heart, TrendingUp, X } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 import { motion } from "motion/react";
 import { get, put, del } from "../../lib/api";
 import { toast } from "sonner";
@@ -114,18 +120,21 @@ function NotificationCard({
   onAction,
   onMarkRead,
   onDelete,
+  onOpen,
 }: {
   notification: UiNotification;
   onAction: (page: string, data?: any) => void;
   onMarkRead: (id: string) => void;
   onDelete: (id: string) => void;
+  onOpen: (n: UiNotification) => void;
 }) {
   const Icon = notification.icon;
   return (
     <Card
-      className={`bg-white/5 border-white/10 hover:bg-white/10 transition-colors ${
+      className={`bg-white/5 border-white/10 hover:bg-white/10 transition-colors cursor-pointer ${
         !notification.isRead ? "border-purple-500/50" : ""
       }`}
+      onClick={() => onOpen(notification)}
     >
       <CardContent className="p-6">
         <div className="flex gap-4">
@@ -157,14 +166,14 @@ function NotificationCard({
                   variant="ghost"
                   size="sm"
                   className="text-white/40 hover:text-red-400 h-6 w-6 p-0"
-                  onClick={() => onDelete(notification.id)}
+                  onClick={(e) => { e.stopPropagation(); onDelete(notification.id); }}
                   title="Xóa thông báo"
                 >
                   &times;
                 </Button>
               </div>
             </div>
-            <p className="text-sm text-white/60 mb-2">{notification.message}</p>
+            <p className="text-sm text-white/60 mb-2 line-clamp-2">{notification.message}</p>
             <div className="flex items-center justify-between">
               <span className="text-xs text-white/40">{notification.time}</span>
               <div className="flex gap-2">
@@ -173,7 +182,7 @@ function NotificationCard({
                     variant="ghost"
                     size="sm"
                     className="text-white/50 hover:text-white/80 text-xs"
-                    onClick={() => onMarkRead(notification.id)}
+                    onClick={(e) => { e.stopPropagation(); onMarkRead(notification.id); }}
                   >
                     Đánh dấu đã đọc
                   </Button>
@@ -182,7 +191,7 @@ function NotificationCard({
                   variant="ghost"
                   size="sm"
                   className="text-purple-400 hover:text-purple-300"
-                  onClick={() => onAction(notification.actionPage, notification.actionData)}
+                  onClick={(e) => { e.stopPropagation(); onAction(notification.actionPage, notification.actionData); }}
                 >
                   {notification.actionText}
                 </Button>
@@ -199,6 +208,12 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
   const [notifications, setNotifications] = useState<UiNotification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [detailNotification, setDetailNotification] = useState<UiNotification | null>(null);
+
+  const openDetail = (n: UiNotification) => {
+    setDetailNotification(n);
+    if (!n.isRead) markAsRead(n.id);
+  };
 
   useEffect(() => {
     fetchNotifications();
@@ -294,6 +309,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
           onAction={onNavigate}
           onMarkRead={markAsRead}
           onDelete={deleteNotification}
+          onOpen={openDetail}
         />
       </motion.div>
     ));
@@ -369,6 +385,51 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
           </div>
         )}
       </div>
+
+      {/* Notification Detail Dialog */}
+      <Dialog open={!!detailNotification} onOpenChange={(o: boolean) => !o && setDetailNotification(null)}>
+        <DialogContent className="bg-zinc-900 border-white/10 text-white max-w-md">
+          {detailNotification && (() => {
+            const Icon = detailNotification.icon;
+            return (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center gap-3 mb-1">
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center flex-shrink-0">
+                      <Icon className="h-5 w-5 text-purple-400" />
+                    </div>
+                    <DialogTitle className="text-white leading-tight">{detailNotification.title}</DialogTitle>
+                  </div>
+                </DialogHeader>
+                <div className="space-y-4 py-2">
+                  <p className="text-white/70 text-sm leading-relaxed">{detailNotification.message}</p>
+                  <p className="text-white/40 text-xs">{detailNotification.time}</p>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-white/10"
+                    onClick={() => setDetailNotification(null)}
+                  >
+                    Đóng
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600"
+                    onClick={() => {
+                      setDetailNotification(null);
+                      onNavigate(detailNotification.actionPage, detailNotification.actionData);
+                    }}
+                  >
+                    {detailNotification.actionText}
+                  </Button>
+                </div>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

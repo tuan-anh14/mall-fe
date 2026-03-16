@@ -209,68 +209,80 @@ export function SellerCouponsPage() {
           <p className="text-sm mt-1">Tạo mã giảm giá đầu tiên để thu hút khách hàng</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {coupons.map((c) => {
-            const status = getCouponStatus(c);
-            return (
-              <div
-                key={c.id}
-                className="bg-white/5 border border-white/10 rounded-xl p-5 flex items-center justify-between gap-4"
-              >
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className="h-10 w-10 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                    <Tag className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono font-bold text-white text-lg">{c.code}</span>
-                      <Badge variant={status.variant}>{status.label}</Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {c.type === "PERCENTAGE" ? `${c.value}%` : `$${c.value}`} off
-                      </Badge>
-                    </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-white/50">
-                      {c.minOrderAmount != null && (
-                        <span>Đơn tối thiểu: ${c.minOrderAmount}</span>
-                      )}
-                      {c.maxDiscount != null && (
-                        <span>Giảm tối đa: ${c.maxDiscount}</span>
-                      )}
-                      {c.usageLimit != null && (
-                        <span>
-                          Đã dùng: {c.usageCount}/{c.usageLimit}
+        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[750px]">
+              <thead>
+                <tr className="border-b border-white/10 text-left">
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Mã code</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Loại / Giá trị</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Đã dùng</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Đơn tối thiểu</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Hiệu lực</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Trạng thái</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium text-right">Hành động</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {coupons.map((c) => {
+                  const status = getCouponStatus(c);
+                  return (
+                    <tr key={c.id} className="hover:bg-white/[0.02]">
+                      <td className="px-6 py-4">
+                        <span className="font-mono font-bold text-white text-sm flex items-center gap-2">
+                          <Tag className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                          {c.code}
                         </span>
-                      )}
-                      <span>
-                        Hiệu lực: {new Date(c.validFrom).toLocaleDateString("vi-VN")}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-white text-sm font-medium">
+                          {c.type === "PERCENTAGE" ? `${c.value}%` : `$${c.value}`}
+                        </span>
+                        <p className="text-white/40 text-xs mt-0.5">
+                          {c.type === "PERCENTAGE" ? "Phần trăm" : "Số tiền cố định"}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4 text-white/60 text-sm">
+                        {c.usageCount}{c.usageLimit != null ? `/${c.usageLimit}` : ""}
+                      </td>
+                      <td className="px-6 py-4 text-white/60 text-sm">
+                        {c.minOrderAmount != null ? `$${c.minOrderAmount}` : "—"}
+                      </td>
+                      <td className="px-6 py-4 text-white/50 text-xs">
+                        <div>{new Date(c.validFrom).toLocaleDateString("vi-VN")}</div>
                         {c.validUntil
-                          ? ` → ${new Date(c.validUntil).toLocaleDateString("vi-VN")}`
-                          : " (không giới hạn)"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openEdit(c)}
-                    className="text-white/60 hover:text-white"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setDeleteId(c.id)}
-                    className="text-red-400/70 hover:text-red-400"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
+                          ? <div>→ {new Date(c.validUntil).toLocaleDateString("vi-VN")}</div>
+                          : <div className="text-white/30">Không giới hạn</div>}
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge variant={status.variant}>{status.label}</Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openEdit(c)}
+                            className="h-8 w-8 text-white/60 hover:text-white"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setDeleteId(c.id)}
+                            className="h-8 w-8 text-red-400/70 hover:text-red-400"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -299,7 +311,7 @@ export function SellerCouponsPage() {
                 <Label>Loại giảm giá *</Label>
                 <Select
                   value={form.type}
-                  onValueChange={(v) => setForm((f) => ({ ...f, type: v as any }))}
+                  onValueChange={(v: string) => setForm((f) => ({ ...f, type: v as any }))}
                 >
                   <SelectTrigger className="bg-white/5 border-white/10">
                     <SelectValue />
@@ -412,7 +424,7 @@ export function SellerCouponsPage() {
       </Dialog>
 
       {/* Delete Confirmation */}
-      <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
+      <AlertDialog open={!!deleteId} onOpenChange={(o: boolean) => !o && setDeleteId(null)}>
         <AlertDialogContent className="bg-zinc-900 border-white/10 text-white">
           <AlertDialogHeader>
             <AlertDialogTitle>Xóa mã giảm giá?</AlertDialogTitle>

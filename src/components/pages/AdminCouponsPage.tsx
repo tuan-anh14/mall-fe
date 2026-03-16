@@ -248,41 +248,48 @@ export function AdminCouponsPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[700px]">
               <thead>
                 <tr className="border-b border-white/10 text-left">
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Mã code</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Loại</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Giá trị</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Đã dùng</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Hiệu lực</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium">Trạng thái</th>
-                  <th className="px-4 py-3 text-white/50 text-sm font-medium text-right">Hành động</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Mã code</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Loại</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Giá trị</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Đã dùng</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Hiệu lực</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Trạng thái</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium text-right">Hành động</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {coupons.map((coupon) => (
+                {coupons.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-16 text-center">
+                      <Tag className="h-10 w-10 text-white/20 mx-auto mb-3" />
+                      <p className="text-white/30 text-sm">Chưa có mã giảm giá nào</p>
+                    </td>
+                  </tr>
+                ) : coupons.map((coupon) => (
                   <tr key={coupon.id} className="hover:bg-white/[0.02]">
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <span className="text-white font-mono font-semibold text-sm flex items-center gap-1.5">
                         <Tag className="h-3.5 w-3.5 text-purple-400" />
                         {coupon.code}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-white/60 text-sm">
-                      {coupon.type === "PERCENTAGE" ? "%" : "$"}
+                    <td className="px-6 py-4 text-white/60 text-sm">
+                      {coupon.type === "PERCENTAGE" ? "Phần trăm" : "Số tiền cố định"}
                     </td>
-                    <td className="px-4 py-3 text-white text-sm font-medium">
+                    <td className="px-6 py-4 text-white text-sm font-medium">
                       {coupon.type === "PERCENTAGE" ? `${coupon.value}%` : `$${coupon.value}`}
                     </td>
-                    <td className="px-4 py-3 text-white/50 text-sm">
+                    <td className="px-6 py-4 text-white/50 text-sm">
                       {coupon._count.usages}{coupon.usageLimit ? `/${coupon.usageLimit}` : ""}
                     </td>
-                    <td className="px-4 py-3 text-white/50 text-xs">
+                    <td className="px-6 py-4 text-white/50 text-xs">
                       <div>{new Date(coupon.validFrom).toLocaleDateString("vi-VN")}</div>
                       {coupon.validUntil && <div>→ {new Date(coupon.validUntil).toLocaleDateString("vi-VN")}</div>}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       {isExpired(coupon) ? (
                         <Badge className="bg-zinc-500/20 text-zinc-400 border-0">Hết hạn</Badge>
                       ) : coupon.isActive ? (
@@ -291,13 +298,13 @@ export function AdminCouponsPage() {
                         <Badge className="bg-red-500/20 text-red-400 border-0">Tắt</Badge>
                       )}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-blue-400/70 hover:text-blue-400" onClick={() => openEdit(coupon)}>
-                          <Pencil className="h-3.5 w-3.5" />
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-400/70 hover:text-blue-400" onClick={() => openEdit(coupon)}>
+                          <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400/70 hover:text-red-400" onClick={() => setDeleteTarget(coupon)}>
-                          <Trash2 className="h-3.5 w-3.5" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400/70 hover:text-red-400" onClick={() => setDeleteTarget(coupon)}>
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>

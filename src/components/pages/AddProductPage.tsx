@@ -43,18 +43,22 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    categoryId: "",
-    price: "",
-    originalPrice: "",
-    stock: "",
-    sku: "",
-    brand: "",
-  });
-  const [images, setImages] = useState<string[]>([]);
-  const [specifications, setSpecifications] = useState<{ key: string; value: string }[]>([]);
+  const [formData, setFormData] = useState(() => ({
+    name: initialProduct?.name ?? "",
+    description: initialProduct?.description ?? "",
+    categoryId: initialProduct?.category?.id ?? "",
+    price: initialProduct?.price != null ? String(initialProduct.price) : "",
+    originalPrice: initialProduct?.originalPrice != null ? String(initialProduct.originalPrice) : "",
+    stock: initialProduct?.stock != null ? String(initialProduct.stock) : "",
+    sku: initialProduct?.sku ?? "",
+    brand: initialProduct?.brand ?? "",
+  }));
+  const [images, setImages] = useState<string[]>(() =>
+    (initialProduct?.images ?? []).map((img) => img.url)
+  );
+  const [specifications, setSpecifications] = useState<{ key: string; value: string }[]>(() =>
+    (initialProduct?.specifications ?? []).map((s) => ({ key: s.key, value: s.value }))
+  );
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -71,25 +75,6 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
         setCategoriesLoaded(true);
       });
   }, []);
-
-  // Pre-fill form when editing
-  useEffect(() => {
-    if (!initialProduct) return;
-    setFormData({
-      name: initialProduct.name ?? "",
-      description: initialProduct.description ?? "",
-      categoryId: initialProduct.category?.id ?? "",
-      price: initialProduct.price != null ? String(initialProduct.price) : "",
-      originalPrice: initialProduct.originalPrice != null ? String(initialProduct.originalPrice) : "",
-      stock: initialProduct.stock != null ? String(initialProduct.stock) : "",
-      sku: initialProduct.sku ?? "",
-      brand: initialProduct.brand ?? "",
-    });
-    setImages((initialProduct.images ?? []).map((img) => img.url));
-    setSpecifications(
-      (initialProduct.specifications ?? []).map((s) => ({ key: s.key, value: s.value }))
-    );
-  }, [initialProduct]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

@@ -24,6 +24,9 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponSellerName, setCouponSellerName] = useState<string | null>(null);
 
   // Shipping form state — pre-seeded from user prop synchronously
   const getInitialName = (part: "first" | "last") => {
@@ -82,6 +85,19 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
     prefill();
   }, []);
 
+  // Load coupon applied in CartPage
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("applied_coupon");
+      if (saved) {
+        const { code, discount, sellerName } = JSON.parse(saved);
+        setCouponCode(code ?? "");
+        setCouponDiscount(discount ?? 0);
+        setCouponSellerName(sellerName ?? null);
+      }
+    } catch {}
+  }, []);
+
   const validateShipping = (): boolean => {
     if (!firstName.trim()) { toast.error("Vui lòng nhập họ"); return false; }
     if (!lastName.trim()) { toast.error("Vui lòng nhập tên"); return false; }
@@ -114,7 +130,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
   );
   const shipping = subtotal > 50 ? 0 : 9.99;
   const tax = subtotal * 0.1;
-  const total = subtotal + shipping + tax;
+  const total = Math.max(0, subtotal - couponDiscount) + shipping + tax;
 
   const handlePlaceOrder = async () => {
     setIsPlacingOrder(true);
@@ -137,7 +153,9 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
           selectedColor: item.selectedColor,
           selectedSize: item.selectedSize,
         })),
+        ...(couponCode ? { couponCode } : {}),
       });
+      try { sessionStorage.removeItem("applied_coupon"); } catch {}
       toast.success("Đặt hàng thành công!");
       if (onOrderPlaced) {
         onOrderPlaced();
@@ -576,6 +594,15 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                 <span>Tạm tính ({cartItems.reduce((s, i) => s + i.quantity, 0)} sản phẩm)</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
+              {couponDiscount > 0 && (
+                <div className="flex justify-between text-green-400">
+                  <span className="flex flex-col">
+                    <span>Giảm giá ({couponCode})</span>
+                    {couponSellerName && <span className="text-xs text-green-400/60">Shop: {couponSellerName}</span>}
+                  </span>
+                  <span>-${couponDiscount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-white/70">
                 <span>Vận chuyển</span>
                 {shipping === 0 ? (
