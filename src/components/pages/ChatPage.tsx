@@ -58,7 +58,6 @@ interface ChatPageProps {
     name: string;
     avatar?: string;
     isOnline?: boolean;
-    productName?: string;
   };
   userId?: string;
   userType?: string;
@@ -82,7 +81,6 @@ interface Conversation {
   unread: number;
   avatar: string;
   online: boolean;
-  productName?: string;
   sellerUserId?: string;
 }
 
@@ -183,7 +181,6 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
           unread: conv.unreadCount ?? 0,
           avatar: getInitials(baseName),
           online: false,
-          productName: conv.product?.name,
           sellerUserId: conv.otherUser?.id,
         };
       });
@@ -220,7 +217,6 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
         unread: conv.unreadCount ?? 0,
         avatar: getInitials(baseName),
         online: false,
-        productName: conv.product?.name ?? sellerInfo?.productName,
         sellerUserId: conv.otherUser?.id,
       };
 
@@ -403,10 +399,14 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
   };
 
   const handleViewProfile = () => {
-    if (activeConversation?.sellerUserId) {
-      onNavigate("seller-profile", { sellerUserId: activeConversation.sellerUserId });
+    if (!activeConversation?.sellerUserId) {
+      toast.info("Không tìm thấy hồ sơ");
+      return;
+    }
+    if (userType?.toUpperCase() === "SELLER") {
+      onNavigate("buyer-profile", { buyerUserId: activeConversation.sellerUserId });
     } else {
-      toast.info(`Không có hồ sơ người bán`);
+      onNavigate("seller-profile", { sellerUserId: activeConversation.sellerUserId });
     }
   };
 
@@ -816,14 +816,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                 </div>
 
                 {/* Message Input */}
-                <div className="border-t border-white/10 bg-white/5">
-                  {activeConversation.productName && (
-                    <div className="px-4 pt-3 pb-1 flex items-center gap-2">
-                      <span className="text-xs text-white/40">Thảo luận về:</span>
-                      <span className="text-xs text-purple-400/80 truncate max-w-[240px]">{activeConversation.productName}</span>
-                    </div>
-                  )}
-                <div className="p-4">
+                <div className="p-4 border-t border-white/10 bg-white/5">
                   {/* Emoji Picker */}
                   {showEmojiPicker && (
                     <div className="mb-3 p-3 bg-zinc-900 border border-white/10 rounded-xl">
@@ -883,7 +876,6 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                       <Send className="h-5 w-5" />
                     </Button>
                   </div>
-                </div>
                 </div>
               </>
             ) : (

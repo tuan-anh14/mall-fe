@@ -39,6 +39,7 @@ const SettingsPage       = lazy(() => import("./components/pages/SettingsPage").
 const HelpPage           = lazy(() => import("./components/pages/HelpPage").then(m => ({ default: m.HelpPage })));
 const ChatPage           = lazy(() => import("./components/pages/ChatPage").then(m => ({ default: m.ChatPage })));
 const SellerProfilePage  = lazy(() => import("./components/pages/SellerProfilePage").then(m => ({ default: m.SellerProfilePage })));
+const BuyerProfilePage   = lazy(() => import("./components/pages/BuyerProfilePage").then(m => ({ default: m.BuyerProfilePage })));
 
 // Admin pages
 const AdminDashboardPage       = lazy(() => import("./components/pages/AdminDashboardPage").then(m => ({ default: m.AdminDashboardPage })));
@@ -132,6 +133,8 @@ export default function App() {
       reactNavigate(qs ? `/shop?${qs}` : "/shop");
     } else if (page === "orders" && data?.orderId) {
       reactNavigate(`/orders?orderId=${encodeURIComponent(data.orderId)}`);
+    } else if (page === "buyer-profile" && data?.buyerUserId) {
+      reactNavigate(`/buyer-profile?userId=${encodeURIComponent(data.buyerUserId)}`);
     } else if (page === "seller-profile" && data?.sellerUserId) {
       reactNavigate(`/seller-profile?userId=${encodeURIComponent(data.sellerUserId)}`);
     } else if (page === "chat") {
@@ -313,6 +316,17 @@ export default function App() {
                   onNavigate={navigate as any}
                   sellerUserId={new URLSearchParams(location.search).get("userId") ?? undefined}
                 />
+              }
+            />
+            <Route
+              path="/buyer-profile"
+              element={
+                !isAuthenticated
+                  ? authRedirect("Vui lòng đăng nhập")
+                  : <BuyerProfilePage
+                      onNavigate={navigate}
+                      buyerUserId={new URLSearchParams(location.search).get("userId") ?? undefined}
+                    />
               }
             />
 
