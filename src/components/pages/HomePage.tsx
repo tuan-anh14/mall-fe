@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ArrowRight, Zap, Shield, Truck, Headphones } from "lucide-react";
+import { ArrowRight, Zap, Shield, Truck, Headphones, Tag, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { ProductCard } from "../ProductCard";
@@ -13,11 +13,25 @@ interface HomePageProps {
   isInWishlist?: (productId: number) => boolean;
 }
 
+interface Promotion {
+  id: string;
+  code: string;
+  name?: string | null;
+  description?: string | null;
+  type: "PERCENTAGE" | "FIXED_AMOUNT";
+  value: number | string;
+  minOrderAmount?: number | string | null;
+  maxDiscount?: number | string | null;
+  validUntil?: string | null;
+}
+
 export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlist }: HomePageProps) {
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [trendingProducts, setTrendingProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showPromoPopup, setShowPromoPopup] = useState(false);
 
   // Auto-rotate featured product every 5 seconds
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
@@ -27,7 +41,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [featuredRes, trendingRes, categoriesRes] = await Promise.all([
+        const [featuredRes, trendingRes, categoriesRes, promotionsRes] = await Promise.all([
           get<{ products: any[]; total: number; page: number; limit: number; totalPages: number }>(
             "/api/v1/products?featured=true&limit=6"
           ),
@@ -35,11 +49,22 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
             "/api/v1/products?trending=true&limit=6"
           ),
           get<{ categories: any[] }>("/api/v1/categories"),
+          get<{ promotions: Promotion[] }>("/api/v1/products/promotions").catch(() => ({ promotions: [] })),
         ]);
 
         setFeaturedProducts(featuredRes.products ?? []);
         setTrendingProducts(trendingRes.products ?? []);
         setCategories(categoriesRes.categories ?? []);
+        const activePromos = promotionsRes.promotions ?? [];
+        setPromotions(activePromos);
+        // Show popup if there are active promotions and user hasn't dismissed today
+        if (activePromos.length > 0) {
+          const lastDismissed = localStorage.getItem("promo_popup_dismissed");
+          const today = new Date().toDateString();
+          if (lastDismissed !== today) {
+            setShowPromoPopup(true);
+          }
+        }
       } catch (err) {
         console.error("Failed to load homepage data:", err);
       } finally {
@@ -285,31 +310,52 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
         </div>
       </section>
 
-      {/* Promotional Banner */}
-      <section className="py-16 container mx-auto px-4">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600 to-blue-600 p-12">
-          <div className="relative z-10 max-w-2xl">
-            <Badge className="mb-4 bg-white/20 text-white border-white/30">
-              Ưu đãi có hạn
-            </Badge>
-            <h2 className="text-4xl text-white mb-4">Khuyến mãi Black Friday</h2>
-            <p className="text-xl text-white/90 mb-6">
-              Giảm đến 50% cho các sản phẩm được chọn. Đừng bỏ lỡ cơ hội tuyệt vời này!
-            </p>
-            <Button
-              size="lg"
-              onClick={() => onNavigate("shop")}
-              className="bg-white text-purple-600 hover:bg-white/90"
-            >
-              Mua khuyến mãi
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+      {/* Promotional Banner — dynamic from active platform coupons */}
+      {promotions.length > 0 && (
+        <section className="py-16 container mx-auto px-4">
+          <div className="space-y-4">
+            {promotions.map((promo) => {
+              const discountLabel = promo.type === "PERCENTAGE"
+                ? `${promo.value}%`
+                : `$${promo.value}`;
+              const title = promo.name || `Giảm ${discountLabel}`;
+              const desc = promo.description || `Sử dụng mã ${promo.code} để được giảm ${discountLabel}. Đừng bỏ lỡ ưu đãi hấp dẫn này!`;
+              const hasExpiry = !!promo.validUntil;
+              return (
+                <div key={promo.id} className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600 to-blue-600 p-12">
+                  <div className="relative z-10 max-w-2xl">
+                    <Badge className="mb-4 bg-white/20 text-white border-white/30">
+                      {hasExpiry ? `Hết hạn ${new Date(promo.validUntil!).toLocaleDateString("vi-VN")}` : "Ưu đãi đặc biệt"}
+                    </Badge>
+                    <h2 className="text-4xl text-white mb-4">{title}</h2>
+                    <p className="text-xl text-white/90 mb-3">{desc}</p>
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="inline-flex items-center gap-2 bg-white/20 rounded-xl px-4 py-2">
+                        <Tag className="h-4 w-4 text-white" />
+                        <span className="text-white font-mono font-bold tracking-widest">{promo.code}</span>
+                      </div>
+                      {promo.minOrderAmount && (
+                        <span className="text-white/70 text-sm">Đơn tối thiểu ${Number(promo.minOrderAmount).toFixed(0)}</span>
+                      )}
+                    </div>
+                    <Button
+                      size="lg"
+                      onClick={() => onNavigate("shop")}
+                      className="bg-white text-purple-600 hover:bg-white/90"
+                    >
+                      Mua ngay
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </div>
+                  <div className="absolute right-0 top-0 bottom-0 w-1/2 opacity-20">
+                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4zIj48cGF0aCBkPSJNMzYgMTZjMC0yLjIxIDEuNzktNCA0LTRzNCAxLjc5IDQgNC0xLjc5IDQtNCA0LTQtMS43OS00LTR6bTAgMjRjMC0yLjIxIDEuNzktNCA0LTRzNCAxLjc5IDQgNC0xLjc5IDQtNCA0LTQtMS43OS00LTR6TTEyIDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00eiIvPjwvZz48L2c+PC9zdmc+')] " />
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <div className="absolute right-0 top-0 bottom-0 w-1/2 opacity-20">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4zIj48cGF0aCBkPSJNMzYgMTZjMC0yLjIxIDEuNzktNCA0LTRzNCAxLjc5IDQgNC0xLjc5IDQtNCA0LTQtMS43OS00LTR6bTAgMjRjMC0yLjIxIDEuNzktNCA0LTRzNCAxLjc5IDQgNC0xLjc5IDQtNCA0LTQtMS43OS00LTR6TTEyIDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00eiIvPjwvZz48L2c+PC9zdmc+')] " />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Trending Products */}
       <section className="py-16 container mx-auto px-4">
@@ -333,6 +379,86 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
           ))}
         </div>
       </section>
+
+      {/* Promo Popup */}
+      <AnimatePresence>
+        {showPromoPopup && promotions.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => {
+              setShowPromoPopup(false);
+              localStorage.setItem("promo_popup_dismissed", new Date().toDateString());
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.85, opacity: 0 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative w-full max-w-md bg-gradient-to-br from-purple-900 to-blue-900 border border-purple-500/30 rounded-3xl p-8 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => {
+                  setShowPromoPopup(false);
+                  localStorage.setItem("promo_popup_dismissed", new Date().toDateString());
+                }}
+                className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 border border-white/20 mb-4">
+                  <Tag className="h-7 w-7 text-purple-300" />
+                </div>
+                <h2 className="text-2xl text-white mb-1">Ưu đãi hôm nay</h2>
+                <p className="text-white/50 text-sm">Đừng bỏ lỡ các mã giảm giá đặc biệt</p>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                {promotions.map((promo) => {
+                  const discountLabel = promo.type === "PERCENTAGE"
+                    ? `Giảm ${promo.value}%`
+                    : `Giảm $${promo.value}`;
+                  return (
+                    <div key={promo.id} className="bg-white/10 border border-white/10 rounded-2xl p-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-white font-mono font-bold tracking-widest text-lg">{promo.code}</span>
+                        <Badge className="bg-purple-500/30 text-purple-200 border-0">{discountLabel}</Badge>
+                      </div>
+                      {(promo.name || promo.description) && (
+                        <p className="text-white/60 text-sm">{promo.description || promo.name}</p>
+                      )}
+                      {promo.minOrderAmount && (
+                        <p className="text-white/40 text-xs mt-1">Đơn tối thiểu ${Number(promo.minOrderAmount).toFixed(0)}</p>
+                      )}
+                      {promo.validUntil && (
+                        <p className="text-white/40 text-xs mt-0.5">Hết hạn {new Date(promo.validUntil).toLocaleDateString("vi-VN")}</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <Button
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                onClick={() => {
+                  setShowPromoPopup(false);
+                  localStorage.setItem("promo_popup_dismissed", new Date().toDateString());
+                  onNavigate("shop");
+                }}
+              >
+                Mua sắm ngay
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

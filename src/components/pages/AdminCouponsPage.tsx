@@ -27,6 +27,8 @@ import { toast } from "sonner";
 interface Coupon {
   id: string;
   code: string;
+  name?: string | null;
+  description?: string | null;
   type: "PERCENTAGE" | "FIXED_AMOUNT";
   value: number | string;
   minOrderAmount?: number | string | null;
@@ -41,6 +43,8 @@ interface Coupon {
 
 interface FormState {
   code: string;
+  name: string;
+  description: string;
   type: "PERCENTAGE" | "FIXED_AMOUNT";
   value: string;
   minOrderAmount: string;
@@ -53,6 +57,8 @@ interface FormState {
 
 const emptyForm: FormState = {
   code: "",
+  name: "",
+  description: "",
   type: "PERCENTAGE",
   value: "",
   minOrderAmount: "",
@@ -100,6 +106,8 @@ export function AdminCouponsPage() {
     setEditTarget(coupon);
     setForm({
       code: coupon.code,
+      name: coupon.name ?? "",
+      description: coupon.description ?? "",
       type: coupon.type,
       value: String(coupon.value),
       minOrderAmount: coupon.minOrderAmount ? String(coupon.minOrderAmount) : "",
@@ -123,6 +131,8 @@ export function AdminCouponsPage() {
         validFrom: new Date(form.validFrom).toISOString(),
         isActive: form.isActive,
       };
+      if (form.name) payload.name = form.name;
+      if (form.description) payload.description = form.description;
       if (form.minOrderAmount) payload.minOrderAmount = parseFloat(form.minOrderAmount);
       if (form.maxDiscount) payload.maxDiscount = parseFloat(form.maxDiscount);
       if (form.usageLimit) payload.usageLimit = parseInt(form.usageLimit);
@@ -182,6 +192,14 @@ export function AdminCouponsPage() {
             <div>
               <label className="text-white/60 text-xs mb-1 block">Mã code *</label>
               <Input value={form.code} onChange={(e) => setForm(f => ({ ...f, code: e.target.value.toUpperCase() }))} placeholder="SUMMER20" className="bg-white/5 border-white/10 text-white font-mono" />
+            </div>
+            <div>
+              <label className="text-white/60 text-xs mb-1 block">Tên hiển thị</label>
+              <Input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Black Friday 2024" className="bg-white/5 border-white/10 text-white" />
+            </div>
+            <div>
+              <label className="text-white/60 text-xs mb-1 block">Mô tả ngắn (hiển thị trên banner)</label>
+              <Input value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Giảm đến 50% cho tất cả sản phẩm" className="bg-white/5 border-white/10 text-white" />
             </div>
             <div>
               <label className="text-white/60 text-xs mb-1 block">Loại *</label>
@@ -252,6 +270,7 @@ export function AdminCouponsPage() {
               <thead>
                 <tr className="border-b border-white/10 text-left">
                   <th className="px-6 py-4 text-white/50 text-sm font-medium">Mã code</th>
+                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Tên / Mô tả</th>
                   <th className="px-6 py-4 text-white/50 text-sm font-medium">Loại</th>
                   <th className="px-6 py-4 text-white/50 text-sm font-medium">Giá trị</th>
                   <th className="px-6 py-4 text-white/50 text-sm font-medium">Đã dùng</th>
@@ -263,7 +282,7 @@ export function AdminCouponsPage() {
               <tbody className="divide-y divide-white/5">
                 {coupons.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-16 text-center">
+                    <td colSpan={8} className="px-6 py-16 text-center">
                       <Tag className="h-10 w-10 text-white/20 mx-auto mb-3" />
                       <p className="text-white/30 text-sm">Chưa có mã giảm giá nào</p>
                     </td>
@@ -275,6 +294,16 @@ export function AdminCouponsPage() {
                         <Tag className="h-3.5 w-3.5 text-purple-400" />
                         {coupon.code}
                       </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {coupon.name ? (
+                        <div>
+                          <p className="text-white text-sm">{coupon.name}</p>
+                          {coupon.description && <p className="text-white/40 text-xs mt-0.5 max-w-[200px] truncate">{coupon.description}</p>}
+                        </div>
+                      ) : (
+                        <span className="text-white/20 text-xs">—</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-white/60 text-sm">
                       {coupon.type === "PERCENTAGE" ? "Phần trăm" : "Số tiền cố định"}
