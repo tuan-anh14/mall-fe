@@ -12,6 +12,7 @@ import {
   Package,
   Store,
   Shield,
+  Wallet,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -339,6 +340,10 @@ export function Header({
                     <DropdownMenuItem onClick={() => onNavigate("orders")} className="text-white/80 hover:text-white cursor-pointer">
                       <Package className="h-4 w-4 mr-2" />
                       Đơn hàng của tôi
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onNavigate("wallet")} className="text-white/80 hover:text-white cursor-pointer">
+                      <Wallet className="h-4 w-4 mr-2" />
+                      Ví của tôi
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onNavigate("settings")} className="text-white/80 hover:text-white cursor-pointer">
                       <Settings className="h-4 w-4 mr-2" />

@@ -50,6 +50,8 @@ const AdminReviewsPage         = lazy(() => import("./components/pages/AdminRevi
 const AdminSellerRequestsPage  = lazy(() => import("./components/pages/AdminSellerRequestsPage").then(m => ({ default: m.AdminSellerRequestsPage })));
 const AdminStatsPage           = lazy(() => import("./components/pages/AdminStatsPage").then(m => ({ default: m.AdminStatsPage })));
 const AdminAuditLogPage        = lazy(() => import("./components/pages/AdminAuditLogPage").then(m => ({ default: m.AdminAuditLogPage })));
+const WalletDashboard          = lazy(() => import("./components/pages/WalletDashboard").then(m => ({ default: m.WalletDashboard })));
+const AdminWalletPage          = lazy(() => import("./components/pages/AdminWalletPage").then(m => ({ default: m.AdminWalletPage })));
 
 // Static pages — one chunk for the whole module
 const AboutPage    = lazy(() => import("./components/pages/StaticPages").then(m => ({ default: m.AboutPage })));
@@ -358,6 +360,7 @@ export default function App() {
             <Route path="/notifications" element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để xem thông báo")            : <NotificationsPage onNavigate={navigate} />} />
             <Route path="/wishlist"      element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để xem danh sách yêu thích")  : <WishlistPage onNavigate={navigate} wishlistItems={wishlistItems} onRemoveItem={removeFromWishlist} onAddToCart={addToCart} />} />
             <Route path="/settings"      element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để truy cập cài đặt")         : <SettingsPage onNavigate={navigate} onLogout={handleLogout} />} />
+            <Route path="/wallet"        element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để xem ví")                    : <WalletDashboard onNavigate={navigate} />} />
             <Route path="/chat"          element={!isAuthenticated ? authRedirect("Vui lòng đăng nhập để trò chuyện với người bán") : <ChatPage onNavigate={navigate} sellerInfo={chatData} userId={user?.id} userType={user?.userType} />} />
 
             {/* Seller protected pages */}
@@ -378,6 +381,7 @@ export default function App() {
             <Route path="/admin/seller-requests"   element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminSellerRequestsPage />} />
             <Route path="/admin/stats"             element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminStatsPage />} />
             <Route path="/admin/audit-log"         element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminAuditLogPage />} />
+            <Route path="/admin/wallets"           element={!isAuthenticated || !isAdmin ? adminRedirect("Truy cập bị từ chối. Cần quyền Admin.") : <AdminWalletPage />} />
 
             {/* 404 fallback */}
             <Route

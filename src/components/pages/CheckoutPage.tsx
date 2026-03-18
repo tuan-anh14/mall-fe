@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CreditCard, MapPin, Package, Check, ChevronDown } from "lucide-react";
+import { CreditCard, MapPin, Package, Check, Wallet, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -10,6 +10,7 @@ import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { CartItem } from "../../types";
 import { toast } from "sonner";
 import { get, post } from "../../lib/api";
+import { walletService, WalletInfo } from "../../services/wallet.service";
 
 interface CheckoutPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -20,8 +21,9 @@ interface CheckoutPageProps {
 
 export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }: CheckoutPageProps) {
   const [step, setStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethod, setPaymentMethod] = useState("wallet");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [couponCode, setCouponCode] = useState("");
@@ -44,6 +46,11 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
+
+  // Fetch wallet balance
+  useEffect(() => {
+    walletService.getWallet().then(setWalletInfo).catch(() => {});
+  }, []);
 
   // Enhance pre-fill from full profile API + saved addresses
   useEffect(() => {
@@ -362,6 +369,84 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
                 <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
                   <div className="space-y-3">
+                    {/* Shop Wallet */}
+                    <div
+                      className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
+                        paymentMethod === "wallet"
+                          ? "border-purple-500 bg-purple-500/10"
+                          : "border-white/10 bg-white/5"
+                      }`}
+                    >
+                      <RadioGroupItem value="wallet" id="wallet" />
+                      <Label htmlFor="wallet" className="flex-1 cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Wallet className="h-4 w-4 text-purple-400" />
+                            <span className="text-white">Shop Wallet</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-white/70 text-sm">
+                              Số dư: <span className="text-purple-300 font-medium">
+                                ${(walletInfo?.balance ?? 0).toFixed(2)}
+                              </span>
+                            </span>
+                            {walletInfo && walletInfo.balance < total && (
+                              <div className="flex items-center gap-1 text-yellow-400 text-xs mt-0.5">
+                                <AlertCircle className="h-3 w-3" />
+                                Số dư không đủ
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        {walletInfo && walletInfo.balance < total && paymentMethod === "wallet" && (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.preventDefault(); onNavigate("wallet"); }}
+                            className="text-xs text-purple-400 hover:text-purple-300 mt-1 underline"
+                          >
+                            → Nạp thêm tiền vào ví
+                          </button>
+                        )}
+                      </Label>
+                    </div>
+
+                    {/* VNPAY */}
+                    <div
+                      className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
+                        paymentMethod === "vnpay"
+                          ? "border-purple-500 bg-purple-500/10"
+                          : "border-white/10 bg-white/5"
+                      }`}
+                    >
+                      <RadioGroupItem value="vnpay" id="vnpay" />
+                      <Label htmlFor="vnpay" className="flex-1 cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <span className="text-white">VNPAY</span>
+                          <span className="text-2xl">🏦</span>
+                        </div>
+                        <p className="text-white/40 text-xs mt-0.5">Internet Banking / ATM / QR Code</p>
+                      </Label>
+                    </div>
+
+                    {/* MoMo */}
+                    <div
+                      className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
+                        paymentMethod === "momo"
+                          ? "border-purple-500 bg-purple-500/10"
+                          : "border-white/10 bg-white/5"
+                      }`}
+                    >
+                      <RadioGroupItem value="momo" id="momo" />
+                      <Label htmlFor="momo" className="flex-1 cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <span className="text-white">MoMo</span>
+                          <span className="text-2xl">📱</span>
+                        </div>
+                        <p className="text-white/40 text-xs mt-0.5">Ví điện tử MoMo</p>
+                      </Label>
+                    </div>
+
+                    {/* Card */}
                     <div
                       className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
                         paymentMethod === "card"
@@ -373,41 +458,24 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       <Label htmlFor="card" className="flex-1 cursor-pointer">
                         <div className="flex items-center justify-between">
                           <span className="text-white">Thẻ tín dụng/ghi nợ</span>
-                          <div className="flex gap-2">
-                            <span className="text-2xl">💳</span>
-                          </div>
+                          <span className="text-2xl">💳</span>
                         </div>
                       </Label>
                     </div>
 
+                    {/* COD */}
                     <div
                       className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
-                        paymentMethod === "paypal"
+                        paymentMethod === "cod"
                           ? "border-purple-500 bg-purple-500/10"
                           : "border-white/10 bg-white/5"
                       }`}
                     >
-                      <RadioGroupItem value="paypal" id="paypal" />
-                      <Label htmlFor="paypal" className="flex-1 cursor-pointer">
+                      <RadioGroupItem value="cod" id="cod" />
+                      <Label htmlFor="cod" className="flex-1 cursor-pointer">
                         <div className="flex items-center justify-between">
-                          <span className="text-white">PayPal</span>
-                          <span className="text-2xl">🅿️</span>
-                        </div>
-                      </Label>
-                    </div>
-
-                    <div
-                      className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
-                        paymentMethod === "crypto"
-                          ? "border-purple-500 bg-purple-500/10"
-                          : "border-white/10 bg-white/5"
-                      }`}
-                    >
-                      <RadioGroupItem value="crypto" id="crypto" />
-                      <Label htmlFor="crypto" className="flex-1 cursor-pointer">
-                        <div className="flex items-center justify-between">
-                          <span className="text-white">Tiền điện tử</span>
-                          <span className="text-2xl">₿</span>
+                          <span className="text-white">Thanh toán khi nhận hàng (COD)</span>
+                          <span className="text-2xl">💵</span>
                         </div>
                       </Label>
                     </div>
@@ -462,11 +530,26 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   <Button
                     size="lg"
                     onClick={() => setStep(3)}
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600"
+                    disabled={paymentMethod === "wallet" && walletInfo !== null && walletInfo.balance < total}
+                    className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 disabled:opacity-40"
                   >
                     Xem lại đơn hàng
                   </Button>
                 </div>
+                {paymentMethod === "wallet" && walletInfo !== null && walletInfo.balance < total && (
+                  <p className="text-center text-yellow-400/80 text-sm flex items-center justify-center gap-1">
+                    <AlertCircle className="h-4 w-4" />
+                    Số dư ví (${ walletInfo.balance.toFixed(2)}) không đủ để thanh toán (${total.toFixed(2)}).
+                    {" "}
+                    <button
+                      type="button"
+                      onClick={() => onNavigate("wallet")}
+                      className="underline hover:text-yellow-300"
+                    >
+                      Nạp thêm tiền
+                    </button>
+                  </p>
+                )}
               </div>
             )}
 
@@ -489,7 +572,11 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   <div className="bg-white/5 rounded-lg p-4">
                     <h3 className="text-white mb-2">Phương thức thanh toán</h3>
                     <p className="text-white/70 text-sm">
+                      {paymentMethod === "wallet" && `Shop Wallet (Số dư: $${(walletInfo?.balance ?? 0).toFixed(2)})`}
+                      {paymentMethod === "vnpay" && "VNPAY"}
+                      {paymentMethod === "momo" && "Ví MoMo"}
                       {paymentMethod === "card" && "Thẻ tín dụng/ghi nợ"}
+                      {paymentMethod === "cod" && "Thanh toán khi nhận hàng"}
                       {paymentMethod === "paypal" && "PayPal"}
                       {paymentMethod === "crypto" && "Tiền điện tử (Bitcoin)"}
                     </p>
