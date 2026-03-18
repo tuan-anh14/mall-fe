@@ -47,10 +47,12 @@ export async function patch<T = any>(path: string, body?: any): Promise<T> {
   return handleResponse<T>(res);
 }
 
-export async function del<T = any>(path: string): Promise<T> {
+export async function del<T = any>(path: string, body?: any): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     method: 'DELETE',
     credentials: 'include',
+    headers: body !== undefined ? { 'Content-Type': 'application/json' } : undefined,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
   });
   return handleResponse<T>(res);
 }

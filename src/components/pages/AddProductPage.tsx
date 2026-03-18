@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Upload, X, Plus } from "lucide-react";
+import { ArrowLeft, Upload, X, Plus, Star } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { get, post, put } from "../../lib/api";
+import { get, post, put, del } from "../../lib/api";
 import { API_URL } from "../../lib/api";
 import { toast } from "sonner";
 
@@ -54,8 +54,12 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
     brand: initialProduct?.brand ?? "",
   }));
   const [images, setImages] = useState<string[]>(() =>
-    (initialProduct?.images ?? []).map((img) => img.url)
+    (initialProduct?.images ?? [])
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((img) => img.url)
   );
+  // Track which images are being deleted individually
+  const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
   const [specifications, setSpecifications] = useState<{ key: string; value: string }[]>(() =>
     (initialProduct?.specifications ?? []).map((s) => ({ key: s.key, value: s.value }))
   );
@@ -109,8 +113,39 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
     }
   };
 
-  const handleRemoveImage = (index: number) => {
+  const handleRemoveImage = async (index: number) => {
+    const url = images[index];
+    setDeletingIndex(index);
+    try {
+      // Remove from Cloudinary / local storage on backend
+      await del('/api/v1/upload/images', { url });
+    } catch {
+      // Non-fatal: image may already be gone or is an external URL
+    } finally {
+      setDeletingIndex(null);
+    }
     setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSetPrimary = (index: number) => {
+    if (index === 0) return;
+    setImages((prev) => {
+      const next = [...prev];
+      const [picked] = next.splice(index, 1);
+      next.unshift(picked);
+      return next;
+    });
+    toast.success("Đã đặt làm ảnh đại diện");
+  };
+
+  const handleMoveImage = (from: number, to: number) => {
+    if (to < 0 || to >= images.length) return;
+    setImages((prev) => {
+      const next = [...prev];
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item);
+      return next;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -325,43 +360,138 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
 
         {/* Product Images */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
-          <h2 className="text-2xl text-white mb-6">Hình ảnh sản phẩm</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl text-white">Hình ảnh sản phẩm</h2>
+            {images.length > 0 && (
+              <span className="text-white/40 text-sm">{images.length} ảnh · Ảnh đầu tiên là ảnh đại diện</span>
+            )}
+          </div>
 
           <div className="space-y-4">
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/png,image/jpeg,image/jpg"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
               multiple
               className="hidden"
               onChange={handleFileChange}
             />
 
+            {/* Drop zone */}
             <div
-              className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-purple-500/50 transition-colors cursor-pointer"
+              className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
+                uploading
+                  ? "border-purple-500/50 bg-purple-500/5"
+                  : "border-white/20 hover:border-purple-500/50 hover:bg-white/3"
+              }`}
               onClick={() => !uploading && fileInputRef.current?.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (uploading) return;
+                const dt = e.dataTransfer;
+                if (!dt.files?.length) return;
+                const fakeEvent = { target: { files: dt.files } } as any;
+                handleFileChange(fakeEvent);
+              }}
             >
-              <Upload className="h-12 w-12 text-white/40 mx-auto mb-4" />
-              <p className="text-white mb-2">
-                {uploading ? "Đang tải lên..." : "Nhấn để tải lên hình ảnh sản phẩm"}
-              </p>
-              <p className="text-sm text-white/60">PNG, JPG tối đa 10MB</p>
+              {uploading ? (
+                <>
+                  <div className="w-10 h-10 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin mx-auto mb-3" />
+                  <p className="text-purple-300 text-sm">Đang tải lên Cloudinary...</p>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-10 w-10 text-white/40 mx-auto mb-3" />
+                  <p className="text-white mb-1">Kéo thả hoặc nhấn để tải ảnh lên</p>
+                  <p className="text-sm text-white/50">PNG, JPG, WEBP · tối đa 10MB · tối đa 10 ảnh</p>
+                </>
+              )}
             </div>
 
+            {/* Image grid */}
             {images.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {images.map((url, index) => (
-                  <div key={index} className="relative aspect-square bg-white/5 rounded-lg overflow-hidden group">
-                    <img src={url} alt={`Product ${index + 1}`} className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(index)}
-                      className="absolute top-2 right-2 h-6 w-6 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="h-4 w-4 text-white" />
-                    </button>
+                  <div
+                    key={url + index}
+                    className="relative aspect-square bg-white/5 rounded-xl overflow-hidden group border border-white/10"
+                  >
+                    <img
+                      src={url}
+                      alt={`Ảnh sản phẩm ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+
+                    {/* Primary badge */}
+                    {index === 0 && (
+                      <div className="absolute top-2 left-2 flex items-center gap-1 bg-yellow-500 text-black text-xs font-semibold px-2 py-0.5 rounded-full">
+                        <Star className="h-3 w-3 fill-black" />
+                        Chính
+                      </div>
+                    )}
+
+                    {/* Overlay actions (visible on hover) */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                      {index !== 0 && (
+                        <button
+                          type="button"
+                          onClick={() => handleSetPrimary(index)}
+                          className="flex items-center gap-1.5 bg-yellow-500 hover:bg-yellow-400 text-black text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                          <Star className="h-3 w-3 fill-black" />
+                          Đặt làm chính
+                        </button>
+                      )}
+                      <div className="flex gap-2">
+                        {index > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => handleMoveImage(index, index - 1)}
+                            className="bg-white/20 hover:bg-white/30 text-white text-xs px-2 py-1 rounded-lg transition-colors"
+                          >
+                            ←
+                          </button>
+                        )}
+                        {index < images.length - 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleMoveImage(index, index + 1)}
+                            className="bg-white/20 hover:bg-white/30 text-white text-xs px-2 py-1 rounded-lg transition-colors"
+                          >
+                            →
+                          </button>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        disabled={deletingIndex === index}
+                        className="flex items-center gap-1.5 bg-red-600 hover:bg-red-500 text-white text-xs px-3 py-1.5 rounded-lg transition-colors disabled:opacity-60"
+                      >
+                        {deletingIndex === index ? (
+                          <div className="w-3 h-3 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                        ) : (
+                          <X className="h-3 w-3" />
+                        )}
+                        Xóa
+                      </button>
+                    </div>
                   </div>
                 ))}
+
+                {/* Add more button */}
+                {images.length < 10 && (
+                  <button
+                    type="button"
+                    onClick={() => !uploading && fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="aspect-square border-2 border-dashed border-white/20 rounded-xl flex flex-col items-center justify-center gap-2 text-white/40 hover:text-white/60 hover:border-purple-500/40 transition-colors disabled:opacity-40"
+                  >
+                    <Plus className="h-6 w-6" />
+                    <span className="text-xs">Thêm ảnh</span>
+                  </button>
+                )}
               </div>
             )}
           </div>
