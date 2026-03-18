@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Plus, Pencil, Trash2, Tag, AlertCircle } from "lucide-react";
+import { formatCurrency } from "../../lib/currency";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -236,7 +237,7 @@ export function SellerCouponsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-white text-sm font-medium">
-                          {c.type === "PERCENTAGE" ? `${c.value}%` : `$${c.value}`}
+                          {c.type === "PERCENTAGE" ? `${c.value}%` : `${formatCurrency(Number(c.value))}`}
                         </span>
                         <p className="text-white/40 text-xs mt-0.5">
                           {c.type === "PERCENTAGE" ? "Phần trăm" : "Số tiền cố định"}
@@ -246,7 +247,7 @@ export function SellerCouponsPage() {
                         {c.usageCount}{c.usageLimit != null ? `/${c.usageLimit}` : ""}
                       </td>
                       <td className="px-6 py-4 text-white/60 text-sm">
-                        {c.minOrderAmount != null ? `$${c.minOrderAmount}` : "—"}
+                        {c.minOrderAmount != null ? formatCurrency(Number(c.minOrderAmount)) : "—"}
                       </td>
                       <td className="px-6 py-4 text-white/50 text-xs">
                         <div>{new Date(c.validFrom).toLocaleDateString("vi-VN")}</div>

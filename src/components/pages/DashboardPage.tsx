@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { get } from "../../lib/api";
+import { formatCurrency, formatCurrencyCompact } from "../../lib/currency";
 
 interface DashboardStats {
   totalRevenue: number;
@@ -119,7 +120,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             </Badge>
           </div>
           <p className="text-sm text-white/60 mb-1">Tổng doanh thu</p>
-          <p className="text-3xl text-white">${((stats?.totalRevenue ?? 0) / 1000).toFixed(1)}K</p>
+          <p className="text-3xl text-white">{formatCurrencyCompact(stats?.totalRevenue ?? 0)}</p>
         </div>
 
         <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-2xl p-6">
@@ -270,7 +271,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                       </div>
                     </TableCell>
                     <TableCell className="text-white/70">{product.category?.name ?? "-"}</TableCell>
-                    <TableCell className="text-white">${product.price}</TableCell>
+                    <TableCell className="text-white">{formatCurrency(product.price)}</TableCell>
                     <TableCell>
                       <Badge
                         className={
@@ -344,7 +345,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                     <TableCell className="text-white">{order.id}</TableCell>
                     <TableCell className="text-white/70">{order.date}</TableCell>
                     <TableCell className="text-white/70">{order.customer.name}</TableCell>
-                    <TableCell className="text-white">${order.total.toFixed(2)}</TableCell>
+                    <TableCell className="text-white">{formatCurrency(order.total)}</TableCell>
                     <TableCell>
                       <Badge
                         className={
@@ -428,7 +429,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                       </TableCell>
                       <TableCell className="text-white/70">{customer.email}</TableCell>
                       <TableCell className="text-white">{customer.orderCount}</TableCell>
-                      <TableCell className="text-white">${customer.totalSpent.toFixed(2)}</TableCell>
+                      <TableCell className="text-white">{formatCurrency(customer.totalSpent)}</TableCell>
                     </TableRow>
                   ));
                 })()}

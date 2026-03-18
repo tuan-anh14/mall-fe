@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { Star, Heart, ShoppingCart, Eye } from "lucide-react";
+import { formatCurrency } from "../lib/currency";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { motion } from "motion/react";
@@ -87,10 +88,10 @@ export const ProductCard = memo(function ProductCard({
 
         {/* Price */}
         <div className="flex items-baseline gap-2">
-          <span className="text-xl text-white">${product.price}</span>
+          <span className="text-xl text-white">{formatCurrency(product.price)}</span>
           {product.originalPrice && (
             <span className="text-sm text-white/50 line-through">
-              ${product.originalPrice}
+              {formatCurrency(product.originalPrice)}
             </span>
           )}
         </div>

@@ -11,6 +11,7 @@ import { CartItem } from "../../types";
 import { toast } from "sonner";
 import { get, post } from "../../lib/api";
 import { walletService, WalletInfo } from "../../services/wallet.service";
+import { formatCurrency } from "../../lib/currency";
 
 interface CheckoutPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -387,7 +388,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                           <div className="text-right">
                             <span className="text-white/70 text-sm">
                               Số dư: <span className="text-purple-300 font-medium">
-                                ${(walletInfo?.balance ?? 0).toFixed(2)}
+                                {formatCurrency(walletInfo?.balance ?? 0)}
                               </span>
                             </span>
                             {walletInfo && walletInfo.balance < total && (
@@ -539,7 +540,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                 {paymentMethod === "wallet" && walletInfo !== null && walletInfo.balance < total && (
                   <p className="text-center text-yellow-400/80 text-sm flex items-center justify-center gap-1">
                     <AlertCircle className="h-4 w-4" />
-                    Số dư ví (${ walletInfo.balance.toFixed(2)}) không đủ để thanh toán (${total.toFixed(2)}).
+                    Số dư ví ({formatCurrency(walletInfo.balance)}) không đủ để thanh toán ({formatCurrency(total)}).
                     {" "}
                     <button
                       type="button"
@@ -572,7 +573,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   <div className="bg-white/5 rounded-lg p-4">
                     <h3 className="text-white mb-2">Phương thức thanh toán</h3>
                     <p className="text-white/70 text-sm">
-                      {paymentMethod === "wallet" && `Shop Wallet (Số dư: $${(walletInfo?.balance ?? 0).toFixed(2)})`}
+                      {paymentMethod === "wallet" && `Shop Wallet (Số dư: ${formatCurrency(walletInfo?.balance ?? 0)})`}
                       {paymentMethod === "vnpay" && "VNPAY"}
                       {paymentMethod === "momo" && "Ví MoMo"}
                       {paymentMethod === "card" && "Thẻ tín dụng/ghi nợ"}
@@ -604,7 +605,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                             </p>
                           </div>
                           <p className="text-white text-sm font-medium flex-shrink-0">
-                            ${(item.product?.price * item.quantity).toFixed(2)}
+                            {formatCurrency(item.product?.price * item.quantity)}
                           </p>
                         </div>
                       ))}
@@ -663,7 +664,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       )}
                     </div>
                     <p className="text-white text-sm font-medium flex-shrink-0">
-                      ${(item.product?.price * item.quantity).toFixed(2)}
+                      {formatCurrency(item.product?.price * item.quantity)}
                     </p>
                   </div>
                 ))}
@@ -679,7 +680,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             <div className="space-y-3">
               <div className="flex justify-between text-white/70">
                 <span>Tạm tính ({cartItems.reduce((s, i) => s + i.quantity, 0)} sản phẩm)</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>{formatCurrency(subtotal)}</span>
               </div>
               {couponDiscount > 0 && (
                 <div className="flex justify-between text-green-400">
@@ -687,7 +688,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     <span>Giảm giá ({couponCode})</span>
                     {couponSellerName && <span className="text-xs text-green-400/60">Shop: {couponSellerName}</span>}
                   </span>
-                  <span>-${couponDiscount.toFixed(2)}</span>
+                  <span>-{formatCurrency(couponDiscount)}</span>
                 </div>
               )}
               <div className="flex justify-between text-white/70">
@@ -695,12 +696,12 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                 {shipping === 0 ? (
                   <Badge variant="secondary" className="bg-green-500/20 text-green-400">MIỄN PHÍ</Badge>
                 ) : (
-                  <span>${shipping.toFixed(2)}</span>
+                  <span>{formatCurrency(shipping)}</span>
                 )}
               </div>
               <div className="flex justify-between text-white/70">
                 <span>Thuế (10%)</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>{formatCurrency(tax)}</span>
               </div>
             </div>
 
@@ -709,14 +710,14 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             <div className="flex justify-between items-center">
               <span className="text-xl text-white">Tổng cộng</span>
               <span className="text-3xl text-white">
-                ${total.toFixed(2)}
+                {formatCurrency(total)}
               </span>
             </div>
 
             {shipping === 0 && subtotal > 0 && (
               <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
                 <p className="text-sm text-green-400">
-                  Miễn phí vận chuyển cho đơn hàng trên $50!
+                  Miễn phí vận chuyển cho đơn hàng trên 50!
                 </p>
               </div>
             )}

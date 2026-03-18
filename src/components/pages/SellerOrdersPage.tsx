@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { get, put } from "../../lib/api";
 import { toast } from "sonner";
+import { formatCurrency } from "../../lib/currency";
 import {
   Dialog,
   DialogContent,
@@ -122,7 +123,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                 <TableCell className="text-white/70">{order.date}</TableCell>
                 <TableCell className="text-white/70">{order.customer.name}</TableCell>
                 <TableCell className="text-white/70">{order.items.length} sản phẩm</TableCell>
-                <TableCell className="text-white">${order.total.toFixed(2)}</TableCell>
+                <TableCell className="text-white">{formatCurrency(order.total)}</TableCell>
                 {showStatus && (
                   <TableCell>
                     <Badge
@@ -345,10 +346,10 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                           {item.selectedColor && item.selectedSize ? " · " : ""}
                           {item.selectedSize ? `Kích cỡ: ${item.selectedSize}` : ""}
                         </p>
-                        <p className="text-white/60 text-xs mt-1">SL: {item.quantity} × ${item.price.toFixed(2)}</p>
+                        <p className="text-white/60 text-xs mt-1">SL: {item.quantity} × {formatCurrency(item.price)}</p>
                       </div>
                       <p className="text-white text-sm font-medium flex-shrink-0">
-                        ${(item.quantity * item.price).toFixed(2)}
+                        {formatCurrency(item.quantity * item.price)}
                       </p>
                     </div>
                   ))}
@@ -358,7 +359,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
               {/* Total */}
               <div className="flex justify-between items-center border-t border-white/10 pt-4">
                 <span className="text-white/60">Tổng cộng</span>
-                <span className="text-white text-lg">${selectedOrder.total.toFixed(2)}</span>
+                <span className="text-white text-lg">{formatCurrency(selectedOrder.total)}</span>
               </div>
 
               {/* Update Status */}

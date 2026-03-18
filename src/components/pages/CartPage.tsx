@@ -8,6 +8,7 @@ import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { CartItem } from "../../types";
 import { post } from "../../lib/api";
 import { toast } from "sonner";
+import { formatCurrency } from "../../lib/currency";
 
 interface CartPageProps {
   onNavigate: (page: string) => void;
@@ -48,7 +49,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
         sessionStorage.setItem("applied_coupon", JSON.stringify({ code, discount, sellerName }));
       } catch {}
       const sellerInfo = sellerName ? ` (shop: ${sellerName})` : "";
-      toast.success(`Đã áp dụng mã giảm giá${sellerInfo}! Tiết kiệm $${discount.toFixed(2)}`);
+      toast.success(`Đã áp dụng mã giảm giá${sellerInfo}! Tiết kiệm ${formatCurrency(discount)}`);
     } catch (err: any) {
       toast.error(err.message || "Mã giảm giá không hợp lệ");
     } finally {
@@ -151,11 +152,11 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
 
                       <div className="text-right">
                         <p className="text-2xl text-white">
-                          ${(item.product.price * item.quantity).toFixed(2)}
+                          {formatCurrency(item.product.price * item.quantity)}
                         </p>
                         {item.quantity > 1 && (
                           <p className="text-sm text-white/50">
-                            ${item.product.price} / sản phẩm
+                            {formatCurrency(item.product.price)} / sản phẩm
                           </p>
                         )}
                       </div>
@@ -188,7 +189,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                   <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-green-400 flex-1 font-mono font-bold">{couponApplied}</span>
-                      <span className="text-sm text-green-400">-${couponDiscount.toFixed(2)}</span>
+                      <span className="text-sm text-green-400">-{formatCurrency(couponDiscount)}</span>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -231,12 +232,12 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
               <div className="space-y-3">
                 <div className="flex justify-between text-white/70">
                   <span>Tạm tính ({cartItems.length} sản phẩm)</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>{formatCurrency(subtotal)}</span>
                 </div>
                 {couponDiscount > 0 && (
                   <div className="flex justify-between text-green-400">
                     <span>Giảm giá coupon</span>
-                    <span>-${couponDiscount.toFixed(2)}</span>
+                    <span>-{formatCurrency(couponDiscount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-white/70">
@@ -247,19 +248,19 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                         MIỄN PHÍ
                       </Badge>
                     ) : (
-                      `$${shipping.toFixed(2)}`
+                      formatCurrency(shipping)
                     )}
                   </span>
                 </div>
                 <div className="flex justify-between text-white/70">
                   <span>Thuế (10%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>{formatCurrency(tax)}</span>
                 </div>
 
                 {shipping > 0 && subtotal < 50 && (
                   <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
                     <p className="text-sm text-purple-400">
-                      Thêm ${(50 - subtotal).toFixed(2)} nữa để được miễn phí vận chuyển!
+                      Thêm {formatCurrency(50 - subtotal)} nữa để được miễn phí vận chuyển!
                     </p>
                   </div>
                 )}
@@ -270,7 +271,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
               {/* Total */}
               <div className="flex justify-between items-center">
                 <span className="text-xl text-white">Tổng cộng</span>
-                <span className="text-3xl text-white">${total.toFixed(2)}</span>
+                <span className="text-3xl text-white">{formatCurrency(total)}</span>
               </div>
 
               <Button

@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback } from "../ui/avatar";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { get } from "../../lib/api";
 import { toast } from "sonner";
+import { formatCurrency } from "../../lib/currency";
 
 interface SellerProfilePageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -184,10 +185,10 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
                     {product.name}
                   </p>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-white font-semibold">${product.price}</span>
+                    <span className="text-white font-semibold">{formatCurrency(product.price)}</span>
                     {product.originalPrice && (
                       <span className="text-white/40 text-sm line-through">
-                        ${product.originalPrice}
+                        {formatCurrency(product.originalPrice)}
                       </span>
                     )}
                   </div>

@@ -3,6 +3,7 @@ import { TrendingUp, Users, ShoppingBag, DollarSign, Package } from "lucide-reac
 import { Card } from "../ui/card";
 import { get } from "../../lib/api";
 import { toast } from "sonner";
+import { formatCurrency, formatCurrencyCompact } from "../../lib/currency";
 import {
   LineChart,
   Line,
@@ -87,7 +88,7 @@ export function AdminStatsPage() {
           </Card>
           <Card className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border-white/10 p-4">
             <DollarSign className="h-5 w-5 text-yellow-400 mb-2" />
-            <p className="text-2xl font-bold text-white">${(stats.totalRevenue / 1000).toFixed(1)}K</p>
+            <p className="text-2xl font-bold text-white">{formatCurrencyCompact(stats.totalRevenue)}</p>
             <p className="text-white/60 text-xs">Tổng doanh thu</p>
             <p className="text-yellow-400/70 text-xs mt-1">{stats.totalOrders} đơn hàng</p>
           </Card>
@@ -122,8 +123,8 @@ export function AdminStatsPage() {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
             <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
-            <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} />
-            <Tooltip {...tooltipStyle} formatter={(v: number) => [`$${v.toLocaleString()}`, 'Doanh thu']} />
+            <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => formatCurrencyCompact(v as number)} />
+            <Tooltip {...tooltipStyle} formatter={(v: number) => [formatCurrency(v), 'Doanh thu']} />
             <Area type="monotone" dataKey="revenue" stroke="#f59e0b" fill="url(#revenueGrad)" strokeWidth={2} />
           </AreaChart>
         </ResponsiveContainer>

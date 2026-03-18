@@ -22,6 +22,7 @@ import {
 import { Separator } from "../ui/separator";
 import { toast } from "sonner";
 import { walletService } from "../../services/wallet.service";
+import { formatCurrency } from "../../lib/currency";
 
 export function AdminWalletPage() {
   const [wallets, setWallets] = useState<any[]>([]);
@@ -93,7 +94,7 @@ export function AdminWalletPage() {
         adjustReason.trim()
       ) as any;
       toast.success(
-        `Điều chỉnh thành công. Số dư mới: $${result.newBalance.toFixed(2)}`
+        `Điều chỉnh thành công. Số dư mới: ${formatCurrency(result.newBalance)}`
       );
       setShowAdjustModal(false);
       fetchWallets();
@@ -185,7 +186,7 @@ export function AdminWalletPage() {
                   </td>
                   <td className="p-4 text-white/70 text-sm">{w.user.email}</td>
                   <td className="p-4 text-right">
-                    <span className="text-white font-medium">${w.balance.toFixed(2)}</span>
+                    <span className="text-white font-medium">{formatCurrency(w.balance)}</span>
                   </td>
                   <td className="p-4 text-right text-white/50 text-sm">
                     {w.transactionCount}
@@ -259,7 +260,7 @@ export function AdminWalletPage() {
                 <div className="flex items-center gap-2 mt-2">
                   <Wallet className="h-4 w-4 text-purple-400" />
                   <span className="text-white font-medium">
-                    Số dư hiện tại: ${selectedWallet.balance.toFixed(2)}
+                    Số dư hiện tại: {formatCurrency(selectedWallet.balance)}
                   </span>
                 </div>
               </div>
@@ -268,7 +269,7 @@ export function AdminWalletPage() {
 
               {/* Amount input */}
               <div>
-                <Label>Số tiền điều chỉnh (USD)</Label>
+                <Label>Số tiền điều chỉnh (VNĐ)</Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -286,7 +287,7 @@ export function AdminWalletPage() {
                     )}
                     <span className="text-white/60">Số dư sau điều chỉnh: </span>
                     <span className="text-white font-medium">
-                      ${Math.max(0, selectedWallet.balance + parseFloat(adjustAmount)).toFixed(2)}
+                      {formatCurrency(Math.max(0, selectedWallet.balance + parseFloat(adjustAmount)))}
                     </span>
                   </div>
                 )}

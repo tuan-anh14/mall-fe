@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Badge } from "../ui/badge";
 import { get } from "../../lib/api";
+import { formatCurrency } from "../../lib/currency";
 
 interface FiltersContentProps {
   categories: any[];
@@ -73,8 +74,8 @@ const FiltersContent = memo(function FiltersContent({
           className="mb-4"
         />
         <div className="flex items-center justify-between text-sm text-white/70">
-          <span>${priceRange[0]}</span>
-          <span>${priceRange[1]}</span>
+          <span>{formatCurrency(priceRange[0])}</span>
+          <span>{formatCurrency(priceRange[1])}</span>
         </div>
       </div>
 

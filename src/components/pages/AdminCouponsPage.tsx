@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, X, Check, ChevronLeft, ChevronRight, Tag } from "lucide-react";
+import { formatCurrency } from "../../lib/currency";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Card } from "../ui/card";
@@ -309,7 +310,7 @@ export function AdminCouponsPage() {
                       {coupon.type === "PERCENTAGE" ? "Phần trăm" : "Số tiền cố định"}
                     </td>
                     <td className="px-6 py-4 text-white text-sm font-medium">
-                      {coupon.type === "PERCENTAGE" ? `${coupon.value}%` : `$${coupon.value}`}
+                      {coupon.type === "PERCENTAGE" ? `${coupon.value}%` : `${formatCurrency(Number(coupon.value))}`}
                     </td>
                     <td className="px-6 py-4 text-white/50 text-sm">
                       {coupon._count.usages}{coupon.usageLimit ? `/${coupon.usageLimit}` : ""}

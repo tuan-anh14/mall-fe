@@ -5,6 +5,7 @@ import { Badge } from "../ui/badge";
 import { ProductCard } from "../ProductCard";
 import { motion, AnimatePresence } from "motion/react";
 import { get } from "../../lib/api";
+import { formatCurrency } from "../../lib/currency";
 
 interface HomePageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -198,7 +199,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                       >
                         <h3 className="text-2xl text-white mb-2">{currentProduct.name}</h3>
                         <div className="flex items-center justify-between">
-                          <span className="text-3xl text-white">${currentProduct.price}</span>
+                          <span className="text-3xl text-white">{formatCurrency(currentProduct.price)}</span>
                           <Button
                             onClick={() => onNavigate("product", currentProduct)}
                             className="bg-gradient-to-r from-purple-600 to-blue-600"
@@ -221,7 +222,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { icon: Truck, title: "Miễn phí vận chuyển", desc: "Đơn hàng trên $50" },
+              { icon: Truck, title: "Miễn phí vận chuyển", desc: "Đơn hàng trên 50" },
               { icon: Shield, title: "Thanh toán an toàn", desc: "Bảo mật 100%" },
               { icon: Zap, title: "Giao hàng nhanh", desc: "2-3 ngày làm việc" },
               { icon: Headphones, title: "Hỗ trợ 24/7", desc: "Luôn sẵn sàng hỗ trợ" },
@@ -317,7 +318,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
             {promotions.map((promo) => {
               const discountLabel = promo.type === "PERCENTAGE"
                 ? `${promo.value}%`
-                : `$${promo.value}`;
+                : `${formatCurrency(Number(promo.value))}`;
               const title = promo.name || `Giảm ${discountLabel}`;
               const desc = promo.description || `Sử dụng mã ${promo.code} để được giảm ${discountLabel}. Đừng bỏ lỡ ưu đãi hấp dẫn này!`;
               const hasExpiry = !!promo.validUntil;
@@ -335,7 +336,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                         <span className="text-white font-mono font-bold tracking-widest">{promo.code}</span>
                       </div>
                       {promo.minOrderAmount && (
-                        <span className="text-white/70 text-sm">Đơn tối thiểu ${Number(promo.minOrderAmount).toFixed(0)}</span>
+                        <span className="text-white/70 text-sm">Đơn tối thiểu {formatCurrency(Number(promo.minOrderAmount))}</span>
                       )}
                     </div>
                     <Button
@@ -423,7 +424,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                 {promotions.map((promo) => {
                   const discountLabel = promo.type === "PERCENTAGE"
                     ? `Giảm ${promo.value}%`
-                    : `Giảm $${promo.value}`;
+                    : `Giảm ${formatCurrency(Number(promo.value))}`;
                   return (
                     <div key={promo.id} className="bg-white/10 border border-white/10 rounded-2xl p-4">
                       <div className="flex items-center justify-between mb-1">
@@ -434,7 +435,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                         <p className="text-white/60 text-sm">{promo.description || promo.name}</p>
                       )}
                       {promo.minOrderAmount && (
-                        <p className="text-white/40 text-xs mt-1">Đơn tối thiểu ${Number(promo.minOrderAmount).toFixed(0)}</p>
+                        <p className="text-white/40 text-xs mt-1">Đơn tối thiểu {formatCurrency(Number(promo.minOrderAmount))}</p>
                       )}
                       {promo.validUntil && (
                         <p className="text-white/40 text-xs mt-0.5">Hết hạn {new Date(promo.validUntil).toLocaleDateString("vi-VN")}</p>

@@ -4,6 +4,7 @@ import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { get } from "../../lib/api";
 import { toast } from "sonner";
+import { formatCurrency, formatCurrencyCompact } from "../../lib/currency";
 import {
   LineChart,
   Line,
@@ -71,7 +72,7 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
         { label: "Tổng người dùng", value: stats.totalUsers.toLocaleString(), icon: Users, color: "from-blue-500/20 to-blue-600/20", iconColor: "text-blue-400", sub: `+${stats.newUsersThisMonth} tháng này` },
         { label: "Người bán", value: stats.totalSellers.toLocaleString(), icon: ShoppingBag, color: "from-purple-500/20 to-purple-600/20", iconColor: "text-purple-400", sub: `${stats.totalBuyers} người mua` },
         { label: "Sản phẩm", value: stats.totalProducts.toLocaleString(), icon: Package, color: "from-green-500/20 to-green-600/20", iconColor: "text-green-400", sub: `${stats.totalCategories} danh mục` },
-        { label: "Tổng doanh thu", value: `$${(stats.totalRevenue / 1000).toFixed(1)}K`, icon: DollarSign, color: "from-yellow-500/20 to-yellow-600/20", iconColor: "text-yellow-400", sub: `${stats.totalOrders} đơn hàng` },
+        { label: "Tổng doanh thu", value: formatCurrencyCompact(stats.totalRevenue), icon: DollarSign, color: "from-yellow-500/20 to-yellow-600/20", iconColor: "text-yellow-400", sub: `${stats.totalOrders} đơn hàng` },
         { label: "Mã giảm giá", value: stats.totalCoupons.toLocaleString(), icon: Ticket, color: "from-pink-500/20 to-pink-600/20", iconColor: "text-pink-400", sub: "đang hoạt động" },
         { label: "Chờ duyệt Seller", value: stats.pendingSellerRequests.toLocaleString(), icon: UserCheck, color: "from-orange-500/20 to-orange-600/20", iconColor: "text-orange-400", sub: "yêu cầu mới", alert: stats.pendingSellerRequests > 0 },
       ]
@@ -121,11 +122,11 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
             <LineChart data={salesData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
-              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} />
+              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => formatCurrencyCompact(v as number)} />
               <Tooltip
                 contentStyle={{ backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
                 labelStyle={{ color: 'rgba(255,255,255,0.7)' }}
-                formatter={(v: number) => [`$${v.toLocaleString()}`, 'Doanh thu']}
+                formatter={(v: number) => [formatCurrency(v), 'Doanh thu']}
               />
               <Line type="monotone" dataKey="revenue" stroke="#f59e0b" strokeWidth={2} dot={false} />
             </LineChart>

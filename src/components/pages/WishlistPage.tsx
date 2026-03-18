@@ -5,6 +5,7 @@ import { Badge } from "../ui/badge";
 import { motion } from "motion/react";
 import { toast } from "sonner";
 import { WishlistItem } from "../../types";
+import { formatCurrency } from "../../lib/currency";
 
 interface WishlistPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -133,10 +134,10 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                         </span>
                       </div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-white">${Number(item.product.price).toFixed(2)}</span>
+                        <span className="text-white">{formatCurrency(Number(item.product.price))}</span>
                         {item.product.originalPrice && (
                           <span className="text-sm text-white/40 line-through">
-                            ${Number(item.product.originalPrice).toFixed(2)}
+                            {formatCurrency(Number(item.product.originalPrice))}
                           </span>
                         )}
                       </div>

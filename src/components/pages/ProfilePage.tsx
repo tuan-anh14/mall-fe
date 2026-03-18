@@ -8,6 +8,7 @@ import { Separator } from "../ui/separator";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { toast } from "sonner";
 import { get } from "../../lib/api";
+import { formatCurrency } from "../../lib/currency";
 
 interface ProfilePageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -216,7 +217,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
           <p className="text-3xl text-white mb-1">
             {ordersLoading
               ? "—"
-              : `$${orders.reduce((sum, o) => sum + Number(o.total), 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+              : formatCurrency(orders.reduce((sum, o) => sum + Number(o.total), 0))}
           </p>
           <p className="text-sm text-white/60">Tổng chi tiêu</p>
         </div>
@@ -301,7 +302,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                     <div className="flex justify-between items-center">
                       <div>
                         <span className="text-sm text-white/60">Tổng: </span>
-                        <span className="text-xl text-white">${Number(order.total).toFixed(2)}</span>
+                        <span className="text-xl text-white">{formatCurrency(Number(order.total))}</span>
                       </div>
                       <div className="flex gap-2">
                         {order.status?.toLowerCase() !== "delivered" && (
@@ -373,7 +374,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                     </div>
                     <div className="p-3">
                       <p className="text-white text-sm line-clamp-2 mb-1">{item.product?.name}</p>
-                      <p className="text-purple-400 font-semibold">${Number(item.product?.price ?? 0).toFixed(2)}</p>
+                      <p className="text-purple-400 font-semibold">{formatCurrency(Number(item.product?.price ?? 0))}</p>
                     </div>
                   </div>
                 ))}

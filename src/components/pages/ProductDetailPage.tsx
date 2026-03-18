@@ -10,6 +10,7 @@ import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { toast } from "sonner";
 import { get, post } from "../../lib/api";
 import { API_URL } from "../../lib/api";
+import { formatCurrency } from "../../lib/currency";
 
 interface ReviewUser {
   id: string;
@@ -191,7 +192,7 @@ export function ProductDetailPage({
       try {
         await navigator.share({
           title: product.name,
-          text: `Xem ngay ${product.name} chỉ với $${product.price}`,
+          text: `Xem ngay ${product.name} chỉ với ${formatCurrency(product.price)}`,
           url: window.location.href,
         });
       } catch (err) {
@@ -336,10 +337,10 @@ export function ProductDetailPage({
 
           {/* Price */}
           <div className="flex items-baseline gap-3">
-            <span className="text-4xl text-white">${product.price}</span>
+            <span className="text-4xl text-white">{formatCurrency(product.price)}</span>
             {product.originalPrice && (
               <span className="text-xl text-white/50 line-through">
-                ${product.originalPrice}
+                {formatCurrency(product.originalPrice)}
               </span>
             )}
             {product.discount && (
@@ -486,7 +487,7 @@ export function ProductDetailPage({
               </div>
               <div>
                 <p className="text-white">Miễn phí vận chuyển</p>
-                <p className="text-white/50 text-xs">Đơn hàng trên $50</p>
+                <p className="text-white/50 text-xs">Đơn hàng trên 50</p>
               </div>
             </div>
             <div className="flex items-center gap-3 text-sm">
@@ -843,9 +844,9 @@ export function ProductDetailPage({
                   <p className="text-white/60 text-xs mb-1">{related.brand}</p>
                   <p className="text-white text-sm font-medium line-clamp-2 mb-2">{related.name}</p>
                   <div className="flex items-center gap-2">
-                    <span className="text-white font-semibold">${related.price}</span>
+                    <span className="text-white font-semibold">{formatCurrency(related.price)}</span>
                     {related.originalPrice && (
-                      <span className="text-white/40 text-sm line-through">${related.originalPrice}</span>
+                      <span className="text-white/40 text-sm line-through">{formatCurrency(related.originalPrice)}</span>
                     )}
                   </div>
                   {related.rating !== undefined && (

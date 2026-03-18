@@ -24,6 +24,7 @@ import {
 } from "../ui/dialog";
 import { toast } from "sonner";
 import { walletService, WalletInfo, WalletTransaction } from "../../services/wallet.service";
+import { formatCurrency } from "../../lib/currency";
 
 interface WalletDashboardProps {
   onNavigate: (page: string, data?: any) => void;
@@ -96,11 +97,11 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
   const handleDeposit = async () => {
     const amount = parseFloat(depositAmount);
     if (!amount || amount < 1) {
-      toast.error("Vui lòng nhập số tiền tối thiểu $1");
+      toast.error("Vui lòng nhập số tiền tối thiểu 1 ₫");
       return;
     }
     if (amount > 10000) {
-      toast.error("Số tiền nạp tối đa $10,000");
+      toast.error("Số tiền nạp tối đa 10.000 ₫");
       return;
     }
 
@@ -116,7 +117,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
           await fetchWallet();
           await fetchTransactions(1);
           setPage(1);
-          toast.success(`Nạp $${amount.toFixed(2)} thành công!`);
+          toast.success(`Nạp ${formatCurrency(amount)} thành công!`);
           setShowDepositModal(false);
           setDepositAmount("");
         } catch {
@@ -163,7 +164,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
 
           <div className="mb-8">
             <span className="text-5xl font-light text-white">
-              ${balance.toFixed(2)}
+              {formatCurrency(balance)}
             </span>
           </div>
 
@@ -210,7 +211,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
               <span className="text-white/50 text-xs">{stat.label}</span>
             </div>
             <p className={`text-xl font-medium ${stat.color}`}>
-              ${stat.value.toFixed(2)}
+              {formatCurrency(stat.value)}
             </p>
           </div>
         ))}
@@ -251,7 +252,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                   </div>
                   <div className="flex-shrink-0 text-right">
                     <p className={`text-sm font-semibold ${isIn ? "text-green-400" : "text-red-400"}`}>
-                      {isIn ? "+" : "-"}${txn.amount.toFixed(2)}
+                      {isIn ? "+" : "-"}{formatCurrency(txn.amount)}
                     </p>
                     <Badge className={`text-xs mt-1 ${statusInfo?.class}`}>
                       {statusInfo?.label}
@@ -316,14 +317,14 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                         : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
                     }`}
                   >
-                    ${amt}
+                    {formatCurrency(amt)}
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <Label htmlFor="deposit-amount">Số tiền tùy chỉnh (USD)</Label>
+              <Label htmlFor="deposit-amount">Số tiền tùy chỉnh (VNĐ)</Label>
               <Input
                 id="deposit-amount"
                 type="number"
@@ -368,12 +369,12 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
               <div className="bg-white/5 rounded-xl p-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-white/60">Số tiền nạp</span>
-                  <span className="text-white">${parseFloat(depositAmount).toFixed(2)}</span>
+                  <span className="text-white">{formatCurrency(parseFloat(depositAmount))}</span>
                 </div>
                 <div className="flex justify-between text-sm mt-1">
                   <span className="text-white/60">Số dư sau nạp</span>
                   <span className="text-green-400">
-                    ${(balance + parseFloat(depositAmount)).toFixed(2)}
+                    {formatCurrency(balance + parseFloat(depositAmount))}
                   </span>
                 </div>
               </div>
@@ -393,7 +394,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                 onClick={handleDeposit}
                 disabled={isDepositing || !depositAmount || parseFloat(depositAmount) < 1}
               >
-                {isDepositing ? "Đang xử lý..." : `Nạp $${parseFloat(depositAmount || "0").toFixed(2)}`}
+                {isDepositing ? "Đang xử lý..." : `Nạp ${formatCurrency(parseFloat(depositAmount || "0"))}`}
               </Button>
             </div>
           </div>
