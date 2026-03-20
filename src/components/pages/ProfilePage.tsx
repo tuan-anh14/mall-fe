@@ -150,20 +150,20 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Profile Header */}
-      <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-white/10 rounded-2xl p-8 mb-8">
+      <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-border rounded-2xl p-8 mb-8">
         <div className="flex flex-col md:flex-row items-center gap-6">
-          <Avatar className="h-24 w-24 border-4 border-white/10">
+          <Avatar className="h-24 w-24 border-4 border-border">
             <AvatarFallback className="text-3xl bg-gradient-to-br from-purple-500 to-blue-500">
               {profileLoading ? "..." : displayAvatar}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-3xl text-white mb-2">
+            <h1 className="text-3xl text-foreground mb-2">
               {profileLoading ? "Đang tải..." : displayName}
             </h1>
-            <p className="text-white/60 mb-1">{displayEmail}</p>
+            <p className="text-muted-foreground mb-1">{displayEmail}</p>
             {displayMemberSince && (
-              <p className="text-sm text-white/50">Thành viên từ {displayMemberSince}</p>
+              <p className="text-sm text-muted-foreground">Thành viên từ {displayMemberSince}</p>
             )}
             {displayUserType && (
               <Badge className="mt-2 bg-purple-500/20 text-purple-400 border-purple-500/30">
@@ -191,41 +191,41 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+        <div className="bg-foreground/5 border border-border rounded-xl p-6 text-center">
           <ShoppingBag className="h-8 w-8 text-purple-400 mx-auto mb-2" />
-          <p className="text-3xl text-white mb-1">
+          <p className="text-3xl text-foreground mb-1">
             {ordersLoading ? "—" : ordersTotal}
           </p>
-          <p className="text-sm text-white/60">Tổng đơn hàng</p>
+          <p className="text-sm text-muted-foreground">Tổng đơn hàng</p>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+        <div className="bg-foreground/5 border border-border rounded-xl p-6 text-center">
           <Package className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-          <p className="text-3xl text-white mb-1">
+          <p className="text-3xl text-foreground mb-1">
             {ordersLoading ? "—" : inTransitCount}
           </p>
-          <p className="text-sm text-white/60">Đang giao</p>
+          <p className="text-sm text-muted-foreground">Đang giao</p>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+        <div className="bg-foreground/5 border border-border rounded-xl p-6 text-center">
           <Heart className="h-8 w-8 text-pink-400 mx-auto mb-2" />
-          <p className="text-3xl text-white mb-1">
+          <p className="text-3xl text-foreground mb-1">
             {wishlistLoading ? "—" : wishlistItems.length}
           </p>
-          <p className="text-sm text-white/60">Yêu thích</p>
+          <p className="text-sm text-muted-foreground">Yêu thích</p>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+        <div className="bg-foreground/5 border border-border rounded-xl p-6 text-center">
           <span className="text-3xl mb-2 block">💰</span>
-          <p className="text-3xl text-white mb-1">
+          <p className="text-3xl text-foreground mb-1">
             {ordersLoading
               ? "—"
               : formatCurrency(orders.reduce((sum, o) => sum + Number(o.total), 0))}
           </p>
-          <p className="text-sm text-white/60">Tổng chi tiêu</p>
+          <p className="text-sm text-muted-foreground">Tổng chi tiêu</p>
         </div>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="orders" className="w-full">
-        <TabsList className="w-full justify-start bg-white/5 border-b border-white/10 rounded-none">
+        <TabsList className="w-full justify-start bg-foreground/5 border-b border-border rounded-none">
           <TabsTrigger value="orders">Lịch sử đơn hàng</TabsTrigger>
           <TabsTrigger value="wishlist">Yêu thích</TabsTrigger>
           <TabsTrigger value="settings">Cài đặt</TabsTrigger>
@@ -233,11 +233,11 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
 
         <TabsContent value="orders" className="mt-8">
           {ordersLoading ? (
-            <div className="text-white/60 text-center py-12">Đang tải đơn hàng...</div>
+            <div className="text-muted-foreground text-center py-12">Đang tải đơn hàng...</div>
           ) : orders.length === 0 ? (
             <div className="text-center py-12">
-              <Package className="h-12 w-12 text-white/20 mx-auto mb-4" />
-              <p className="text-white/60 mb-4">Chưa có đơn hàng.</p>
+              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">Chưa có đơn hàng.</p>
               <Button
                 className="bg-gradient-to-r from-purple-600 to-blue-600"
                 onClick={() => onNavigate("shop")}
@@ -260,13 +260,13 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                 return (
                   <div
                     key={order.id}
-                    className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all cursor-pointer"
+                    className="bg-foreground/5 border border-border rounded-2xl p-6 hover:border-purple-500/50 transition-all cursor-pointer"
                     onClick={() => onNavigate("orders", { orderId: order.id })}
                   >
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                       <div>
-                        <h3 className="text-xl text-white mb-1">Đơn hàng {order.id}</h3>
-                        <p className="text-sm text-white/60">Đặt ngày {formattedDate}</p>
+                        <h3 className="text-xl text-foreground mb-1">Đơn hàng {order.id}</h3>
+                        <p className="text-sm text-muted-foreground">Đặt ngày {formattedDate}</p>
                       </div>
                       <Badge className={getStatusBadgeClass(order.status)}>
                         {order.status}
@@ -280,7 +280,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                         return (
                           <div
                             key={item.id}
-                            className="w-20 h-20 bg-white/5 rounded-lg overflow-hidden flex-shrink-0"
+                            className="w-20 h-20 bg-foreground/5 rounded-lg overflow-hidden flex-shrink-0"
                           >
                             <ImageWithFallback
                               src={imgSrc}
@@ -291,18 +291,18 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                         );
                       })}
                       {order.items.length > 3 && (
-                        <div className="w-20 h-20 bg-white/5 rounded-lg flex items-center justify-center">
-                          <span className="text-white/50">+{order.items.length - 3}</span>
+                        <div className="w-20 h-20 bg-foreground/5 rounded-lg flex items-center justify-center">
+                          <span className="text-muted-foreground">+{order.items.length - 3}</span>
                         </div>
                       )}
                     </div>
 
-                    <Separator className="bg-white/10 mb-4" />
+                    <Separator className="bg-foreground/10 mb-4" />
 
                     <div className="flex justify-between items-center">
                       <div>
-                        <span className="text-sm text-white/60">Tổng: </span>
-                        <span className="text-xl text-white">{formatCurrency(Number(order.total))}</span>
+                        <span className="text-sm text-muted-foreground">Tổng: </span>
+                        <span className="text-xl text-foreground">{formatCurrency(Number(order.total))}</span>
                       </div>
                       <div className="flex gap-2">
                         {order.status?.toLowerCase() !== "delivered" && (
@@ -338,11 +338,11 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
 
         <TabsContent value="wishlist" className="mt-8">
           {wishlistLoading ? (
-            <div className="text-white/60 text-center py-12">Đang tải yêu thích...</div>
+            <div className="text-muted-foreground text-center py-12">Đang tải yêu thích...</div>
           ) : wishlistItems.length === 0 ? (
             <div className="text-center py-12">
-              <Heart className="h-12 w-12 text-white/20 mx-auto mb-4" />
-              <p className="text-white/60 mb-4">Danh sách yêu thích trống.</p>
+              <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">Danh sách yêu thích trống.</p>
               <Button
                 className="bg-gradient-to-r from-purple-600 to-blue-600"
                 onClick={() => onNavigate("shop")}
@@ -353,7 +353,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
           ) : (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <p className="text-white/60">{wishlistItems.length} sản phẩm đã lưu</p>
+                <p className="text-muted-foreground">{wishlistItems.length} sản phẩm đã lưu</p>
                 <Button variant="ghost" size="sm" className="text-purple-400" onClick={() => onNavigate("wishlist")}>
                   Xem tất cả →
                 </Button>
@@ -362,10 +362,10 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                 {wishlistItems.slice(0, 8).map((item: any) => (
                   <div
                     key={item.id}
-                    className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-purple-500/50 transition-all cursor-pointer group"
+                    className="bg-foreground/5 border border-border rounded-xl overflow-hidden hover:border-purple-500/50 transition-all cursor-pointer group"
                     onClick={() => onNavigate("product", item.product)}
                   >
-                    <div className="aspect-square overflow-hidden bg-white/5">
+                    <div className="aspect-square overflow-hidden bg-foreground/5">
                       <ImageWithFallback
                         src={item.product?.image}
                         alt={item.product?.name}
@@ -373,7 +373,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                       />
                     </div>
                     <div className="p-3">
-                      <p className="text-white text-sm line-clamp-2 mb-1">{item.product?.name}</p>
+                      <p className="text-foreground text-sm line-clamp-2 mb-1">{item.product?.name}</p>
                       <p className="text-purple-400 font-semibold">{formatCurrency(Number(item.product?.price ?? 0))}</p>
                     </div>
                   </div>
@@ -392,14 +392,14 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
 
         <TabsContent value="settings" className="mt-8">
           <div className="max-w-2xl">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
+            <div className="bg-foreground/5 border border-border rounded-2xl p-6 space-y-6">
               <div>
-                <h3 className="text-xl text-white mb-4">Cài đặt tài khoản</h3>
+                <h3 className="text-xl text-foreground mb-4">Cài đặt tài khoản</h3>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg">
+                  <div className="flex justify-between items-center p-4 bg-foreground/5 rounded-lg">
                     <div>
-                      <p className="text-white">Thông báo email</p>
-                      <p className="text-sm text-white/60">
+                      <p className="text-foreground">Thông báo email</p>
+                      <p className="text-sm text-muted-foreground">
                         Nhận cập nhật về đơn hàng của bạn
                       </p>
                     </div>
@@ -407,28 +407,28 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                       Cấu hình
                     </Button>
                   </div>
-                  <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg">
+                  <div className="flex justify-between items-center p-4 bg-foreground/5 rounded-lg">
                     <div>
-                      <p className="text-white">Mật khẩu</p>
-                      <p className="text-sm text-white/60">Đổi mật khẩu</p>
+                      <p className="text-foreground">Mật khẩu</p>
+                      <p className="text-sm text-muted-foreground">Đổi mật khẩu</p>
                     </div>
                     <Button variant="outline" size="sm" onClick={() => onNavigate("settings")}>
                       Cập nhật
                     </Button>
                   </div>
-                  <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg">
+                  <div className="flex justify-between items-center p-4 bg-foreground/5 rounded-lg">
                     <div>
-                      <p className="text-white">Phương thức thanh toán</p>
-                      <p className="text-sm text-white/60">Quản lý thẻ đã lưu</p>
+                      <p className="text-foreground">Phương thức thanh toán</p>
+                      <p className="text-sm text-muted-foreground">Quản lý thẻ đã lưu</p>
                     </div>
                     <Button variant="outline" size="sm" onClick={() => onNavigate("settings")}>
                       Quản lý
                     </Button>
                   </div>
-                  <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg">
+                  <div className="flex justify-between items-center p-4 bg-foreground/5 rounded-lg">
                     <div>
-                      <p className="text-white">Địa chỉ giao hàng</p>
-                      <p className="text-sm text-white/60">Quản lý địa chỉ giao hàng</p>
+                      <p className="text-foreground">Địa chỉ giao hàng</p>
+                      <p className="text-sm text-muted-foreground">Quản lý địa chỉ giao hàng</p>
                     </div>
                     <Button variant="outline" size="sm" onClick={() => onNavigate("settings")}>
                       Quản lý
@@ -437,10 +437,10 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                 </div>
               </div>
 
-              <Separator className="bg-white/10" />
+              <Separator className="bg-foreground/10" />
 
               <div>
-                <h3 className="text-xl text-white mb-4">Vùng nguy hiểm</h3>
+                <h3 className="text-xl text-foreground mb-4">Vùng nguy hiểm</h3>
                 <div className="space-y-2">
                   <Button
                     variant="outline"

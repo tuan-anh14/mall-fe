@@ -20,7 +20,7 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur-xl">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -29,11 +29,11 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
             onClick={() => onNavigate("dashboard")}
           >
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
-              <Store className="h-6 w-6 text-white" />
+              <Store className="h-6 w-6 text-foreground" />
             </div>
             <div>
-              <h1 className="text-xl text-white">Kênh Người Bán</h1>
-              <p className="text-xs text-white/60">Quản lý cửa hàng</p>
+              <h1 className="text-xl text-foreground">Kênh Người Bán</h1>
+              <p className="text-xs text-muted-foreground">Quản lý cửa hàng</p>
             </div>
           </div>
 
@@ -49,8 +49,8 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
                   variant="ghost"
                   className={`gap-2 ${
                     isActive
-                      ? "text-white bg-white/10"
-                      : "text-white/60 hover:text-white hover:bg-white/5"
+                      ? "text-foreground bg-foreground/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                   }`}
                   onClick={() => onNavigate(item.id)}
                 >
@@ -81,11 +81,11 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
               Xem cửa hàng
             </Button>
             <div className="hidden sm:block text-right">
-              <p className="text-sm text-white">{user?.name || "Seller"}</p>
-              <p className="text-xs text-white/60">Tài khoản Người bán</p>
+              <p className="text-sm text-foreground">{user?.name || "Seller"}</p>
+              <p className="text-xs text-muted-foreground">Tài khoản Người bán</p>
             </div>
             <Avatar 
-              className="h-10 w-10 cursor-pointer border-2 border-white/10"
+              className="h-10 w-10 cursor-pointer border-2 border-border"
               onClick={() => onNavigate("profile")}
             >
               <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
@@ -117,8 +117,8 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
                 size="sm"
                 className={`gap-2 flex-shrink-0 ${
                   isActive
-                    ? "text-white bg-white/10"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
+                    ? "text-foreground bg-foreground/10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                 }`}
                 onClick={() => onNavigate(item.id)}
               >
@@ -130,7 +130,7 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
           <Button
             variant="ghost"
             size="sm"
-            className="gap-2 flex-shrink-0 text-white/60 hover:text-white hover:bg-white/5"
+            className="gap-2 flex-shrink-0 text-muted-foreground hover:text-foreground hover:bg-foreground/5"
             onClick={() => onNavigate("home")}
           >
             <Home className="h-4 w-4" />

@@ -55,17 +55,17 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
         <div className="hidden lg:block">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-3xl" />
-            <div className="relative bg-gradient-to-br from-purple-600/10 to-blue-600/10 border border-white/10 rounded-3xl p-12">
+            <div className="relative bg-gradient-to-br from-purple-600/10 to-blue-600/10 border border-border rounded-3xl p-12">
               <div className="flex items-center gap-3 mb-8">
                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                  <ShoppingCart className="h-6 w-6 text-white" />
+                  <ShoppingCart className="h-6 w-6 text-foreground" />
                 </div>
-                <span className="text-3xl text-white">ShopHub</span>
+                <span className="text-3xl text-foreground">ShopHub</span>
               </div>
-              <h2 className="text-4xl text-white mb-4">
+              <h2 className="text-4xl text-foreground mb-4">
                 Chào mừng đến với Tương lai Mua sắm
               </h2>
-              <p className="text-xl text-white/70 mb-8">
+              <p className="text-xl text-muted-foreground mb-8">
                 Tham gia cùng hàng nghìn người bán và người mua trên sàn thương mại cao cấp của chúng tôi.
               </p>
               <div className="space-y-4">
@@ -73,19 +73,19 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">✓</span>
                   </div>
-                  <p className="text-white/80">Thanh toán an toàn & bảo vệ dữ liệu</p>
+                  <p className="text-muted-foreground">Thanh toán an toàn & bảo vệ dữ liệu</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">✓</span>
                   </div>
-                  <p className="text-white/80">Giao hàng nhanh & đổi trả dễ dàng</p>
+                  <p className="text-muted-foreground">Giao hàng nhanh & đổi trả dễ dàng</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">✓</span>
                   </div>
-                  <p className="text-white/80">Hỗ trợ khách hàng 24/7</p>
+                  <p className="text-muted-foreground">Hỗ trợ khách hàng 24/7</p>
                 </div>
               </div>
             </div>
@@ -95,27 +95,27 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
         {/* Right Side - Forms */}
         <div>
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-white/5 p-1">
+            <TabsList className="grid w-full grid-cols-2 bg-foreground/5 p-1">
               <TabsTrigger value="login">Đăng nhập</TabsTrigger>
               <TabsTrigger value="register">Đăng ký</TabsTrigger>
             </TabsList>
 
             {/* Login Tab */}
             <TabsContent value="login">
-              <form onSubmit={handleLogin} className="bg-white/5 border border-white/10 rounded-2xl p-8">
-                <h2 className="text-2xl text-white mb-2">Chào mừng trở lại</h2>
-                <p className="text-white/60 mb-6">Đăng nhập vào tài khoản</p>
+              <form onSubmit={handleLogin} className="bg-foreground/5 border border-border rounded-2xl p-8">
+                <h2 className="text-2xl text-foreground mb-2">Chào mừng trở lại</h2>
+                <p className="text-muted-foreground mb-6">Đăng nhập vào tài khoản</p>
 
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="login-email">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="login-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10 bg-foreground/5 border-border"
                         {...loginForm.register("email")}
                       />
                     </div>
@@ -136,12 +136,12 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                       </button>
                     </div>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="login-password"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10 bg-foreground/5 border-border"
                         {...loginForm.register("password")}
                       />
                     </div>
@@ -161,8 +161,8 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                 </div>
 
                 <div className="relative my-6">
-                  <Separator className="bg-white/10" />
-                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-950 px-3 text-sm text-white/60">
+                  <Separator className="bg-foreground/10" />
+                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-sm text-muted-foreground">
                     hoặc tiếp tục với
                   </span>
                 </div>
@@ -199,15 +199,15 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
 
             {/* Register Tab */}
             <TabsContent value="register">
-              <form onSubmit={handleRegister} className="bg-white/5 border border-white/10 rounded-2xl p-8">
-                <h2 className="text-2xl text-white mb-2">Tạo tài khoản</h2>
-                <p className="text-white/60 mb-6">Tham gia ShopHub ngay hôm nay</p>
+              <form onSubmit={handleRegister} className="bg-foreground/5 border border-border rounded-2xl p-8">
+                <h2 className="text-2xl text-foreground mb-2">Tạo tài khoản</h2>
+                <p className="text-muted-foreground mb-6">Tham gia ShopHub ngay hôm nay</p>
 
                 <div className="flex items-center gap-3 mb-6 p-4 rounded-xl border border-purple-500/30 bg-purple-500/10">
                   <ShoppingCart className="h-6 w-6 text-purple-400 flex-shrink-0" />
                   <div>
-                    <p className="text-white text-sm font-medium">Tài khoản Người mua</p>
-                    <p className="text-white/50 text-xs mt-0.5">Bạn có thể đăng ký trở thành người bán sau khi có tài khoản</p>
+                    <p className="text-foreground text-sm font-medium">Tài khoản Người mua</p>
+                    <p className="text-muted-foreground text-xs mt-0.5">Bạn có thể đăng ký trở thành người bán sau khi có tài khoản</p>
                   </div>
                 </div>
 
@@ -215,11 +215,11 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   <div>
                     <Label htmlFor="register-name">Họ và tên</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="register-name"
                         placeholder="Nguyễn Văn A"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10 bg-foreground/5 border-border"
                         {...registerForm.register("name")}
                       />
                     </div>
@@ -231,12 +231,12 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   <div>
                     <Label htmlFor="register-email">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="register-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10 bg-foreground/5 border-border"
                         {...registerForm.register("email")}
                       />
                     </div>
@@ -248,12 +248,12 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   <div>
                     <Label htmlFor="register-password">Mật khẩu</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="register-password"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10 bg-foreground/5 border-border"
                         {...registerForm.register("password")}
                       />
                     </div>
@@ -265,12 +265,12 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   <div>
                     <Label htmlFor="register-confirm">Xác nhận mật khẩu</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="register-confirm"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10 bg-foreground/5 border-border"
                         {...registerForm.register("confirmPassword")}
                       />
                     </div>
@@ -289,7 +289,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   </Button>
                 </div>
 
-                <p className="text-center text-sm text-white/60 mt-6">
+                <p className="text-center text-sm text-muted-foreground mt-6">
                   Bằng việc đăng ký, bạn đồng ý với{" "}
                   <button type="button" className="text-purple-400 hover:text-purple-300" onClick={() => onNavigate("terms")}>
                     Điều khoản dịch vụ

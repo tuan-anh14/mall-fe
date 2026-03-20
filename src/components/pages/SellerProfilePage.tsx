@@ -49,7 +49,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
       <div className="container mx-auto px-4 py-16 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
-          <p className="text-white/60">Đang tải hồ sơ người bán...</p>
+          <p className="text-muted-foreground">Đang tải hồ sơ người bán...</p>
         </div>
       </div>
     );
@@ -74,7 +74,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
       </Button>
 
       {/* Seller Header */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden mb-8">
+      <div className="bg-foreground/5 border border-border rounded-2xl overflow-hidden mb-8">
         {/* Banner */}
         {seller.bannerImage ? (
           <div className="h-48 overflow-hidden">
@@ -103,7 +103,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
 
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-3xl text-white">Cửa hàng {seller.storeName}</h1>
+                <h1 className="text-3xl text-foreground">Cửa hàng {seller.storeName}</h1>
                 {seller.isVerified && (
                   <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
                     <Shield className="h-3 w-3 mr-1" />
@@ -112,7 +112,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-sm text-white/60">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 {seller.positiveRating > 0 && (
                   <div className="flex items-center gap-1">
                     <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
@@ -129,7 +129,7 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
               </div>
 
               {seller.description && (
-                <p className="text-white/70 mt-3 text-sm max-w-2xl">{seller.description}</p>
+                <p className="text-muted-foreground mt-3 text-sm max-w-2xl">{seller.description}</p>
               )}
             </div>
 
@@ -151,21 +151,21 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
 
       {/* Products Grid */}
       <div>
-        <h2 className="text-2xl text-white mb-6">
+        <h2 className="text-2xl text-foreground mb-6">
           Sản phẩm ({seller.totalProducts})
         </h2>
 
         {products.length === 0 ? (
           <div className="text-center py-12">
-            <Package className="h-12 w-12 text-white/20 mx-auto mb-3" />
-            <p className="text-white/40">Chưa có sản phẩm</p>
+            <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground">Chưa có sản phẩm</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
               <div
                 key={product.id}
-                className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 transition-all cursor-pointer group"
+                className="bg-foreground/5 border border-border rounded-2xl overflow-hidden hover:border-border transition-all cursor-pointer group"
                 onClick={() => onNavigate("product", product)}
               >
                 <div className="aspect-square overflow-hidden">
@@ -181,13 +181,13 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
                       -{product.discount}%
                     </Badge>
                   )}
-                  <p className="text-white text-sm font-medium line-clamp-2 mb-2">
+                  <p className="text-foreground text-sm font-medium line-clamp-2 mb-2">
                     {product.name}
                   </p>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-white font-semibold">{formatCurrency(product.price)}</span>
+                    <span className="text-foreground font-semibold">{formatCurrency(product.price)}</span>
                     {product.originalPrice && (
-                      <span className="text-white/40 text-sm line-through">
+                      <span className="text-muted-foreground text-sm line-through">
                         {formatCurrency(product.originalPrice)}
                       </span>
                     )}
@@ -195,9 +195,9 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
                   {product.rating !== undefined && product.rating > 0 && (
                     <div className="flex items-center gap-1">
                       <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                      <span className="text-white/60 text-xs">{product.rating}</span>
+                      <span className="text-muted-foreground text-xs">{product.rating}</span>
                       {product.reviews > 0 && (
-                        <span className="text-white/40 text-xs">({product.reviews})</span>
+                        <span className="text-muted-foreground text-xs">({product.reviews})</span>
                       )}
                     </div>
                   )}

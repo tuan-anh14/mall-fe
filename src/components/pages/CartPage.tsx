@@ -67,13 +67,13 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl text-white mb-8">Giỏ hàng</h1>
+      <h1 className="text-4xl text-foreground mb-8">Giỏ hàng</h1>
 
       {cartItems.length === 0 ? (
         <div className="text-center py-16">
-          <ShoppingBag className="h-24 w-24 text-white/20 mx-auto mb-4" />
-          <h2 className="text-2xl text-white mb-2">Giỏ hàng trống</h2>
-          <p className="text-white/60 mb-6">Hãy thêm sản phẩm để bắt đầu!</p>
+          <ShoppingBag className="h-24 w-24 text-muted-foreground mx-auto mb-4" />
+          <h2 className="text-2xl text-foreground mb-2">Giỏ hàng trống</h2>
+          <p className="text-muted-foreground mb-6">Hãy thêm sản phẩm để bắt đầu!</p>
           <Button
             onClick={() => onNavigate("shop")}
             className="bg-gradient-to-r from-purple-600 to-blue-600"
@@ -88,10 +88,10 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="bg-white/5 border border-white/10 rounded-2xl p-6"
+                className="bg-foreground/5 border border-border rounded-2xl p-6"
               >
                 <div className="flex gap-6">
-                  <div className="w-32 h-32 bg-white/5 rounded-xl overflow-hidden flex-shrink-0">
+                  <div className="w-32 h-32 bg-foreground/5 rounded-xl overflow-hidden flex-shrink-0">
                     <ImageWithFallback
                       src={item.product.image}
                       alt={item.product.name}
@@ -105,17 +105,17 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                         {item.product.category && (
                           <Badge className="mb-2">{item.product.category}</Badge>
                         )}
-                        <h3 className="text-xl text-white mb-1">{item.product.name}</h3>
+                        <h3 className="text-xl text-foreground mb-1">{item.product.name}</h3>
                         {item.product.brand && (
-                          <p className="text-sm text-white/60">{item.product.brand}</p>
+                          <p className="text-sm text-muted-foreground">{item.product.brand}</p>
                         )}
                         {(item.selectedColor || item.selectedSize) && (
                           <div className="flex gap-2 mt-1">
                             {item.selectedColor && (
-                              <span className="text-xs text-white/50">Màu: {item.selectedColor}</span>
+                              <span className="text-xs text-muted-foreground">Màu: {item.selectedColor}</span>
                             )}
                             {item.selectedSize && (
-                              <span className="text-xs text-white/50">Kích cỡ: {item.selectedSize}</span>
+                              <span className="text-xs text-muted-foreground">Kích cỡ: {item.selectedSize}</span>
                             )}
                           </div>
                         )}
@@ -131,7 +131,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                     </div>
 
                     <div className="flex items-center justify-between mt-4">
-                      <div className="flex items-center bg-white/5 border border-white/10 rounded-lg">
+                      <div className="flex items-center bg-foreground/5 border border-border rounded-lg">
                         <Button
                           size="icon"
                           variant="ghost"
@@ -140,7 +140,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
-                        <span className="px-4 text-white">{item.quantity}</span>
+                        <span className="px-4 text-foreground">{item.quantity}</span>
                         <Button
                           size="icon"
                           variant="ghost"
@@ -151,11 +151,11 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                       </div>
 
                       <div className="text-right">
-                        <p className="text-2xl text-white">
+                        <p className="text-2xl text-foreground">
                           {formatCurrency(item.product.price * item.quantity)}
                         </p>
                         {item.quantity > 1 && (
-                          <p className="text-sm text-white/50">
+                          <p className="text-sm text-muted-foreground">
                             {formatCurrency(item.product.price)} / sản phẩm
                           </p>
                         )}
@@ -177,12 +177,12 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
-              <h2 className="text-2xl text-white">Tóm tắt đơn hàng</h2>
+            <div className="sticky top-24 bg-foreground/5 border border-border rounded-2xl p-6 space-y-6">
+              <h2 className="text-2xl text-foreground">Tóm tắt đơn hàng</h2>
 
               {/* Coupon Code */}
               <div>
-                <label className="text-sm text-white/70 mb-2 block">
+                <label className="text-sm text-muted-foreground mb-2 block">
                   Mã giảm giá
                 </label>
                 {couponApplied ? (
@@ -193,7 +193,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="text-white/50 hover:text-white h-6 px-2"
+                        className="text-muted-foreground hover:text-foreground h-6 px-2"
                         onClick={() => { setCouponApplied(""); setCouponDiscount(0); setCouponCode(""); setCouponSellerName(null); try { sessionStorage.removeItem("applied_coupon"); } catch {} }}
                       >
                         ×
@@ -212,7 +212,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                       placeholder="Nhập mã"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      className="bg-white/5 border-white/10"
+                      className="bg-foreground/5 border-border"
                       onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
                     />
                     <Button
@@ -226,11 +226,11 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                 )}
               </div>
 
-              <Separator className="bg-white/10" />
+              <Separator className="bg-foreground/10" />
 
               {/* Price Breakdown */}
               <div className="space-y-3">
-                <div className="flex justify-between text-white/70">
+                <div className="flex justify-between text-muted-foreground">
                   <span>Tạm tính ({cartItems.length} sản phẩm)</span>
                   <span>{formatCurrency(subtotal)}</span>
                 </div>
@@ -240,7 +240,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                     <span>-{formatCurrency(couponDiscount)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-white/70">
+                <div className="flex justify-between text-muted-foreground">
                   <span>Vận chuyển</span>
                   <span>
                     {shipping === 0 ? (
@@ -252,7 +252,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                     )}
                   </span>
                 </div>
-                <div className="flex justify-between text-white/70">
+                <div className="flex justify-between text-muted-foreground">
                   <span>Thuế (10%)</span>
                   <span>{formatCurrency(tax)}</span>
                 </div>
@@ -266,12 +266,12 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                 )}
               </div>
 
-              <Separator className="bg-white/10" />
+              <Separator className="bg-foreground/10" />
 
               {/* Total */}
               <div className="flex justify-between items-center">
-                <span className="text-xl text-white">Tổng cộng</span>
-                <span className="text-3xl text-white">{formatCurrency(total)}</span>
+                <span className="text-xl text-foreground">Tổng cộng</span>
+                <span className="text-3xl text-foreground">{formatCurrency(total)}</span>
               </div>
 
               <Button
@@ -284,18 +284,18 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
               </Button>
 
               {/* Security Badges */}
-              <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/10">
+              <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border">
                 <div className="text-center">
                   <div className="text-2xl mb-1">🔒</div>
-                  <p className="text-xs text-white/60">Thanh toán an toàn</p>
+                  <p className="text-xs text-muted-foreground">Thanh toán an toàn</p>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl mb-1">📦</div>
-                  <p className="text-xs text-white/60">Giao hàng nhanh</p>
+                  <p className="text-xs text-muted-foreground">Giao hàng nhanh</p>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl mb-1">↩️</div>
-                  <p className="text-xs text-white/60">Đổi trả dễ dàng</p>
+                  <p className="text-xs text-muted-foreground">Đổi trả dễ dàng</p>
                 </div>
               </div>
             </div>

@@ -105,7 +105,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
-          <p className="text-white/60 text-sm">Đang tải...</p>
+          <p className="text-muted-foreground text-sm">Đang tải...</p>
         </div>
       </div>
     );
@@ -127,13 +127,13 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
               <Badge className="mb-4 bg-purple-500/20 text-purple-300 border-purple-500/30">
                 Hàng mới về
               </Badge>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl text-white mb-6">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl text-foreground mb-6">
                 Sản Phẩm Cao Cấp
                 <span className="block bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                   Chất Lượng Vượt Trội
                 </span>
               </h1>
-              <p className="text-xl text-white/70 mb-8 max-w-lg">
+              <p className="text-xl text-muted-foreground mb-8 max-w-lg">
                 Khám phá bộ sưu tập điện tử, thời trang và đồ gia dụng cao cấp được tuyển chọn. Ưu đãi có hạn giảm đến 50%!
               </p>
               <div className="flex flex-wrap gap-4">
@@ -158,7 +158,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
               className="relative hidden lg:block"
             >
               {currentProduct && (
-                <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-8">
+                <div className="relative rounded-3xl overflow-hidden border border-border bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-8">
                   <AnimatePresence mode="wait">
                     <motion.img
                       key={currentFeaturedIndex}
@@ -171,7 +171,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                       transition={{ duration: 0.5 }}
                     />
                   </AnimatePresence>
-                  <div className="absolute bottom-12 left-12 right-12 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                  <div className="absolute bottom-12 left-12 right-12 bg-background/90 backdrop-blur-xl border border-border rounded-2xl p-6">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-sm text-purple-400">Sản phẩm nổi bật</p>
                       <div className="flex gap-1">
@@ -182,7 +182,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                             className={`h-1.5 rounded-full transition-all ${
                               index === currentFeaturedIndex
                                 ? "w-8 bg-purple-400"
-                                : "w-1.5 bg-white/30 hover:bg-white/50"
+                                : "w-1.5 bg-white/30 hover:bg-foreground/50"
                             }`}
                             aria-label={`Go to product ${index + 1}`}
                           />
@@ -197,9 +197,9 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <h3 className="text-2xl text-white mb-2">{currentProduct.name}</h3>
+                        <h3 className="text-2xl text-foreground mb-2">{currentProduct.name}</h3>
                         <div className="flex items-center justify-between">
-                          <span className="text-3xl text-white">{formatCurrency(currentProduct.price)}</span>
+                          <span className="text-3xl text-foreground">{formatCurrency(currentProduct.price)}</span>
                           <Button
                             onClick={() => onNavigate("product", currentProduct)}
                             className="bg-gradient-to-r from-purple-600 to-blue-600"
@@ -218,7 +218,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
       </section>
 
       {/* Features */}
-      <section className="py-16 border-y border-white/10 bg-white/5">
+      <section className="py-16 border-y border-border bg-foreground/5">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
@@ -234,11 +234,11 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                 transition={{ delay: i * 0.1 }}
                 className="text-center"
               >
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 mb-4">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-border mb-4">
                   <feature.icon className="h-6 w-6 text-purple-400" />
                 </div>
-                <h3 className="text-white mb-1">{feature.title}</h3>
-                <p className="text-sm text-white/60">{feature.desc}</p>
+                <h3 className="text-foreground mb-1">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -249,8 +249,8 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
       <section className="py-16 container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl text-white mb-2">Danh mục sản phẩm</h2>
-            <p className="text-white/60">Khám phá đa dạng sản phẩm của chúng tôi</p>
+            <h2 className="text-3xl text-foreground mb-2">Danh mục sản phẩm</h2>
+            <p className="text-muted-foreground">Khám phá đa dạng sản phẩm của chúng tôi</p>
           </div>
           <Button variant="ghost" onClick={() => onNavigate("shop")}>
             Xem tất cả
@@ -265,7 +265,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onNavigate("shop", { category: cat.name })}
-              className="group relative bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all"
+              className="group relative bg-foreground/5 border border-border rounded-2xl p-6 hover:border-purple-500/50 transition-all"
             >
               <div className="text-4xl mb-3">
                 {cat.name === "Điện tử" && "💻"}
@@ -278,7 +278,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
               <h3 className="text-white group-hover:text-purple-400 transition-colors">
                 {cat.name}
               </h3>
-              <p className="text-xs text-white/50 mt-1">{cat.productCount} sản phẩm</p>
+              <p className="text-xs text-muted-foreground mt-1">{cat.productCount} sản phẩm</p>
             </motion.button>
           ))}
         </div>
@@ -288,8 +288,8 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
       <section className="py-16 container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl text-white mb-2">Sản phẩm nổi bật</h2>
-            <p className="text-white/60">Sản phẩm được tuyển chọn dành cho bạn</p>
+            <h2 className="text-3xl text-foreground mb-2">Sản phẩm nổi bật</h2>
+            <p className="text-muted-foreground">Sản phẩm được tuyển chọn dành cho bạn</p>
           </div>
           <Button variant="ghost" onClick={() => onNavigate("shop")}>
             Xem tất cả
@@ -325,18 +325,18 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
               return (
                 <div key={promo.id} className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600 to-blue-600 p-12">
                   <div className="relative z-10 max-w-2xl">
-                    <Badge className="mb-4 bg-white/20 text-white border-white/30">
+                    <Badge className="mb-4 bg-foreground/20 text-foreground border-border/30">
                       {hasExpiry ? `Hết hạn ${new Date(promo.validUntil!).toLocaleDateString("vi-VN")}` : "Ưu đãi đặc biệt"}
                     </Badge>
-                    <h2 className="text-4xl text-white mb-4">{title}</h2>
-                    <p className="text-xl text-white/90 mb-3">{desc}</p>
+                    <h2 className="text-4xl text-foreground mb-4">{title}</h2>
+                    <p className="text-xl text-muted-foreground mb-3">{desc}</p>
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="inline-flex items-center gap-2 bg-white/20 rounded-xl px-4 py-2">
-                        <Tag className="h-4 w-4 text-white" />
-                        <span className="text-white font-mono font-bold tracking-widest">{promo.code}</span>
+                      <div className="inline-flex items-center gap-2 bg-foreground/20 rounded-xl px-4 py-2">
+                        <Tag className="h-4 w-4 text-foreground" />
+                        <span className="text-foreground font-mono font-bold tracking-widest">{promo.code}</span>
                       </div>
                       {promo.minOrderAmount && (
-                        <span className="text-white/70 text-sm">Đơn tối thiểu {formatCurrency(Number(promo.minOrderAmount))}</span>
+                        <span className="text-muted-foreground text-sm">Đơn tối thiểu {formatCurrency(Number(promo.minOrderAmount))}</span>
                       )}
                     </div>
                     <Button
@@ -362,8 +362,8 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
       <section className="py-16 container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl text-white mb-2">Xu hướng hiện tại</h2>
-            <p className="text-white/60">Sản phẩm phổ biến nhất tuần này</p>
+            <h2 className="text-3xl text-foreground mb-2">Xu hướng hiện tại</h2>
+            <p className="text-muted-foreground">Sản phẩm phổ biến nhất tuần này</p>
           </div>
         </div>
 
@@ -388,7 +388,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/70 backdrop-blur-sm"
             onClick={() => {
               setShowPromoPopup(false);
               localStorage.setItem("promo_popup_dismissed", new Date().toDateString());
@@ -407,17 +407,17 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                   setShowPromoPopup(false);
                   localStorage.setItem("promo_popup_dismissed", new Date().toDateString());
                 }}
-                className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
+                className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
 
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 border border-white/20 mb-4">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-foreground/10 border border-border mb-4">
                   <Tag className="h-7 w-7 text-purple-300" />
                 </div>
-                <h2 className="text-2xl text-white mb-1">Ưu đãi hôm nay</h2>
-                <p className="text-white/50 text-sm">Đừng bỏ lỡ các mã giảm giá đặc biệt</p>
+                <h2 className="text-2xl text-foreground mb-1">Ưu đãi hôm nay</h2>
+                <p className="text-muted-foreground text-sm">Đừng bỏ lỡ các mã giảm giá đặc biệt</p>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -426,19 +426,19 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                     ? `Giảm ${promo.value}%`
                     : `Giảm ${formatCurrency(Number(promo.value))}`;
                   return (
-                    <div key={promo.id} className="bg-white/10 border border-white/10 rounded-2xl p-4">
+                    <div key={promo.id} className="bg-foreground/10 border border-border rounded-2xl p-4">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-white font-mono font-bold tracking-widest text-lg">{promo.code}</span>
+                        <span className="text-foreground font-mono font-bold tracking-widest text-lg">{promo.code}</span>
                         <Badge className="bg-purple-500/30 text-purple-200 border-0">{discountLabel}</Badge>
                       </div>
                       {(promo.name || promo.description) && (
-                        <p className="text-white/60 text-sm">{promo.description || promo.name}</p>
+                        <p className="text-muted-foreground text-sm">{promo.description || promo.name}</p>
                       )}
                       {promo.minOrderAmount && (
-                        <p className="text-white/40 text-xs mt-1">Đơn tối thiểu {formatCurrency(Number(promo.minOrderAmount))}</p>
+                        <p className="text-muted-foreground text-xs mt-1">Đơn tối thiểu {formatCurrency(Number(promo.minOrderAmount))}</p>
                       )}
                       {promo.validUntil && (
-                        <p className="text-white/40 text-xs mt-0.5">Hết hạn {new Date(promo.validUntil).toLocaleDateString("vi-VN")}</p>
+                        <p className="text-muted-foreground text-xs mt-0.5">Hết hạn {new Date(promo.validUntil).toLocaleDateString("vi-VN")}</p>
                       )}
                     </div>
                   );

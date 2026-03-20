@@ -115,8 +115,8 @@ export function AdminCategoriesPage() {
     <div className="container mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Quản lý danh mục</h1>
-          <p className="text-white/50 text-sm mt-0.5">{categories.length} danh mục</p>
+          <h1 className="text-2xl font-bold text-foreground">Quản lý danh mục</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">{categories.length} danh mục</p>
         </div>
         <Button
           onClick={openCreate}
@@ -129,43 +129,43 @@ export function AdminCategoriesPage() {
 
       {/* Form */}
       {showForm && (
-        <Card className="bg-white/5 border-purple-500/30 p-5">
-          <h3 className="text-white font-semibold mb-4">{editTarget ? "Sửa danh mục" : "Thêm danh mục mới"}</h3>
+        <Card className="bg-foreground/5 border-purple-500/30 p-5">
+          <h3 className="text-foreground font-semibold mb-4">{editTarget ? "Sửa danh mục" : "Thêm danh mục mới"}</h3>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Tên danh mục *</label>
+              <label className="text-muted-foreground text-xs mb-1 block">Tên danh mục *</label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm(f => ({ ...f, name: e.target.value, slug: autoSlug(e.target.value) }))}
                 placeholder="Electronics"
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-foreground/5 border-border text-foreground"
               />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Slug *</label>
+              <label className="text-muted-foreground text-xs mb-1 block">Slug *</label>
               <Input
                 value={form.slug}
                 onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))}
                 placeholder="electronics"
-                className="bg-white/5 border-white/10 text-white font-mono text-sm"
+                className="bg-foreground/5 border-border text-foreground font-mono text-sm"
               />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Icon (Lucide name)</label>
+              <label className="text-muted-foreground text-xs mb-1 block">Icon (Lucide name)</label>
               <Input
                 value={form.icon}
                 onChange={(e) => setForm(f => ({ ...f, icon: e.target.value }))}
                 placeholder="Laptop"
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-foreground/5 border-border text-foreground"
               />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Thứ tự</label>
+              <label className="text-muted-foreground text-xs mb-1 block">Thứ tự</label>
               <Input
                 type="number"
                 value={form.sortOrder}
                 onChange={(e) => setForm(f => ({ ...f, sortOrder: e.target.value }))}
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-foreground/5 border-border text-foreground"
               />
             </div>
           </div>
@@ -174,7 +174,7 @@ export function AdminCategoriesPage() {
               <Check className="h-4 w-4 mr-1" />
               {saving ? "Đang lưu..." : "Lưu"}
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => setShowForm(false)} className="border border-white/10">
+            <Button size="sm" variant="ghost" onClick={() => setShowForm(false)} className="border border-border">
               <X className="h-4 w-4 mr-1" />
               Hủy
             </Button>
@@ -183,33 +183,33 @@ export function AdminCategoriesPage() {
       )}
 
       {/* Category Table */}
-      <Card className="bg-white/5 border-white/10 overflow-hidden">
+      <Card className="bg-foreground/5 border-border overflow-hidden">
         {loading ? (
           <div className="flex justify-center items-center h-48">
-            <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-border border-t-white rounded-full animate-spin" />
           </div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/10 text-left">
-                <th className="px-4 py-3 text-white/50 text-sm font-medium">Tên</th>
-                <th className="px-4 py-3 text-white/50 text-sm font-medium">Slug</th>
-                <th className="px-4 py-3 text-white/50 text-sm font-medium">Icon</th>
-                <th className="px-4 py-3 text-white/50 text-sm font-medium">Sản phẩm</th>
-                <th className="px-4 py-3 text-white/50 text-sm font-medium">Thứ tự</th>
-                <th className="px-4 py-3 text-white/50 text-sm font-medium text-right">Hành động</th>
+              <tr className="border-b border-border text-left">
+                <th className="px-4 py-3 text-muted-foreground text-sm font-medium">Tên</th>
+                <th className="px-4 py-3 text-muted-foreground text-sm font-medium">Slug</th>
+                <th className="px-4 py-3 text-muted-foreground text-sm font-medium">Icon</th>
+                <th className="px-4 py-3 text-muted-foreground text-sm font-medium">Sản phẩm</th>
+                <th className="px-4 py-3 text-muted-foreground text-sm font-medium">Thứ tự</th>
+                <th className="px-4 py-3 text-muted-foreground text-sm font-medium text-right">Hành động</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {categories.map((cat) => (
                 <tr key={cat.id} className="hover:bg-white/[0.02]">
-                  <td className="px-4 py-3 text-white font-medium">{cat.name}</td>
-                  <td className="px-4 py-3 text-white/50 text-sm font-mono">{cat.slug}</td>
-                  <td className="px-4 py-3 text-white/50 text-sm">{cat.icon || "—"}</td>
+                  <td className="px-4 py-3 text-foreground font-medium">{cat.name}</td>
+                  <td className="px-4 py-3 text-muted-foreground text-sm font-mono">{cat.slug}</td>
+                  <td className="px-4 py-3 text-muted-foreground text-sm">{cat.icon || "—"}</td>
                   <td className="px-4 py-3">
                     <Badge className="bg-blue-500/20 text-blue-400 border-0">{cat._count.products}</Badge>
                   </td>
-                  <td className="px-4 py-3 text-white/50 text-sm">{cat.sortOrder}</td>
+                  <td className="px-4 py-3 text-muted-foreground text-sm">{cat.sortOrder}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
                       <Button
@@ -238,16 +238,16 @@ export function AdminCategoriesPage() {
       </Card>
 
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-white/10">
+        <AlertDialogContent className="bg-secondary border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Xóa danh mục?</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
-              Xóa danh mục <strong className="text-white">{deleteTarget?.name}</strong>. Chỉ xóa được nếu không có sản phẩm nào.
+            <AlertDialogTitle className="text-foreground">Xóa danh mục?</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              Xóa danh mục <strong className="text-foreground">{deleteTarget?.name}</strong>. Chỉ xóa được nếu không có sản phẩm nào.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Hủy</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">Xóa</AlertDialogAction>
+            <AlertDialogCancel className="bg-foreground/5 border-border text-foreground hover:bg-foreground/10">Hủy</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-foreground">Xóa</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

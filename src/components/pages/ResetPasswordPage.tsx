@@ -50,27 +50,27 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
           </Button>
         )}
 
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+        <div className="bg-foreground/5 border border-border rounded-2xl p-8">
           {!submitted ? (
             <>
               <div className="mb-8 text-center">
                 <div className="h-16 w-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-4">
-                  <Lock className="h-8 w-8 text-white" />
+                  <Lock className="h-8 w-8 text-foreground" />
                 </div>
-                <h2 className="text-2xl text-white mb-2">Đặt lại mật khẩu</h2>
-                <p className="text-white/60">Nhập mật khẩu mới bên dưới</p>
+                <h2 className="text-2xl text-foreground mb-2">Đặt lại mật khẩu</h2>
+                <p className="text-muted-foreground">Nhập mật khẩu mới bên dưới</p>
               </div>
 
               <form onSubmit={onSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="password">Mật khẩu mới</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="password"
                       type="password"
                       placeholder="••••••••"
-                      className="pl-10 bg-white/5 border-white/10"
+                      className="pl-10 bg-foreground/5 border-border"
                       {...register("password")}
                     />
                   </div>
@@ -82,12 +82,12 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
                 <div>
                   <Label htmlFor="confirm-password">Xác nhận mật khẩu</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="confirm-password"
                       type="password"
                       placeholder="••••••••"
-                      className="pl-10 bg-white/5 border-white/10"
+                      className="pl-10 bg-foreground/5 border-border"
                       {...register("confirmPassword")}
                     />
                   </div>
@@ -111,8 +111,8 @@ export function ResetPasswordPage({ onNavigate, token }: ResetPasswordPageProps)
               <div className="h-16 w-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-green-400" />
               </div>
-              <h2 className="text-2xl text-white mb-2">Đã đặt lại mật khẩu!</h2>
-              <p className="text-white/60 mb-6">
+              <h2 className="text-2xl text-foreground mb-2">Đã đặt lại mật khẩu!</h2>
+              <p className="text-muted-foreground mb-6">
                 Mật khẩu đã được đặt lại thành công. Bạn có thể đăng nhập bằng mật khẩu mới.
               </p>
               <Button

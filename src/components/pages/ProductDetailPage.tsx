@@ -277,7 +277,7 @@ export function ProductDetailPage({
       <div className="grid lg:grid-cols-2 gap-12 mb-16">
         {/* Product Images */}
         <div className="space-y-4">
-          <div className="relative aspect-square bg-white/5 rounded-2xl overflow-hidden border border-white/10">
+          <div className="relative aspect-square bg-foreground/5 rounded-2xl overflow-hidden border border-border">
             <ImageWithFallback
               src={product.images?.[selectedImage]?.url ?? product.images?.[selectedImage] ?? product.image}
               alt={product.name}
@@ -296,10 +296,10 @@ export function ProductDetailPage({
                 <button
                   key={i}
                   onClick={() => setSelectedImage(i)}
-                  className={`aspect-square bg-white/5 rounded-xl overflow-hidden border-2 transition-all ${
+                  className={`aspect-square bg-foreground/5 rounded-xl overflow-hidden border-2 transition-all ${
                     selectedImage === i
                       ? "border-purple-500"
-                      : "border-white/10 hover:border-white/30"
+                      : "border-border hover:border-border/30"
                   }`}
                 >
                   <img src={imgUrl} alt={`Ảnh ${i + 1}`} className="w-full h-full object-cover" />
@@ -313,8 +313,8 @@ export function ProductDetailPage({
         <div className="space-y-6">
           <div>
             <Badge className="mb-3">{product.category}</Badge>
-            <h1 className="text-4xl text-white mb-2">{product.name}</h1>
-            <p className="text-white/60">bởi {product.brand}</p>
+            <h1 className="text-4xl text-foreground mb-2">{product.name}</h1>
+            <p className="text-muted-foreground">bởi {product.brand}</p>
           </div>
 
           {/* Rating */}
@@ -326,20 +326,20 @@ export function ProductDetailPage({
                   className={`h-5 w-5 ${
                     i < Math.floor(product.rating)
                       ? "fill-yellow-400 text-yellow-400"
-                      : "text-white/20"
+                      : "text-muted-foreground"
                   }`}
                 />
               ))}
             </div>
-            <span className="text-white">{product.rating}</span>
-            <span className="text-white/50">({product.reviews} đánh giá)</span>
+            <span className="text-foreground">{product.rating}</span>
+            <span className="text-muted-foreground">({product.reviews} đánh giá)</span>
           </div>
 
           {/* Price */}
           <div className="flex items-baseline gap-3">
-            <span className="text-4xl text-white">{formatCurrency(product.price)}</span>
+            <span className="text-4xl text-foreground">{formatCurrency(product.price)}</span>
             {product.originalPrice && (
-              <span className="text-xl text-white/50 line-through">
+              <span className="text-xl text-muted-foreground line-through">
                 {formatCurrency(product.originalPrice)}
               </span>
             )}
@@ -350,15 +350,15 @@ export function ProductDetailPage({
             )}
           </div>
 
-          <Separator className="bg-white/10" />
+          <Separator className="bg-foreground/10" />
 
           {/* Description */}
-          <p className="text-white/70">{product.description}</p>
+          <p className="text-muted-foreground">{product.description}</p>
 
           {/* Color Selection */}
           {product.colors && product.colors.length > 0 && (
             <div>
-              <label className="text-white mb-2 block">
+              <label className="text-foreground mb-2 block">
                 Màu sắc: <span className="text-purple-400">{selectedColor}</span>
               </label>
               <div className="flex gap-2">
@@ -371,10 +371,10 @@ export function ProductDetailPage({
                       className={`px-4 py-2 rounded-lg border-2 transition-all ${
                         selectedColor === colorName
                           ? "border-purple-500 bg-purple-500/20"
-                          : "border-white/10 bg-white/5 hover:border-white/30"
+                          : "border-border bg-foreground/5 hover:border-border/30"
                       }`}
                     >
-                      <span className="text-white text-sm">{colorName}</span>
+                      <span className="text-foreground text-sm">{colorName}</span>
                     </button>
                   );
                 })}
@@ -385,7 +385,7 @@ export function ProductDetailPage({
           {/* Size Selection */}
           {product.sizes && product.sizes.length > 0 && (
             <div>
-              <label className="text-white mb-2 block">
+              <label className="text-foreground mb-2 block">
                 Kích cỡ: <span className="text-purple-400">{selectedSize}</span>
               </label>
               <div className="flex gap-2">
@@ -396,10 +396,10 @@ export function ProductDetailPage({
                     className={`px-4 py-2 rounded-lg border-2 transition-all ${
                       selectedSize === size
                         ? "border-purple-500 bg-purple-500/20"
-                        : "border-white/10 bg-white/5 hover:border-white/30"
+                        : "border-border bg-foreground/5 hover:border-border/30"
                     }`}
                   >
-                    <span className="text-white text-sm">{size}</span>
+                    <span className="text-foreground text-sm">{size}</span>
                   </button>
                 ))}
               </div>
@@ -417,9 +417,9 @@ export function ProductDetailPage({
 
           {/* Quantity */}
           <div>
-            <label className="text-white mb-2 block">Số lượng</label>
+            <label className="text-foreground mb-2 block">Số lượng</label>
             <div className="flex items-center gap-3">
-              <div className="flex items-center bg-white/5 border border-white/10 rounded-lg">
+              <div className="flex items-center bg-foreground/5 border border-border rounded-lg">
                 <Button
                   size="icon"
                   variant="ghost"
@@ -428,7 +428,7 @@ export function ProductDetailPage({
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
-                <span className="px-4 text-white">{quantity}</span>
+                <span className="px-4 text-foreground">{quantity}</span>
                 <Button
                   size="icon"
                   variant="ghost"
@@ -438,7 +438,7 @@ export function ProductDetailPage({
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <span className="text-white/50 text-sm">
+              <span className="text-muted-foreground text-sm">
                 (còn {product.stock} sản phẩm)
               </span>
             </div>
@@ -486,8 +486,8 @@ export function ProductDetailPage({
                 <Truck className="h-5 w-5 text-purple-400" />
               </div>
               <div>
-                <p className="text-white">Miễn phí vận chuyển</p>
-                <p className="text-white/50 text-xs">Đơn hàng trên 50</p>
+                <p className="text-foreground">Miễn phí vận chuyển</p>
+                <p className="text-muted-foreground text-xs">Đơn hàng trên 50</p>
               </div>
             </div>
             <div className="flex items-center gap-3 text-sm">
@@ -495,8 +495,8 @@ export function ProductDetailPage({
                 <Shield className="h-5 w-5 text-purple-400" />
               </div>
               <div>
-                <p className="text-white">Thanh toán an toàn</p>
-                <p className="text-white/50 text-xs">Bảo mật 100%</p>
+                <p className="text-foreground">Thanh toán an toàn</p>
+                <p className="text-muted-foreground text-xs">Bảo mật 100%</p>
               </div>
             </div>
             <div className="flex items-center gap-3 text-sm">
@@ -504,8 +504,8 @@ export function ProductDetailPage({
                 <RotateCcw className="h-5 w-5 text-purple-400" />
               </div>
               <div>
-                <p className="text-white">Đổi trả dễ dàng</p>
-                <p className="text-white/50 text-xs">Chính sách đổi trả 30 ngày</p>
+                <p className="text-foreground">Đổi trả dễ dàng</p>
+                <p className="text-muted-foreground text-xs">Chính sách đổi trả 30 ngày</p>
               </div>
             </div>
             <div className="flex items-center gap-3 text-sm">
@@ -513,14 +513,14 @@ export function ProductDetailPage({
                 <MessageCircle className="h-5 w-5 text-purple-400" />
               </div>
               <div>
-                <p className="text-white">Hỗ trợ 24/7</p>
-                <p className="text-white/50 text-xs">Luôn sẵn sàng hỗ trợ</p>
+                <p className="text-foreground">Hỗ trợ 24/7</p>
+                <p className="text-muted-foreground text-xs">Luôn sẵn sàng hỗ trợ</p>
               </div>
             </div>
           </div>
 
           {/* Seller Info */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+          <div className="bg-foreground/5 border border-border rounded-xl p-4">
             <div className="flex items-center justify-between">
               <div
                 className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
@@ -536,8 +536,8 @@ export function ProductDetailPage({
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-white">{product.seller?.storeName || `${product.brand} Store`}</p>
-                  <p className="text-sm text-white/50">
+                  <p className="text-foreground">{product.seller?.storeName || `${product.brand} Store`}</p>
+                  <p className="text-sm text-muted-foreground">
                     {product.seller?.isVerified ? "✓ Người bán đã xác minh" : "Người bán"}
                     {product.seller?.positiveRating ? ` · ${product.seller.positiveRating}% tích cực` : ""}
                   </p>
@@ -561,7 +561,7 @@ export function ProductDetailPage({
 
       {/* Tabs Section */}
       <Tabs defaultValue="description" className="w-full">
-        <TabsList className="w-full justify-start bg-white/5 border-b border-white/10 rounded-none">
+        <TabsList className="w-full justify-start bg-foreground/5 border-b border-border rounded-none">
           <TabsTrigger value="description">Mô tả</TabsTrigger>
           <TabsTrigger value="specifications">Thông số kỹ thuật</TabsTrigger>
           <TabsTrigger value="reviews">Đánh giá ({reviews.length})</TabsTrigger>
@@ -569,21 +569,21 @@ export function ProductDetailPage({
 
         <TabsContent value="description" className="mt-8">
           <div className="prose prose-invert max-w-none">
-            <h3 className="text-2xl text-white mb-4">Mô tả sản phẩm</h3>
-            <p className="text-white/70">{product.description}</p>
+            <h3 className="text-2xl text-foreground mb-4">Mô tả sản phẩm</h3>
+            <p className="text-muted-foreground">{product.description}</p>
           </div>
         </TabsContent>
 
         <TabsContent value="specifications" className="mt-8">
-          <h3 className="text-2xl text-white mb-6">Thông số kỹ thuật chi tiết</h3>
+          <h3 className="text-2xl text-foreground mb-6">Thông số kỹ thuật chi tiết</h3>
           <div className="grid md:grid-cols-2 gap-4">
             {(Array.isArray(product.specifications) ? product.specifications : Object.entries(product.specifications ?? {}).map(([key, value]) => ({ key, value }))).map((spec: any) => (
               <div
                 key={spec.key}
-                className="bg-white/5 border border-white/10 rounded-lg p-4 flex justify-between"
+                className="bg-foreground/5 border border-border rounded-lg p-4 flex justify-between"
               >
-                <span className="text-white/60">{spec.key}</span>
-                <span className="text-white">{spec.value}</span>
+                <span className="text-muted-foreground">{spec.key}</span>
+                <span className="text-foreground">{spec.value}</span>
               </div>
             ))}
           </div>
@@ -592,17 +592,17 @@ export function ProductDetailPage({
         <TabsContent value="reviews" className="mt-8">
           {/* Write Review Button / Form */}
           {isAuthenticated && !userReview && !canReview && (
-            <div className="mb-8 bg-white/5 border border-white/10 rounded-2xl p-4">
-              <p className="text-white/50 text-sm text-center">
+            <div className="mb-8 bg-foreground/5 border border-border rounded-2xl p-4">
+              <p className="text-muted-foreground text-sm text-center">
                 🛍️ Mua và nhận sản phẩm này để viết đánh giá.
               </p>
             </div>
           )}
           {isAuthenticated && canReview && !userReview && (
-            <div className="mb-8 bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div className="mb-8 bg-foreground/5 border border-border rounded-2xl p-6">
               {!reviewFormOpen ? (
                 <div className="flex items-center justify-between">
-                  <p className="text-white/70">Bạn đã mua sản phẩm này. Hãy chia sẻ trải nghiệm!</p>
+                  <p className="text-muted-foreground">Bạn đã mua sản phẩm này. Hãy chia sẻ trải nghiệm!</p>
                   <Button
                     onClick={() => setReviewFormOpen(true)}
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
@@ -612,37 +612,37 @@ export function ProductDetailPage({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <h3 className="text-white text-lg">Viết đánh giá của bạn</h3>
+                  <h3 className="text-foreground text-lg">Viết đánh giá của bạn</h3>
 
                   {/* Star Rating */}
                   <div>
-                    <label className="text-white/70 text-sm mb-2 block">Đánh giá *</label>
+                    <label className="text-muted-foreground text-sm mb-2 block">Đánh giá *</label>
                     <div className="flex gap-1">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button key={star} onClick={() => setReviewRating(star)}>
-                          <Star className={`h-8 w-8 transition-colors ${star <= reviewRating ? "fill-yellow-400 text-yellow-400" : "text-white/20"}`} />
+                          <Star className={`h-8 w-8 transition-colors ${star <= reviewRating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
                         </button>
                       ))}
-                      <span className="ml-2 text-white/60 self-center">{reviewRating}/5 sao</span>
+                      <span className="ml-2 text-muted-foreground self-center">{reviewRating}/5 sao</span>
                     </div>
                   </div>
 
                   {/* Emoji Reaction */}
                   <div>
-                    <label className="text-white/70 text-sm mb-2 block">Biểu tượng cảm xúc (tùy chọn)</label>
+                    <label className="text-muted-foreground text-sm mb-2 block">Biểu tượng cảm xúc (tùy chọn)</label>
                     <div className="flex items-center gap-2">
                       {reviewEmoji && <span className="text-3xl">{reviewEmoji}</span>}
-                      <Button variant="ghost" size="sm" className="text-white/60 border border-white/10" onClick={() => setShowReviewEmojiPicker((v) => !v)}>
+                      <Button variant="ghost" size="sm" className="text-muted-foreground border border-border" onClick={() => setShowReviewEmojiPicker((v) => !v)}>
                         <Smile className="h-4 w-4 mr-1" /> Chọn biểu tượng
                       </Button>
                       {reviewEmoji && (
-                        <Button variant="ghost" size="sm" className="text-white/40" onClick={() => setReviewEmoji("")}>
+                        <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={() => setReviewEmoji("")}>
                           <X className="h-4 w-4" />
                         </Button>
                       )}
                     </div>
                     {showReviewEmojiPicker && (
-                      <div className="mt-2 p-3 bg-zinc-900 border border-white/10 rounded-xl flex flex-wrap gap-2 w-fit">
+                      <div className="mt-2 p-3 bg-secondary border border-border rounded-xl flex flex-wrap gap-2 w-fit">
                         {REVIEW_EMOJIS.map((e) => (
                           <button key={e} className="text-2xl hover:scale-125 transition-transform" onClick={() => { setReviewEmoji(e); setShowReviewEmojiPicker(false); }}>
                             {e}
@@ -654,19 +654,19 @@ export function ProductDetailPage({
 
                   {/* Review Comment */}
                   <div>
-                    <label className="text-white/70 text-sm mb-2 block">Nhận xét *</label>
+                    <label className="text-muted-foreground text-sm mb-2 block">Nhận xét *</label>
                     <textarea
                       value={reviewComment}
                       onChange={(e) => setReviewComment(e.target.value)}
                       placeholder="Chia sẻ trải nghiệm của bạn với sản phẩm này..."
                       rows={4}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white placeholder:text-white/40 resize-none focus:outline-none focus:border-purple-500"
+                      className="w-full bg-foreground/5 border border-border rounded-lg p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:border-purple-500"
                     />
                   </div>
 
                   {/* Image Upload */}
                   <div>
-                    <label className="text-white/70 text-sm mb-2 block">Hình ảnh đánh giá (tùy chọn)</label>
+                    <label className="text-muted-foreground text-sm mb-2 block">Hình ảnh đánh giá (tùy chọn)</label>
                     <input ref={reviewImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleReviewImageUpload} />
                     <div className="flex flex-wrap gap-3">
                       {reviewImages.map((url, i) => (
@@ -676,7 +676,7 @@ export function ProductDetailPage({
                             className="absolute -top-1 -right-1 bg-red-500 rounded-full h-5 w-5 flex items-center justify-center"
                             onClick={() => setReviewImages((prev) => prev.filter((_, idx) => idx !== i))}
                           >
-                            <X className="h-3 w-3 text-white" />
+                            <X className="h-3 w-3 text-foreground" />
                           </button>
                         </div>
                       ))}
@@ -684,7 +684,7 @@ export function ProductDetailPage({
                         <button
                           onClick={() => reviewImageInputRef.current?.click()}
                           disabled={isUploadingReviewImage}
-                          className="w-20 h-20 border-2 border-dashed border-white/20 rounded-lg flex flex-col items-center justify-center text-white/40 hover:border-purple-500 hover:text-purple-400 transition-colors"
+                          className="w-20 h-20 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground hover:border-purple-500 hover:text-purple-400 transition-colors"
                         >
                           <Upload className="h-5 w-5 mb-1" />
                           <span className="text-xs">{isUploadingReviewImage ? "..." : "Thêm"}</span>
@@ -702,7 +702,7 @@ export function ProductDetailPage({
                     >
                       {isSubmittingReview ? "Đang gửi..." : "Gửi đánh giá"}
                     </Button>
-                    <Button variant="ghost" onClick={() => setReviewFormOpen(false)} className="text-white/60">
+                    <Button variant="ghost" onClick={() => setReviewFormOpen(false)} className="text-muted-foreground">
                       Hủy
                     </Button>
                   </div>
@@ -719,9 +719,9 @@ export function ProductDetailPage({
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Rating Summary */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div className="bg-foreground/5 border border-border rounded-2xl p-6">
               <div className="text-center mb-6">
-                <div className="text-5xl text-white mb-2">{ratingAverage}</div>
+                <div className="text-5xl text-foreground mb-2">{ratingAverage}</div>
                 <div className="flex justify-center mb-2">
                   {[...Array(5)].map((_, i) => (
                     <Star
@@ -729,19 +729,19 @@ export function ProductDetailPage({
                       className={`h-5 w-5 ${
                         i < Math.floor(ratingAverage)
                           ? "fill-yellow-400 text-yellow-400"
-                          : "text-white/20"
+                          : "text-muted-foreground"
                       }`}
                     />
                   ))}
                 </div>
-                <p className="text-white/60">Dựa trên {product.reviews} đánh giá</p>
+                <p className="text-muted-foreground">Dựa trên {product.reviews} đánh giá</p>
               </div>
               <div className="space-y-3">
                 {[5, 4, 3, 2, 1].map((star) => (
                   <div key={star} className="flex items-center gap-3">
-                    <span className="text-sm text-white/60 w-8">{star}★</span>
+                    <span className="text-sm text-muted-foreground w-8">{star}★</span>
                     <Progress value={getBreakdownPercentage(star)} className="flex-1" />
-                    <span className="text-sm text-white/60 w-12">
+                    <span className="text-sm text-muted-foreground w-12">
                       {getBreakdownPercentage(star)}%
                     </span>
                   </div>
@@ -753,17 +753,17 @@ export function ProductDetailPage({
             <div className="lg:col-span-2 space-y-6">
               {reviewsLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <p className="text-white/50">Đang tải đánh giá...</p>
+                  <p className="text-muted-foreground">Đang tải đánh giá...</p>
                 </div>
               ) : reviews.length === 0 ? (
                 <div className="flex items-center justify-center py-12">
-                  <p className="text-white/50">Chưa có đánh giá.</p>
+                  <p className="text-muted-foreground">Chưa có đánh giá.</p>
                 </div>
               ) : (
                 reviews.map((review) => (
                   <div
                     key={review.id}
-                    className="bg-white/5 border border-white/10 rounded-2xl p-6"
+                    className="bg-foreground/5 border border-border rounded-2xl p-6"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
@@ -773,7 +773,7 @@ export function ProductDetailPage({
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-white">{review.user?.name}</p>
+                          <p className="text-foreground">{review.user?.name}</p>
                           <div className="flex items-center gap-2">
                             <div className="flex">
                               {[...Array(5)].map((_, i) => (
@@ -782,12 +782,12 @@ export function ProductDetailPage({
                                   className={`h-4 w-4 ${
                                     i < review.rating
                                       ? "fill-yellow-400 text-yellow-400"
-                                      : "text-white/20"
+                                      : "text-muted-foreground"
                                   }`}
                                 />
                               ))}
                             </div>
-                            <span className="text-sm text-white/50">
+                            <span className="text-sm text-muted-foreground">
                               {new Date(review.createdAt).toLocaleDateString()}
                             </span>
                           </div>
@@ -797,7 +797,7 @@ export function ProductDetailPage({
                     {(review as any).emoji && (
                       <span className="text-2xl mb-2 block">{(review as any).emoji}</span>
                     )}
-                    <p className="text-white/70 mb-4">{review.comment}</p>
+                    <p className="text-muted-foreground mb-4">{review.comment}</p>
                     {(review as any).images?.length > 0 && (
                       <div className="flex gap-2 mb-4 flex-wrap">
                         {(review as any).images.map((url: string, i: number) => (
@@ -811,7 +811,7 @@ export function ProductDetailPage({
                         ))}
                       </div>
                     )}
-                    <Button variant="ghost" size="sm" className="text-white/50 hover:text-white">
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                       👍 Hữu ích ({review.helpful})
                     </Button>
                   </div>
@@ -825,12 +825,12 @@ export function ProductDetailPage({
       {/* Related Products */}
       {!relatedLoading && relatedProducts.length > 0 && (
         <div className="mt-16">
-          <h2 className="text-2xl text-white mb-8">Sản phẩm liên quan</h2>
+          <h2 className="text-2xl text-foreground mb-8">Sản phẩm liên quan</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {relatedProducts.map((related) => (
               <div
                 key={related.id}
-                className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 transition-all cursor-pointer"
+                className="bg-foreground/5 border border-border rounded-2xl overflow-hidden hover:border-border transition-all cursor-pointer"
                 onClick={() => onNavigate("product", related)}
               >
                 <div className="aspect-square overflow-hidden">
@@ -841,18 +841,18 @@ export function ProductDetailPage({
                   />
                 </div>
                 <div className="p-4">
-                  <p className="text-white/60 text-xs mb-1">{related.brand}</p>
-                  <p className="text-white text-sm font-medium line-clamp-2 mb-2">{related.name}</p>
+                  <p className="text-muted-foreground text-xs mb-1">{related.brand}</p>
+                  <p className="text-foreground text-sm font-medium line-clamp-2 mb-2">{related.name}</p>
                   <div className="flex items-center gap-2">
-                    <span className="text-white font-semibold">{formatCurrency(related.price)}</span>
+                    <span className="text-foreground font-semibold">{formatCurrency(related.price)}</span>
                     {related.originalPrice && (
-                      <span className="text-white/40 text-sm line-through">{formatCurrency(related.originalPrice)}</span>
+                      <span className="text-muted-foreground text-sm line-through">{formatCurrency(related.originalPrice)}</span>
                     )}
                   </div>
                   {related.rating !== undefined && (
                     <div className="flex items-center gap-1 mt-1">
                       <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                      <span className="text-white/60 text-xs">{related.rating}</span>
+                      <span className="text-muted-foreground text-xs">{related.rating}</span>
                     </div>
                   )}
                 </div>

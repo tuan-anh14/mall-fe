@@ -105,25 +105,25 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow className="border-white/10 hover:bg-white/5">
-            <TableHead className="text-white/70">Mã đơn hàng</TableHead>
-            <TableHead className="text-white/70">Ngày</TableHead>
-            <TableHead className="text-white/70">Khách hàng</TableHead>
-            <TableHead className="text-white/70">Sản phẩm</TableHead>
-            <TableHead className="text-white/70">Tổng</TableHead>
-            {showStatus && <TableHead className="text-white/70">Trạng thái</TableHead>}
-            <TableHead className="text-white/70 text-right">Thao tác</TableHead>
+          <TableRow className="border-border hover:bg-foreground/5">
+            <TableHead className="text-muted-foreground">Mã đơn hàng</TableHead>
+            <TableHead className="text-muted-foreground">Ngày</TableHead>
+            <TableHead className="text-muted-foreground">Khách hàng</TableHead>
+            <TableHead className="text-muted-foreground">Sản phẩm</TableHead>
+            <TableHead className="text-muted-foreground">Tổng</TableHead>
+            {showStatus && <TableHead className="text-muted-foreground">Trạng thái</TableHead>}
+            <TableHead className="text-muted-foreground text-right">Thao tác</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rows.length > 0 ? (
             rows.map((order) => (
-              <TableRow key={order.id} className="border-white/10 hover:bg-white/5">
-                <TableCell className="text-white">{order.id}</TableCell>
-                <TableCell className="text-white/70">{order.date}</TableCell>
-                <TableCell className="text-white/70">{order.customer.name}</TableCell>
-                <TableCell className="text-white/70">{order.items.length} sản phẩm</TableCell>
-                <TableCell className="text-white">{formatCurrency(order.total)}</TableCell>
+              <TableRow key={order.id} className="border-border hover:bg-foreground/5">
+                <TableCell className="text-foreground">{order.id}</TableCell>
+                <TableCell className="text-muted-foreground">{order.date}</TableCell>
+                <TableCell className="text-muted-foreground">{order.customer.name}</TableCell>
+                <TableCell className="text-muted-foreground">{order.items.length} sản phẩm</TableCell>
+                <TableCell className="text-foreground">{formatCurrency(order.total)}</TableCell>
                 {showStatus && (
                   <TableCell>
                     <Badge
@@ -173,7 +173,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={showStatus ? 7 : 6} className="text-center text-white/60 py-8">
+              <TableCell colSpan={showStatus ? 7 : 6} className="text-center text-muted-foreground py-8">
                 Không tìm thấy đơn hàng
               </TableCell>
             </TableRow>
@@ -187,8 +187,8 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl text-white mb-2">Quản lý đơn hàng</h1>
-        <p className="text-white/60">Theo dõi và quản lý đơn hàng khách hàng</p>
+        <h1 className="text-4xl text-foreground mb-2">Quản lý đơn hàng</h1>
+        <p className="text-muted-foreground">Theo dõi và quản lý đơn hàng khách hàng</p>
       </div>
 
       {/* Stats */}
@@ -196,54 +196,54 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
         <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <Package className="h-5 w-5 text-blue-400" />
-            <p className="text-sm text-white/60">Tổng đơn hàng</p>
+            <p className="text-sm text-muted-foreground">Tổng đơn hàng</p>
           </div>
-          <p className="text-3xl text-white">{stats.total}</p>
+          <p className="text-3xl text-foreground">{stats.total}</p>
         </div>
         <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/20 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <Clock className="h-5 w-5 text-yellow-400" />
-            <p className="text-sm text-white/60">Chờ xử lý</p>
+            <p className="text-sm text-muted-foreground">Chờ xử lý</p>
           </div>
-          <p className="text-3xl text-white">{stats.pending}</p>
+          <p className="text-3xl text-foreground">{stats.pending}</p>
         </div>
         <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/20 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <Truck className="h-5 w-5 text-purple-400" />
-            <p className="text-sm text-white/60">Đang giao</p>
+            <p className="text-sm text-muted-foreground">Đang giao</p>
           </div>
-          <p className="text-3xl text-white">{stats.shipped}</p>
+          <p className="text-3xl text-foreground">{stats.shipped}</p>
         </div>
         <div className="bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/20 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <CheckCircle className="h-5 w-5 text-green-400" />
-            <p className="text-sm text-white/60">Đã giao</p>
+            <p className="text-sm text-muted-foreground">Đã giao</p>
           </div>
-          <p className="text-3xl text-white">{stats.delivered}</p>
+          <p className="text-3xl text-foreground">{stats.delivered}</p>
         </div>
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-        <div className="p-4 border-b border-white/10">
+      <div className="bg-foreground/5 border border-border rounded-2xl overflow-hidden">
+        <div className="p-4 border-b border-border">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <h2 className="text-xl text-white">Tất cả đơn hàng</h2>
+            <h2 className="text-xl text-foreground">Tất cả đơn hàng</h2>
             <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
               <div className="relative flex-1 sm:flex-initial">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Tìm kiếm đơn hàng..."
-                  className="pl-10 bg-white/5 border-white/10 w-full sm:w-[250px]"
+                  className="pl-10 bg-foreground/5 border-border w-full sm:w-[250px]"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-[150px] bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="w-full sm:w-[150px] bg-foreground/5 border-border text-foreground">
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Trạng thái" />
                 </SelectTrigger>
-                <SelectContent className="bg-black border-white/10">
+                <SelectContent className="bg-background border-border">
                   <SelectItem value="all">Tất cả trạng thái</SelectItem>
                   <SelectItem value="Processing">Đang xử lý</SelectItem>
                   <SelectItem value="Shipped">Đang giao</SelectItem>
@@ -255,7 +255,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
         </div>
 
         {loading ? (
-          <div className="text-center text-white/60 py-12">Đang tải đơn hàng...</div>
+          <div className="text-center text-muted-foreground py-12">Đang tải đơn hàng...</div>
         ) : (
           <Tabs
             value={statusFilter === "all" ? "all" : statusFilter === "Processing" ? "pending" : statusFilter === "Shipped" ? "shipped" : "delivered"}
@@ -267,7 +267,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
             }}
             className="w-full"
           >
-            <TabsList className="w-full justify-start bg-white/5 border-b border-white/10 rounded-none px-4">
+            <TabsList className="w-full justify-start bg-foreground/5 border-b border-border rounded-none px-4">
               <TabsTrigger value="all">Tất cả ({stats.total})</TabsTrigger>
               <TabsTrigger value="pending">Chờ xử lý ({stats.pending})</TabsTrigger>
               <TabsTrigger value="shipped">Đang giao ({stats.shipped})</TabsTrigger>
@@ -295,23 +295,23 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
 
       {/* Order Detail Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
-        <DialogContent className="bg-zinc-950 border-white/10 max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-card border-border max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white">Chi tiết đơn hàng — {selectedOrder?.id}</DialogTitle>
+            <DialogTitle className="text-foreground">Chi tiết đơn hàng — {selectedOrder?.id}</DialogTitle>
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-6 mt-2">
               {/* Summary */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-white/50 mb-1">Khách hàng</p>
-                  <p className="text-white">{selectedOrder.customer.name}</p>
-                  <p className="text-white/60">{selectedOrder.customer.email}</p>
+                  <p className="text-muted-foreground mb-1">Khách hàng</p>
+                  <p className="text-foreground">{selectedOrder.customer.name}</p>
+                  <p className="text-muted-foreground">{selectedOrder.customer.email}</p>
                 </div>
                 <div>
-                  <p className="text-white/50 mb-1">Thông tin đơn hàng</p>
-                  <p className="text-white">Ngày: {selectedOrder.date}</p>
-                  <p className="text-white">
+                  <p className="text-muted-foreground mb-1">Thông tin đơn hàng</p>
+                  <p className="text-foreground">Ngày: {selectedOrder.date}</p>
+                  <p className="text-foreground">
                     Trạng thái:{" "}
                     <span className={
                       selectedOrder.status === "Delivered"
@@ -328,10 +328,10 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
 
               {/* Items */}
               <div>
-                <p className="text-white/50 text-sm mb-3">Sản phẩm ({selectedOrder.items.length})</p>
+                <p className="text-muted-foreground text-sm mb-3">Sản phẩm ({selectedOrder.items.length})</p>
                 <div className="space-y-3">
                   {selectedOrder.items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-3 bg-white/5 rounded-lg p-3">
+                    <div key={item.id} className="flex items-center gap-3 bg-foreground/5 rounded-lg p-3">
                       {item.productImage && (
                         <img
                           src={item.productImage}
@@ -340,15 +340,15 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                         />
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm truncate">{item.productName}</p>
-                        <p className="text-white/50 text-xs">
+                        <p className="text-foreground text-sm truncate">{item.productName}</p>
+                        <p className="text-muted-foreground text-xs">
                           {item.selectedColor ? `Màu: ${item.selectedColor}` : ""}
                           {item.selectedColor && item.selectedSize ? " · " : ""}
                           {item.selectedSize ? `Kích cỡ: ${item.selectedSize}` : ""}
                         </p>
-                        <p className="text-white/60 text-xs mt-1">SL: {item.quantity} × {formatCurrency(item.price)}</p>
+                        <p className="text-muted-foreground text-xs mt-1">SL: {item.quantity} × {formatCurrency(item.price)}</p>
                       </div>
-                      <p className="text-white text-sm font-medium flex-shrink-0">
+                      <p className="text-foreground text-sm font-medium flex-shrink-0">
                         {formatCurrency(item.quantity * item.price)}
                       </p>
                     </div>
@@ -357,9 +357,9 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
               </div>
 
               {/* Total */}
-              <div className="flex justify-between items-center border-t border-white/10 pt-4">
-                <span className="text-white/60">Tổng cộng</span>
-                <span className="text-white text-lg">{formatCurrency(selectedOrder.total)}</span>
+              <div className="flex justify-between items-center border-t border-border pt-4">
+                <span className="text-muted-foreground">Tổng cộng</span>
+                <span className="text-foreground text-lg">{formatCurrency(selectedOrder.total)}</span>
               </div>
 
               {/* Update Status */}

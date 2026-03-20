@@ -73,43 +73,43 @@ export function AdminStatsPage() {
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Báo cáo thống kê</h1>
-        <p className="text-white/50 text-sm mt-0.5">Năm {new Date().getFullYear()}</p>
+        <h1 className="text-2xl font-bold text-foreground">Báo cáo thống kê</h1>
+        <p className="text-muted-foreground text-sm mt-0.5">Năm {new Date().getFullYear()}</p>
       </div>
 
       {/* KPI Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-white/10 p-4">
+          <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-border p-4">
             <Users className="h-5 w-5 text-blue-400 mb-2" />
-            <p className="text-2xl font-bold text-white">{stats.totalUsers.toLocaleString()}</p>
-            <p className="text-white/60 text-xs">Tổng người dùng</p>
+            <p className="text-2xl font-bold text-foreground">{stats.totalUsers.toLocaleString()}</p>
+            <p className="text-muted-foreground text-xs">Tổng người dùng</p>
             <p className="text-blue-400/70 text-xs mt-1">+{stats.newUsersThisMonth} tháng này</p>
           </Card>
-          <Card className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border-white/10 p-4">
+          <Card className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border-border p-4">
             <DollarSign className="h-5 w-5 text-yellow-400 mb-2" />
-            <p className="text-2xl font-bold text-white">{formatCurrencyCompact(stats.totalRevenue)}</p>
-            <p className="text-white/60 text-xs">Tổng doanh thu</p>
+            <p className="text-2xl font-bold text-foreground">{formatCurrencyCompact(stats.totalRevenue)}</p>
+            <p className="text-muted-foreground text-xs">Tổng doanh thu</p>
             <p className="text-yellow-400/70 text-xs mt-1">{stats.totalOrders} đơn hàng</p>
           </Card>
-          <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-white/10 p-4">
+          <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-border p-4">
             <ShoppingBag className="h-5 w-5 text-purple-400 mb-2" />
-            <p className="text-2xl font-bold text-white">{stats.totalSellers.toLocaleString()}</p>
-            <p className="text-white/60 text-xs">Người bán</p>
+            <p className="text-2xl font-bold text-foreground">{stats.totalSellers.toLocaleString()}</p>
+            <p className="text-muted-foreground text-xs">Người bán</p>
             <p className="text-purple-400/70 text-xs mt-1">{stats.pendingSellerRequests} chờ duyệt</p>
           </Card>
-          <Card className="bg-gradient-to-br from-green-500/20 to-green-600/20 border-white/10 p-4">
+          <Card className="bg-gradient-to-br from-green-500/20 to-green-600/20 border-border p-4">
             <Package className="h-5 w-5 text-green-400 mb-2" />
-            <p className="text-2xl font-bold text-white">{stats.totalProducts.toLocaleString()}</p>
-            <p className="text-white/60 text-xs">Sản phẩm</p>
+            <p className="text-2xl font-bold text-foreground">{stats.totalProducts.toLocaleString()}</p>
+            <p className="text-muted-foreground text-xs">Sản phẩm</p>
             <p className="text-green-400/70 text-xs mt-1">{stats.totalCategories} danh mục</p>
           </Card>
         </div>
       )}
 
       {/* Revenue Chart */}
-      <Card className="bg-white/5 border-white/10 p-5">
-        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+      <Card className="bg-foreground/5 border-border p-5">
+        <h3 className="text-foreground font-semibold mb-4 flex items-center gap-2">
           <DollarSign className="h-4 w-4 text-yellow-400" />
           Doanh thu theo tháng
         </h3>
@@ -132,8 +132,8 @@ export function AdminStatsPage() {
 
       {/* Orders + Users Charts */}
       <div className="grid lg:grid-cols-2 gap-4">
-        <Card className="bg-white/5 border-white/10 p-5">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+        <Card className="bg-foreground/5 border-border p-5">
+          <h3 className="text-foreground font-semibold mb-4 flex items-center gap-2">
             <ShoppingBag className="h-4 w-4 text-purple-400" />
             Đơn hàng theo tháng
           </h3>
@@ -148,8 +148,8 @@ export function AdminStatsPage() {
           </ResponsiveContainer>
         </Card>
 
-        <Card className="bg-white/5 border-white/10 p-5">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+        <Card className="bg-foreground/5 border-border p-5">
+          <h3 className="text-foreground font-semibold mb-4 flex items-center gap-2">
             <Users className="h-4 w-4 text-blue-400" />
             Người dùng mới theo tháng
           </h3>
@@ -167,8 +167,8 @@ export function AdminStatsPage() {
 
       {/* Summary Table */}
       {stats && (
-        <Card className="bg-white/5 border-white/10 p-5">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+        <Card className="bg-foreground/5 border-border p-5">
+          <h3 className="text-foreground font-semibold mb-4 flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-green-400" />
             Tóm tắt hệ thống
           </h3>
@@ -183,9 +183,9 @@ export function AdminStatsPage() {
               { label: "Mã giảm giá", value: stats.totalCoupons },
               { label: "Chờ duyệt Seller", value: stats.pendingSellerRequests },
             ].map(({ label, value }) => (
-              <div key={label} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                <span className="text-white/60 text-sm">{label}</span>
-                <span className="text-white font-semibold">{value.toLocaleString()}</span>
+              <div key={label} className="flex items-center justify-between p-3 bg-foreground/5 rounded-lg">
+                <span className="text-muted-foreground text-sm">{label}</span>
+                <span className="text-foreground font-semibold">{value.toLocaleString()}</span>
               </div>
             ))}
           </div>

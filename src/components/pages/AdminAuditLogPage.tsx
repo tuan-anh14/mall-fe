@@ -104,16 +104,16 @@ export function AdminAuditLogPage() {
             <History className="h-5 w-5 text-purple-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Lịch sử thao tác</h1>
-            <p className="text-white/50 text-sm mt-0.5">{total} bản ghi</p>
+            <h1 className="text-2xl font-bold text-foreground">Lịch sử thao tác</h1>
+            <p className="text-muted-foreground text-sm mt-0.5">{total} bản ghi</p>
           </div>
         </div>
 
         {/* Filters */}
         <div className="flex items-center gap-2 flex-wrap">
-          <Filter className="h-4 w-4 text-white/40" />
+          <Filter className="h-4 w-4 text-muted-foreground" />
           <Select value={actionFilter} onValueChange={(v: string) => handleFilterChange("action", v)}>
-            <SelectTrigger className="w-44 bg-white/5 border-white/10 text-white">
+            <SelectTrigger className="w-44 bg-foreground/5 border-border text-foreground">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -123,7 +123,7 @@ export function AdminAuditLogPage() {
             </SelectContent>
           </Select>
           <Select value={resourceFilter} onValueChange={(v: string) => handleFilterChange("resource", v)}>
-            <SelectTrigger className="w-44 bg-white/5 border-white/10 text-white">
+            <SelectTrigger className="w-44 bg-foreground/5 border-border text-foreground">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -137,7 +137,7 @@ export function AdminAuditLogPage() {
               variant="ghost"
               size="sm"
               onClick={() => { setActionFilter("ALL"); setResourceFilter("ALL"); setPage(1); }}
-              className="text-white/40 hover:text-white"
+              className="text-muted-foreground hover:text-foreground"
             >
               Xóa lọc
             </Button>
@@ -145,13 +145,13 @@ export function AdminAuditLogPage() {
         </div>
       </div>
 
-      <Card className="bg-white/5 border-white/10 overflow-hidden">
+      <Card className="bg-foreground/5 border-border overflow-hidden">
         {loading ? (
           <div className="flex justify-center items-center h-48">
-            <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-border border-t-white rounded-full animate-spin" />
           </div>
         ) : logs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-white/40">
+          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
             <History className="h-12 w-12 mb-3 opacity-40" />
             <p className="text-lg">Không có dữ liệu</p>
             <p className="text-sm mt-1">
@@ -172,43 +172,43 @@ export function AdminAuditLogPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[700px]">
               <thead>
-                <tr className="border-b border-white/10 text-left">
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Thời gian</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Admin</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Hành động</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Đối tượng</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Chi tiết</th>
+                <tr className="border-b border-border text-left">
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Thời gian</th>
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Admin</th>
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Hành động</th>
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Đối tượng</th>
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Chi tiết</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {logs.map((log) => (
                   <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-6 py-4 text-white/50 text-xs whitespace-nowrap">
+                    <td className="px-6 py-4 text-muted-foreground text-xs whitespace-nowrap">
                       {new Date(log.createdAt).toLocaleString("vi-VN")}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <Shield className="h-3.5 w-3.5 text-red-400/70" />
                         <div>
-                          <p className="text-white text-sm">{log.admin.firstName} {log.admin.lastName}</p>
-                          <p className="text-white/40 text-xs">{log.admin.email}</p>
+                          <p className="text-foreground text-sm">{log.admin.firstName} {log.admin.lastName}</p>
+                          <p className="text-muted-foreground text-xs">{log.admin.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <Badge className={`border-0 ${ACTION_COLORS[log.action] ?? "bg-white/10 text-white/60"}`}>
+                      <Badge className={`border-0 ${ACTION_COLORS[log.action] ?? "bg-foreground/10 text-muted-foreground"}`}>
                         {log.action}
                       </Badge>
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-white/80 text-sm">{RESOURCE_LABELS[log.resource] ?? log.resource}</p>
+                        <p className="text-muted-foreground text-sm">{RESOURCE_LABELS[log.resource] ?? log.resource}</p>
                         {log.resourceId && (
-                          <p className="text-white/30 text-xs font-mono">{log.resourceId.slice(-8)}</p>
+                          <p className="text-muted-foreground text-xs font-mono">{log.resourceId.slice(-8)}</p>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-white/50 text-xs max-w-xs truncate">
+                    <td className="px-6 py-4 text-muted-foreground text-xs max-w-xs truncate">
                       {log.details ? JSON.stringify(log.details) : "—"}
                     </td>
                   </tr>
@@ -222,7 +222,7 @@ export function AdminAuditLogPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-white/40 text-sm">Trang {page} / {totalPages} ({total} bản ghi)</p>
+          <p className="text-muted-foreground text-sm">Trang {page} / {totalPages} ({total} bản ghi)</p>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
               <ChevronLeft className="h-4 w-4" />

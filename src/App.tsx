@@ -97,7 +97,7 @@ export default function App() {
   const currentPage = getPageFromPathname(location.pathname);
 
   useEffect(() => {
-    document.documentElement.classList.add("dark");
+    document.documentElement.classList.remove("dark");
   }, []);
 
   // Show toast for new real-time notifications
@@ -218,8 +218,8 @@ export default function App() {
 
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white/40 text-sm">Đang tải...</div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-muted-foreground text-sm">Đang tải...</div>
       </div>
     );
   }
@@ -242,7 +242,7 @@ export default function App() {
   const adminRedirect = (msg: string) => <RedirectWithToast to="/" message={msg} />;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       {showSellerHeader && (
         <SellerHeader currentPage={currentPage} onNavigate={navigate} onLogout={handleLogout} user={user} />
       )}
@@ -388,8 +388,8 @@ export default function App() {
               path="*"
               element={
                 <div className="container mx-auto px-4 py-16 text-center">
-                  <h1 className="text-4xl text-white mb-4">Trang Đang Xây Dựng</h1>
-                  <p className="text-white/60 mb-8">Trang này sẽ sớm ra mắt!</p>
+                  <h1 className="text-4xl text-foreground mb-4">Trang Đang Xây Dựng</h1>
+                  <p className="text-muted-foreground mb-8">Trang này sẽ sớm ra mắt!</p>
                   <button onClick={() => navigate("home")} className="text-purple-400 hover:text-purple-300">
                     ← Quay về Trang chủ
                   </button>

@@ -87,7 +87,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
-        <p className="text-white/60">Đang tải bảng điều khiển...</p>
+        <p className="text-muted-foreground">Đang tải bảng điều khiển...</p>
       </div>
     );
   }
@@ -96,8 +96,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl text-white mb-2">Bảng điều khiển</h1>
-          <p className="text-white/60">Chào mừng trở lại! Đây là tổng quan cửa hàng của bạn.</p>
+          <h1 className="text-4xl text-foreground mb-2">Bảng điều khiển</h1>
+          <p className="text-muted-foreground">Chào mừng trở lại! Đây là tổng quan cửa hàng của bạn.</p>
         </div>
         <Button
           className="bg-gradient-to-r from-purple-600 to-blue-600"
@@ -119,8 +119,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.revenueChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Tổng doanh thu</p>
-          <p className="text-3xl text-white">{formatCurrencyCompact(stats?.totalRevenue ?? 0)}</p>
+          <p className="text-sm text-muted-foreground mb-1">Tổng doanh thu</p>
+          <p className="text-3xl text-foreground">{formatCurrencyCompact(stats?.totalRevenue ?? 0)}</p>
         </div>
 
         <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-2xl p-6">
@@ -132,8 +132,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.ordersChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Tổng đơn hàng</p>
-          <p className="text-3xl text-white">{(stats?.totalOrders ?? 0).toLocaleString()}</p>
+          <p className="text-sm text-muted-foreground mb-1">Tổng đơn hàng</p>
+          <p className="text-3xl text-foreground">{(stats?.totalOrders ?? 0).toLocaleString()}</p>
         </div>
 
         <div className="bg-gradient-to-br from-pink-500/10 to-pink-600/10 border border-pink-500/20 rounded-2xl p-6">
@@ -145,8 +145,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.productsChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Sản phẩm</p>
-          <p className="text-3xl text-white">{stats?.totalProducts ?? 0}</p>
+          <p className="text-sm text-muted-foreground mb-1">Sản phẩm</p>
+          <p className="text-3xl text-foreground">{stats?.totalProducts ?? 0}</p>
         </div>
 
         <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-2xl p-6">
@@ -158,15 +158,15 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.customersChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Khách hàng</p>
-          <p className="text-3xl text-white">{((stats?.totalCustomers ?? 0) / 1000).toFixed(1)}K</p>
+          <p className="text-sm text-muted-foreground mb-1">Khách hàng</p>
+          <p className="text-3xl text-foreground">{((stats?.totalCustomers ?? 0) / 1000).toFixed(1)}K</p>
         </div>
       </div>
 
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-          <h2 className="text-xl text-white mb-6">Tổng quan doanh thu</h2>
+        <div className="bg-foreground/5 border border-border rounded-2xl p-6">
+          <h2 className="text-xl text-foreground mb-6">Tổng quan doanh thu</h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={salesData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -197,8 +197,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-          <h2 className="text-xl text-white mb-6">Đơn hàng theo tháng</h2>
+        <div className="bg-foreground/5 border border-border rounded-2xl p-6">
+          <h2 className="text-xl text-foreground mb-6">Đơn hàng theo tháng</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={salesData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -226,16 +226,16 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
       {/* Tabs */}
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="w-full justify-start bg-white/5 border-b border-white/10 rounded-none">
+        <TabsList className="w-full justify-start bg-foreground/5 border-b border-border rounded-none">
           <TabsTrigger value="products">Sản phẩm</TabsTrigger>
           <TabsTrigger value="orders">Đơn hàng gần đây</TabsTrigger>
           <TabsTrigger value="customers">Khách hàng</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products" className="mt-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-white/10 flex justify-between items-center">
-              <h2 className="text-xl text-white">Quản lý sản phẩm</h2>
+          <div className="bg-foreground/5 border border-border rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-border flex justify-between items-center">
+              <h2 className="text-xl text-foreground">Quản lý sản phẩm</h2>
               <Button
                 className="bg-gradient-to-r from-purple-600 to-blue-600"
                 onClick={() => onNavigate("add-product")}
@@ -246,21 +246,21 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             </div>
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white/70">Sản phẩm</TableHead>
-                  <TableHead className="text-white/70">Danh mục</TableHead>
-                  <TableHead className="text-white/70">Giá</TableHead>
-                  <TableHead className="text-white/70">Tồn kho</TableHead>
-                  <TableHead className="text-white/70">Trạng thái</TableHead>
-                  <TableHead className="text-white/70">Thao tác</TableHead>
+                <TableRow className="border-border hover:bg-foreground/5">
+                  <TableHead className="text-muted-foreground">Sản phẩm</TableHead>
+                  <TableHead className="text-muted-foreground">Danh mục</TableHead>
+                  <TableHead className="text-muted-foreground">Giá</TableHead>
+                  <TableHead className="text-muted-foreground">Tồn kho</TableHead>
+                  <TableHead className="text-muted-foreground">Trạng thái</TableHead>
+                  <TableHead className="text-muted-foreground">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {products.slice(0, 6).map((product) => (
-                  <TableRow key={product.id} className="border-white/10 hover:bg-white/5">
-                    <TableCell className="text-white">
+                  <TableRow key={product.id} className="border-border hover:bg-foreground/5">
+                    <TableCell className="text-foreground">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-white/5 rounded-lg overflow-hidden">
+                        <div className="w-12 h-12 bg-foreground/5 rounded-lg overflow-hidden">
                           <img
                             src={product.images[0]?.url || ""}
                             alt={product.name}
@@ -270,8 +270,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                         <span>{product.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-white/70">{product.category?.name ?? "-"}</TableCell>
-                    <TableCell className="text-white">{formatCurrency(product.price)}</TableCell>
+                    <TableCell className="text-muted-foreground">{product.category?.name ?? "-"}</TableCell>
+                    <TableCell className="text-foreground">{formatCurrency(product.price)}</TableCell>
                     <TableCell>
                       <Badge
                         className={
@@ -313,7 +313,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 ))}
                 {products.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-white/60 py-8">
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                       Chưa có sản phẩm
                     </TableCell>
                   </TableRow>
@@ -324,28 +324,28 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         </TabsContent>
 
         <TabsContent value="orders" className="mt-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-white/10">
-              <h2 className="text-xl text-white">Đơn hàng gần đây</h2>
+          <div className="bg-foreground/5 border border-border rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-border">
+              <h2 className="text-xl text-foreground">Đơn hàng gần đây</h2>
             </div>
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white/70">Mã đơn hàng</TableHead>
-                  <TableHead className="text-white/70">Ngày</TableHead>
-                  <TableHead className="text-white/70">Khách hàng</TableHead>
-                  <TableHead className="text-white/70">Tổng</TableHead>
-                  <TableHead className="text-white/70">Trạng thái</TableHead>
-                  <TableHead className="text-white/70">Thao tác</TableHead>
+                <TableRow className="border-border hover:bg-foreground/5">
+                  <TableHead className="text-muted-foreground">Mã đơn hàng</TableHead>
+                  <TableHead className="text-muted-foreground">Ngày</TableHead>
+                  <TableHead className="text-muted-foreground">Khách hàng</TableHead>
+                  <TableHead className="text-muted-foreground">Tổng</TableHead>
+                  <TableHead className="text-muted-foreground">Trạng thái</TableHead>
+                  <TableHead className="text-muted-foreground">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {orders.map((order) => (
-                  <TableRow key={order.id} className="border-white/10 hover:bg-white/5">
-                    <TableCell className="text-white">{order.id}</TableCell>
-                    <TableCell className="text-white/70">{order.date}</TableCell>
-                    <TableCell className="text-white/70">{order.customer.name}</TableCell>
-                    <TableCell className="text-white">{formatCurrency(order.total)}</TableCell>
+                  <TableRow key={order.id} className="border-border hover:bg-foreground/5">
+                    <TableCell className="text-foreground">{order.id}</TableCell>
+                    <TableCell className="text-muted-foreground">{order.date}</TableCell>
+                    <TableCell className="text-muted-foreground">{order.customer.name}</TableCell>
+                    <TableCell className="text-foreground">{formatCurrency(order.total)}</TableCell>
                     <TableCell>
                       <Badge
                         className={
@@ -370,7 +370,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 ))}
                 {orders.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-white/60 py-8">
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                       Chưa có đơn hàng
                     </TableCell>
                   </TableRow>
@@ -381,17 +381,17 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         </TabsContent>
 
         <TabsContent value="customers" className="mt-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-white/10">
-              <h2 className="text-xl text-white">Quản lý khách hàng</h2>
+          <div className="bg-foreground/5 border border-border rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-border">
+              <h2 className="text-xl text-foreground">Quản lý khách hàng</h2>
             </div>
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white/70">Khách hàng</TableHead>
-                  <TableHead className="text-white/70">Email</TableHead>
-                  <TableHead className="text-white/70">Đơn hàng</TableHead>
-                  <TableHead className="text-white/70">Tổng chi tiêu</TableHead>
+                <TableRow className="border-border hover:bg-foreground/5">
+                  <TableHead className="text-muted-foreground">Khách hàng</TableHead>
+                  <TableHead className="text-muted-foreground">Email</TableHead>
+                  <TableHead className="text-muted-foreground">Đơn hàng</TableHead>
+                  <TableHead className="text-muted-foreground">Tổng chi tiêu</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -411,25 +411,25 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                   if (customers.length === 0) {
                     return (
                       <TableRow>
-                        <TableCell colSpan={4} className="text-center text-white/60 py-8">
+                        <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
                           Chưa có khách hàng
                         </TableCell>
                       </TableRow>
                     );
                   }
                   return customers.map((customer) => (
-                    <TableRow key={customer.id} className="border-white/10 hover:bg-white/5">
+                    <TableRow key={customer.id} className="border-border hover:bg-foreground/5">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="h-9 w-9 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm">
                             {customer.name[0]?.toUpperCase() || "?"}
                           </div>
-                          <span className="text-white">{customer.name}</span>
+                          <span className="text-foreground">{customer.name}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-white/70">{customer.email}</TableCell>
-                      <TableCell className="text-white">{customer.orderCount}</TableCell>
-                      <TableCell className="text-white">{formatCurrency(customer.totalSpent)}</TableCell>
+                      <TableCell className="text-muted-foreground">{customer.email}</TableCell>
+                      <TableCell className="text-foreground">{customer.orderCount}</TableCell>
+                      <TableCell className="text-foreground">{formatCurrency(customer.totalSpent)}</TableCell>
                     </TableRow>
                   ));
                 })()}

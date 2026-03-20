@@ -26,7 +26,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
   };
 
   return (
-    <div className="min-h-screen bg-black py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -37,11 +37,11 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                <Heart className="h-6 w-6 text-white" />
+                <Heart className="h-6 w-6 text-foreground" />
               </div>
               <div>
-                <h1 className="text-white">Danh sách yêu thích</h1>
-                <p className="text-sm text-white/60">
+                <h1 className="text-foreground">Danh sách yêu thích</h1>
+                <p className="text-sm text-muted-foreground">
                   {wishlistItems.length} sản phẩm đã lưu
                 </p>
               </div>
@@ -71,10 +71,10 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="bg-white/5 border-white/10 hover:border-white/20 transition-all group overflow-hidden">
+                <Card className="bg-foreground/5 border-border hover:border-border transition-all group overflow-hidden">
                   <CardContent className="p-0">
                     {/* Product Image */}
-                    <div className="relative aspect-square overflow-hidden bg-white/5">
+                    <div className="relative aspect-square overflow-hidden bg-foreground/5">
                       <img
                         src={item.product.image}
                         alt={item.product.name}
@@ -88,7 +88,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm hover:bg-black/70 text-white"
+                        className="absolute top-3 right-3 bg-background/50 backdrop-blur-sm hover:bg-background/70 text-foreground"
                         onClick={() => removeFromWishlist(item.productId)}
                       >
                         <X className="h-4 w-4" />
@@ -103,7 +103,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                     {/* Product Info */}
                     <div className="p-4">
                       <div className="mb-2">
-                        <Badge variant="outline" className="border-white/20 text-white/60 text-xs mb-2">
+                        <Badge variant="outline" className="border-border text-muted-foreground text-xs mb-2">
                           {item.product.category}
                         </Badge>
                       </div>
@@ -121,7 +121,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                               className={`w-4 h-4 ${
                                 i < Math.floor(item.product.rating ?? item.product.ratingAverage ?? 0)
                                   ? "text-yellow-500 fill-current"
-                                  : "text-white/20 fill-current"
+                                  : "text-muted-foreground fill-current"
                               }`}
                               viewBox="0 0 20 20"
                             >
@@ -129,14 +129,14 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                             </svg>
                           ))}
                         </div>
-                        <span className="text-sm text-white/60">
+                        <span className="text-sm text-muted-foreground">
                           ({item.product.reviews ?? item.product.reviewCount ?? 0})
                         </span>
                       </div>
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-white">{formatCurrency(Number(item.product.price))}</span>
+                        <span className="text-foreground">{formatCurrency(Number(item.product.price))}</span>
                         {item.product.originalPrice && (
-                          <span className="text-sm text-white/40 line-through">
+                          <span className="text-sm text-muted-foreground line-through">
                             {formatCurrency(Number(item.product.originalPrice))}
                           </span>
                         )}
@@ -154,7 +154,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="border border-white/10 hover:bg-white/5"
+                          className="border border-border hover:bg-foreground/5"
                           onClick={() => removeFromWishlist(item.productId)}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -173,11 +173,11 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
             animate={{ opacity: 1, scale: 1 }}
             className="text-center py-16"
           >
-            <div className="h-32 w-32 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
-              <Heart className="h-16 w-16 text-white/40" />
+            <div className="h-32 w-32 rounded-full bg-foreground/5 flex items-center justify-center mx-auto mb-6">
+              <Heart className="h-16 w-16 text-muted-foreground" />
             </div>
-            <h2 className="text-white/80 mb-2">Danh sách yêu thích trống</h2>
-            <p className="text-white/60 text-sm mb-8">
+            <h2 className="text-muted-foreground mb-2">Danh sách yêu thích trống</h2>
+            <p className="text-muted-foreground text-sm mb-8">
               Hãy thêm sản phẩm yêu thích vào danh sách!
             </p>
             <Button

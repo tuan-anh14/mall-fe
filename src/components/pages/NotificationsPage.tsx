@@ -131,7 +131,7 @@ function NotificationCard({
   const Icon = notification.icon;
   return (
     <Card
-      className={`bg-white/5 border-white/10 hover:bg-white/10 transition-colors cursor-pointer ${
+      className={`bg-foreground/5 border-border hover:bg-foreground/10 transition-colors cursor-pointer ${
         !notification.isRead ? "border-purple-500/50" : ""
       }`}
       onClick={() => onOpen(notification)}
@@ -142,19 +142,19 @@ function NotificationCard({
             className={`h-12 w-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
               !notification.isRead
                 ? "bg-gradient-to-br from-purple-500/20 to-blue-500/20"
-                : "bg-white/5"
+                : "bg-foreground/5"
             }`}
           >
             <Icon
               className={`h-6 w-6 ${
-                !notification.isRead ? "text-purple-400" : "text-white/60"
+                !notification.isRead ? "text-purple-400" : "text-muted-foreground"
               }`}
             />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-4 mb-1">
               <h3
-                className={`text-white ${!notification.isRead ? "" : "text-white/80"}`}
+                className={`text-foreground ${!notification.isRead ? "" : "text-muted-foreground"}`}
               >
                 {notification.title}
               </h3>
@@ -165,7 +165,7 @@ function NotificationCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-white/40 hover:text-red-400 h-6 w-6 p-0"
+                  className="text-muted-foreground hover:text-red-400 h-6 w-6 p-0"
                   onClick={(e) => { e.stopPropagation(); onDelete(notification.id); }}
                   title="Xóa thông báo"
                 >
@@ -173,15 +173,15 @@ function NotificationCard({
                 </Button>
               </div>
             </div>
-            <p className="text-sm text-white/60 mb-2 line-clamp-2">{notification.message}</p>
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{notification.message}</p>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-white/40">{notification.time}</span>
+              <span className="text-xs text-muted-foreground">{notification.time}</span>
               <div className="flex gap-2">
                 {!notification.isRead && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-white/50 hover:text-white/80 text-xs"
+                    className="text-muted-foreground hover:text-muted-foreground text-xs"
                     onClick={(e) => { e.stopPropagation(); onMarkRead(notification.id); }}
                   >
                     Đánh dấu đã đọc
@@ -284,7 +284,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
   const renderList = (list: UiNotification[]) => {
     if (isLoading) {
       return (
-        <div className="text-center py-8 text-white/40">
+        <div className="text-center py-8 text-muted-foreground">
           Đang tải thông báo...
         </div>
       );
@@ -292,8 +292,8 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
     if (list.length === 0) {
       return (
         <div className="text-center py-8">
-          <Bell className="h-10 w-10 text-white/20 mx-auto mb-3" />
-          <p className="text-white/40 text-sm">Không có thông báo trong danh mục này</p>
+          <Bell className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground text-sm">Không có thông báo trong danh mục này</p>
         </div>
       );
     }
@@ -316,7 +316,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-black py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -327,12 +327,12 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                <Bell className="h-6 w-6 text-white" />
+                <Bell className="h-6 w-6 text-foreground" />
               </div>
               <div>
-                <h1 className="text-white">Thông báo</h1>
+                <h1 className="text-foreground">Thông báo</h1>
                 {unreadCount > 0 && (
-                  <p className="text-sm text-white/60">
+                  <p className="text-sm text-muted-foreground">
                     Bạn có {unreadCount} thông báo chưa đọc
                   </p>
                 )}
@@ -348,7 +348,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
 
         {/* Notifications Tabs */}
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-3 mb-8 bg-white/5">
+          <TabsList className="grid w-full max-w-md grid-cols-3 mb-8 bg-foreground/5">
             <TabsTrigger value="all">
               Tất cả
               {unreadCount > 0 && (
@@ -377,18 +377,18 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
         {/* Empty State (global) */}
         {!isLoading && notifications.length === 0 && (
           <div className="text-center py-16">
-            <div className="h-20 w-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-              <Bell className="h-10 w-10 text-white/40" />
+            <div className="h-20 w-20 rounded-full bg-foreground/5 flex items-center justify-center mx-auto mb-4">
+              <Bell className="h-10 w-10 text-muted-foreground" />
             </div>
-            <h2 className="text-white/80 mb-2">Không có thông báo</h2>
-            <p className="text-white/60 text-sm">Bạn đã xem hết thông báo!</p>
+            <h2 className="text-muted-foreground mb-2">Không có thông báo</h2>
+            <p className="text-muted-foreground text-sm">Bạn đã xem hết thông báo!</p>
           </div>
         )}
       </div>
 
       {/* Notification Detail Dialog */}
       <Dialog open={!!detailNotification} onOpenChange={(o: boolean) => !o && setDetailNotification(null)}>
-        <DialogContent className="bg-zinc-900 border-white/10 text-white max-w-md">
+        <DialogContent className="bg-secondary border-border text-foreground max-w-md">
           {detailNotification && (() => {
             const Icon = detailNotification.icon;
             return (
@@ -398,18 +398,18 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
                     <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center flex-shrink-0">
                       <Icon className="h-5 w-5 text-purple-400" />
                     </div>
-                    <DialogTitle className="text-white leading-tight">{detailNotification.title}</DialogTitle>
+                    <DialogTitle className="text-foreground leading-tight">{detailNotification.title}</DialogTitle>
                   </div>
                 </DialogHeader>
                 <div className="space-y-4 py-2">
-                  <p className="text-white/70 text-sm leading-relaxed">{detailNotification.message}</p>
-                  <p className="text-white/40 text-xs">{detailNotification.time}</p>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{detailNotification.message}</p>
+                  <p className="text-muted-foreground text-xs">{detailNotification.time}</p>
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-white/10"
+                    className="border-border"
                     onClick={() => setDetailNotification(null)}
                   >
                     Đóng

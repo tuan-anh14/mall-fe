@@ -42,7 +42,7 @@ const FiltersContent = memo(function FiltersContent({
     <div className="space-y-6">
       {/* Categories */}
       <div>
-        <h3 className="text-white mb-4">Danh mục</h3>
+        <h3 className="text-foreground mb-4">Danh mục</h3>
         <div className="space-y-3">
           {categories.map((cat) => (
             <div key={cat.name} className="flex items-center space-x-2">
@@ -53,7 +53,7 @@ const FiltersContent = memo(function FiltersContent({
               />
               <Label
                 htmlFor={`cat-${cat.name}`}
-                className="text-sm text-white/70 cursor-pointer"
+                className="text-sm text-muted-foreground cursor-pointer"
               >
                 {cat.name} ({cat.productCount})
               </Label>
@@ -64,7 +64,7 @@ const FiltersContent = memo(function FiltersContent({
 
       {/* Price Range */}
       <div>
-        <h3 className="text-white mb-4">Khoảng giá</h3>
+        <h3 className="text-foreground mb-4">Khoảng giá</h3>
         <Slider
           min={0}
           max={3000}
@@ -73,7 +73,7 @@ const FiltersContent = memo(function FiltersContent({
           onValueChange={handlePriceRangeChange}
           className="mb-4"
         />
-        <div className="flex items-center justify-between text-sm text-white/70">
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>{formatCurrency(priceRange[0])}</span>
           <span>{formatCurrency(priceRange[1])}</span>
         </div>
@@ -81,7 +81,7 @@ const FiltersContent = memo(function FiltersContent({
 
       {/* Brands */}
       <div>
-        <h3 className="text-white mb-4">Thương hiệu</h3>
+        <h3 className="text-foreground mb-4">Thương hiệu</h3>
         <div className="space-y-3">
           {brands.slice(0, 8).map((brand) => (
             <div key={brand} className="flex items-center space-x-2">
@@ -92,7 +92,7 @@ const FiltersContent = memo(function FiltersContent({
               />
               <Label
                 htmlFor={`brand-${brand}`}
-                className="text-sm text-white/70 cursor-pointer"
+                className="text-sm text-muted-foreground cursor-pointer"
               >
                 {brand}
               </Label>
@@ -103,7 +103,7 @@ const FiltersContent = memo(function FiltersContent({
 
       {/* Rating */}
       <div>
-        <h3 className="text-white mb-4">Đánh giá</h3>
+        <h3 className="text-foreground mb-4">Đánh giá</h3>
         <div className="space-y-2">
           {[5, 4, 3, 2].map((rating) => (
             <button
@@ -112,7 +112,7 @@ const FiltersContent = memo(function FiltersContent({
               className={`flex items-center gap-2 text-sm w-full px-2 py-1 rounded-lg transition-colors ${
                 selectedRating === rating
                   ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
-                  : "text-white/70 hover:text-white hover:bg-white/5"
+                  : "text-muted-foreground hover:text-white hover:bg-foreground/5"
               }`}
             >
               <span>{"⭐".repeat(rating)}</span>
@@ -289,8 +289,8 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl text-white mb-2">Tất cả sản phẩm</h1>
-          <p className="text-white/60">
+          <h1 className="text-3xl text-foreground mb-2">Tất cả sản phẩm</h1>
+          <p className="text-muted-foreground">
             {loading ? "Đang tải sản phẩm..." : `Hiển thị ${products.length} trên ${total} sản phẩm`}
           </p>
         </div>
@@ -298,10 +298,10 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
         <div className="flex items-center gap-4">
           {/* Sort */}
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[180px] bg-white/5 border-white/10">
+            <SelectTrigger className="w-[180px] bg-foreground/5 border-border">
               <SelectValue placeholder="Sắp xếp" />
             </SelectTrigger>
-            <SelectContent className="bg-zinc-950 border-white/10">
+            <SelectContent className="bg-card border-border">
               <SelectItem value="popularity">Phổ biến nhất</SelectItem>
               <SelectItem value="price-low">Giá: Thấp đến Cao</SelectItem>
               <SelectItem value="price-high">Giá: Cao đến Thấp</SelectItem>
@@ -311,7 +311,7 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
           </Select>
 
           {/* View Mode */}
-          <div className="hidden md:flex items-center gap-1 bg-white/5 rounded-lg p-1">
+          <div className="hidden md:flex items-center gap-1 bg-foreground/5 rounded-lg p-1">
             <Button
               size="icon"
               variant={viewMode === "grid" ? "default" : "ghost"}
@@ -337,9 +337,9 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
                 <SlidersHorizontal className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="bg-zinc-950 border-white/10 w-80">
+            <SheetContent side="left" className="bg-card border-border w-80">
               <SheetHeader>
-                <SheetTitle className="text-white">Bộ lọc</SheetTitle>
+                <SheetTitle className="text-foreground">Bộ lọc</SheetTitle>
               </SheetHeader>
               <div className="mt-6">
                 <FiltersContent
@@ -409,8 +409,8 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
       <div className="grid lg:grid-cols-4 gap-8">
         {/* Desktop Filters */}
         <aside className="hidden md:block">
-          <div className="sticky top-24 bg-white/5 border border-white/10 rounded-2xl p-6">
-            <h2 className="text-xl text-white mb-6 flex items-center gap-2">
+          <div className="sticky top-24 bg-foreground/5 border border-border rounded-2xl p-6">
+            <h2 className="text-xl text-foreground mb-6 flex items-center gap-2">
               <SlidersHorizontal className="h-5 w-5" />
               Bộ lọc
             </h2>
@@ -436,12 +436,12 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
             <div className="flex items-center justify-center py-24">
               <div className="flex flex-col items-center gap-4">
                 <div className="w-10 h-10 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
-                <p className="text-white/60 text-sm">Đang tải sản phẩm...</p>
+                <p className="text-muted-foreground text-sm">Đang tải sản phẩm...</p>
               </div>
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-xl text-white/60">Không tìm thấy sản phẩm</p>
+              <p className="text-xl text-muted-foreground">Không tìm thấy sản phẩm</p>
               <Button className="mt-4" onClick={clearFilters}>
                 Xóa bộ lọc
               </Button>

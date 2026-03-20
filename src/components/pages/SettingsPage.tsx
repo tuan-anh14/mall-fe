@@ -363,7 +363,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-black py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Header */}
         <motion.div
@@ -373,18 +373,18 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
         >
           <div className="flex items-center gap-3 mb-2">
             <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-              <Settings className="h-6 w-6 text-white" />
+              <Settings className="h-6 w-6 text-foreground" />
             </div>
             <div>
-              <h1 className="text-white">Cài đặt</h1>
-              <p className="text-sm text-white/60">Quản lý tùy chọn tài khoản</p>
+              <h1 className="text-foreground">Cài đặt</h1>
+              <p className="text-sm text-muted-foreground">Quản lý tùy chọn tài khoản</p>
             </div>
           </div>
         </motion.div>
 
         {/* Settings Tabs */}
         <Tabs defaultValue="account" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-8 bg-white/5">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-8 bg-foreground/5">
             <TabsTrigger value="account">Tài khoản</TabsTrigger>
             <TabsTrigger value="notifications">Thông báo</TabsTrigger>
             <TabsTrigger value="security">Bảo mật</TabsTrigger>
@@ -399,55 +399,55 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               className="space-y-6"
             >
               {/* Personal Information */}
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-foreground/5 border-border">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <User className="h-5 w-5" />
                     Thông tin cá nhân
                   </CardTitle>
-                  <CardDescription className="text-white/60">
+                  <CardDescription className="text-muted-foreground">
                     Cập nhật thông tin cá nhân và liên hệ
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName" className="text-white/80">Họ</Label>
+                      <Label htmlFor="firstName" className="text-muted-foreground">Họ</Label>
                       <Input
                         id="firstName"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="bg-white/5 border-white/10 text-white"
+                        className="bg-foreground/5 border-border text-foreground"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName" className="text-white/80">Tên</Label>
+                      <Label htmlFor="lastName" className="text-muted-foreground">Tên</Label>
                       <Input
                         id="lastName"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="bg-white/5 border-white/10 text-white"
+                        className="bg-foreground/5 border-border text-foreground"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-white/80">Địa chỉ email</Label>
+                    <Label htmlFor="email" className="text-muted-foreground">Địa chỉ email</Label>
                     <Input
                       id="email"
                       type="email"
                       value={email}
                       readOnly
-                      className="bg-white/5 border-white/10 text-white opacity-70 cursor-not-allowed"
+                      className="bg-foreground/5 border-border text-foreground opacity-70 cursor-not-allowed"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-white/80">Số điện thoại</Label>
+                    <Label htmlFor="phone" className="text-muted-foreground">Số điện thoại</Label>
                     <Input
                       id="phone"
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="bg-white/5 border-white/10 text-white"
+                      className="bg-foreground/5 border-border text-foreground"
                     />
                   </div>
                   <Button
@@ -461,26 +461,26 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               </Card>
 
               {/* Payment Methods */}
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-foreground/5 border-border">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <CreditCard className="h-5 w-5" />
                     Phương thức thanh toán
                   </CardTitle>
-                  <CardDescription className="text-white/60">
+                  <CardDescription className="text-muted-foreground">
                     Quản lý phương thức thanh toán đã lưu
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-foreground/5 border border-border">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                          <CreditCard className="h-5 w-5 text-white" />
+                          <CreditCard className="h-5 w-5 text-foreground" />
                         </div>
                         <div>
-                          <p className="text-white">Visa kết thúc bằng 4242</p>
-                          <p className="text-sm text-white/60">Hết hạn 12/25</p>
+                          <p className="text-foreground">Visa kết thúc bằng 4242</p>
+                          <p className="text-sm text-muted-foreground">Hết hạn 12/25</p>
                         </div>
                       </div>
                       <Button
@@ -493,7 +493,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                     </div>
                     <Button
                       variant="outline"
-                      className="w-full border-white/10 text-white hover:bg-white/5"
+                      className="w-full border-border text-foreground hover:bg-foreground/5"
                       onClick={handleAddPayment}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -504,50 +504,50 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               </Card>
 
               {/* Shipping Addresses */}
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-foreground/5 border-border">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
                     Địa chỉ giao hàng
                   </CardTitle>
-                  <CardDescription className="text-white/60">
+                  <CardDescription className="text-muted-foreground">
                     Quản lý địa chỉ giao hàng
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {isLoadingAddresses ? (
-                      <div className="text-center py-4 text-white/40 text-sm">
+                      <div className="text-center py-4 text-muted-foreground text-sm">
                         Đang tải địa chỉ...
                       </div>
                     ) : addresses.length === 0 ? (
-                      <div className="text-center py-4 text-white/40 text-sm">
+                      <div className="text-center py-4 text-muted-foreground text-sm">
                         Chưa có địa chỉ nào được lưu
                       </div>
                     ) : (
                       addresses.map((address) => (
                         <div
                           key={address.id}
-                          className="flex items-start justify-between p-4 rounded-lg bg-white/5 border border-white/10"
+                          className="flex items-start justify-between p-4 rounded-lg bg-foreground/5 border border-border"
                         >
                           <div className="flex items-start gap-3">
                             <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
-                              <MapPin className="h-5 w-5 text-white" />
+                              <MapPin className="h-5 w-5 text-foreground" />
                             </div>
                             <div>
                               <div className="flex items-center gap-2 mb-1">
-                                <p className="text-white">{address.label}</p>
+                                <p className="text-foreground">{address.label}</p>
                                 {address.isDefault && (
                                   <span className="text-xs px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full">
                                     Mặc định
                                   </span>
                                 )}
                               </div>
-                              <p className="text-sm text-white/80">{address.street}</p>
-                              <p className="text-sm text-white/60">
+                              <p className="text-sm text-muted-foreground">{address.street}</p>
+                              <p className="text-sm text-muted-foreground">
                                 {address.city}, {address.state} {address.zip}
                               </p>
-                              <p className="text-sm text-white/60">{address.country}</p>
+                              <p className="text-sm text-muted-foreground">{address.country}</p>
                             </div>
                           </div>
                           <div className="flex gap-2">
@@ -575,7 +575,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
 
                     <Button
                       variant="outline"
-                      className="w-full border-white/10 text-white hover:bg-white/5"
+                      className="w-full border-border text-foreground hover:bg-foreground/5"
                       onClick={handleAddAddress}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -593,65 +593,65 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-foreground/5 border-border">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <Bell className="h-5 w-5" />
                     Tùy chọn thông báo
                   </CardTitle>
-                  <CardDescription className="text-white/60">
+                  <CardDescription className="text-muted-foreground">
                     Chọn loại thông báo bạn muốn nhận
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Thông báo email</Label>
-                      <p className="text-sm text-white/60">Nhận thông báo qua email</p>
+                      <Label className="text-foreground">Thông báo email</Label>
+                      <p className="text-sm text-muted-foreground">Nhận thông báo qua email</p>
                     </div>
                     <Switch
                       checked={notifSettings.emailNotifications}
                       onCheckedChange={() => toggleNotif("emailNotifications")}
                     />
                   </div>
-                  <Separator className="bg-white/10" />
+                  <Separator className="bg-foreground/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Cập nhật đơn hàng</Label>
-                      <p className="text-sm text-white/60">Nhận cập nhật về đơn hàng</p>
+                      <Label className="text-foreground">Cập nhật đơn hàng</Label>
+                      <p className="text-sm text-muted-foreground">Nhận cập nhật về đơn hàng</p>
                     </div>
                     <Switch
                       checked={notifSettings.orderUpdates}
                       onCheckedChange={() => toggleNotif("orderUpdates")}
                     />
                   </div>
-                  <Separator className="bg-white/10" />
+                  <Separator className="bg-foreground/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Email khuyến mãi</Label>
-                      <p className="text-sm text-white/60">Nhận ưu đãi đặc biệt và khuyến mãi</p>
+                      <Label className="text-foreground">Email khuyến mãi</Label>
+                      <p className="text-sm text-muted-foreground">Nhận ưu đãi đặc biệt và khuyến mãi</p>
                     </div>
                     <Switch
                       checked={notifSettings.promotions}
                       onCheckedChange={() => toggleNotif("promotions")}
                     />
                   </div>
-                  <Separator className="bg-white/10" />
+                  <Separator className="bg-foreground/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Thông báo giảm giá</Label>
-                      <p className="text-sm text-white/60">Nhận thông báo khi sản phẩm yêu thích giảm giá</p>
+                      <Label className="text-foreground">Thông báo giảm giá</Label>
+                      <p className="text-sm text-muted-foreground">Nhận thông báo khi sản phẩm yêu thích giảm giá</p>
                     </div>
                     <Switch
                       checked={notifSettings.newsletter}
                       onCheckedChange={() => toggleNotif("newsletter")}
                     />
                   </div>
-                  <Separator className="bg-white/10" />
+                  <Separator className="bg-foreground/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Cảnh báo đăng nhập</Label>
-                      <p className="text-sm text-white/60">Nhận thông báo về hoạt động đăng nhập mới</p>
+                      <Label className="text-foreground">Cảnh báo đăng nhập</Label>
+                      <p className="text-sm text-muted-foreground">Nhận thông báo về hoạt động đăng nhập mới</p>
                     </div>
                     <Switch
                       checked={notifSettings.loginAlerts}
@@ -677,45 +677,45 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-foreground/5 border-border">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <Lock className="h-5 w-5" />
                     Đổi mật khẩu
                   </CardTitle>
-                  <CardDescription className="text-white/60">
+                  <CardDescription className="text-muted-foreground">
                     Cập nhật mật khẩu để giữ tài khoản an toàn
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="currentPassword" className="text-white/80">Mật khẩu hiện tại</Label>
+                    <Label htmlFor="currentPassword" className="text-muted-foreground">Mật khẩu hiện tại</Label>
                     <Input
                       id="currentPassword"
                       type="password"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
-                      className="bg-white/5 border-white/10 text-white"
+                      className="bg-foreground/5 border-border text-foreground"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="newPassword" className="text-white/80">Mật khẩu mới</Label>
+                    <Label htmlFor="newPassword" className="text-muted-foreground">Mật khẩu mới</Label>
                     <Input
                       id="newPassword"
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="bg-white/5 border-white/10 text-white"
+                      className="bg-foreground/5 border-border text-foreground"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-white/80">Xác nhận mật khẩu mới</Label>
+                    <Label htmlFor="confirmPassword" className="text-muted-foreground">Xác nhận mật khẩu mới</Label>
                     <Input
                       id="confirmPassword"
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="bg-white/5 border-white/10 text-white"
+                      className="bg-foreground/5 border-border text-foreground"
                     />
                   </div>
                   <Button
@@ -728,72 +728,72 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-foreground/5 border-border">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <Shield className="h-5 w-5" />
                     Xác thực hai yếu tố
                   </CardTitle>
-                  <CardDescription className="text-white/60">
+                  <CardDescription className="text-muted-foreground">
                     Thêm lớp bảo mật bổ sung cho tài khoản
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-foreground/5 border border-border">
                     <div className="flex items-center gap-3">
-                      <Smartphone className="h-5 w-5 text-white/60" />
+                      <Smartphone className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="text-white">Ứng dụng xác thực</p>
-                        <p className="text-sm text-white/60">
+                        <p className="text-foreground">Ứng dụng xác thực</p>
+                        <p className="text-sm text-muted-foreground">
                           {notifSettings.twoFactorAuth ? "Đã bật" : "Chưa bật"}
                         </p>
                       </div>
                     </div>
                     <Button
                       variant="outline"
-                      className="border-white/10 text-white hover:bg-white/5"
+                      className="border-border text-foreground hover:bg-foreground/5"
                       onClick={() => toggleNotif("twoFactorAuth")}
                     >
                       {notifSettings.twoFactorAuth ? "Tắt" : "Bật"}
                     </Button>
                   </div>
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-foreground/5 border border-border">
                     <div className="flex items-center gap-3">
-                      <Mail className="h-5 w-5 text-white/60" />
+                      <Mail className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="text-white">Xác minh email</p>
-                        <p className="text-sm text-white/60">Đã bật</p>
+                        <p className="text-foreground">Xác minh email</p>
+                        <p className="text-sm text-muted-foreground">Đã bật</p>
                       </div>
                     </div>
-                    <Button variant="outline" className="border-white/10 text-white hover:bg-white/5">
+                    <Button variant="outline" className="border-border text-foreground hover:bg-foreground/5">
                       Tắt
                     </Button>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-foreground/5 border-border">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <Eye className="h-5 w-5" />
                     Phiên đăng nhập
                   </CardTitle>
-                  <CardDescription className="text-white/60">
+                  <CardDescription className="text-muted-foreground">
                     Quản lý phiên đăng nhập đang hoạt động
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-foreground/5 border border-border">
                     <div>
-                      <p className="text-white">Chrome trên Windows</p>
-                      <p className="text-sm text-white/60">Hoạt động gần nhất: 2 phút trước</p>
+                      <p className="text-foreground">Chrome trên Windows</p>
+                      <p className="text-sm text-muted-foreground">Hoạt động gần nhất: 2 phút trước</p>
                     </div>
                     <Button variant="ghost" size="sm">Thu hồi</Button>
                   </div>
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-foreground/5 border border-border">
                     <div>
-                      <p className="text-white">Safari trên iPhone</p>
-                      <p className="text-sm text-white/60">Hoạt động gần nhất: 2 ngày trước</p>
+                      <p className="text-foreground">Safari trên iPhone</p>
+                      <p className="text-sm text-muted-foreground">Hoạt động gần nhất: 2 ngày trước</p>
                     </div>
                     <Button variant="ghost" size="sm">Thu hồi</Button>
                   </div>
@@ -808,24 +808,24 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-foreground/5 border-border">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <Globe className="h-5 w-5" />
                     Tùy chọn chung
                   </CardTitle>
-                  <CardDescription className="text-white/60">
+                  <CardDescription className="text-muted-foreground">
                     Tùy chỉnh trải nghiệm mua sắm
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label className="text-white/80">Ngôn ngữ</Label>
+                    <Label className="text-muted-foreground">Ngôn ngữ</Label>
                     <Select defaultValue="en">
-                      <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                      <SelectTrigger className="bg-foreground/5 border-border text-foreground">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-zinc-950 border-white/10">
+                      <SelectContent className="bg-card border-border">
                         <SelectItem value="en">Tiếng Anh</SelectItem>
                         <SelectItem value="es">Tiếng Tây Ban Nha</SelectItem>
                         <SelectItem value="fr">Tiếng Pháp</SelectItem>
@@ -833,14 +833,14 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Separator className="bg-white/10" />
+                  <Separator className="bg-foreground/10" />
                   <div className="space-y-2">
-                    <Label className="text-white/80">Tiền tệ</Label>
+                    <Label className="text-muted-foreground">Tiền tệ</Label>
                     <Select defaultValue="usd">
-                      <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                      <SelectTrigger className="bg-foreground/5 border-border text-foreground">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-zinc-950 border-white/10">
+                      <SelectContent className="bg-card border-border">
                         <SelectItem value="usd">USD - US Dollar</SelectItem>
                         <SelectItem value="eur">EUR - Euro</SelectItem>
                         <SelectItem value="gbp">GBP - British Pound</SelectItem>
@@ -848,22 +848,22 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Separator className="bg-white/10" />
+                  <Separator className="bg-foreground/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white flex items-center gap-2">
+                      <Label className="text-foreground flex items-center gap-2">
                         <Moon className="h-4 w-4" />
                         Chế độ tối
                       </Label>
-                      <p className="text-sm text-white/60">Sử dụng giao diện tối trên toàn trang</p>
+                      <p className="text-sm text-muted-foreground">Sử dụng giao diện tối trên toàn trang</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
-                  <Separator className="bg-white/10" />
+                  <Separator className="bg-foreground/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-white">Hiển thị gợi ý sản phẩm</Label>
-                      <p className="text-sm text-white/60">Nhận gợi ý sản phẩm cá nhân hóa</p>
+                      <Label className="text-foreground">Hiển thị gợi ý sản phẩm</Label>
+                      <p className="text-sm text-muted-foreground">Nhận gợi ý sản phẩm cá nhân hóa</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
@@ -889,15 +889,15 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
           <Card className="bg-red-500/10 border-red-500/30">
             <CardHeader>
               <CardTitle className="text-red-400">Vùng nguy hiểm</CardTitle>
-              <CardDescription className="text-white/60">
+              <CardDescription className="text-muted-foreground">
                 Hành động không thể hoàn tác - hãy cẩn thận
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white">Xóa tài khoản</p>
-                  <p className="text-sm text-white/60">
+                  <p className="text-foreground">Xóa tài khoản</p>
+                  <p className="text-sm text-muted-foreground">
                     Xóa vĩnh viễn tài khoản và tất cả dữ liệu
                   </p>
                 </div>
@@ -910,21 +910,21 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
 
       {/* Delete Account Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="bg-black border border-white/10">
+        <AlertDialogContent className="bg-background border border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Xóa tài khoản</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
+            <AlertDialogTitle className="text-foreground">Xóa tài khoản</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản? Tất cả dữ liệu, đơn hàng và cài đặt sẽ bị xóa. Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+            <AlertDialogCancel className="bg-foreground/5 border-border text-foreground hover:bg-foreground/10">
               Hủy
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAccount}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-foreground"
             >
               {isDeleting ? "Đang xóa..." : "Xóa tài khoản"}
             </AlertDialogAction>
@@ -934,10 +934,10 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
 
       {/* Payment Method Dialog */}
       <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
-        <DialogContent className="bg-black border-white/10 text-white">
+        <DialogContent className="bg-background border-border text-foreground">
           <DialogHeader>
             <DialogTitle>{editingPayment ? "Chỉnh sửa phương thức thanh toán" : "Thêm phương thức thanh toán"}</DialogTitle>
-            <DialogDescription className="text-white/60">
+            <DialogDescription className="text-muted-foreground">
               {editingPayment
                 ? "Cập nhật thông tin phương thức thanh toán"
                 : "Thêm phương thức thanh toán mới vào tài khoản"}
@@ -945,40 +945,40 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="cardNumber" className="text-white/80">Số thẻ</Label>
+              <Label htmlFor="cardNumber" className="text-muted-foreground">Số thẻ</Label>
               <Input
                 id="cardNumber"
                 placeholder="1234 5678 9012 3456"
                 defaultValue={editingPayment ? `**** **** **** ${editingPayment.last4}` : ""}
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-foreground/5 border-border text-foreground"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="expiry" className="text-white/80">Ngày hết hạn</Label>
+                <Label htmlFor="expiry" className="text-muted-foreground">Ngày hết hạn</Label>
                 <Input
                   id="expiry"
                   placeholder="MM/YY"
                   defaultValue={editingPayment?.expiry || ""}
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-foreground/5 border-border text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cvv" className="text-white/80">CVV</Label>
+                <Label htmlFor="cvv" className="text-muted-foreground">CVV</Label>
                 <Input
                   id="cvv"
                   placeholder="123"
                   type="password"
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-foreground/5 border-border text-foreground"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cardName" className="text-white/80">Tên chủ thẻ</Label>
+              <Label htmlFor="cardName" className="text-muted-foreground">Tên chủ thẻ</Label>
               <Input
                 id="cardName"
                 placeholder="Nguyễn Văn A"
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-foreground/5 border-border text-foreground"
               />
             </div>
           </div>
@@ -986,7 +986,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
             <Button
               variant="outline"
               onClick={() => setPaymentDialogOpen(false)}
-              className="border-white/10 text-white hover:bg-white/5"
+              className="border-border text-foreground hover:bg-foreground/5"
             >
               Hủy
             </Button>
@@ -1002,12 +1002,12 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
 
       {/* Address Dialog */}
       <Dialog open={addressDialogOpen} onOpenChange={setAddressDialogOpen}>
-        <DialogContent className="bg-black border-white/10 text-white max-w-2xl">
+        <DialogContent className="bg-background border-border text-foreground max-w-2xl">
           <DialogHeader>
             <DialogTitle>
               {editingAddress ? "Chỉnh sửa địa chỉ giao hàng" : "Thêm địa chỉ giao hàng"}
             </DialogTitle>
-            <DialogDescription className="text-white/60">
+            <DialogDescription className="text-muted-foreground">
               {editingAddress
                 ? "Cập nhật thông tin địa chỉ giao hàng"
                 : "Thêm địa chỉ giao hàng mới vào tài khoản"}
@@ -1016,87 +1016,87 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="addrFirstName" className="text-white/80">Họ <span className="text-red-400">*</span></Label>
+                <Label htmlFor="addrFirstName" className="text-muted-foreground">Họ <span className="text-red-400">*</span></Label>
                 <Input
                   id="addrFirstName"
                   placeholder="Nguyễn"
                   value={addressForm.firstName}
                   onChange={(e) => updateAddressForm("firstName", e.target.value)}
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-foreground/5 border-border text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="addrLastName" className="text-white/80">Tên <span className="text-red-400">*</span></Label>
+                <Label htmlFor="addrLastName" className="text-muted-foreground">Tên <span className="text-red-400">*</span></Label>
                 <Input
                   id="addrLastName"
                   placeholder="Văn A"
                   value={addressForm.lastName}
                   onChange={(e) => updateAddressForm("lastName", e.target.value)}
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-foreground/5 border-border text-foreground"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="addressLabel" className="text-white/80">Nhãn địa chỉ</Label>
+              <Label htmlFor="addressLabel" className="text-muted-foreground">Nhãn địa chỉ</Label>
               <Input
                 id="addressLabel"
                 placeholder="Nhà, Văn phòng, v.v."
                 value={addressForm.label}
                 onChange={(e) => updateAddressForm("label", e.target.value)}
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-foreground/5 border-border text-foreground"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="street" className="text-white/80">Địa chỉ</Label>
+              <Label htmlFor="street" className="text-muted-foreground">Địa chỉ</Label>
               <Input
                 id="street"
                 placeholder="123 Nguyễn Huệ"
                 value={addressForm.street}
                 onChange={(e) => updateAddressForm("street", e.target.value)}
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-foreground/5 border-border text-foreground"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="city" className="text-white/80">Thành phố</Label>
+                <Label htmlFor="city" className="text-muted-foreground">Thành phố</Label>
                 <Input
                   id="city"
                   placeholder="Hồ Chí Minh"
                   value={addressForm.city}
                   onChange={(e) => updateAddressForm("city", e.target.value)}
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-foreground/5 border-border text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="state" className="text-white/80">Tỉnh/Thành</Label>
+                <Label htmlFor="state" className="text-muted-foreground">Tỉnh/Thành</Label>
                 <Input
                   id="state"
                   placeholder="HCM"
                   value={addressForm.state}
                   onChange={(e) => updateAddressForm("state", e.target.value)}
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-foreground/5 border-border text-foreground"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="zip" className="text-white/80">Mã bưu chính</Label>
+                <Label htmlFor="zip" className="text-muted-foreground">Mã bưu chính</Label>
                 <Input
                   id="zip"
                   placeholder="10001"
                   value={addressForm.zip}
                   onChange={(e) => updateAddressForm("zip", e.target.value)}
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-foreground/5 border-border text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="country" className="text-white/80">Quốc gia</Label>
+                <Label htmlFor="country" className="text-muted-foreground">Quốc gia</Label>
                 <Input
                   id="country"
                   placeholder="Việt Nam"
                   value={addressForm.country}
                   onChange={(e) => updateAddressForm("country", e.target.value)}
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-foreground/5 border-border text-foreground"
                 />
               </div>
             </div>
@@ -1105,7 +1105,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
             <Button
               variant="outline"
               onClick={() => setAddressDialogOpen(false)}
-              className="border-white/10 text-white hover:bg-white/5"
+              className="border-border text-foreground hover:bg-foreground/5"
             >
               Hủy
             </Button>

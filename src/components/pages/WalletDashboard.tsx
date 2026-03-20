@@ -48,7 +48,7 @@ const STATUS_BADGE: Record<string, { label: string; class: string }> = {
   COMPLETED: { label: "Thành công", class: "bg-green-500/20 text-green-400" },
   PENDING: { label: "Đang xử lý", class: "bg-yellow-500/20 text-yellow-400" },
   FAILED: { label: "Thất bại", class: "bg-red-500/20 text-red-400" },
-  CANCELLED: { label: "Đã hủy", class: "bg-white/10 text-white/40" },
+  CANCELLED: { label: "Đã hủy", class: "bg-foreground/10 text-muted-foreground" },
 };
 
 export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
@@ -143,38 +143,38 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-3xl text-white mb-8">Ví của tôi</h1>
+      <h1 className="text-3xl text-foreground mb-8">Ví của tôi</h1>
 
       {/* Balance Card */}
       <div className="relative overflow-hidden rounded-2xl p-8 mb-8 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700">
         {/* Decorative circles */}
-        <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/5" />
-        <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white/5" />
+        <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-foreground/5" />
+        <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-foreground/5" />
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
-              <Wallet className="h-6 w-6 text-white" />
+            <div className="h-12 w-12 rounded-full bg-foreground/20 flex items-center justify-center">
+              <Wallet className="h-6 w-6 text-foreground" />
             </div>
             <div>
-              <p className="text-white/70 text-sm">Số dư khả dụng</p>
-              <p className="text-white text-xs">ShopHub Wallet</p>
+              <p className="text-muted-foreground text-sm">Số dư khả dụng</p>
+              <p className="text-foreground text-xs">ShopHub Wallet</p>
             </div>
           </div>
 
           <div className="mb-8">
-            <span className="text-5xl font-light text-white">
+            <span className="text-5xl font-light text-foreground">
               {formatCurrency(balance)}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="text-white/50 text-sm">
+            <div className="text-muted-foreground text-sm">
               Cập nhật: {wallet ? new Date(wallet.updatedAt).toLocaleDateString("vi-VN") : "—"}
             </div>
             <Button
               onClick={() => setShowDepositModal(true)}
-              className="bg-white/20 hover:bg-white/30 text-white border-0"
+              className="bg-foreground/20 hover:bg-white/30 text-foreground border-0"
             >
               <Plus className="h-4 w-4 mr-2" />
               Nạp tiền
@@ -205,10 +205,10 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
             icon: <RefreshCw className="h-5 w-5 text-blue-400" />,
           },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white/5 border border-white/10 rounded-xl p-4">
+          <div key={stat.label} className="bg-foreground/5 border border-border rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               {stat.icon}
-              <span className="text-white/50 text-xs">{stat.label}</span>
+              <span className="text-muted-foreground text-xs">{stat.label}</span>
             </div>
             <p className={`text-xl font-medium ${stat.color}`}>
               {formatCurrency(stat.value)}
@@ -218,13 +218,13 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
       </div>
 
       {/* Transaction History */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-        <h2 className="text-lg text-white mb-4">Lịch sử giao dịch</h2>
+      <div className="bg-foreground/5 border border-border rounded-2xl p-6">
+        <h2 className="text-lg text-foreground mb-4">Lịch sử giao dịch</h2>
 
         {transactions.length === 0 ? (
           <div className="text-center py-12">
-            <Wallet className="h-12 w-12 text-white/20 mx-auto mb-3" />
-            <p className="text-white/40">Chưa có giao dịch nào</p>
+            <Wallet className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground">Chưa có giao dịch nào</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -234,19 +234,19 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
               return (
                 <div
                   key={txn.id}
-                  className="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-white/8 transition-colors"
+                  className="flex items-center gap-4 p-4 bg-foreground/5 rounded-xl hover:bg-white/8 transition-colors"
                 >
                   <div className="flex-shrink-0">
                     {TX_ICONS[txn.type]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-medium">
+                    <p className="text-foreground text-sm font-medium">
                       {TX_LABELS[txn.type]}
                     </p>
                     {txn.description && (
-                      <p className="text-white/50 text-xs truncate">{txn.description}</p>
+                      <p className="text-muted-foreground text-xs truncate">{txn.description}</p>
                     )}
-                    <p className="text-white/30 text-xs mt-0.5">
+                    <p className="text-muted-foreground text-xs mt-0.5">
                       {new Date(txn.createdAt).toLocaleString("vi-VN")}
                     </p>
                   </div>
@@ -274,7 +274,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
             >
               Trước
             </Button>
-            <span className="text-white/50 text-sm">
+            <span className="text-muted-foreground text-sm">
               {page} / {totalPages}
             </span>
             <Button
@@ -291,13 +291,13 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
 
       {/* Deposit Modal */}
       <Dialog open={showDepositModal} onOpenChange={setShowDepositModal}>
-        <DialogContent className="bg-zinc-900 border-white/10 max-w-md">
+        <DialogContent className="bg-secondary border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
+            <DialogTitle className="text-foreground flex items-center gap-2">
               <Plus className="h-5 w-5 text-purple-400" />
               Nạp tiền vào ví
             </DialogTitle>
-            <DialogDescription className="text-white/60">
+            <DialogDescription className="text-muted-foreground">
               Chọn số tiền và phương thức thanh toán
             </DialogDescription>
           </DialogHeader>
@@ -305,7 +305,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
           <div className="space-y-5 mt-2">
             {/* Quick amounts */}
             <div>
-              <Label className="text-white/70 mb-2 block">Số tiền nhanh</Label>
+              <Label className="text-muted-foreground mb-2 block">Số tiền nhanh</Label>
               <div className="grid grid-cols-4 gap-2">
                 {[10, 20, 50, 100].map((amt) => (
                   <button
@@ -314,7 +314,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                     className={`py-2 rounded-lg text-sm border transition-all ${
                       depositAmount === String(amt)
                         ? "border-purple-500 bg-purple-500/20 text-purple-300"
-                        : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
+                        : "border-border bg-foreground/5 text-muted-foreground hover:border-border"
                     }`}
                   >
                     {formatCurrency(amt)}
@@ -332,7 +332,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                 max="10000"
                 step="0.01"
                 placeholder="Nhập số tiền..."
-                className="bg-white/5 border-white/10 mt-1"
+                className="bg-foreground/5 border-border mt-1"
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(e.target.value)}
               />
@@ -348,13 +348,13 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                     className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
                       depositGateway === gw
                         ? "border-purple-500 bg-purple-500/10"
-                        : "border-white/10 bg-white/5 hover:border-white/20"
+                        : "border-border bg-foreground/5 hover:border-border"
                     }`}
                   >
                     <span className="text-2xl">{gw === "VNPAY" ? "🏦" : "📱"}</span>
                     <div className="text-left">
-                      <p className="text-white text-sm font-medium">{gw}</p>
-                      <p className="text-white/40 text-xs">
+                      <p className="text-foreground text-sm font-medium">{gw}</p>
+                      <p className="text-muted-foreground text-xs">
                         {gw === "VNPAY" ? "Internet Banking" : "Ví MoMo"}
                       </p>
                     </div>
@@ -363,16 +363,16 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
               </div>
             </div>
 
-            <Separator className="bg-white/10" />
+            <Separator className="bg-foreground/10" />
 
             {depositAmount && parseFloat(depositAmount) > 0 && (
-              <div className="bg-white/5 rounded-xl p-4">
+              <div className="bg-foreground/5 rounded-xl p-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-white/60">Số tiền nạp</span>
-                  <span className="text-white">{formatCurrency(parseFloat(depositAmount))}</span>
+                  <span className="text-muted-foreground">Số tiền nạp</span>
+                  <span className="text-foreground">{formatCurrency(parseFloat(depositAmount))}</span>
                 </div>
                 <div className="flex justify-between text-sm mt-1">
-                  <span className="text-white/60">Số dư sau nạp</span>
+                  <span className="text-muted-foreground">Số dư sau nạp</span>
                   <span className="text-green-400">
                     {formatCurrency(balance + parseFloat(depositAmount))}
                   </span>
@@ -383,7 +383,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
             <div className="flex gap-3">
               <Button
                 variant="ghost"
-                className="flex-1 border border-white/10"
+                className="flex-1 border border-border"
                 onClick={() => setShowDepositModal(false)}
                 disabled={isDepositing}
               >

@@ -100,7 +100,7 @@ export function Header({
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur-xl">
         {/* Top Banner */}
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-center">
           <p className="text-sm text-white">
@@ -118,7 +118,7 @@ export function Header({
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[300px] bg-zinc-950 border-white/10">
+              <SheetContent side="left" className="w-[300px] bg-card border-border">
                 <nav className="flex flex-col gap-4 mt-8">
                   <Button
                     variant={currentPage === "home" ? "default" : "ghost"}
@@ -186,9 +186,9 @@ export function Header({
             {/* Logo */}
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate("home")}>
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                <ShoppingCart className="h-5 w-5 text-white" />
+                <ShoppingCart className="h-5 w-5 text-foreground" />
               </div>
-              <span className="text-xl tracking-tight text-white">ShopHub</span>
+              <span className="text-xl tracking-tight text-foreground">ShopHub</span>
             </div>
 
             {/* Desktop Navigation */}
@@ -254,13 +254,13 @@ export function Header({
             <div className="hidden md:flex flex-1 max-w-md">
               <div className="relative w-full flex gap-1">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Tìm kiếm sản phẩm..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={handleSearchKeyDown}
-                    className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/50"
+                    className="pl-10 bg-foreground/5 border-border text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
                 <Button size="sm" onClick={handleSearch} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-3">
@@ -322,36 +322,36 @@ export function Header({
                       <div className="absolute -bottom-0.5 -right-0.5 h-2 w-2 bg-green-500 rounded-full border border-black" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-52 bg-zinc-900 border-white/10">
+                  <DropdownMenuContent align="end" className="w-52 bg-secondary border-border">
                     <div className="px-3 py-2">
-                      <p className="text-sm font-medium text-white">{user?.name}</p>
-                      <p className="text-xs text-white/50">{user?.email}</p>
+                      <p className="text-sm font-medium text-foreground">{user?.name}</p>
+                      <p className="text-xs text-muted-foreground">{user?.email}</p>
                       <span className={`text-xs px-1.5 py-0.5 rounded mt-1 inline-block ${
                         isAdmin ? "bg-red-500/20 text-red-400" : "bg-purple-500/20 text-purple-400"
                       }`}>
                         {isAdmin ? "Admin" : "Người mua"}
                       </span>
                     </div>
-                    <DropdownMenuSeparator className="bg-white/10" />
-                    <DropdownMenuItem onClick={() => onNavigate("profile")} className="text-white/80 hover:text-white cursor-pointer">
+                    <DropdownMenuSeparator className="bg-foreground/10" />
+                    <DropdownMenuItem onClick={() => onNavigate("profile")} className="text-muted-foreground hover:text-foreground cursor-pointer">
                       <User className="h-4 w-4 mr-2" />
                       Hồ sơ cá nhân
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onNavigate("orders")} className="text-white/80 hover:text-white cursor-pointer">
+                    <DropdownMenuItem onClick={() => onNavigate("orders")} className="text-muted-foreground hover:text-foreground cursor-pointer">
                       <Package className="h-4 w-4 mr-2" />
                       Đơn hàng của tôi
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onNavigate("wallet")} className="text-white/80 hover:text-white cursor-pointer">
+                    <DropdownMenuItem onClick={() => onNavigate("wallet")} className="text-muted-foreground hover:text-foreground cursor-pointer">
                       <Wallet className="h-4 w-4 mr-2" />
                       Ví của tôi
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onNavigate("settings")} className="text-white/80 hover:text-white cursor-pointer">
+                    <DropdownMenuItem onClick={() => onNavigate("settings")} className="text-muted-foreground hover:text-foreground cursor-pointer">
                       <Settings className="h-4 w-4 mr-2" />
                       Cài đặt
                     </DropdownMenuItem>
                     {isAdmin && (
                       <>
-                        <DropdownMenuSeparator className="bg-white/10" />
+                        <DropdownMenuSeparator className="bg-foreground/10" />
                         <DropdownMenuItem
                           onClick={() => onNavigate("admin-dashboard")}
                           className="text-red-400 hover:text-red-300 cursor-pointer"
@@ -363,7 +363,7 @@ export function Header({
                     )}
                     {isBuyer && (
                       <>
-                        <DropdownMenuSeparator className="bg-white/10" />
+                        <DropdownMenuSeparator className="bg-foreground/10" />
                         {hasPendingRequest ? (
                           <DropdownMenuItem
                             disabled
@@ -383,7 +383,7 @@ export function Header({
                         )}
                       </>
                     )}
-                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuSeparator className="bg-foreground/10" />
                     <DropdownMenuItem onClick={onLogout} className="text-red-400 hover:text-red-300 cursor-pointer">
                       <LogOut className="h-4 w-4 mr-2" />
                       Đăng xuất
@@ -408,33 +408,33 @@ export function Header({
 
       {/* Become Seller Dialog */}
       <Dialog open={showSellerDialog} onOpenChange={setShowSellerDialog}>
-        <DialogContent className="bg-zinc-900 border-white/10 max-w-md">
+        <DialogContent className="bg-secondary border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
+            <DialogTitle className="text-foreground flex items-center gap-2">
               <Store className="h-5 w-5 text-purple-400" />
               Đăng ký trở thành Người bán
             </DialogTitle>
-            <DialogDescription className="text-white/60">
+            <DialogDescription className="text-muted-foreground">
               Yêu cầu của bạn sẽ được Admin xem xét và phê duyệt. Bạn sẽ được thông báo sau khi có kết quả.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-2">
             <div>
-              <label className="text-sm text-white/70 mb-1.5 block">
-                Lý do muốn trở thành người bán <span className="text-white/30">(tuỳ chọn)</span>
+              <label className="text-sm text-muted-foreground mb-1.5 block">
+                Lý do muốn trở thành người bán <span className="text-muted-foreground">(tuỳ chọn)</span>
               </label>
               <textarea
                 value={sellerMessage}
                 onChange={(e) => setSellerMessage(e.target.value)}
                 placeholder="Ví dụ: Tôi muốn bán đồ điện tử, phụ kiện công nghệ..."
                 rows={3}
-                className="w-full rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/30 px-3 py-2 text-sm resize-none focus:outline-none focus:border-purple-500/50"
+                className="w-full rounded-lg bg-foreground/5 border border-border text-white placeholder:text-muted-foreground px-3 py-2 text-sm resize-none focus:outline-none focus:border-purple-500/50"
               />
             </div>
             <div className="flex gap-3">
               <Button
                 variant="ghost"
-                className="flex-1 border border-white/10"
+                className="flex-1 border border-border"
                 onClick={() => setShowSellerDialog(false)}
                 disabled={isSubmitting}
               >

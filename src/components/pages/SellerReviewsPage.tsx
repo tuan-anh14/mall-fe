@@ -99,7 +99,7 @@ export function SellerReviewsPage({ onNavigate }: SellerReviewsPageProps) {
   const StarRating = ({ rating }: { rating: number }) => (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((s) => (
-        <Star key={s} className={`h-3.5 w-3.5 ${s <= rating ? "text-yellow-400 fill-yellow-400" : "text-white/20"}`} />
+        <Star key={s} className={`h-3.5 w-3.5 ${s <= rating ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground"}`} />
       ))}
     </div>
   );
@@ -110,20 +110,20 @@ export function SellerReviewsPage({ onNavigate }: SellerReviewsPageProps) {
     <div className="container mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Quản lý đánh giá</h1>
-          <p className="text-white/50 text-sm mt-0.5">{total} đánh giá</p>
+          <h1 className="text-2xl font-bold text-foreground">Quản lý đánh giá</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">{total} đánh giá</p>
         </div>
         <Select value={selectedProduct} onValueChange={setSelectedProduct}>
-          <SelectTrigger className="w-56 bg-white/5 border-white/10 text-white">
+          <SelectTrigger className="w-56 bg-foreground/5 border-border text-foreground">
             <SelectValue placeholder="Tất cả sản phẩm" />
           </SelectTrigger>
-          <SelectContent className="bg-zinc-900 border-white/10 max-h-64">
-            <SelectItem value="all" className="text-white">Tất cả sản phẩm</SelectItem>
+          <SelectContent className="bg-secondary border-border max-h-64">
+            <SelectItem value="all" className="text-foreground">Tất cả sản phẩm</SelectItem>
             {products.map((p) => (
-              <SelectItem key={p.id} value={p.id} className="text-white">
+              <SelectItem key={p.id} value={p.id} className="text-foreground">
                 <div className="flex items-center gap-2">
                   <span className="truncate max-w-[160px]">{p.name}</span>
-                  <span className="text-white/40 text-xs flex-shrink-0">({p.reviewCount})</span>
+                  <span className="text-muted-foreground text-xs flex-shrink-0">({p.reviewCount})</span>
                 </div>
               </SelectItem>
             ))}
@@ -136,31 +136,31 @@ export function SellerReviewsPage({ onNavigate }: SellerReviewsPageProps) {
         const prod = products.find((p) => p.id === selectedProduct);
         if (!prod) return null;
         return (
-          <Card className="bg-white/5 border-white/10 p-4 flex items-center gap-4">
+          <Card className="bg-foreground/5 border-border p-4 flex items-center gap-4">
             {prod.images[0] && (
               <img src={prod.images[0].url} alt="" className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
             )}
             <div>
-              <p className="text-white font-medium">{prod.name}</p>
+              <p className="text-foreground font-medium">{prod.name}</p>
               <div className="flex items-center gap-2 mt-1">
                 <StarRating rating={Math.round(prod.ratingAverage)} />
                 <span className="text-yellow-400 font-semibold text-sm">{prod.ratingAverage.toFixed(1)}</span>
-                <span className="text-white/40 text-xs">({prod.reviewCount} đánh giá)</span>
+                <span className="text-muted-foreground text-xs">({prod.reviewCount} đánh giá)</span>
               </div>
             </div>
           </Card>
         );
       })()}
 
-      <Card className="bg-white/5 border-white/10 overflow-hidden">
+      <Card className="bg-foreground/5 border-border overflow-hidden">
         {loading ? (
           <div className="flex justify-center items-center h-48">
-            <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-border border-t-white rounded-full animate-spin" />
           </div>
         ) : reviews.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 gap-2">
-            <Package className="h-8 w-8 text-white/20" />
-            <p className="text-white/30 text-sm">Chưa có đánh giá nào</p>
+            <Package className="h-8 w-8 text-muted-foreground" />
+            <p className="text-muted-foreground text-sm">Chưa có đánh giá nào</p>
           </div>
         ) : (
           <div className="divide-y divide-white/5">
@@ -175,14 +175,14 @@ export function SellerReviewsPage({ onNavigate }: SellerReviewsPageProps) {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       {selectedProduct === "all" && (
-                        <p className="text-white/50 text-xs truncate mb-0.5">{review.product.name}</p>
+                        <p className="text-muted-foreground text-xs truncate mb-0.5">{review.product.name}</p>
                       )}
-                      <p className="text-white font-medium text-sm">
+                      <p className="text-foreground font-medium text-sm">
                         {review.user.firstName} {review.user.lastName}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-white/30 text-xs">
+                      <span className="text-muted-foreground text-xs">
                         {new Date(review.createdAt).toLocaleDateString("vi-VN")}
                       </span>
                       <Button
@@ -198,7 +198,7 @@ export function SellerReviewsPage({ onNavigate }: SellerReviewsPageProps) {
                   </div>
                   <StarRating rating={review.rating} />
                   {review.comment && (
-                    <p className="text-white/60 text-sm mt-1 line-clamp-3">{review.comment}</p>
+                    <p className="text-muted-foreground text-sm mt-1 line-clamp-3">{review.comment}</p>
                   )}
                 </div>
               </div>
@@ -209,7 +209,7 @@ export function SellerReviewsPage({ onNavigate }: SellerReviewsPageProps) {
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-white/40 text-sm">Trang {page} / {totalPages}</p>
+          <p className="text-muted-foreground text-sm">Trang {page} / {totalPages}</p>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
               <ChevronLeft className="h-4 w-4" />
@@ -222,16 +222,16 @@ export function SellerReviewsPage({ onNavigate }: SellerReviewsPageProps) {
       )}
 
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-white/10">
+        <AlertDialogContent className="bg-secondary border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Xóa đánh giá?</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
-              Xóa đánh giá của <strong className="text-white">{deleteTarget?.user.firstName} {deleteTarget?.user.lastName}</strong>. Hành động này không thể hoàn tác.
+            <AlertDialogTitle className="text-foreground">Xóa đánh giá?</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              Xóa đánh giá của <strong className="text-foreground">{deleteTarget?.user.firstName} {deleteTarget?.user.lastName}</strong>. Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Hủy</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">Xóa</AlertDialogAction>
+            <AlertDialogCancel className="bg-foreground/5 border-border text-foreground hover:bg-foreground/10">Hủy</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-foreground">Xóa</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

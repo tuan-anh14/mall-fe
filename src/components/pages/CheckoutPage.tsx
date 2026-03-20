@@ -178,7 +178,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl text-white mb-8">Thanh toán</h1>
+      <h1 className="text-4xl text-foreground mb-8">Thanh toán</h1>
 
       {/* Progress Steps */}
       <div className="mb-12">
@@ -192,18 +192,18 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       ? "bg-gradient-to-r from-purple-600 to-blue-600 border-purple-500"
                       : step === s.number
                       ? "border-purple-500 bg-purple-500/20"
-                      : "border-white/20 bg-white/5"
+                      : "border-border bg-foreground/5"
                   }`}
                 >
                   {step > s.number ? (
-                    <Check className="h-6 w-6 text-white" />
+                    <Check className="h-6 w-6 text-foreground" />
                   ) : (
-                    <s.icon className="h-5 w-5 text-white" />
+                    <s.icon className="h-5 w-5 text-foreground" />
                   )}
                 </div>
                 <span
                   className={`mt-2 text-sm ${
-                    step >= s.number ? "text-white" : "text-white/50"
+                    step >= s.number ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
                   {s.title}
@@ -212,7 +212,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
               {i < steps.length - 1 && (
                 <div
                   className={`flex-1 h-0.5 ${
-                    step > s.number ? "bg-purple-500" : "bg-white/10"
+                    step > s.number ? "bg-purple-500" : "bg-foreground/10"
                   }`}
                 />
               )}
@@ -224,16 +224,16 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Form Section */}
         <div className="lg:col-span-2">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+          <div className="bg-foreground/5 border border-border rounded-2xl p-8">
             {/* Step 1: Shipping */}
             {step === 1 && (
               <div className="space-y-6">
-                <h2 className="text-2xl text-white mb-6">Thông tin vận chuyển</h2>
+                <h2 className="text-2xl text-foreground mb-6">Thông tin vận chuyển</h2>
 
                 {/* Saved Address Selector (only when user has multiple saved addresses) */}
                 {savedAddresses.length > 1 && (
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                    <p className="text-white text-sm mb-3">Chọn địa chỉ đã lưu:</p>
+                  <div className="bg-foreground/5 border border-border rounded-xl p-4">
+                    <p className="text-foreground text-sm mb-3">Chọn địa chỉ đã lưu:</p>
                     <div className="space-y-2">
                       {savedAddresses.map((addr) => (
                         <div
@@ -242,17 +242,17 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                           className={`p-3 rounded-lg border cursor-pointer transition-all ${
                             selectedAddressId === addr.id
                               ? "border-purple-500 bg-purple-500/10"
-                              : "border-white/10 bg-white/5 hover:border-white/20"
+                              : "border-border bg-foreground/5 hover:border-border"
                           }`}
                         >
                           <div className="flex items-start justify-between">
                             <div>
-                              <p className="text-white text-sm">
+                              <p className="text-foreground text-sm">
                                 {addr.street}, {addr.city}
                                 {addr.state ? `, ${addr.state}` : ""} {addr.zip || addr.zipCode}
                               </p>
                               {addr.label && (
-                                <p className="text-white/50 text-xs mt-0.5">{addr.label}</p>
+                                <p className="text-muted-foreground text-xs mt-0.5">{addr.label}</p>
                               )}
                             </div>
                             {addr.isDefault && (
@@ -264,7 +264,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                         </div>
                       ))}
                     </div>
-                    <p className="text-white/40 text-xs mt-3">
+                    <p className="text-muted-foreground text-xs mt-3">
                       Hoặc điền địa chỉ khác bên dưới:
                     </p>
                   </div>
@@ -275,7 +275,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     <Label htmlFor="firstName">Họ <span className="text-red-400">*</span></Label>
                     <Input
                       id="firstName"
-                      className="bg-white/5 border-white/10"
+                      className="bg-foreground/5 border-border"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                     />
@@ -284,7 +284,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     <Label htmlFor="lastName">Tên <span className="text-red-400">*</span></Label>
                     <Input
                       id="lastName"
-                      className="bg-white/5 border-white/10"
+                      className="bg-foreground/5 border-border"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                     />
@@ -296,7 +296,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   <Input
                     id="email"
                     type="email"
-                    className="bg-white/5 border-white/10"
+                    className="bg-foreground/5 border-border"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -307,7 +307,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   <Input
                     id="phone"
                     type="tel"
-                    className="bg-white/5 border-white/10"
+                    className="bg-foreground/5 border-border"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
@@ -317,7 +317,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   <Label htmlFor="address">Địa chỉ <span className="text-red-400">*</span></Label>
                   <Input
                     id="address"
-                    className="bg-white/5 border-white/10"
+                    className="bg-foreground/5 border-border"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                   />
@@ -328,7 +328,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     <Label htmlFor="city">Thành phố <span className="text-red-400">*</span></Label>
                     <Input
                       id="city"
-                      className="bg-white/5 border-white/10"
+                      className="bg-foreground/5 border-border"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                     />
@@ -337,7 +337,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     <Label htmlFor="state">Tỉnh/Thành <span className="text-red-400">*</span></Label>
                     <Input
                       id="state"
-                      className="bg-white/5 border-white/10"
+                      className="bg-foreground/5 border-border"
                       value={state}
                       onChange={(e) => setState(e.target.value)}
                     />
@@ -346,7 +346,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     <Label htmlFor="zip">Mã bưu chính <span className="text-red-400">*</span></Label>
                     <Input
                       id="zip"
-                      className="bg-white/5 border-white/10"
+                      className="bg-foreground/5 border-border"
                       value={zip}
                       onChange={(e) => setZip(e.target.value)}
                     />
@@ -366,7 +366,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             {/* Step 2: Payment */}
             {step === 2 && (
               <div className="space-y-6">
-                <h2 className="text-2xl text-white mb-6">Phương thức thanh toán</h2>
+                <h2 className="text-2xl text-foreground mb-6">Phương thức thanh toán</h2>
 
                 <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
                   <div className="space-y-3">
@@ -375,7 +375,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
                         paymentMethod === "wallet"
                           ? "border-purple-500 bg-purple-500/10"
-                          : "border-white/10 bg-white/5"
+                          : "border-border bg-foreground/5"
                       }`}
                     >
                       <RadioGroupItem value="wallet" id="wallet" />
@@ -383,10 +383,10 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <Wallet className="h-4 w-4 text-purple-400" />
-                            <span className="text-white">Shop Wallet</span>
+                            <span className="text-foreground">Shop Wallet</span>
                           </div>
                           <div className="text-right">
-                            <span className="text-white/70 text-sm">
+                            <span className="text-muted-foreground text-sm">
                               Số dư: <span className="text-purple-300 font-medium">
                                 {formatCurrency(walletInfo?.balance ?? 0)}
                               </span>
@@ -416,16 +416,16 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
                         paymentMethod === "vnpay"
                           ? "border-purple-500 bg-purple-500/10"
-                          : "border-white/10 bg-white/5"
+                          : "border-border bg-foreground/5"
                       }`}
                     >
                       <RadioGroupItem value="vnpay" id="vnpay" />
                       <Label htmlFor="vnpay" className="flex-1 cursor-pointer">
                         <div className="flex items-center justify-between">
-                          <span className="text-white">VNPAY</span>
+                          <span className="text-foreground">VNPAY</span>
                           <span className="text-2xl">🏦</span>
                         </div>
-                        <p className="text-white/40 text-xs mt-0.5">Internet Banking / ATM / QR Code</p>
+                        <p className="text-muted-foreground text-xs mt-0.5">Internet Banking / ATM / QR Code</p>
                       </Label>
                     </div>
 
@@ -434,16 +434,16 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
                         paymentMethod === "momo"
                           ? "border-purple-500 bg-purple-500/10"
-                          : "border-white/10 bg-white/5"
+                          : "border-border bg-foreground/5"
                       }`}
                     >
                       <RadioGroupItem value="momo" id="momo" />
                       <Label htmlFor="momo" className="flex-1 cursor-pointer">
                         <div className="flex items-center justify-between">
-                          <span className="text-white">MoMo</span>
+                          <span className="text-foreground">MoMo</span>
                           <span className="text-2xl">📱</span>
                         </div>
-                        <p className="text-white/40 text-xs mt-0.5">Ví điện tử MoMo</p>
+                        <p className="text-muted-foreground text-xs mt-0.5">Ví điện tử MoMo</p>
                       </Label>
                     </div>
 
@@ -452,13 +452,13 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
                         paymentMethod === "card"
                           ? "border-purple-500 bg-purple-500/10"
-                          : "border-white/10 bg-white/5"
+                          : "border-border bg-foreground/5"
                       }`}
                     >
                       <RadioGroupItem value="card" id="card" />
                       <Label htmlFor="card" className="flex-1 cursor-pointer">
                         <div className="flex items-center justify-between">
-                          <span className="text-white">Thẻ tín dụng/ghi nợ</span>
+                          <span className="text-foreground">Thẻ tín dụng/ghi nợ</span>
                           <span className="text-2xl">💳</span>
                         </div>
                       </Label>
@@ -469,13 +469,13 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
                         paymentMethod === "cod"
                           ? "border-purple-500 bg-purple-500/10"
-                          : "border-white/10 bg-white/5"
+                          : "border-border bg-foreground/5"
                       }`}
                     >
                       <RadioGroupItem value="cod" id="cod" />
                       <Label htmlFor="cod" className="flex-1 cursor-pointer">
                         <div className="flex items-center justify-between">
-                          <span className="text-white">Thanh toán khi nhận hàng (COD)</span>
+                          <span className="text-foreground">Thanh toán khi nhận hàng (COD)</span>
                           <span className="text-2xl">💵</span>
                         </div>
                       </Label>
@@ -490,7 +490,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       <Input
                         id="cardNumber"
                         placeholder="1234 5678 9012 3456"
-                        className="bg-white/5 border-white/10"
+                        className="bg-foreground/5 border-border"
                       />
                     </div>
 
@@ -500,7 +500,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                         <Input
                           id="expiry"
                           placeholder="MM/YY"
-                          className="bg-white/5 border-white/10"
+                          className="bg-foreground/5 border-border"
                         />
                       </div>
                       <div>
@@ -508,7 +508,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                         <Input
                           id="cvv"
                           placeholder="123"
-                          className="bg-white/5 border-white/10"
+                          className="bg-foreground/5 border-border"
                         />
                       </div>
                     </div>
@@ -518,7 +518,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       <Input
                         id="cardName"
                         placeholder="Nguyễn Văn A"
-                        className="bg-white/5 border-white/10"
+                        className="bg-foreground/5 border-border"
                       />
                     </div>
                   </div>
@@ -557,12 +557,12 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             {/* Step 3: Review */}
             {step === 3 && (
               <div className="space-y-6">
-                <h2 className="text-2xl text-white mb-6">Xem lại đơn hàng</h2>
+                <h2 className="text-2xl text-foreground mb-6">Xem lại đơn hàng</h2>
 
                 <div className="space-y-4">
-                  <div className="bg-white/5 rounded-lg p-4">
-                    <h3 className="text-white mb-2">Địa chỉ giao hàng</h3>
-                    <p className="text-white/70 text-sm">
+                  <div className="bg-foreground/5 rounded-lg p-4">
+                    <h3 className="text-foreground mb-2">Địa chỉ giao hàng</h3>
+                    <p className="text-muted-foreground text-sm">
                       {firstName} {lastName}<br />
                       {address}<br />
                       {city}{city && state ? ", " : ""}{state} {zip}<br />
@@ -570,9 +570,9 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     </p>
                   </div>
 
-                  <div className="bg-white/5 rounded-lg p-4">
-                    <h3 className="text-white mb-2">Phương thức thanh toán</h3>
-                    <p className="text-white/70 text-sm">
+                  <div className="bg-foreground/5 rounded-lg p-4">
+                    <h3 className="text-foreground mb-2">Phương thức thanh toán</h3>
+                    <p className="text-muted-foreground text-sm">
                       {paymentMethod === "wallet" && `Shop Wallet (Số dư: ${formatCurrency(walletInfo?.balance ?? 0)})`}
                       {paymentMethod === "vnpay" && "VNPAY"}
                       {paymentMethod === "momo" && "Ví MoMo"}
@@ -584,12 +584,12 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   </div>
 
                   {/* Items review */}
-                  <div className="bg-white/5 rounded-lg p-4">
-                    <h3 className="text-white mb-3">Sản phẩm ({cartItems.length})</h3>
+                  <div className="bg-foreground/5 rounded-lg p-4">
+                    <h3 className="text-foreground mb-3">Sản phẩm ({cartItems.length})</h3>
                     <div className="space-y-3">
                       {cartItems.map((item) => (
                         <div key={item.id} className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-lg bg-white/5 overflow-hidden flex-shrink-0">
+                          <div className="w-12 h-12 rounded-lg bg-foreground/5 overflow-hidden flex-shrink-0">
                             <ImageWithFallback
                               src={item.product?.image}
                               alt={item.product?.name}
@@ -597,14 +597,14 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-white text-sm truncate">{item.product?.name}</p>
-                            <p className="text-white/50 text-xs">
+                            <p className="text-foreground text-sm truncate">{item.product?.name}</p>
+                            <p className="text-muted-foreground text-xs">
                               SL: {item.quantity}
                               {item.selectedColor && ` · ${item.selectedColor}`}
                               {item.selectedSize && ` · ${item.selectedSize}`}
                             </p>
                           </div>
-                          <p className="text-white text-sm font-medium flex-shrink-0">
+                          <p className="text-foreground text-sm font-medium flex-shrink-0">
                             {formatCurrency(item.product?.price * item.quantity)}
                           </p>
                         </div>
@@ -633,10 +633,10 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
 
         {/* Order Summary Sidebar */}
         <div className="lg:col-span-1">
-          <div className="sticky top-24 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-            <h2 className="text-xl text-white">Tóm tắt đơn hàng</h2>
+          <div className="sticky top-24 bg-foreground/5 border border-border rounded-2xl p-6 space-y-4">
+            <h2 className="text-xl text-foreground">Tóm tắt đơn hàng</h2>
 
-            <Separator className="bg-white/10" />
+            <Separator className="bg-foreground/10" />
 
             {/* Cart items list */}
             {cartItems.length > 0 && (
@@ -644,7 +644,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex items-center gap-3">
                     <div className="relative flex-shrink-0">
-                      <div className="w-14 h-14 rounded-lg bg-white/5 overflow-hidden">
+                      <div className="w-14 h-14 rounded-lg bg-foreground/5 overflow-hidden">
                         <ImageWithFallback
                           src={item.product?.image}
                           alt={item.product?.name}
@@ -656,14 +656,14 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm line-clamp-2">{item.product?.name}</p>
+                      <p className="text-foreground text-sm line-clamp-2">{item.product?.name}</p>
                       {(item.selectedColor || item.selectedSize) && (
-                        <p className="text-white/40 text-xs">
+                        <p className="text-muted-foreground text-xs">
                           {[item.selectedColor, item.selectedSize].filter(Boolean).join(" · ")}
                         </p>
                       )}
                     </div>
-                    <p className="text-white text-sm font-medium flex-shrink-0">
+                    <p className="text-foreground text-sm font-medium flex-shrink-0">
                       {formatCurrency(item.product?.price * item.quantity)}
                     </p>
                   </div>
@@ -672,13 +672,13 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
             )}
 
             {cartItems.length === 0 && (
-              <p className="text-white/40 text-sm text-center py-4">Không có sản phẩm trong giỏ</p>
+              <p className="text-muted-foreground text-sm text-center py-4">Không có sản phẩm trong giỏ</p>
             )}
 
-            <Separator className="bg-white/10" />
+            <Separator className="bg-foreground/10" />
 
             <div className="space-y-3">
-              <div className="flex justify-between text-white/70">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Tạm tính ({cartItems.reduce((s, i) => s + i.quantity, 0)} sản phẩm)</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>
@@ -691,7 +691,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   <span>-{formatCurrency(couponDiscount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-white/70">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Vận chuyển</span>
                 {shipping === 0 ? (
                   <Badge variant="secondary" className="bg-green-500/20 text-green-400">MIỄN PHÍ</Badge>
@@ -699,17 +699,17 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   <span>{formatCurrency(shipping)}</span>
                 )}
               </div>
-              <div className="flex justify-between text-white/70">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Thuế (10%)</span>
                 <span>{formatCurrency(tax)}</span>
               </div>
             </div>
 
-            <Separator className="bg-white/10" />
+            <Separator className="bg-foreground/10" />
 
             <div className="flex justify-between items-center">
-              <span className="text-xl text-white">Tổng cộng</span>
-              <span className="text-3xl text-white">
+              <span className="text-xl text-foreground">Tổng cộng</span>
+              <span className="text-3xl text-foreground">
                 {formatCurrency(total)}
               </span>
             </div>

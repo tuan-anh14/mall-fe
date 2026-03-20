@@ -186,8 +186,8 @@ export function AdminAccountsPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white">Quản lý tài khoản</h1>
-          <p className="text-white/50 text-sm mt-0.5">{total} tài khoản</p>
+          <h1 className="text-2xl font-bold text-foreground">Quản lý tài khoản</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">{total} tài khoản</p>
         </div>
         <Button
           onClick={() => setShowCreateDialog(true)}
@@ -202,24 +202,24 @@ export function AdminAccountsPage() {
       <div className="flex flex-wrap gap-3 items-center">
         <div className="flex gap-2 flex-1 min-w-0">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Tìm theo tên, email..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+              className="pl-9 bg-foreground/5 border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
-          <Button size="sm" onClick={handleSearch} className="bg-white/10 hover:bg-white/20 flex-shrink-0">
+          <Button size="sm" onClick={handleSearch} className="bg-foreground/10 hover:bg-foreground/20 flex-shrink-0">
             <Search className="h-4 w-4" />
           </Button>
         </div>
 
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-white/40" />
+          <Filter className="h-4 w-4 text-muted-foreground" />
           <Select value={userTypeFilter} onValueChange={(v: string) => { setUserTypeFilter(v); setPage(1); }}>
-            <SelectTrigger className="w-36 bg-white/5 border-white/10 text-white">
+            <SelectTrigger className="w-36 bg-foreground/5 border-border text-foreground">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -234,7 +234,7 @@ export function AdminAccountsPage() {
               variant="ghost"
               size="sm"
               onClick={handleClearFilter}
-              className="text-white/40 hover:text-white"
+              className="text-muted-foreground hover:text-foreground"
             >
               Xóa lọc
             </Button>
@@ -243,13 +243,13 @@ export function AdminAccountsPage() {
       </div>
 
       {/* Table */}
-      <Card className="bg-white/5 border-white/10 overflow-hidden">
+      <Card className="bg-foreground/5 border-border overflow-hidden">
         {loading ? (
           <div className="flex justify-center items-center h-48">
-            <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-border border-t-white rounded-full animate-spin" />
           </div>
         ) : accounts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-white/40">
+          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
             <Users className="h-12 w-12 mb-3 opacity-40" />
             <p className="text-lg">Không có dữ liệu</p>
             <p className="text-sm mt-1">
@@ -267,14 +267,14 @@ export function AdminAccountsPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[750px]">
               <thead>
-                <tr className="border-b border-white/10 text-left">
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Người dùng</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Loại</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Email</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Đơn hàng</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Reviews</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Ngày tạo</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium text-right">Hành động</th>
+                <tr className="border-b border-border text-left">
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Người dùng</th>
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Loại</th>
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Email</th>
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Đơn hàng</th>
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Reviews</th>
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium">Ngày tạo</th>
+                  <th className="px-6 py-4 text-muted-foreground text-sm font-medium text-right">Hành động</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -282,7 +282,7 @@ export function AdminAccountsPage() {
                   <tr key={acc.id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-white text-sm font-medium">{acc.firstName} {acc.lastName}</p>
+                        <p className="text-foreground text-sm font-medium">{acc.firstName} {acc.lastName}</p>
                         {acc.sellerProfile && (
                           <p className="text-purple-400/70 text-xs">{acc.sellerProfile.storeName}</p>
                         )}
@@ -296,15 +296,15 @@ export function AdminAccountsPage() {
                     <td className="px-6 py-4">{typeBadge(acc.userType)}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-white/60 text-xs">{acc.email}</span>
+                        <span className="text-muted-foreground text-xs">{acc.email}</span>
                         {acc.isEmailVerified && (
                           <span className="text-green-400 text-[10px]">✓</span>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-white/70 text-sm">{acc._count.orders}</td>
-                    <td className="px-6 py-4 text-white/70 text-sm">{acc._count.reviews}</td>
-                    <td className="px-6 py-4 text-white/50 text-xs">
+                    <td className="px-6 py-4 text-muted-foreground text-sm">{acc._count.orders}</td>
+                    <td className="px-6 py-4 text-muted-foreground text-sm">{acc._count.reviews}</td>
+                    <td className="px-6 py-4 text-muted-foreground text-xs">
                       {new Date(acc.createdAt).toLocaleDateString("vi-VN")}
                     </td>
                     <td className="px-6 py-4">
@@ -312,7 +312,7 @@ export function AdminAccountsPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-white/40 hover:text-white hover:bg-white/10"
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-foreground/10"
                           title="Xem chi tiết"
                           onClick={() => handleViewDetail(acc)}
                         >
@@ -353,7 +353,7 @@ export function AdminAccountsPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-white/40 text-sm">Trang {page} / {totalPages} ({total} tài khoản)</p>
+          <p className="text-muted-foreground text-sm">Trang {page} / {totalPages} ({total} tài khoản)</p>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
               <ChevronLeft className="h-4 w-4" />
@@ -381,16 +381,16 @@ export function AdminAccountsPage() {
 
       {/* Delete Confirm */}
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-white/10">
+        <AlertDialogContent className="bg-secondary border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Xóa tài khoản?</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
-              Xóa tài khoản <strong className="text-white">{deleteTarget?.email}</strong>. Hành động này không thể hoàn tác.
+            <AlertDialogTitle className="text-foreground">Xóa tài khoản?</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              Xóa tài khoản <strong className="text-foreground">{deleteTarget?.email}</strong>. Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Hủy</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">
+            <AlertDialogCancel className="bg-foreground/5 border-border text-foreground hover:bg-foreground/10">Hủy</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-foreground">
               Xóa
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -399,65 +399,65 @@ export function AdminAccountsPage() {
 
       {/* Account Detail Dialog */}
       <Dialog open={!!detailAccount || detailLoading} onOpenChange={() => { setDetailAccount(null); }}>
-        <DialogContent className="bg-zinc-900 border-white/10 max-w-lg">
+        <DialogContent className="bg-secondary border-border max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-white">Chi tiết tài khoản</DialogTitle>
+            <DialogTitle className="text-foreground">Chi tiết tài khoản</DialogTitle>
           </DialogHeader>
           {detailLoading ? (
             <div className="flex justify-center py-8">
-              <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-border border-t-white rounded-full animate-spin" />
             </div>
           ) : detailAccount ? (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-white/40 text-xs mb-1">Họ và tên</p>
-                  <p className="text-white text-sm font-medium">{detailAccount.firstName} {detailAccount.lastName}</p>
+                  <p className="text-muted-foreground text-xs mb-1">Họ và tên</p>
+                  <p className="text-foreground text-sm font-medium">{detailAccount.firstName} {detailAccount.lastName}</p>
                 </div>
                 <div>
-                  <p className="text-white/40 text-xs mb-1">Email</p>
-                  <p className="text-white/80 text-sm">{detailAccount.email}</p>
+                  <p className="text-muted-foreground text-xs mb-1">Email</p>
+                  <p className="text-muted-foreground text-sm">{detailAccount.email}</p>
                 </div>
                 <div>
-                  <p className="text-white/40 text-xs mb-1">Loại tài khoản</p>
+                  <p className="text-muted-foreground text-xs mb-1">Loại tài khoản</p>
                   <div>{typeBadge(detailAccount.userType)}</div>
                 </div>
                 <div>
-                  <p className="text-white/40 text-xs mb-1">Xác thực email</p>
-                  <p className={`text-sm ${detailAccount.isEmailVerified ? "text-green-400" : "text-white/40"}`}>
+                  <p className="text-muted-foreground text-xs mb-1">Xác thực email</p>
+                  <p className={`text-sm ${detailAccount.isEmailVerified ? "text-green-400" : "text-muted-foreground"}`}>
                     {detailAccount.isEmailVerified ? "Đã xác thực ✓" : "Chưa xác thực"}
                   </p>
                 </div>
                 {detailAccount.phone && (
                   <div>
-                    <p className="text-white/40 text-xs mb-1">Điện thoại</p>
-                    <p className="text-white/80 text-sm">{detailAccount.phone}</p>
+                    <p className="text-muted-foreground text-xs mb-1">Điện thoại</p>
+                    <p className="text-muted-foreground text-sm">{detailAccount.phone}</p>
                   </div>
                 )}
                 <div>
-                  <p className="text-white/40 text-xs mb-1">Ngày tạo</p>
-                  <p className="text-white/80 text-sm">{new Date(detailAccount.createdAt).toLocaleString("vi-VN")}</p>
+                  <p className="text-muted-foreground text-xs mb-1">Ngày tạo</p>
+                  <p className="text-muted-foreground text-sm">{new Date(detailAccount.createdAt).toLocaleString("vi-VN")}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 pt-2 border-t border-white/10">
-                <div className="bg-white/5 rounded-lg p-3 text-center">
-                  <p className="text-white text-lg font-bold">{detailAccount._count.orders}</p>
-                  <p className="text-white/40 text-xs mt-0.5">Đơn hàng</p>
+              <div className="grid grid-cols-3 gap-3 pt-2 border-t border-border">
+                <div className="bg-foreground/5 rounded-lg p-3 text-center">
+                  <p className="text-foreground text-lg font-bold">{detailAccount._count.orders}</p>
+                  <p className="text-muted-foreground text-xs mt-0.5">Đơn hàng</p>
                 </div>
-                <div className="bg-white/5 rounded-lg p-3 text-center">
-                  <p className="text-white text-lg font-bold">{detailAccount._count.reviews}</p>
-                  <p className="text-white/40 text-xs mt-0.5">Reviews</p>
+                <div className="bg-foreground/5 rounded-lg p-3 text-center">
+                  <p className="text-foreground text-lg font-bold">{detailAccount._count.reviews}</p>
+                  <p className="text-muted-foreground text-xs mt-0.5">Reviews</p>
                 </div>
-                <div className="bg-white/5 rounded-lg p-3 text-center">
-                  <p className="text-white text-lg font-bold">{detailAccount._count.sessions}</p>
-                  <p className="text-white/40 text-xs mt-0.5">Phiên</p>
+                <div className="bg-foreground/5 rounded-lg p-3 text-center">
+                  <p className="text-foreground text-lg font-bold">{detailAccount._count.sessions}</p>
+                  <p className="text-muted-foreground text-xs mt-0.5">Phiên</p>
                 </div>
               </div>
 
               {detailAccount.sellerProfile && (
-                <div className="pt-2 border-t border-white/10">
-                  <p className="text-white/40 text-xs mb-2">Hồ sơ Shop</p>
+                <div className="pt-2 border-t border-border">
+                  <p className="text-muted-foreground text-xs mb-2">Hồ sơ Shop</p>
                   <div className="flex items-center gap-2">
                     <span className="text-purple-400 text-sm font-medium">{detailAccount.sellerProfile.storeName}</span>
                     {detailAccount.sellerProfile.isVerified && (
@@ -468,8 +468,8 @@ export function AdminAccountsPage() {
               )}
 
               {detailAccount.sellerRequest && (
-                <div className="pt-2 border-t border-white/10">
-                  <p className="text-white/40 text-xs mb-1">Yêu cầu Seller</p>
+                <div className="pt-2 border-t border-border">
+                  <p className="text-muted-foreground text-xs mb-1">Yêu cầu Seller</p>
                   <Badge className={
                     detailAccount.sellerRequest.status === "PENDING" ? "bg-yellow-500/20 text-yellow-400 border-0" :
                     detailAccount.sellerRequest.status === "APPROVED" ? "bg-green-500/20 text-green-400 border-0" :
@@ -487,55 +487,55 @@ export function AdminAccountsPage() {
 
       {/* Create Account Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={(o) => { if (!o) { setShowCreateDialog(false); setCreateForm(emptyCreateForm); } }}>
-        <DialogContent className="bg-zinc-900 border-white/10 max-w-md">
+        <DialogContent className="bg-secondary border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-white">Tạo tài khoản mới</DialogTitle>
+            <DialogTitle className="text-foreground">Tạo tài khoản mới</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-white/60 text-sm">Họ *</Label>
+                <Label className="text-muted-foreground text-sm">Họ *</Label>
                 <Input
                   value={createForm.firstName}
                   onChange={(e) => setCreateForm(f => ({ ...f, firstName: e.target.value }))}
                   placeholder="Nguyễn"
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-foreground/5 border-border text-foreground"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-white/60 text-sm">Tên *</Label>
+                <Label className="text-muted-foreground text-sm">Tên *</Label>
                 <Input
                   value={createForm.lastName}
                   onChange={(e) => setCreateForm(f => ({ ...f, lastName: e.target.value }))}
                   placeholder="Văn A"
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-foreground/5 border-border text-foreground"
                 />
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-white/60 text-sm">Email *</Label>
+              <Label className="text-muted-foreground text-sm">Email *</Label>
               <Input
                 type="email"
                 value={createForm.email}
                 onChange={(e) => setCreateForm(f => ({ ...f, email: e.target.value }))}
                 placeholder="email@example.com"
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-foreground/5 border-border text-foreground"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-white/60 text-sm">Mật khẩu * (tối thiểu 6 ký tự)</Label>
+              <Label className="text-muted-foreground text-sm">Mật khẩu * (tối thiểu 6 ký tự)</Label>
               <Input
                 type="password"
                 value={createForm.password}
                 onChange={(e) => setCreateForm(f => ({ ...f, password: e.target.value }))}
                 placeholder="••••••••"
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-foreground/5 border-border text-foreground"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-white/60 text-sm">Loại tài khoản</Label>
+              <Label className="text-muted-foreground text-sm">Loại tài khoản</Label>
               <Select value={createForm.userType} onValueChange={(v: any) => setCreateForm(f => ({ ...f, userType: v }))}>
-                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="bg-foreground/5 border-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -547,7 +547,7 @@ export function AdminAccountsPage() {
             </div>
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <Button variant="ghost" className="border border-white/10 text-white" onClick={() => { setShowCreateDialog(false); setCreateForm(emptyCreateForm); }}>
+            <Button variant="ghost" className="border border-border text-foreground" onClick={() => { setShowCreateDialog(false); setCreateForm(emptyCreateForm); }}>
               Hủy
             </Button>
             <Button onClick={handleCreate} disabled={creating} className="bg-purple-600 hover:bg-purple-700">
