@@ -10,6 +10,7 @@ import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { toast } from "sonner";
 import { get, post } from "../../lib/api";
 import { API_URL } from "../../lib/api";
+import { viewHistoryService } from "../../services/viewHistory.service";
 import { formatCurrency } from "../../lib/currency";
 
 interface ReviewUser {
@@ -83,6 +84,9 @@ export function ProductDetailPage({
   const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
 
+  const [similarProducts, setSimilarProducts] = useState<RelatedProduct[]>([]);
+  const [similarLoading, setSimilarLoading] = useState(false);
+
   // Review form state
   const [canReview, setCanReview] = useState(false);
   const [userReview, setUserReview] = useState<Review | null>(null);
@@ -150,10 +154,28 @@ export function ProductDetailPage({
       }
     };
 
+    const fetchSimilar = async () => {
+      setSimilarLoading(true);
+      try {
+        const data = await viewHistoryService.getSimilarProducts(product.id, 6);
+        setSimilarProducts(data.products ?? []);
+      } catch {
+        // silently ignore
+      } finally {
+        setSimilarLoading(false);
+      }
+    };
+
+    // Track view (fire-and-forget, only for authenticated users)
+    if (isAuthenticated) {
+      viewHistoryService.trackView(product.id).catch(() => {});
+    }
+
     fetchReviews();
     fetchRelated();
     fetchReviewEligibility();
-  }, [product.id]);
+    fetchSimilar();
+  }, [product.id, isAuthenticated]);
 
   const handleAddToCart = async () => {
     try {
@@ -853,6 +875,47 @@ export function ProductDetailPage({
                     <div className="flex items-center gap-1 mt-1">
                       <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                       <span className="text-white/60 text-xs">{related.rating}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* AI Similar Products */}
+      {!similarLoading && similarProducts.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-2xl text-white mb-2">Sản phẩm tương tự</h2>
+          <p className="text-white/50 text-sm mb-6">Được gợi ý dựa trên sản phẩm này</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {similarProducts.map((similar) => (
+              <div
+                key={similar.id}
+                className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-purple-500/50 transition-all cursor-pointer"
+                onClick={() => onNavigate("product", similar)}
+              >
+                <div className="aspect-square overflow-hidden">
+                  <ImageWithFallback
+                    src={similar.images?.[0] || similar.image || ""}
+                    alt={similar.name}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-4">
+                  <p className="text-white/60 text-xs mb-1">{similar.brand}</p>
+                  <p className="text-white text-sm font-medium line-clamp-2 mb-2">{similar.name}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-semibold">{formatCurrency(similar.price)}</span>
+                    {similar.originalPrice && (
+                      <span className="text-white/40 text-sm line-through">{formatCurrency(similar.originalPrice)}</span>
+                    )}
+                  </div>
+                  {similar.rating !== undefined && (
+                    <div className="flex items-center gap-1 mt-1">
+                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      <span className="text-white/60 text-xs">{similar.rating}</span>
                     </div>
                   )}
                 </div>

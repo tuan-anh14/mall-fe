@@ -1,0 +1,79 @@
+import { useState, useEffect } from "react";
+import { Sparkles, ArrowRight } from "lucide-react";
+import { Button } from "./ui/button";
+import { ProductCard } from "./ProductCard";
+import { viewHistoryService } from "../services/viewHistory.service";
+
+interface RecommendedSectionProps {
+  onNavigate: (page: string, data?: any) => void;
+  onAddToCart?: (product: any) => void;
+  onAddToWishlist?: (product: any) => void;
+  isInWishlist?: (productId: string) => boolean;
+}
+
+export function RecommendedSection({
+  onNavigate,
+  onAddToCart,
+  onAddToWishlist,
+  isInWishlist,
+}: RecommendedSectionProps) {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    viewHistoryService
+      .getRecommendations(8)
+      .then((res) => setProducts(res.products))
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-12 container mx-auto px-4">
+        <div className="flex items-center gap-2 mb-6">
+          <Sparkles className="h-5 w-5 text-purple-400" />
+          <h2 className="text-2xl text-white">Đề xuất cho bạn</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl h-64 animate-pulse" />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (products.length === 0) return null;
+
+  return (
+    <section className="py-12 container mx-auto px-4">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-purple-400" />
+          <div>
+            <h2 className="text-2xl text-white">Đề xuất cho bạn</h2>
+            <p className="text-sm text-white/50">Dựa trên lịch sử xem của bạn</p>
+          </div>
+        </div>
+        <Button variant="ghost" onClick={() => onNavigate("shop")}>
+          Xem thêm
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            onView={(id) => onNavigate("product", product)}
+            onAddToCart={onAddToCart}
+            onAddToWishlist={onAddToWishlist}
+            isInWishlist={isInWishlist?.(product.id)}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}

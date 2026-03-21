@@ -269,7 +269,7 @@ export default function App() {
         <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* Public pages */}
-            <Route path="/" element={<HomePage onNavigate={navigate} onAddToCart={addToCart} onAddToWishlist={addToWishlist} isInWishlist={isInWishlist} />} />
+            <Route path="/" element={<HomePage onNavigate={navigate} onAddToCart={addToCart} onAddToWishlist={addToWishlist} isInWishlist={isInWishlist} isAuthenticated={isAuthenticated} />} />
             <Route
               path="/shop"
               element={

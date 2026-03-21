@@ -3,6 +3,8 @@ import { ArrowRight, Zap, Shield, Truck, Headphones, Tag, X } from "lucide-react
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { ProductCard } from "../ProductCard";
+import { RecommendedSection } from "../RecommendedSection";
+import { RecentlyViewedSection } from "../RecentlyViewedSection";
 import { motion, AnimatePresence } from "motion/react";
 import { get } from "../../lib/api";
 import { formatCurrency } from "../../lib/currency";
@@ -12,6 +14,7 @@ interface HomePageProps {
   onAddToCart?: (product: any) => void;
   onAddToWishlist?: (product: any) => void;
   isInWishlist?: (productId: number) => boolean;
+  isAuthenticated?: boolean;
 }
 
 interface Promotion {
@@ -26,7 +29,7 @@ interface Promotion {
   validUntil?: string | null;
 }
 
-export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlist }: HomePageProps) {
+export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlist, isAuthenticated = false }: HomePageProps) {
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [trendingProducts, setTrendingProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -356,6 +359,26 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
             })}
           </div>
         </section>
+      )}
+
+      {/* AI Recommendations — shown only to logged-in users */}
+      {isAuthenticated && (
+        <RecommendedSection
+          onNavigate={onNavigate}
+          onAddToCart={onAddToCart}
+          onAddToWishlist={onAddToWishlist}
+          isInWishlist={(id) => isInWishlist?.(id as any) ?? false}
+        />
+      )}
+
+      {/* Recently Viewed — shown only to logged-in users */}
+      {isAuthenticated && (
+        <RecentlyViewedSection
+          onNavigate={onNavigate}
+          onAddToCart={onAddToCart}
+          onAddToWishlist={onAddToWishlist}
+          isInWishlist={(id) => isInWishlist?.(id as any) ?? false}
+        />
       )}
 
       {/* Trending Products */}

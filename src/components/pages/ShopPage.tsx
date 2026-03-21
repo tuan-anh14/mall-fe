@@ -5,8 +5,20 @@ import { ProductCard } from "../ProductCard";
 import { Slider } from "../ui/slider";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
 import { Badge } from "../ui/badge";
 import { get } from "../../lib/api";
 import { formatCurrency } from "../../lib/currency";
@@ -108,7 +120,9 @@ const FiltersContent = memo(function FiltersContent({
           {[5, 4, 3, 2].map((rating) => (
             <button
               key={rating}
-              onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
+              onClick={() =>
+                setSelectedRating(selectedRating === rating ? null : rating)
+              }
               className={`flex items-center gap-2 text-sm w-full px-2 py-1 rounded-lg transition-colors ${
                 selectedRating === rating
                   ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
@@ -147,11 +161,18 @@ const SORT_MAP: Record<string, string> = {
   newest: "newest",
 };
 
-export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCart, onAddToWishlist, isInWishlist }: ShopPageProps) {
+export function ShopPage({
+  onNavigate,
+  initialCategory,
+  initialSearch,
+  onAddToCart,
+  onAddToWishlist,
+  isInWishlist,
+}: ShopPageProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [priceRange, setPriceRange] = useState([0, 3000]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    initialCategory ? [initialCategory] : []
+    initialCategory ? [initialCategory] : [],
   );
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
@@ -173,12 +194,15 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
   }, [initialSearch]);
 
   // Debounce price range to avoid firing on every slider tick
-  const priceRangeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const priceRangeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const [debouncedPriceRange, setDebouncedPriceRange] = useState([0, 3000]);
 
   const handlePriceRangeChange = (value: number[]) => {
     setPriceRange(value);
-    if (priceRangeDebounceRef.current) clearTimeout(priceRangeDebounceRef.current);
+    if (priceRangeDebounceRef.current)
+      clearTimeout(priceRangeDebounceRef.current);
     priceRangeDebounceRef.current = setTimeout(() => {
       setDebouncedPriceRange(value);
     }, 500);
@@ -228,16 +252,22 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
           params.set("sort", SORT_MAP[sortBy]);
         }
 
-        const res = await get<{ products: any[]; total: number; page: number; limit: number; totalPages: number }>(
-          `/api/v1/products?${params.toString()}`
-        );
+        const res = await get<{
+          products: any[];
+          total: number;
+          page: number;
+          limit: number;
+          totalPages: number;
+        }>(`/api/v1/products?${params.toString()}`);
 
         const fetched = res.products ?? [];
         setProducts(fetched);
         setTotal(res.total ?? 0);
 
         // Derive brands from fetched products
-        const uniqueBrands = Array.from(new Set(fetched.map((p: any) => p.brand).filter(Boolean))) as string[];
+        const uniqueBrands = Array.from(
+          new Set(fetched.map((p: any) => p.brand).filter(Boolean)),
+        ) as string[];
         setBrands((prev) => {
           // Merge with previously known brands so filter options don't disappear
           const merged = Array.from(new Set([...prev, ...uniqueBrands]));
@@ -251,19 +281,26 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
     };
 
     fetchProducts();
-  }, [selectedCategories, selectedBrands, selectedRating, debouncedPriceRange, sortBy, searchQuery]);
+  }, [
+    selectedCategories,
+    selectedBrands,
+    selectedRating,
+    debouncedPriceRange,
+    sortBy,
+    searchQuery,
+  ]);
 
   const toggleCategory = useCallback((category: string) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((c) => c !== category)
-        : [...prev, category]
+        : [...prev, category],
     );
   }, []);
 
   const toggleBrand = useCallback((brand: string) => {
     setSelectedBrands((prev) =>
-      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
+      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand],
     );
   }, []);
 
@@ -276,13 +313,22 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
     setSearchQuery("");
   }, []);
 
-  const handleViewProduct = useCallback((id: string | number) => {
-    onNavigate("product", products.find((p) => p.id === id));
-  }, [products, onNavigate]);
+  const handleViewProduct = useCallback(
+    (id: string | number) => {
+      onNavigate(
+        "product",
+        products.find((p) => p.id === id),
+      );
+    },
+    [products, onNavigate],
+  );
 
-  const handleAddToCart = useCallback((prod: any) => {
-    onAddToCart?.(prod, 1);
-  }, [onAddToCart]);
+  const handleAddToCart = useCallback(
+    (prod: any) => {
+      onAddToCart?.(prod);
+    },
+    [onAddToCart],
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -291,7 +337,9 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
         <div>
           <h1 className="text-3xl text-white mb-2">Tất cả sản phẩm</h1>
           <p className="text-white/60">
-            {loading ? "Đang tải sản phẩm..." : `Hiển thị ${products.length} trên ${total} sản phẩm`}
+            {loading
+              ? "Đang tải sản phẩm..."
+              : `Hiển thị ${products.length} trên ${total} sản phẩm`}
           </p>
         </div>
 
@@ -337,7 +385,10 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
                 <SlidersHorizontal className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="bg-zinc-950 border-white/10 w-80">
+            <SheetContent
+              side="left"
+              className="bg-zinc-950 border-white/10 w-80"
+            >
               <SheetHeader>
                 <SheetTitle className="text-white">Bộ lọc</SheetTitle>
               </SheetHeader>
@@ -362,7 +413,10 @@ export function ShopPage({ onNavigate, initialCategory, initialSearch, onAddToCa
       </div>
 
       {/* Active Filters */}
-      {(selectedCategories.length > 0 || selectedBrands.length > 0 || selectedRating !== null || searchQuery) && (
+      {(selectedCategories.length > 0 ||
+        selectedBrands.length > 0 ||
+        selectedRating !== null ||
+        searchQuery) && (
         <div className="flex flex-wrap gap-2 mb-6">
           {searchQuery && (
             <Badge
