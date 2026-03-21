@@ -14,6 +14,12 @@ import {
 } from "../ui/alert-dialog";
 import { get, del } from "../../lib/api";
 import { toast } from "sonner";
+import {
+  AdminPageLayout,
+  AdminSpinner,
+  adminPanelClass,
+  adminPaginationBarClass,
+} from "../admin/AdminPageLayout";
 
 interface Review {
   id: string;
@@ -70,23 +76,21 @@ export function AdminReviewsPage() {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Quản lý đánh giá</h1>
-        <p className="text-gray-400 text-sm mt-0.5">{total} đánh giá</p>
-      </div>
-
-      <Card className="bg-white border-gray-200 overflow-hidden">
+    <AdminPageLayout
+      title="Quản lý đánh giá"
+      description={`${total.toLocaleString("vi-VN")} đánh giá sản phẩm`}
+    >
+      <Card className={adminPanelClass}>
         {loading ? (
-          <div className="flex justify-center items-center h-48">
-            <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
-          </div>
+          <AdminSpinner />
         ) : (
           <div className="divide-y divide-gray-100">
             {reviews.map((review) => (
-              <div key={review.id} className="px-4 py-4 hover:bg-gray-50 flex gap-4">
-                {/* Product Image */}
-                <div className="w-12 h-12 rounded-lg bg-gray-50 overflow-hidden flex-shrink-0">
+              <div
+                key={review.id}
+                className="flex gap-4 px-4 py-4 transition-colors hover:bg-gray-50/80 sm:px-6"
+              >
+                <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
                   {review.product.images[0] ? (
                     <img src={review.product.images[0].url} alt="" className="w-full h-full object-cover" />
                   ) : (
@@ -126,8 +130,10 @@ export function AdminReviewsPage() {
               </div>
             ))}
             {reviews.length === 0 && (
-              <div className="flex items-center justify-center h-32">
-                <p className="text-gray-300 text-sm">Chưa có đánh giá nào</p>
+              <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+                <Star className="mb-3 h-10 w-10 text-gray-300" />
+                <p className="text-sm font-medium text-gray-900">Chưa có đánh giá</p>
+                <p className="mt-1 text-xs text-gray-500">Dữ liệu sẽ hiển thị khi có review từ khách</p>
               </div>
             )}
           </div>
@@ -135,8 +141,8 @@ export function AdminReviewsPage() {
       </Card>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-gray-400 text-sm">Trang {page} / {totalPages}</p>
+        <div className={adminPaginationBarClass}>
+          <p className="text-sm text-gray-500">Trang {page} / {totalPages}</p>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
               <ChevronLeft className="h-4 w-4" />
@@ -162,6 +168,6 @@ export function AdminReviewsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </AdminPageLayout>
   );
 }

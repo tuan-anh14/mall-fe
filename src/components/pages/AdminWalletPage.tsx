@@ -23,6 +23,15 @@ import { Separator } from "../ui/separator";
 import { toast } from "sonner";
 import { walletService } from "../../services/wallet.service";
 import { formatCurrency } from "../../lib/currency";
+import {
+  AdminPageLayout,
+  AdminSpinner,
+  adminPanelClass,
+  adminTheadRowClass,
+  adminThClass,
+  adminTrClass,
+  adminBtnPrimaryClass,
+} from "../admin/AdminPageLayout";
 
 export function AdminWalletPage() {
   const [wallets, setWallets] = useState<any[]>([]);
@@ -106,59 +115,57 @@ export function AdminWalletPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl text-gray-900">Quản lý Ví</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Tổng cộng {total} ví người dùng
-          </p>
-        </div>
-      </div>
-
-      {/* Search */}
-      <div className="flex gap-3 mb-6">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+    <AdminPageLayout
+      title="Quản lý ví người dùng"
+      description={`${total.toLocaleString("vi-VN")} ví trong hệ thống`}
+    >
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm">
+        <div className="relative min-w-[200px] max-w-md flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Tìm theo email, số điện thoại, tên..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="pl-9 bg-gray-50 border-gray-200"
+            className="rounded-xl border-gray-200 bg-gray-50 pl-9"
           />
         </div>
-        <Button onClick={handleSearch} className="bg-gradient-to-r from-blue-600 to-blue-600">
-          <Search className="h-4 w-4 mr-2" />
+        <Button onClick={handleSearch} className={adminBtnPrimaryClass}>
+          <Search className="mr-2 h-4 w-4" />
           Tìm kiếm
         </Button>
-        {search && (
+        {search ? (
           <Button
             variant="ghost"
-            onClick={() => { setSearch(""); setSearchInput(""); setPage(1); }}
+            className="rounded-xl text-gray-600"
+            onClick={() => {
+              setSearch("");
+              setSearchInput("");
+              setPage(1);
+            }}
           >
             Xóa bộ lọc
           </Button>
-        )}
+        ) : null}
       </div>
 
-      {/* Table */}
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-        <table className="w-full">
+      <div className={adminPanelClass}>
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[640px]">
           <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left p-4 text-gray-500 text-sm font-medium">Người dùng</th>
-              <th className="text-left p-4 text-gray-500 text-sm font-medium">Email</th>
-              <th className="text-right p-4 text-gray-500 text-sm font-medium">Số dư</th>
-              <th className="text-right p-4 text-gray-500 text-sm font-medium">Giao dịch</th>
-              <th className="text-right p-4 text-gray-500 text-sm font-medium">Thao tác</th>
+            <tr className={adminTheadRowClass}>
+              <th className={adminThClass}>Người dùng</th>
+              <th className={adminThClass}>Email</th>
+              <th className={`${adminThClass} text-right`}>Số dư</th>
+              <th className={`${adminThClass} text-right`}>Giao dịch</th>
+              <th className={`${adminThClass} text-right`}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="text-center py-16">
-                  <div className="w-8 h-8 rounded-full border-4 border-blue-500/30 border-t-blue-500 animate-spin mx-auto" />
+                <td colSpan={5}>
+                  <AdminSpinner className="min-h-[14rem]" />
                 </td>
               </tr>
             ) : wallets.length === 0 ? (
@@ -170,10 +177,10 @@ export function AdminWalletPage() {
               </tr>
             ) : (
               wallets.map((w) => (
-                <tr key={w.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                  <td className="p-4">
+                <tr key={w.id} className={adminTrClass}>
+                  <td className="px-4 py-4 sm:px-6">
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/90">
                         <User className="h-4 w-4 text-white" />
                       </div>
                       <div>
@@ -184,19 +191,19 @@ export function AdminWalletPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="p-4 text-gray-600 text-sm">{w.user.email}</td>
-                  <td className="p-4 text-right">
-                    <span className="text-gray-900 font-medium">{formatCurrency(w.balance)}</span>
+                  <td className="px-4 py-4 text-sm text-gray-600 sm:px-6">{w.user.email}</td>
+                  <td className="px-4 py-4 text-right sm:px-6">
+                    <span className="font-medium tabular-nums text-gray-900">{formatCurrency(w.balance)}</span>
                   </td>
-                  <td className="p-4 text-right text-gray-500 text-sm">
+                  <td className="px-4 py-4 text-right text-sm text-gray-500 sm:px-6">
                     {w.transactionCount}
                   </td>
-                  <td className="p-4 text-right">
+                  <td className="px-4 py-4 text-right sm:px-6">
                     <Button
                       size="sm"
-                      variant="ghost"
+                      variant="outline"
                       onClick={() => openAdjust(w)}
-                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 border border-blue-500/20"
+                      className="rounded-xl border-blue-200 text-primary hover:bg-blue-50"
                     >
                       <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5" />
                       Điều chỉnh
@@ -207,17 +214,18 @@ export function AdminWalletPage() {
             )}
           </tbody>
         </table>
+        </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-gray-200">
-            <p className="text-gray-400 text-sm">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-4 py-3 sm:px-6">
+            <p className="text-sm text-gray-500">
               Trang {page} / {totalPages}
             </p>
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
+                className="rounded-xl"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => p - 1)}
               >
@@ -226,6 +234,7 @@ export function AdminWalletPage() {
               <Button
                 variant="outline"
                 size="sm"
+                className="rounded-xl"
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
               >
@@ -240,8 +249,8 @@ export function AdminWalletPage() {
       <Dialog open={showAdjustModal} onOpenChange={setShowAdjustModal}>
         <DialogContent className="bg-white border-gray-200 max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-gray-900 flex items-center gap-2">
-              <SlidersHorizontal className="h-5 w-5 text-blue-400" />
+            <DialogTitle className="flex items-center gap-2 text-gray-900">
+              <SlidersHorizontal className="h-5 w-5 text-primary" />
               Điều chỉnh số dư ví
             </DialogTitle>
             <DialogDescription className="text-gray-500">
@@ -252,13 +261,13 @@ export function AdminWalletPage() {
           {selectedWallet && (
             <div className="space-y-4 mt-2">
               {/* User Info */}
-              <div className="bg-gray-50 rounded-xl p-4">
+              <div className="rounded-xl border border-gray-100 bg-gray-50/90 p-4">
                 <p className="text-gray-900 text-sm font-medium">
                   {selectedWallet.user.firstName} {selectedWallet.user.lastName}
                 </p>
                 <p className="text-gray-500 text-sm">{selectedWallet.user.email}</p>
                 <div className="flex items-center gap-2 mt-2">
-                  <Wallet className="h-4 w-4 text-blue-400" />
+                  <Wallet className="h-4 w-4 text-primary" />
                   <span className="text-gray-900 font-medium">
                     Số dư hiện tại: {formatCurrency(selectedWallet.balance)}
                   </span>
@@ -313,7 +322,7 @@ export function AdminWalletPage() {
                   Hủy
                 </Button>
                 <Button
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-600"
+                  className={`flex-1 ${adminBtnPrimaryClass}`}
                   onClick={handleAdjust}
                   disabled={isAdjusting || !adjustAmount || !adjustReason.trim()}
                 >
@@ -324,6 +333,6 @@ export function AdminWalletPage() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </AdminPageLayout>
   );
 }

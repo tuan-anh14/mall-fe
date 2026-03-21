@@ -11,10 +11,12 @@ import {
   Menu,
   History,
   Wallet,
+  Shield,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { User } from "../types";
+import { cn } from "./ui/utils";
 
 interface AdminHeaderProps {
   currentPage: string;
@@ -37,97 +39,133 @@ const navItems = [
 
 export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-red-700 bg-red-700">
-      <div className="bg-red-800 px-4 py-1.5 text-center">
-        <p className="text-xs text-white font-medium">Admin Dashboard — Shop MALL</p>
-      </div>
+    <header className="sticky top-0 z-50 w-full border-b border-blue-800 bg-primary shadow-md">
+      {/* Cùng họ màu với Kênh người bán (primary #1A56DB) */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-sky-300/90 via-white/40 to-indigo-300/80" aria-hidden />
 
-      <div className="container mx-auto px-4">
-        <div className="flex h-14 items-center gap-4">
-          {/* Mobile Menu */}
+      <div className="container mx-auto max-w-7xl px-4">
+        <div className="flex h-[3.25rem] items-center gap-3 sm:gap-4">
           <Sheet>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 text-blue-100 hover:bg-white/15 hover:text-white"
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[260px] bg-white border-gray-200">
-              <nav className="flex flex-col gap-2 mt-8">
-                {navItems.map(({ page, label, icon: Icon }) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "ghost"}
-                    className="justify-start"
-                    onClick={() => onNavigate(page)}
-                  >
-                    <Icon className="h-4 w-4 mr-2" />
-                    {label}
-                  </Button>
-                ))}
+            <SheetContent
+              side="left"
+              className="flex w-[min(100%,280px)] flex-col border-slate-200 bg-white p-0"
+            >
+              <div className="border-b border-blue-800/20 bg-primary px-4 py-4 text-white">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
+                    <Shield className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">Quản trị</p>
+                    <p className="text-[11px] text-blue-100">Shop MALL</p>
+                  </div>
+                </div>
+              </div>
+              <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+                {navItems.map(({ page, label, icon: Icon }) => {
+                  const active = currentPage === page;
+                  return (
+                    <button
+                      key={page}
+                      type="button"
+                      onClick={() => onNavigate(page)}
+                      className={cn(
+                        "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors",
+                        active
+                          ? "border border-blue-100 bg-blue-50 text-blue-900 shadow-sm"
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          "h-4 w-4 shrink-0",
+                          active ? "text-primary" : "text-slate-400",
+                        )}
+                      />
+                      {label}
+                    </button>
+                  );
+                })}
+                <div className="my-2 border-t border-slate-100" />
                 <Button
                   variant="ghost"
-                  className="justify-start text-white/80 mt-4"
+                  className="justify-start rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                   onClick={() => onNavigate("home")}
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Về trang chủ
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  Về cửa hàng
                 </Button>
               </nav>
             </SheetContent>
           </Sheet>
 
-          {/* Logo */}
-          <div
-            className="flex items-center gap-2 cursor-pointer"
+          <button
+            type="button"
             onClick={() => onNavigate("admin-dashboard")}
+            className="flex min-w-0 items-center gap-2 rounded-xl py-1 text-left transition-opacity hover:opacity-90"
           >
-            <div className="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center">
-              <LayoutDashboard className="h-4 w-4 text-white" />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/20">
+              <Shield className="h-4 w-4 text-white" />
             </div>
-            <span className="text-base font-semibold text-white hidden sm:block">Admin</span>
-          </div>
+            <div className="hidden min-w-0 sm:block">
+              <p className="truncate text-sm font-semibold text-white">Quản trị</p>
+              <p className="truncate text-[11px] text-blue-100">Shop MALL</p>
+            </div>
+          </button>
 
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-1 flex-1">
-            {navItems.map(({ page, label, icon: Icon }) => (
-              <Button
-                key={page}
-                variant={currentPage === page ? "default" : "ghost"}
-                size="sm"
-                onClick={() => onNavigate(page)}
-                className={
-                  currentPage === page
-                    ? "bg-red-600/90 hover:bg-red-700 text-white"
-                    : "text-white/70 hover:text-white"
-                }
-              >
-                <Icon className="h-4 w-4 mr-1.5" />
-                {label}
-              </Button>
-            ))}
+          <nav className="hidden min-w-0 flex-1 items-center gap-0.5 overflow-x-auto py-1 [scrollbar-width:thin] lg:flex">
+            {navItems.map(({ page, label, icon: Icon }) => {
+              const active = currentPage === page;
+              return (
+                <Button
+                  key={page}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onNavigate(page)}
+                  className={cn(
+                    "h-8 shrink-0 rounded-lg px-2.5 text-xs font-medium sm:h-9 sm:px-3 sm:text-sm",
+                    active
+                      ? "bg-white/20 text-white hover:bg-white/25 hover:text-white"
+                      : "text-blue-100 hover:bg-white/10 hover:text-white",
+                  )}
+                >
+                  <Icon className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  {label}
+                </Button>
+              );
+            })}
           </nav>
 
-          {/* Right side */}
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
             <Button
               variant="ghost"
               size="sm"
-              className="text-white/50 hover:text-white hidden md:flex"
+              className="hidden text-blue-100 hover:bg-white/10 hover:text-white md:inline-flex"
               onClick={() => onNavigate("home")}
             >
-              <ShoppingCart className="h-4 w-4 mr-1.5" />
-              Shop
+              <ShoppingCart className="mr-1.5 h-4 w-4" />
+              Cửa hàng
             </Button>
             {user && (
-              <span className="text-white/80 text-sm hidden md:block">
+              <span className="hidden max-w-[8rem] truncate text-xs text-blue-100 lg:inline lg:max-w-[10rem] lg:text-sm lg:text-white">
                 {user.name}
               </span>
             )}
             <Button
               variant="ghost"
               size="icon"
-              className="text-white/80 hover:text-red-400"
+              className="text-blue-100 hover:bg-white/10 hover:text-white"
               onClick={onLogout}
+              title="Đăng xuất"
             >
               <LogOut className="h-4 w-4" />
             </Button>

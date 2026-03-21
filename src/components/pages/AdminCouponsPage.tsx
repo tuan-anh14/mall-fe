@@ -24,6 +24,17 @@ import {
 } from "../ui/alert-dialog";
 import { get, post, put, del } from "../../lib/api";
 import { toast } from "sonner";
+import {
+  AdminPageLayout,
+  AdminSpinner,
+  adminPanelClass,
+  adminFormPanelClass,
+  adminTheadRowClass,
+  adminThClass,
+  adminTrClass,
+  adminPaginationBarClass,
+  adminBtnPrimaryClass,
+} from "../admin/AdminPageLayout";
 
 interface Coupon {
   id: string;
@@ -173,22 +184,21 @@ export function AdminCouponsPage() {
     coupon.validUntil && new Date(coupon.validUntil) < new Date();
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý mã giảm giá</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{total} mã giảm giá</p>
-        </div>
-        <Button onClick={openCreate} className="bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700">
-          <Plus className="h-4 w-4 mr-2" />
+    <AdminPageLayout
+      title="Quản lý mã giảm giá"
+      description={`${total.toLocaleString("vi-VN")} mã trong hệ thống`}
+      actions={
+        <Button onClick={openCreate} className={adminBtnPrimaryClass}>
+          <Plus className="mr-2 h-4 w-4" />
           Thêm mã
         </Button>
-      </div>
-
-      {/* Form */}
+      }
+    >
       {showForm && (
-        <Card className="bg-gray-50 border-blue-500/30 p-5">
-          <h3 className="text-gray-900 font-semibold mb-4">{editTarget ? "Sửa mã giảm giá" : "Tạo mã giảm giá mới"}</h3>
+        <Card className={adminFormPanelClass}>
+          <h3 className="mb-4 font-semibold text-gray-900">
+            {editTarget ? "Sửa mã giảm giá" : "Tạo mã giảm giá mới"}
+          </h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div>
               <label className="text-gray-500 text-xs mb-1 block">Mã code *</label>
@@ -248,7 +258,7 @@ export function AdminCouponsPage() {
             </div>
           </div>
           <div className="flex gap-2 mt-4">
-            <Button size="sm" onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+            <Button size="sm" onClick={handleSave} disabled={saving} className={adminBtnPrimaryClass}>
               <Check className="h-4 w-4 mr-1" />
               {saving ? "Đang lưu..." : "Lưu"}
             </Button>
@@ -260,27 +270,25 @@ export function AdminCouponsPage() {
         </Card>
       )}
 
-      <Card className="bg-gray-50 border-gray-200 overflow-hidden">
+      <Card className={adminPanelClass}>
         {loading ? (
-          <div className="flex justify-center items-center h-48">
-            <div className="w-6 h-6 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
-          </div>
+          <AdminSpinner />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[700px]">
               <thead>
-                <tr className="border-b border-gray-200 text-left">
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Mã code</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Tên / Mô tả</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Loại</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Giá trị</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Đã dùng</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Hiệu lực</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Trạng thái</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium text-right">Hành động</th>
+                <tr className={adminTheadRowClass}>
+                  <th className={adminThClass}>Mã code</th>
+                  <th className={adminThClass}>Tên / Mô tả</th>
+                  <th className={adminThClass}>Loại</th>
+                  <th className={adminThClass}>Giá trị</th>
+                  <th className={adminThClass}>Đã dùng</th>
+                  <th className={adminThClass}>Hiệu lực</th>
+                  <th className={adminThClass}>Trạng thái</th>
+                  <th className={`${adminThClass} text-right`}>Hành động</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {coupons.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-6 py-16 text-center">
@@ -289,7 +297,7 @@ export function AdminCouponsPage() {
                     </td>
                   </tr>
                 ) : coupons.map((coupon) => (
-                  <tr key={coupon.id} className="hover:bg-gray-50">
+                  <tr key={coupon.id} className={adminTrClass}>
                     <td className="px-6 py-4">
                       <span className="text-gray-900 font-mono font-semibold text-sm flex items-center gap-1.5">
                         <Tag className="h-3.5 w-3.5 text-blue-400" />
@@ -323,9 +331,9 @@ export function AdminCouponsPage() {
                       {isExpired(coupon) ? (
                         <Badge className="bg-zinc-500/20 text-zinc-400 border-0">Hết hạn</Badge>
                       ) : coupon.isActive ? (
-                        <Badge className="bg-green-500/20 text-green-400 border-0">Đang dùng</Badge>
+                        <Badge className="border-0 bg-emerald-50 font-medium text-emerald-800">Đang dùng</Badge>
                       ) : (
-                        <Badge className="bg-red-500/20 text-red-400 border-0">Tắt</Badge>
+                        <Badge className="border-0 bg-slate-100 text-slate-600 hover:bg-slate-100">Tắt</Badge>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -347,8 +355,8 @@ export function AdminCouponsPage() {
       </Card>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-gray-400 text-sm">Trang {page} / {totalPages}</p>
+        <div className={adminPaginationBarClass}>
+          <p className="text-sm text-gray-500">Trang {page} / {totalPages}</p>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}><ChevronLeft className="h-4 w-4" /></Button>
             <Button variant="ghost" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}><ChevronRight className="h-4 w-4" /></Button>
@@ -370,6 +378,6 @@ export function AdminCouponsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </AdminPageLayout>
   );
 }

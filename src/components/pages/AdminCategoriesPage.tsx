@@ -16,6 +16,16 @@ import {
 } from "../ui/alert-dialog";
 import { get, post, put, del } from "../../lib/api";
 import { toast } from "sonner";
+import {
+  AdminPageLayout,
+  AdminSpinner,
+  adminPanelClass,
+  adminFormPanelClass,
+  adminTheadRowClass,
+  adminThClass,
+  adminTrClass,
+  adminBtnPrimaryClass,
+} from "../admin/AdminPageLayout";
 
 interface Category {
   id: string;
@@ -112,25 +122,21 @@ export function AdminCategoriesPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý danh mục</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{categories.length} danh mục</p>
-        </div>
-        <Button
-          onClick={openCreate}
-          className="bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700"
-        >
-          <Plus className="h-4 w-4 mr-2" />
+    <AdminPageLayout
+      title="Quản lý danh mục"
+      description={`${categories.length} danh mục sản phẩm`}
+      actions={
+        <Button onClick={openCreate} className={adminBtnPrimaryClass}>
+          <Plus className="mr-2 h-4 w-4" />
           Thêm danh mục
         </Button>
-      </div>
-
-      {/* Form */}
+      }
+    >
       {showForm && (
-        <Card className="bg-white border-blue-500/30 p-5">
-          <h3 className="text-gray-900 font-semibold mb-4">{editTarget ? "Sửa danh mục" : "Thêm danh mục mới"}</h3>
+        <Card className={adminFormPanelClass}>
+          <h3 className="mb-4 font-semibold text-gray-900">
+            {editTarget ? "Sửa danh mục" : "Thêm danh mục mới"}
+          </h3>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <label className="text-gray-500 text-xs mb-1 block">Tên danh mục *</label>
@@ -170,7 +176,7 @@ export function AdminCategoriesPage() {
             </div>
           </div>
           <div className="flex gap-2 mt-4">
-            <Button size="sm" onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+            <Button size="sm" onClick={handleSave} disabled={saving} className={adminBtnPrimaryClass}>
               <Check className="h-4 w-4 mr-1" />
               {saving ? "Đang lưu..." : "Lưu"}
             </Button>
@@ -182,32 +188,39 @@ export function AdminCategoriesPage() {
         </Card>
       )}
 
-      {/* Category Table */}
-      <Card className="bg-white border-gray-200 overflow-hidden">
+      <Card className={adminPanelClass}>
         {loading ? (
-          <div className="flex justify-center items-center h-48">
-            <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
+          <AdminSpinner />
+        ) : categories.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+            <p className="text-sm">Chưa có danh mục nào</p>
+            <Button variant="link" className="mt-2 text-primary" onClick={openCreate}>
+              Thêm danh mục đầu tiên
+            </Button>
           </div>
         ) : (
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px]">
             <thead>
-              <tr className="border-b border-gray-200 text-left">
-                <th className="px-4 py-3 text-gray-500 text-sm font-medium">Tên</th>
-                <th className="px-4 py-3 text-gray-500 text-sm font-medium">Slug</th>
-                <th className="px-4 py-3 text-gray-500 text-sm font-medium">Icon</th>
-                <th className="px-4 py-3 text-gray-500 text-sm font-medium">Sản phẩm</th>
-                <th className="px-4 py-3 text-gray-500 text-sm font-medium">Thứ tự</th>
-                <th className="px-4 py-3 text-gray-500 text-sm font-medium text-right">Hành động</th>
+              <tr className={adminTheadRowClass}>
+                <th className={adminThClass}>Tên</th>
+                <th className={adminThClass}>Slug</th>
+                <th className={adminThClass}>Icon</th>
+                <th className={adminThClass}>Sản phẩm</th>
+                <th className={adminThClass}>Thứ tự</th>
+                <th className={`${adminThClass} text-right`}>Hành động</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {categories.map((cat) => (
-                <tr key={cat.id} className="hover:bg-gray-50">
+                <tr key={cat.id} className={adminTrClass}>
                   <td className="px-4 py-3 text-gray-900 font-medium">{cat.name}</td>
                   <td className="px-4 py-3 text-gray-500 text-sm font-mono">{cat.slug}</td>
                   <td className="px-4 py-3 text-gray-500 text-sm">{cat.icon || "—"}</td>
-                  <td className="px-4 py-3">
-                    <Badge className="bg-blue-500/20 text-blue-400 border-0">{cat._count.products}</Badge>
+                  <td className="px-4 py-3 sm:px-6">
+                    <Badge className="border-0 bg-blue-50 font-medium text-blue-800">
+                      {cat._count.products}
+                    </Badge>
                   </td>
                   <td className="px-4 py-3 text-gray-500 text-sm">{cat.sortOrder}</td>
                   <td className="px-4 py-3">
@@ -234,6 +247,7 @@ export function AdminCategoriesPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </Card>
 
@@ -251,6 +265,6 @@ export function AdminCategoriesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </AdminPageLayout>
   );
 }

@@ -515,7 +515,13 @@ export default function App() {
         />
       )}
 
-      <main className="flex-1">
+      <main
+        className={
+          showAdminHeader
+            ? "flex-1 min-h-0 bg-gray-50/50"
+            : "flex-1 min-h-0"
+        }
+      >
         <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* Public pages */}

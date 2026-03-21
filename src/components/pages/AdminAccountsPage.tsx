@@ -30,6 +30,16 @@ import {
 import { Label } from "../ui/label";
 import { get, put, del, post } from "../../lib/api";
 import { toast } from "sonner";
+import {
+  AdminPageLayout,
+  AdminSpinner,
+  adminPanelClass,
+  adminTheadRowClass,
+  adminThClass,
+  adminTrClass,
+  adminPaginationBarClass,
+  adminBtnPrimaryClass,
+} from "../admin/AdminPageLayout";
 
 interface Account {
   id: string;
@@ -176,30 +186,30 @@ export function AdminAccountsPage() {
   const hasActiveFilter = search || userTypeFilter !== "ALL";
 
   const typeBadge = (type: string) => {
-    if (type === "ADMIN") return <Badge className="bg-red-500/20 text-red-400 border-0">Admin</Badge>;
-    if (type === "SELLER") return <Badge className="bg-blue-50 text-blue-600 border-0">Seller</Badge>;
-    return <Badge className="bg-blue-500/20 text-blue-400 border-0">Buyer</Badge>;
+    if (type === "ADMIN")
+      return (
+        <Badge className="border border-blue-200 bg-blue-100 text-blue-900 hover:bg-blue-100">Admin</Badge>
+      );
+    if (type === "SELLER")
+      return (
+        <Badge className="border-0 bg-emerald-50 text-emerald-800 hover:bg-emerald-50">Seller</Badge>
+      );
+    return <Badge className="border-0 bg-slate-100 text-slate-700 hover:bg-slate-100">Buyer</Badge>;
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý tài khoản</h1>
-          <p className="text-gray-400 text-sm mt-0.5">{total} tài khoản</p>
-        </div>
-        <Button
-          onClick={() => setShowCreateDialog(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
-        >
-          <Plus className="h-4 w-4 mr-1" />
+    <AdminPageLayout
+      title="Quản lý tài khoản"
+      description={`${total.toLocaleString("vi-VN")} tài khoản trong hệ thống`}
+      actions={
+        <Button onClick={() => setShowCreateDialog(true)} className={adminBtnPrimaryClass}>
+          <Plus className="mr-1 h-4 w-4" />
           Tạo tài khoản
         </Button>
-      </div>
-
+      }
+    >
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 items-center">
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm">
         <div className="flex gap-2 flex-1 min-w-0">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -243,16 +253,16 @@ export function AdminAccountsPage() {
       </div>
 
       {/* Table */}
-      <Card className="bg-white border-gray-200 overflow-hidden">
+      <Card className={adminPanelClass}>
         {loading ? (
-          <div className="flex justify-center items-center h-48">
-            <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
-          </div>
+          <AdminSpinner />
         ) : accounts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-            <Users className="h-12 w-12 mb-3 opacity-40" />
-            <p className="text-lg">Không có dữ liệu</p>
-            <p className="text-sm mt-1">
+          <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+            <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100">
+              <Users className="h-7 w-7 text-gray-400" />
+            </div>
+            <p className="text-base font-semibold text-gray-900">Không có dữ liệu</p>
+            <p className="mt-1 text-sm text-gray-500">
               {hasActiveFilter
                 ? "Không tìm thấy tài khoản nào phù hợp với bộ lọc"
                 : "Chưa có tài khoản nào"}
@@ -267,19 +277,19 @@ export function AdminAccountsPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[750px]">
               <thead>
-                <tr className="border-b border-gray-200 text-left">
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Người dùng</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Loại</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Email</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Đơn hàng</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Reviews</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Ngày tạo</th>
-                  <th className="px-6 py-4 text-gray-500 text-sm font-medium text-right">Hành động</th>
+                <tr className={adminTheadRowClass}>
+                  <th className={adminThClass}>Người dùng</th>
+                  <th className={adminThClass}>Loại</th>
+                  <th className={adminThClass}>Email</th>
+                  <th className={adminThClass}>Đơn hàng</th>
+                  <th className={adminThClass}>Reviews</th>
+                  <th className={adminThClass}>Ngày tạo</th>
+                  <th className={`${adminThClass} text-right`}>Hành động</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {accounts.map((acc) => (
-                  <tr key={acc.id} className="border-gray-200 hover:bg-gray-50 transition-colors">
+                  <tr key={acc.id} className={adminTrClass}>
                     <td className="px-6 py-4">
                       <div>
                         <p className="text-gray-900 text-sm font-medium">{acc.firstName} {acc.lastName}</p>
@@ -352,8 +362,10 @@ export function AdminAccountsPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-gray-400 text-sm">Trang {page} / {totalPages} ({total} tài khoản)</p>
+        <div className={adminPaginationBarClass}>
+          <p className="text-sm text-gray-500">
+            Trang {page} / {totalPages} ({total.toLocaleString("vi-VN")} tài khoản)
+          </p>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
               <ChevronLeft className="h-4 w-4" />
@@ -404,9 +416,7 @@ export function AdminAccountsPage() {
             <DialogTitle className="text-gray-900">Chi tiết tài khoản</DialogTitle>
           </DialogHeader>
           {detailLoading ? (
-            <div className="flex justify-center py-8">
-              <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
-            </div>
+            <AdminSpinner className="min-h-[8rem]" label="Đang tải chi tiết…" />
           ) : detailAccount ? (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -550,12 +560,12 @@ export function AdminAccountsPage() {
             <Button variant="ghost" className="border border-gray-200 text-gray-700" onClick={() => { setShowCreateDialog(false); setCreateForm(emptyCreateForm); }}>
               Hủy
             </Button>
-            <Button onClick={handleCreate} disabled={creating} className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button onClick={handleCreate} disabled={creating} className={adminBtnPrimaryClass}>
               {creating ? "Đang tạo..." : "Tạo tài khoản"}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </AdminPageLayout>
   );
 }

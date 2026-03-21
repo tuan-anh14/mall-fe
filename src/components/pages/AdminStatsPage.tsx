@@ -15,9 +15,9 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
+import { AdminPageLayout, AdminSpinner, adminPanelClass } from "../admin/AdminPageLayout";
 
 interface MonthlyData {
   month: string;
@@ -59,120 +59,194 @@ export function AdminStatsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 rounded-full border-4 border-red-500/30 border-t-red-500 animate-spin" />
-      </div>
+      <AdminPageLayout
+        title="Báo cáo thống kê"
+        description={`Năm ${new Date().getFullYear()}`}
+      >
+        <AdminSpinner className="min-h-[40vh]" />
+      </AdminPageLayout>
     );
   }
 
   const tooltipStyle = {
-    contentStyle: { backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8 },
-    labelStyle: { color: '#374151' },
+    contentStyle: {
+      backgroundColor: "#ffffff",
+      border: "1px solid #e5e7eb",
+      borderRadius: 12,
+      boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+    },
+    labelStyle: { color: "#374151", fontWeight: 600 },
   };
 
-  return (
-    <div className="container mx-auto px-4 py-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Báo cáo thống kê</h1>
-        <p className="text-gray-500 text-sm mt-0.5">Năm {new Date().getFullYear()}</p>
-      </div>
+  const chartWrap = "border-b border-gray-100 px-5 py-4";
+  const chartBody = "bg-gray-50/80 px-3 py-4 sm:px-5";
 
-      {/* KPI Cards */}
+  return (
+    <AdminPageLayout
+      title="Báo cáo thống kê"
+      description={`Số liệu tổng hợp năm ${new Date().getFullYear()}`}
+    >
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-gray-200 p-4">
-            <Users className="h-5 w-5 text-blue-400 mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{stats.totalUsers.toLocaleString()}</p>
-            <p className="text-gray-500 text-xs">Tổng người dùng</p>
-            <p className="text-blue-400/70 text-xs mt-1">+{stats.newUsersThisMonth} tháng này</p>
-          </Card>
-          <Card className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border-gray-200 p-4">
-            <DollarSign className="h-5 w-5 text-yellow-400 mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{formatCurrencyCompact(stats.totalRevenue)}</p>
-            <p className="text-gray-500 text-xs">Tổng doanh thu</p>
-            <p className="text-yellow-400/70 text-xs mt-1">{stats.totalOrders} đơn hàng</p>
-          </Card>
-          <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-gray-200 p-4">
-            <ShoppingBag className="h-5 w-5 text-blue-400 mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{stats.totalSellers.toLocaleString()}</p>
-            <p className="text-gray-500 text-xs">Người bán</p>
-            <p className="text-blue-400/70 text-xs mt-1">{stats.pendingSellerRequests} chờ duyệt</p>
-          </Card>
-          <Card className="bg-gradient-to-br from-green-500/20 to-green-600/20 border-gray-200 p-4">
-            <Package className="h-5 w-5 text-green-400 mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{stats.totalProducts.toLocaleString()}</p>
-            <p className="text-gray-500 text-xs">Sản phẩm</p>
-            <p className="text-green-400/70 text-xs mt-1">{stats.totalCategories} danh mục</p>
-          </Card>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+          {[
+            {
+              label: "Tổng người dùng",
+              value: stats.totalUsers.toLocaleString("vi-VN"),
+              sub: `+${stats.newUsersThisMonth} tháng này`,
+              icon: Users,
+              bar: "bg-blue-500",
+              box: "border-blue-100 bg-blue-50 text-primary",
+            },
+            {
+              label: "Tổng doanh thu",
+              value: formatCurrencyCompact(stats.totalRevenue),
+              sub: `${stats.totalOrders.toLocaleString("vi-VN")} đơn`,
+              icon: DollarSign,
+              bar: "bg-amber-500",
+              box: "border-amber-100 bg-amber-50 text-amber-700",
+            },
+            {
+              label: "Người bán",
+              value: stats.totalSellers.toLocaleString("vi-VN"),
+              sub: `${stats.pendingSellerRequests} chờ duyệt`,
+              icon: ShoppingBag,
+              bar: "bg-indigo-500",
+              box: "border-indigo-100 bg-indigo-50 text-indigo-700",
+            },
+            {
+              label: "Sản phẩm",
+              value: stats.totalProducts.toLocaleString("vi-VN"),
+              sub: `${stats.totalCategories} danh mục`,
+              icon: Package,
+              bar: "bg-emerald-500",
+              box: "border-emerald-100 bg-emerald-50 text-emerald-700",
+            },
+          ].map((c) => {
+            const Icon = c.icon;
+            return (
+              <Card key={c.label} className={`relative overflow-hidden ${adminPanelClass} p-4`}>
+                <div className={`absolute bottom-3 left-0 top-3 w-1 rounded-full ${c.bar}`} />
+                <div className="pl-2.5">
+                  <div
+                    className={`mb-2 flex h-10 w-10 items-center justify-center rounded-xl border ${c.box}`}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <p className="text-xl font-bold tabular-nums text-gray-900">{c.value}</p>
+                  <p className="text-xs font-medium text-gray-600">{c.label}</p>
+                  <p className="mt-0.5 text-[11px] text-gray-400">{c.sub}</p>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       )}
 
-      {/* Revenue Chart */}
-      <Card className="bg-white border-gray-200 p-5">
-        <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-yellow-400" />
-          Doanh thu theo tháng
-        </h3>
-        <ResponsiveContainer width="100%" height={250}>
-          <AreaChart data={salesData}>
-            <defs>
-              <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
-            <XAxis dataKey="month" stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
-            <YAxis stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => formatCurrencyCompact(v as number)} />
-            <Tooltip {...tooltipStyle} formatter={(v: number) => [formatCurrency(v), 'Doanh thu']} />
-            <Area type="monotone" dataKey="revenue" stroke="#f59e0b" fill="url(#revenueGrad)" strokeWidth={2} />
-          </AreaChart>
-        </ResponsiveContainer>
+      <Card className={adminPanelClass}>
+        <div className={chartWrap}>
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-primary">
+              <DollarSign className="h-4 w-4" />
+            </span>
+            Doanh thu theo tháng
+          </h3>
+          <p className="mt-0.5 text-xs text-gray-500">Biểu đồ vùng — đơn vị theo cài đặt hệ thống</p>
+        </div>
+        <div className={chartBody}>
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart data={salesData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="revenueGradAdmin" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#1A56DB" stopOpacity={0.22} />
+                  <stop offset="95%" stopColor="#1A56DB" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+              <XAxis dataKey="month" stroke="rgba(0,0,0,0.25)" tick={{ fontSize: 11 }} />
+              <YAxis
+                stroke="rgba(0,0,0,0.25)"
+                tick={{ fontSize: 11 }}
+                tickFormatter={(v) => formatCurrencyCompact(v as number)}
+                width={56}
+              />
+              <Tooltip {...tooltipStyle} formatter={(v: number) => [formatCurrency(v), "Doanh thu"]} />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="#1A56DB"
+                fill="url(#revenueGradAdmin)"
+                strokeWidth={2}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </Card>
 
-      {/* Orders + Users Charts */}
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card className="bg-white border-gray-200 p-5">
-          <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
-            <ShoppingBag className="h-4 w-4 text-blue-400" />
-            Đơn hàng theo tháng
-          </h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
-              <XAxis dataKey="month" stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
-              <YAxis stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
-              <Tooltip {...tooltipStyle} formatter={(v: number) => [v, 'Đơn hàng']} />
-              <Bar dataKey="orders" fill="#7c3aed" radius={[3, 3, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+      <div className="grid gap-4 lg:grid-cols-2 lg:gap-6">
+        <Card className={adminPanelClass}>
+          <div className={chartWrap}>
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+                <ShoppingBag className="h-4 w-4" />
+              </span>
+              Đơn hàng theo tháng
+            </h3>
+          </div>
+          <div className={chartBody}>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={salesData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+                <XAxis dataKey="month" stroke="rgba(0,0,0,0.25)" tick={{ fontSize: 11 }} />
+                <YAxis stroke="rgba(0,0,0,0.25)" tick={{ fontSize: 11 }} width={36} />
+                <Tooltip {...tooltipStyle} formatter={(v: number) => [v, "Đơn hàng"]} />
+                <Bar dataKey="orders" fill="#7c3aed" radius={[6, 6, 0, 0]} maxBarSize={48} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </Card>
 
-        <Card className="bg-white border-gray-200 p-5">
-          <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
-            <Users className="h-4 w-4 text-blue-400" />
-            Người dùng mới theo tháng
-          </h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
-              <XAxis dataKey="month" stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
-              <YAxis stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
-              <Tooltip {...tooltipStyle} formatter={(v: number) => [v, 'Người dùng']} />
-              <Line type="monotone" dataKey="users" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
-            </LineChart>
-          </ResponsiveContainer>
+        <Card className={adminPanelClass}>
+          <div className={chartWrap}>
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-primary">
+                <Users className="h-4 w-4" />
+              </span>
+              Người dùng mới theo tháng
+            </h3>
+          </div>
+          <div className={chartBody}>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={salesData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+                <XAxis dataKey="month" stroke="rgba(0,0,0,0.25)" tick={{ fontSize: 11 }} />
+                <YAxis stroke="rgba(0,0,0,0.25)" tick={{ fontSize: 11 }} width={36} />
+                <Tooltip {...tooltipStyle} formatter={(v: number) => [v, "Người dùng"]} />
+                <Line
+                  type="monotone"
+                  dataKey="users"
+                  stroke="#1A56DB"
+                  strokeWidth={2.5}
+                  dot={{ r: 3, fill: "#1A56DB", strokeWidth: 0 }}
+                  activeDot={{ r: 5 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </Card>
       </div>
 
-      {/* Summary Table */}
       {stats && (
-        <Card className="bg-white border-gray-200 p-5">
-          <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-green-400" />
-            Tóm tắt hệ thống
-          </h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className={adminPanelClass}>
+          <div className="border-b border-gray-100 px-5 py-4">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                <TrendingUp className="h-4 w-4" />
+              </span>
+              Tóm tắt hệ thống
+            </h3>
+            <p className="mt-0.5 text-xs text-gray-500">Chỉ số chi tiết</p>
+          </div>
+          <div className="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { label: "Tổng người dùng", value: stats.totalUsers },
               { label: "Người mua", value: stats.totalBuyers },
@@ -183,14 +257,19 @@ export function AdminStatsPage() {
               { label: "Mã giảm giá", value: stats.totalCoupons },
               { label: "Chờ duyệt Seller", value: stats.pendingSellerRequests },
             ].map(({ label, value }) => (
-              <div key={label} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <span className="text-gray-500 text-sm">{label}</span>
-                <span className="text-gray-900 font-semibold">{value.toLocaleString()}</span>
+              <div
+                key={label}
+                className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50/80 px-3 py-2.5"
+              >
+                <span className="text-sm text-gray-600">{label}</span>
+                <span className="font-semibold tabular-nums text-gray-900">
+                  {value.toLocaleString("vi-VN")}
+                </span>
               </div>
             ))}
           </div>
         </Card>
       )}
-    </div>
+    </AdminPageLayout>
   );
 }

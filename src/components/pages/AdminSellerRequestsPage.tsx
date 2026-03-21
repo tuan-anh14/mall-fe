@@ -19,6 +19,7 @@ import {
 } from "../ui/select";
 import { get, put } from "../../lib/api";
 import { toast } from "sonner";
+import { AdminPageLayout, AdminSpinner, adminPanelClass, adminBtnPrimaryClass } from "../admin/AdminPageLayout";
 
 interface SellerRequest {
   id: string;
@@ -79,42 +80,61 @@ export function AdminSellerRequestsPage() {
   };
 
   const statusBadge = (status: string) => {
-    if (status === "PENDING") return <Badge className="bg-yellow-500/20 text-yellow-400 border-0 gap-1"><Clock className="h-3 w-3" />Chờ duyệt</Badge>;
-    if (status === "APPROVED") return <Badge className="bg-green-500/20 text-green-400 border-0 gap-1"><CheckCircle className="h-3 w-3" />Đã duyệt</Badge>;
-    return <Badge className="bg-red-500/20 text-red-400 border-0 gap-1"><XCircle className="h-3 w-3" />Từ chối</Badge>;
+    if (status === "PENDING")
+      return (
+        <Badge className="gap-1 border-0 bg-amber-50 font-medium text-amber-900">
+          <Clock className="h-3 w-3" />
+          Chờ duyệt
+        </Badge>
+      );
+    if (status === "APPROVED")
+      return (
+        <Badge className="gap-1 border-0 bg-emerald-50 font-medium text-emerald-800">
+          <CheckCircle className="h-3 w-3" />
+          Đã duyệt
+        </Badge>
+      );
+    return (
+      <Badge className="gap-1 border-0 bg-red-50 font-medium text-red-800">
+        <XCircle className="h-3 w-3" />
+        Từ chối
+      </Badge>
+    );
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Duyệt đăng ký Seller</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{requests.length} yêu cầu</p>
-        </div>
+    <AdminPageLayout
+      title="Duyệt đăng ký Seller"
+      description={`${requests.length} yêu cầu — bộ lọc: ${filter === "PENDING" ? "chờ duyệt" : filter === "APPROVED" ? "đã duyệt" : "từ chối"}`}
+      actions={
         <Select value={filter} onValueChange={setFilter}>
-          <SelectTrigger className="w-44 bg-gray-50 border-gray-200 text-gray-900">
+          <SelectTrigger className="w-44 rounded-xl border-gray-200 bg-white text-gray-900 shadow-sm">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-white border-gray-200">
-            <SelectItem value="PENDING" className="text-gray-900">Chờ duyệt</SelectItem>
-            <SelectItem value="APPROVED" className="text-gray-900">Đã duyệt</SelectItem>
-            <SelectItem value="REJECTED" className="text-gray-900">Từ chối</SelectItem>
+          <SelectContent className="border-gray-200 bg-white">
+            <SelectItem value="PENDING" className="text-gray-900">
+              Chờ duyệt
+            </SelectItem>
+            <SelectItem value="APPROVED" className="text-gray-900">
+              Đã duyệt
+            </SelectItem>
+            <SelectItem value="REJECTED" className="text-gray-900">
+              Từ chối
+            </SelectItem>
           </SelectContent>
         </Select>
-      </div>
-
+      }
+    >
       {loading ? (
-        <div className="flex justify-center items-center h-48">
-          <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
-        </div>
+        <AdminSpinner />
       ) : requests.length === 0 ? (
-        <Card className="bg-white border-gray-200 flex items-center justify-center h-32">
-          <p className="text-gray-400 text-sm">Không có yêu cầu nào</p>
+        <Card className={`${adminPanelClass} flex min-h-[10rem] items-center justify-center`}>
+          <p className="text-sm text-gray-500">Không có yêu cầu nào trong bộ lọc này</p>
         </Card>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {requests.map((req) => (
-            <Card key={req.id} className="bg-white border-gray-200 p-4">
+            <Card key={req.id} className={`${adminPanelClass} p-5`}>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
@@ -128,15 +148,15 @@ export function AdminSellerRequestsPage() {
                     <span>Gửi lúc {new Date(req.createdAt).toLocaleString("vi-VN")}</span>
                   </div>
                   {req.message && (
-                    <div className="mt-2 p-3 rounded-lg bg-gray-50 border border-gray-200">
-                      <p className="text-gray-500 text-xs font-medium mb-1">Lý do đăng ký:</p>
-                      <p className="text-gray-600 text-sm">{req.message}</p>
+                    <div className="mt-3 rounded-xl border border-gray-200 bg-gray-50/80 p-3">
+                      <p className="mb-1 text-xs font-medium text-gray-500">Lý do đăng ký</p>
+                      <p className="text-sm text-gray-700">{req.message}</p>
                     </div>
                   )}
                   {req.adminNote && (
-                    <div className="mt-2 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                      <p className="text-blue-400 text-xs font-medium mb-1">Ghi chú Admin:</p>
-                      <p className="text-gray-600 text-sm">{req.adminNote}</p>
+                    <div className="mt-3 rounded-xl border border-blue-100 bg-blue-50/50 p-3">
+                      <p className="mb-1 text-xs font-medium text-primary">Ghi chú admin</p>
+                      <p className="text-sm text-gray-700">{req.adminNote}</p>
                     </div>
                   )}
                 </div>
@@ -144,8 +164,11 @@ export function AdminSellerRequestsPage() {
                   <div className="flex flex-col gap-2 flex-shrink-0">
                     <Button
                       size="sm"
-                      className="bg-green-600 hover:bg-green-700 text-white gap-1.5"
-                      onClick={() => { setReviewTarget(req); setAdminNote(""); }}
+                      className={`${adminBtnPrimaryClass} gap-1.5`}
+                      onClick={() => {
+                        setReviewTarget(req);
+                        setAdminNote("");
+                      }}
                     >
                       <CheckCircle className="h-4 w-4" />
                       Xem xét
@@ -201,7 +224,7 @@ export function AdminSellerRequestsPage() {
               Từ chối
             </Button>
             <Button
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white gap-1.5"
+              className={`flex-1 gap-1.5 ${adminBtnPrimaryClass}`}
               onClick={() => handleReview("APPROVED")}
               disabled={submitting}
             >
@@ -211,6 +234,6 @@ export function AdminSellerRequestsPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </AdminPageLayout>
   );
 }
