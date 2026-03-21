@@ -66,50 +66,50 @@ export function AdminStatsPage() {
   }
 
   const tooltipStyle = {
-    contentStyle: { backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 },
-    labelStyle: { color: 'rgba(255,255,255,0.7)' },
+    contentStyle: { backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8 },
+    labelStyle: { color: '#374151' },
   };
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Báo cáo thống kê</h1>
-        <p className="text-white/50 text-sm mt-0.5">Năm {new Date().getFullYear()}</p>
+        <h1 className="text-2xl font-bold text-gray-900">Báo cáo thống kê</h1>
+        <p className="text-gray-500 text-sm mt-0.5">Năm {new Date().getFullYear()}</p>
       </div>
 
       {/* KPI Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-white/10 p-4">
+          <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-gray-200 p-4">
             <Users className="h-5 w-5 text-blue-400 mb-2" />
-            <p className="text-2xl font-bold text-white">{stats.totalUsers.toLocaleString()}</p>
-            <p className="text-white/60 text-xs">Tổng người dùng</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.totalUsers.toLocaleString()}</p>
+            <p className="text-gray-500 text-xs">Tổng người dùng</p>
             <p className="text-blue-400/70 text-xs mt-1">+{stats.newUsersThisMonth} tháng này</p>
           </Card>
-          <Card className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border-white/10 p-4">
+          <Card className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border-gray-200 p-4">
             <DollarSign className="h-5 w-5 text-yellow-400 mb-2" />
-            <p className="text-2xl font-bold text-white">{formatCurrencyCompact(stats.totalRevenue)}</p>
-            <p className="text-white/60 text-xs">Tổng doanh thu</p>
+            <p className="text-2xl font-bold text-gray-900">{formatCurrencyCompact(stats.totalRevenue)}</p>
+            <p className="text-gray-500 text-xs">Tổng doanh thu</p>
             <p className="text-yellow-400/70 text-xs mt-1">{stats.totalOrders} đơn hàng</p>
           </Card>
-          <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-white/10 p-4">
-            <ShoppingBag className="h-5 w-5 text-purple-400 mb-2" />
-            <p className="text-2xl font-bold text-white">{stats.totalSellers.toLocaleString()}</p>
-            <p className="text-white/60 text-xs">Người bán</p>
-            <p className="text-purple-400/70 text-xs mt-1">{stats.pendingSellerRequests} chờ duyệt</p>
+          <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-gray-200 p-4">
+            <ShoppingBag className="h-5 w-5 text-blue-400 mb-2" />
+            <p className="text-2xl font-bold text-gray-900">{stats.totalSellers.toLocaleString()}</p>
+            <p className="text-gray-500 text-xs">Người bán</p>
+            <p className="text-blue-400/70 text-xs mt-1">{stats.pendingSellerRequests} chờ duyệt</p>
           </Card>
-          <Card className="bg-gradient-to-br from-green-500/20 to-green-600/20 border-white/10 p-4">
+          <Card className="bg-gradient-to-br from-green-500/20 to-green-600/20 border-gray-200 p-4">
             <Package className="h-5 w-5 text-green-400 mb-2" />
-            <p className="text-2xl font-bold text-white">{stats.totalProducts.toLocaleString()}</p>
-            <p className="text-white/60 text-xs">Sản phẩm</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.totalProducts.toLocaleString()}</p>
+            <p className="text-gray-500 text-xs">Sản phẩm</p>
             <p className="text-green-400/70 text-xs mt-1">{stats.totalCategories} danh mục</p>
           </Card>
         </div>
       )}
 
       {/* Revenue Chart */}
-      <Card className="bg-white/5 border-white/10 p-5">
-        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+      <Card className="bg-white border-gray-200 p-5">
+        <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
           <DollarSign className="h-4 w-4 text-yellow-400" />
           Doanh thu theo tháng
         </h3>
@@ -121,9 +121,9 @@ export function AdminStatsPage() {
                 <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-            <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
-            <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => formatCurrencyCompact(v as number)} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+            <XAxis dataKey="month" stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
+            <YAxis stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => formatCurrencyCompact(v as number)} />
             <Tooltip {...tooltipStyle} formatter={(v: number) => [formatCurrency(v), 'Doanh thu']} />
             <Area type="monotone" dataKey="revenue" stroke="#f59e0b" fill="url(#revenueGrad)" strokeWidth={2} />
           </AreaChart>
@@ -132,32 +132,32 @@ export function AdminStatsPage() {
 
       {/* Orders + Users Charts */}
       <div className="grid lg:grid-cols-2 gap-4">
-        <Card className="bg-white/5 border-white/10 p-5">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <ShoppingBag className="h-4 w-4 text-purple-400" />
+        <Card className="bg-white border-gray-200 p-5">
+          <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
+            <ShoppingBag className="h-4 w-4 text-blue-400" />
             Đơn hàng theo tháng
           </h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
-              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+              <XAxis dataKey="month" stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
+              <YAxis stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
               <Tooltip {...tooltipStyle} formatter={(v: number) => [v, 'Đơn hàng']} />
               <Bar dataKey="orders" fill="#7c3aed" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
 
-        <Card className="bg-white/5 border-white/10 p-5">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+        <Card className="bg-white border-gray-200 p-5">
+          <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
             <Users className="h-4 w-4 text-blue-400" />
             Người dùng mới theo tháng
           </h3>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
-              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+              <XAxis dataKey="month" stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
+              <YAxis stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
               <Tooltip {...tooltipStyle} formatter={(v: number) => [v, 'Người dùng']} />
               <Line type="monotone" dataKey="users" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
             </LineChart>
@@ -167,8 +167,8 @@ export function AdminStatsPage() {
 
       {/* Summary Table */}
       {stats && (
-        <Card className="bg-white/5 border-white/10 p-5">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+        <Card className="bg-white border-gray-200 p-5">
+          <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-green-400" />
             Tóm tắt hệ thống
           </h3>
@@ -183,9 +183,9 @@ export function AdminStatsPage() {
               { label: "Mã giảm giá", value: stats.totalCoupons },
               { label: "Chờ duyệt Seller", value: stats.pendingSellerRequests },
             ].map(({ label, value }) => (
-              <div key={label} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                <span className="text-white/60 text-sm">{label}</span>
-                <span className="text-white font-semibold">{value.toLocaleString()}</span>
+              <div key={label} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <span className="text-gray-500 text-sm">{label}</span>
+                <span className="text-gray-900 font-semibold">{value.toLocaleString()}</span>
               </div>
             ))}
           </div>

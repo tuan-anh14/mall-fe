@@ -44,15 +44,15 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
           Quay lại đăng nhập
         </Button>
 
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+        <div className="bg-white border border-gray-200 rounded-2xl p-8">
           {!submitted ? (
             <>
               <div className="mb-8 text-center">
-                <div className="h-16 w-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-4">
+                <div className="h-16 w-16 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-4">
                   <Mail className="h-8 w-8 text-white" />
                 </div>
-                <h2 className="text-2xl text-white mb-2">Quên mật khẩu?</h2>
-                <p className="text-white/60">
+                <h2 className="text-2xl text-gray-900 mb-2">Quên mật khẩu?</h2>
+                <p className="text-gray-500">
                   Đừng lo! Nhập email và chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu.
                 </p>
               </div>
@@ -61,12 +61,12 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                 <div>
                   <Label htmlFor="email">Địa chỉ email</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
                       id="email"
                       type="email"
                       placeholder="you@example.com"
-                      className="pl-10 bg-white/5 border-white/10"
+                      className="pl-10 bg-gray-50 border-gray-200"
                       {...register("email")}
                     />
                   </div>
@@ -79,7 +79,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                   type="submit"
                   size="lg"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {isSubmitting ? "Đang gửi..." : "Gửi liên kết đặt lại"}
                 </Button>
@@ -90,15 +90,15 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
               <div className="h-16 w-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-green-400" />
               </div>
-              <h2 className="text-2xl text-white mb-2">Kiểm tra email</h2>
-              <p className="text-white/60 mb-6">
-                Chúng tôi đã gửi liên kết đặt lại mật khẩu đến <strong className="text-white">{submittedEmail}</strong>
+              <h2 className="text-2xl text-gray-900 mb-2">Kiểm tra email</h2>
+              <p className="text-gray-500 mb-6">
+                Chúng tôi đã gửi liên kết đặt lại mật khẩu đến <strong className="text-gray-900">{submittedEmail}</strong>
               </p>
-              <p className="text-sm text-white/50 mb-6">
+              <p className="text-sm text-gray-400 mb-6">
                 Chưa nhận được email? Kiểm tra thư mục spam hoặc{" "}
                 <button
                   type="button"
-                  className="text-purple-400 hover:text-purple-300"
+                  className="text-blue-600 hover:text-blue-700"
                   onClick={() => setSubmitted(false)}
                 >
                   thử email khác

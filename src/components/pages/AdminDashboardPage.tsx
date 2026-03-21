@@ -70,7 +70,7 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
   const statCards = stats
     ? [
         { label: "Tổng người dùng", value: stats.totalUsers.toLocaleString(), icon: Users, color: "from-blue-500/20 to-blue-600/20", iconColor: "text-blue-400", sub: `+${stats.newUsersThisMonth} tháng này` },
-        { label: "Người bán", value: stats.totalSellers.toLocaleString(), icon: ShoppingBag, color: "from-purple-500/20 to-purple-600/20", iconColor: "text-purple-400", sub: `${stats.totalBuyers} người mua` },
+        { label: "Người bán", value: stats.totalSellers.toLocaleString(), icon: ShoppingBag, color: "from-blue-500/20 to-blue-600/20", iconColor: "text-blue-400", sub: `${stats.totalBuyers} người mua` },
         { label: "Sản phẩm", value: stats.totalProducts.toLocaleString(), icon: Package, color: "from-green-500/20 to-green-600/20", iconColor: "text-green-400", sub: `${stats.totalCategories} danh mục` },
         { label: "Tổng doanh thu", value: formatCurrencyCompact(stats.totalRevenue), icon: DollarSign, color: "from-yellow-500/20 to-yellow-600/20", iconColor: "text-yellow-400", sub: `${stats.totalOrders} đơn hàng` },
         { label: "Mã giảm giá", value: stats.totalCoupons.toLocaleString(), icon: Ticket, color: "from-pink-500/20 to-pink-600/20", iconColor: "text-pink-400", sub: "đang hoạt động" },
@@ -90,42 +90,42 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
-        <p className="text-white/50 text-sm mt-1">Tổng quan hệ thống ShopHub</p>
+        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+        <p className="text-gray-400 text-sm mt-1">Tổng quan hệ thống Shop MALL</p>
       </div>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {statCards.map(({ label, value, icon: Icon, color, iconColor, sub, alert }) => (
-          <Card key={label} className={`bg-gradient-to-br ${color} border-white/10 p-4 relative`}>
+          <Card key={label} className={`bg-gradient-to-br ${color} border-gray-200 p-4 relative`}>
             {alert && (
               <div className="absolute top-2 right-2">
                 <AlertCircle className="h-4 w-4 text-orange-400 animate-pulse" />
               </div>
             )}
             <Icon className={`h-5 w-5 ${iconColor} mb-2`} />
-            <p className="text-xl font-bold text-white">{value}</p>
-            <p className="text-white/70 text-xs font-medium">{label}</p>
-            <p className="text-white/40 text-xs mt-0.5">{sub}</p>
+            <p className="text-xl font-bold text-gray-900">{value}</p>
+            <p className="text-gray-600 text-xs font-medium">{label}</p>
+            <p className="text-gray-400 text-xs mt-0.5">{sub}</p>
           </Card>
         ))}
       </div>
 
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-4">
-        <Card className="bg-white/5 border-white/10 p-5">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+        <Card className="bg-white border-gray-200 p-5">
+          <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-yellow-400" />
             Doanh thu theo tháng
           </h3>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
-              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => formatCurrencyCompact(v as number)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+              <XAxis dataKey="month" stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
+              <YAxis stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => formatCurrencyCompact(v as number)} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
-                labelStyle={{ color: 'rgba(255,255,255,0.7)' }}
+                contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8 }}
+                labelStyle={{ color: '#374151' }}
                 formatter={(v: number) => [formatCurrency(v), 'Doanh thu']}
               />
               <Line type="monotone" dataKey="revenue" stroke="#f59e0b" strokeWidth={2} dot={false} />
@@ -133,22 +133,22 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
           </ResponsiveContainer>
         </Card>
 
-        <Card className="bg-white/5 border-white/10 p-5">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <ShoppingBag className="h-4 w-4 text-purple-400" />
+        <Card className="bg-white border-gray-200 p-5">
+          <h3 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
+            <ShoppingBag className="h-4 w-4 text-blue-600" />
             Đơn hàng theo tháng
           </h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
-              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+              <XAxis dataKey="month" stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
+              <YAxis stroke="rgba(0,0,0,0.3)" tick={{ fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
-                labelStyle={{ color: 'rgba(255,255,255,0.7)' }}
+                contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8 }}
+                labelStyle={{ color: '#374151' }}
                 formatter={(v: number) => [v, 'Đơn hàng']}
               />
-              <Bar dataKey="orders" fill="#7c3aed" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="orders" fill="#2563eb" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
@@ -156,24 +156,24 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
 
       {/* Quick Links */}
       <div>
-        <h2 className="text-lg font-semibold text-white mb-3">Truy cập nhanh</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">Truy cập nhanh</h2>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
           {quickLinks.map(({ label, page, icon: Icon, desc, badge }) => (
             <button
               key={page}
               onClick={() => onNavigate(page)}
-              className="text-left p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/[0.07] transition-all group"
+              className="text-left p-4 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 transition-all group"
             >
               <div className="flex items-start justify-between">
-                <Icon className="h-5 w-5 text-white/50 group-hover:text-white/80 transition-colors mb-2" />
+                <Icon className="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors mb-2" />
                 {badge != null && badge > 0 && (
                   <span className="text-xs bg-orange-500 text-white px-1.5 py-0.5 rounded-full">
                     {badge}
                   </span>
                 )}
               </div>
-              <p className="text-white font-medium text-sm">{label}</p>
-              <p className="text-white/40 text-xs mt-0.5">{desc}</p>
+              <p className="text-gray-900 font-medium text-sm">{label}</p>
+              <p className="text-gray-400 text-xs mt-0.5">{desc}</p>
             </button>
           ))}
         </div>

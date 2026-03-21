@@ -87,7 +87,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
-        <p className="text-white/60">Đang tải bảng điều khiển...</p>
+        <p className="text-gray-500">Đang tải bảng điều khiển...</p>
       </div>
     );
   }
@@ -96,11 +96,11 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl text-white mb-2">Bảng điều khiển</h1>
-          <p className="text-white/60">Chào mừng trở lại! Đây là tổng quan cửa hàng của bạn.</p>
+          <h1 className="text-4xl text-gray-900 mb-2">Bảng điều khiển</h1>
+          <p className="text-gray-500">Chào mừng trở lại! Đây là tổng quan cửa hàng của bạn.</p>
         </div>
         <Button
-          className="bg-gradient-to-r from-purple-600 to-blue-600"
+          className="bg-blue-600 hover:bg-blue-700 text-white"
           onClick={() => onNavigate("add-product")}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -110,17 +110,17 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/20 rounded-2xl p-6">
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="h-12 w-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-purple-400" />
+            <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center">
+              <TrendingUp className="h-6 w-6 text-blue-600" />
             </div>
             <Badge className={changeClass(stats?.revenueChange ?? 0)}>
               {changeLabel(stats?.revenueChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Tổng doanh thu</p>
-          <p className="text-3xl text-white">{formatCurrencyCompact(stats?.totalRevenue ?? 0)}</p>
+          <p className="text-sm text-gray-500 mb-1">Tổng doanh thu</p>
+          <p className="text-3xl text-gray-900">{formatCurrencyCompact(stats?.totalRevenue ?? 0)}</p>
         </div>
 
         <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-2xl p-6">
@@ -132,8 +132,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.ordersChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Tổng đơn hàng</p>
-          <p className="text-3xl text-white">{(stats?.totalOrders ?? 0).toLocaleString()}</p>
+          <p className="text-sm text-gray-500 mb-1">Tổng đơn hàng</p>
+          <p className="text-3xl text-gray-900">{(stats?.totalOrders ?? 0).toLocaleString()}</p>
         </div>
 
         <div className="bg-gradient-to-br from-pink-500/10 to-pink-600/10 border border-pink-500/20 rounded-2xl p-6">
@@ -145,8 +145,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.productsChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Sản phẩm</p>
-          <p className="text-3xl text-white">{stats?.totalProducts ?? 0}</p>
+          <p className="text-sm text-gray-500 mb-1">Sản phẩm</p>
+          <p className="text-3xl text-gray-900">{stats?.totalProducts ?? 0}</p>
         </div>
 
         <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-2xl p-6">
@@ -158,67 +158,55 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               {changeLabel(stats?.customersChange ?? 0)}
             </Badge>
           </div>
-          <p className="text-sm text-white/60 mb-1">Khách hàng</p>
-          <p className="text-3xl text-white">{((stats?.totalCustomers ?? 0) / 1000).toFixed(1)}K</p>
+          <p className="text-sm text-gray-500 mb-1">Khách hàng</p>
+          <p className="text-3xl text-gray-900">{((stats?.totalCustomers ?? 0) / 1000).toFixed(1)}K</p>
         </div>
       </div>
 
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-          <h2 className="text-xl text-white mb-6">Tổng quan doanh thu</h2>
+        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+          <h2 className="text-xl text-gray-900 mb-6">Tổng quan doanh thu</h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-              <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" />
-              <YAxis stroke="rgba(255,255,255,0.5)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+              <XAxis dataKey="month" stroke="rgba(0,0,0,0.4)" />
+              <YAxis stroke="rgba(0,0,0,0.4)" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgba(0,0,0,0.9)",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #e5e7eb",
                   borderRadius: "8px",
-                  color: "white",
+                  color: "#111827",
                 }}
               />
               <Line
                 type="monotone"
                 dataKey="revenue"
-                stroke="url(#colorRevenue)"
+                stroke="#2563eb"
                 strokeWidth={3}
                 dot={false}
               />
-              <defs>
-                <linearGradient id="colorRevenue" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#9333ea" />
-                  <stop offset="100%" stopColor="#3b82f6" />
-                </linearGradient>
-              </defs>
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-          <h2 className="text-xl text-white mb-6">Đơn hàng theo tháng</h2>
+        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+          <h2 className="text-xl text-gray-900 mb-6">Đơn hàng theo tháng</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-              <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" />
-              <YAxis stroke="rgba(255,255,255,0.5)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+              <XAxis dataKey="month" stroke="rgba(0,0,0,0.4)" />
+              <YAxis stroke="rgba(0,0,0,0.4)" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgba(0,0,0,0.9)",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #e5e7eb",
                   borderRadius: "8px",
-                  color: "white",
+                  color: "#111827",
                 }}
               />
-              <Bar dataKey="orders" fill="url(#colorOrders)" radius={[8, 8, 0, 0]} />
-              <defs>
-                <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#9333ea" />
-                  <stop offset="100%" stopColor="#3b82f6" />
-                </linearGradient>
-              </defs>
+              <Bar dataKey="orders" fill="#2563eb" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -226,18 +214,18 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
       {/* Tabs */}
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="w-full justify-start bg-white/5 border-b border-white/10 rounded-none">
+        <TabsList className="w-full">
           <TabsTrigger value="products">Sản phẩm</TabsTrigger>
           <TabsTrigger value="orders">Đơn hàng gần đây</TabsTrigger>
           <TabsTrigger value="customers">Khách hàng</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products" className="mt-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-white/10 flex justify-between items-center">
-              <h2 className="text-xl text-white">Quản lý sản phẩm</h2>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-xl text-gray-900">Quản lý sản phẩm</h2>
               <Button
-                className="bg-gradient-to-r from-purple-600 to-blue-600"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => onNavigate("add-product")}
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -246,21 +234,21 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             </div>
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white/70">Sản phẩm</TableHead>
-                  <TableHead className="text-white/70">Danh mục</TableHead>
-                  <TableHead className="text-white/70">Giá</TableHead>
-                  <TableHead className="text-white/70">Tồn kho</TableHead>
-                  <TableHead className="text-white/70">Trạng thái</TableHead>
-                  <TableHead className="text-white/70">Thao tác</TableHead>
+                <TableRow className="border-gray-200 hover:bg-gray-50">
+                  <TableHead className="text-gray-500">Sản phẩm</TableHead>
+                  <TableHead className="text-gray-500">Danh mục</TableHead>
+                  <TableHead className="text-gray-500">Giá</TableHead>
+                  <TableHead className="text-gray-500">Tồn kho</TableHead>
+                  <TableHead className="text-gray-500">Trạng thái</TableHead>
+                  <TableHead className="text-gray-500">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {products.slice(0, 6).map((product) => (
-                  <TableRow key={product.id} className="border-white/10 hover:bg-white/5">
-                    <TableCell className="text-white">
+                  <TableRow key={product.id} className="border-gray-200 hover:bg-gray-50">
+                    <TableCell className="text-gray-900">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-white/5 rounded-lg overflow-hidden">
+                        <div className="w-12 h-12 bg-gray-50 rounded-lg overflow-hidden">
                           <img
                             src={product.images[0]?.url || ""}
                             alt={product.name}
@@ -270,8 +258,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                         <span>{product.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-white/70">{product.category?.name ?? "-"}</TableCell>
-                    <TableCell className="text-white">{formatCurrency(product.price)}</TableCell>
+                    <TableCell className="text-gray-500">{product.category?.name ?? "-"}</TableCell>
+                    <TableCell className="text-gray-900">{formatCurrency(product.price)}</TableCell>
                     <TableCell>
                       <Badge
                         className={
@@ -313,7 +301,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 ))}
                 {products.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-white/60 py-8">
+                    <TableCell colSpan={6} className="text-center text-gray-500 py-8">
                       Chưa có sản phẩm
                     </TableCell>
                   </TableRow>
@@ -324,28 +312,28 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         </TabsContent>
 
         <TabsContent value="orders" className="mt-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-white/10">
-              <h2 className="text-xl text-white">Đơn hàng gần đây</h2>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-xl text-gray-900">Đơn hàng gần đây</h2>
             </div>
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white/70">Mã đơn hàng</TableHead>
-                  <TableHead className="text-white/70">Ngày</TableHead>
-                  <TableHead className="text-white/70">Khách hàng</TableHead>
-                  <TableHead className="text-white/70">Tổng</TableHead>
-                  <TableHead className="text-white/70">Trạng thái</TableHead>
-                  <TableHead className="text-white/70">Thao tác</TableHead>
+                <TableRow className="border-gray-200 hover:bg-gray-50">
+                  <TableHead className="text-gray-500">Mã đơn hàng</TableHead>
+                  <TableHead className="text-gray-500">Ngày</TableHead>
+                  <TableHead className="text-gray-500">Khách hàng</TableHead>
+                  <TableHead className="text-gray-500">Tổng</TableHead>
+                  <TableHead className="text-gray-500">Trạng thái</TableHead>
+                  <TableHead className="text-gray-500">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {orders.map((order) => (
-                  <TableRow key={order.id} className="border-white/10 hover:bg-white/5">
-                    <TableCell className="text-white">{order.id}</TableCell>
-                    <TableCell className="text-white/70">{order.date}</TableCell>
-                    <TableCell className="text-white/70">{order.customer.name}</TableCell>
-                    <TableCell className="text-white">{formatCurrency(order.total)}</TableCell>
+                  <TableRow key={order.id} className="border-gray-200 hover:bg-gray-50">
+                    <TableCell className="text-gray-900">{order.id}</TableCell>
+                    <TableCell className="text-gray-500">{order.date}</TableCell>
+                    <TableCell className="text-gray-500">{order.customer.name}</TableCell>
+                    <TableCell className="text-gray-900">{formatCurrency(order.total)}</TableCell>
                     <TableCell>
                       <Badge
                         className={
@@ -370,7 +358,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 ))}
                 {orders.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-white/60 py-8">
+                    <TableCell colSpan={6} className="text-center text-gray-500 py-8">
                       Chưa có đơn hàng
                     </TableCell>
                   </TableRow>
@@ -381,17 +369,17 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         </TabsContent>
 
         <TabsContent value="customers" className="mt-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-white/10">
-              <h2 className="text-xl text-white">Quản lý khách hàng</h2>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-xl text-gray-900">Quản lý khách hàng</h2>
             </div>
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white/70">Khách hàng</TableHead>
-                  <TableHead className="text-white/70">Email</TableHead>
-                  <TableHead className="text-white/70">Đơn hàng</TableHead>
-                  <TableHead className="text-white/70">Tổng chi tiêu</TableHead>
+                <TableRow className="border-gray-200 hover:bg-gray-50">
+                  <TableHead className="text-gray-500">Khách hàng</TableHead>
+                  <TableHead className="text-gray-500">Email</TableHead>
+                  <TableHead className="text-gray-500">Đơn hàng</TableHead>
+                  <TableHead className="text-gray-500">Tổng chi tiêu</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -411,25 +399,25 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                   if (customers.length === 0) {
                     return (
                       <TableRow>
-                        <TableCell colSpan={4} className="text-center text-white/60 py-8">
+                        <TableCell colSpan={4} className="text-center text-gray-500 py-8">
                           Chưa có khách hàng
                         </TableCell>
                       </TableRow>
                     );
                   }
                   return customers.map((customer) => (
-                    <TableRow key={customer.id} className="border-white/10 hover:bg-white/5">
+                    <TableRow key={customer.id} className="border-gray-200 hover:bg-gray-50">
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm">
+                          <div className="h-9 w-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm">
                             {customer.name[0]?.toUpperCase() || "?"}
                           </div>
-                          <span className="text-white">{customer.name}</span>
+                          <span className="text-gray-900">{customer.name}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-white/70">{customer.email}</TableCell>
-                      <TableCell className="text-white">{customer.orderCount}</TableCell>
-                      <TableCell className="text-white">{formatCurrency(customer.totalSpent)}</TableCell>
+                      <TableCell className="text-gray-500">{customer.email}</TableCell>
+                      <TableCell className="text-gray-900">{customer.orderCount}</TableCell>
+                      <TableCell className="text-gray-900">{formatCurrency(customer.totalSpent)}</TableCell>
                     </TableRow>
                   ));
                 })()}

@@ -1,0 +1,1 @@
+const e=new Intl.NumberFormat("vi-VN",{style:"currency",currency:"VND"});function t(r){return e.format(Math.round(r))}function n(r){return r>=1e9?`${(r/1e9).toFixed(1)} tỷ ₫`:r>=1e6?`${(r/1e6).toFixed(1)} triệu ₫`:r>=1e3?`${(r/1e3).toFixed(0)}K ₫`:e.format(Math.round(r))}export{n as a,t as f};

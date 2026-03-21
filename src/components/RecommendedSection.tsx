@@ -32,12 +32,12 @@ export function RecommendedSection({
     return (
       <section className="py-12 container mx-auto px-4">
         <div className="flex items-center gap-2 mb-6">
-          <Sparkles className="h-5 w-5 text-purple-400" />
-          <h2 className="text-2xl text-white">Đề xuất cho bạn</h2>
+          <Sparkles className="h-5 w-5 text-blue-600" />
+          <h2 className="text-2xl text-gray-900">Đề xuất cho bạn</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl h-64 animate-pulse" />
+            <div key={i} className="bg-gray-100 border border-gray-200 rounded-2xl h-64 animate-pulse" />
           ))}
         </div>
       </section>
@@ -50,10 +50,10 @@ export function RecommendedSection({
     <section className="py-12 container mx-auto px-4">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-purple-400" />
+          <Sparkles className="h-5 w-5 text-blue-600" />
           <div>
-            <h2 className="text-2xl text-white">Đề xuất cho bạn</h2>
-            <p className="text-sm text-white/50">Dựa trên lịch sử xem của bạn</p>
+            <h2 className="text-2xl text-gray-900">Đề xuất cho bạn</h2>
+            <p className="text-sm text-gray-500">Dựa trên lịch sử xem của bạn</p>
           </div>
         </div>
         <Button variant="ghost" onClick={() => onNavigate("shop")}>

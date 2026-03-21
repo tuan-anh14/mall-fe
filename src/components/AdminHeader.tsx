@@ -37,9 +37,9 @@ const navItems = [
 
 export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-red-500/20 bg-black/90 backdrop-blur-xl">
-      <div className="bg-gradient-to-r from-red-700 to-orange-600 px-4 py-1.5 text-center">
-        <p className="text-xs text-white font-medium">Admin Dashboard — ShopHub</p>
+    <header className="sticky top-0 z-50 w-full border-b border-red-700 bg-red-700">
+      <div className="bg-red-800 px-4 py-1.5 text-center">
+        <p className="text-xs text-white font-medium">Admin Dashboard — Shop MALL</p>
       </div>
 
       <div className="container mx-auto px-4">
@@ -51,7 +51,7 @@ export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHe
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[260px] bg-zinc-950 border-white/10">
+            <SheetContent side="left" className="w-[260px] bg-white border-gray-200">
               <nav className="flex flex-col gap-2 mt-8">
                 {navItems.map(({ page, label, icon: Icon }) => (
                   <Button
@@ -66,7 +66,7 @@ export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHe
                 ))}
                 <Button
                   variant="ghost"
-                  className="justify-start text-white/60 mt-4"
+                  className="justify-start text-white/80 mt-4"
                   onClick={() => onNavigate("home")}
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
@@ -81,7 +81,7 @@ export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHe
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => onNavigate("admin-dashboard")}
           >
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-red-600 to-orange-500 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center">
               <LayoutDashboard className="h-4 w-4 text-white" />
             </div>
             <span className="text-base font-semibold text-white hidden sm:block">Admin</span>
@@ -119,14 +119,14 @@ export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHe
               Shop
             </Button>
             {user && (
-              <span className="text-white/60 text-sm hidden md:block">
+              <span className="text-white/80 text-sm hidden md:block">
                 {user.name}
               </span>
             )}
             <Button
               variant="ghost"
               size="icon"
-              className="text-white/60 hover:text-red-400"
+              className="text-white/80 hover:text-red-400"
               onClick={onLogout}
             >
               <LogOut className="h-4 w-4" />

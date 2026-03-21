@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from "react";
-import { Grid, List, SlidersHorizontal } from "lucide-react";
+import { Grid, List, SlidersHorizontal, Search, Package, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { ProductCard } from "../ProductCard";
 import { Slider } from "../ui/slider";
@@ -20,8 +20,29 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import { Badge } from "../ui/badge";
+import { motion, AnimatePresence } from "motion/react";
 import { get } from "../../lib/api";
 import { formatCurrency } from "../../lib/currency";
+
+const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.06, delayChildren: 0.05 },
+  },
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 20, scale: 0.98 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.4, ease },
+  },
+};
 
 interface FiltersContentProps {
   categories: any[];
@@ -51,13 +72,13 @@ const FiltersContent = memo(function FiltersContent({
   clearFilters,
 }: FiltersContentProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       {/* Categories */}
       <div>
-        <h3 className="text-white mb-4">Danh mục</h3>
-        <div className="space-y-3">
+        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Danh mục</h3>
+        <div className="space-y-2.5">
           {categories.map((cat) => (
-            <div key={cat.name} className="flex items-center space-x-2">
+            <div key={cat.name} className="flex items-center space-x-2.5 group">
               <Checkbox
                 id={`cat-${cat.name}`}
                 checked={selectedCategories.includes(cat.name)}
@@ -65,9 +86,10 @@ const FiltersContent = memo(function FiltersContent({
               />
               <Label
                 htmlFor={`cat-${cat.name}`}
-                className="text-sm text-white/70 cursor-pointer"
+                className="text-sm text-gray-600 cursor-pointer group-hover:text-gray-900 transition-colors duration-200 flex items-center justify-between w-full"
               >
-                {cat.name} ({cat.productCount})
+                <span>{cat.name}</span>
+                <span className="text-xs text-gray-400">{cat.productCount}</span>
               </Label>
             </div>
           ))}
@@ -76,7 +98,7 @@ const FiltersContent = memo(function FiltersContent({
 
       {/* Price Range */}
       <div>
-        <h3 className="text-white mb-4">Khoảng giá</h3>
+        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Khoảng giá</h3>
         <Slider
           min={0}
           max={3000}
@@ -85,51 +107,54 @@ const FiltersContent = memo(function FiltersContent({
           onValueChange={handlePriceRangeChange}
           className="mb-4"
         />
-        <div className="flex items-center justify-between text-sm text-white/70">
-          <span>{formatCurrency(priceRange[0])}</span>
-          <span>{formatCurrency(priceRange[1])}</span>
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-gray-700 bg-gray-100 px-2.5 py-1 rounded-lg">{formatCurrency(priceRange[0])}</span>
+          <span className="text-xs text-gray-400">—</span>
+          <span className="text-sm font-medium text-gray-700 bg-gray-100 px-2.5 py-1 rounded-lg">{formatCurrency(priceRange[1])}</span>
         </div>
       </div>
 
       {/* Brands */}
-      <div>
-        <h3 className="text-white mb-4">Thương hiệu</h3>
-        <div className="space-y-3">
-          {brands.slice(0, 8).map((brand) => (
-            <div key={brand} className="flex items-center space-x-2">
-              <Checkbox
-                id={`brand-${brand}`}
-                checked={selectedBrands.includes(brand)}
-                onCheckedChange={() => toggleBrand(brand)}
-              />
-              <Label
-                htmlFor={`brand-${brand}`}
-                className="text-sm text-white/70 cursor-pointer"
-              >
-                {brand}
-              </Label>
-            </div>
-          ))}
+      {brands.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Thương hiệu</h3>
+          <div className="space-y-2.5">
+            {brands.slice(0, 8).map((brand) => (
+              <div key={brand} className="flex items-center space-x-2.5 group">
+                <Checkbox
+                  id={`brand-${brand}`}
+                  checked={selectedBrands.includes(brand)}
+                  onCheckedChange={() => toggleBrand(brand)}
+                />
+                <Label
+                  htmlFor={`brand-${brand}`}
+                  className="text-sm text-gray-600 cursor-pointer group-hover:text-gray-900 transition-colors duration-200"
+                >
+                  {brand}
+                </Label>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Rating */}
       <div>
-        <h3 className="text-white mb-4">Đánh giá</h3>
-        <div className="space-y-2">
+        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Đánh giá</h3>
+        <div className="space-y-1.5">
           {[5, 4, 3, 2].map((rating) => (
             <button
               key={rating}
               onClick={() =>
                 setSelectedRating(selectedRating === rating ? null : rating)
               }
-              className={`flex items-center gap-2 text-sm w-full px-2 py-1 rounded-lg transition-colors ${
+              className={`flex items-center gap-2 text-sm w-full px-3 py-2 rounded-xl transition-all duration-200 ${
                 selectedRating === rating
-                  ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
-                  : "text-white/70 hover:text-white hover:bg-white/5"
+                  ? "bg-blue-50 text-blue-700 border border-blue-200 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border border-transparent"
               }`}
             >
-              <span>{"⭐".repeat(rating)}</span>
+              <span className="text-xs">{"⭐".repeat(rating)}</span>
               <span>trở lên</span>
             </button>
           ))}
@@ -137,7 +162,7 @@ const FiltersContent = memo(function FiltersContent({
       </div>
 
       {/* Clear Filters */}
-      <Button variant="outline" className="w-full" onClick={clearFilters}>
+      <Button variant="outline" className="w-full border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200" onClick={clearFilters}>
         Xóa tất cả bộ lọc
       </Button>
     </div>
@@ -330,69 +355,183 @@ export function ShopPage({
     [onAddToCart],
   );
 
+  const hasActiveFilters = selectedCategories.length > 0 || selectedBrands.length > 0 || selectedRating !== null || searchQuery;
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl text-white mb-2">Tất cả sản phẩm</h1>
-          <p className="text-white/60">
-            {loading
-              ? "Đang tải sản phẩm..."
-              : `Hiển thị ${products.length} trên ${total} sản phẩm`}
-          </p>
+    <div className="min-h-screen bg-gray-50/50">
+      {/* ── Page Header ── */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="container mx-auto px-4 py-8 md:py-10">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="flex flex-col md:flex-row md:items-end justify-between gap-4"
+          >
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-1">Tất cả sản phẩm</h1>
+              <p className="text-gray-500">
+                {loading
+                  ? "Đang tải sản phẩm..."
+                  : `Hiển thị ${products.length} trên ${total} sản phẩm`}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Sort */}
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[180px] bg-white border-gray-200 rounded-xl h-10 shadow-sm">
+                  <SelectValue placeholder="Sắp xếp" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-200 rounded-xl shadow-lg">
+                  <SelectItem value="popularity">Phổ biến nhất</SelectItem>
+                  <SelectItem value="price-low">Giá: Thấp đến Cao</SelectItem>
+                  <SelectItem value="price-high">Giá: Cao đến Thấp</SelectItem>
+                  <SelectItem value="rating">Đánh giá cao nhất</SelectItem>
+                  <SelectItem value="newest">Mới nhất</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* View Mode */}
+              <div className="hidden md:flex items-center bg-gray-100 rounded-xl p-1 gap-0.5">
+                <Button
+                  size="icon"
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  onClick={() => setViewMode("grid")}
+                  className={`h-8 w-8 rounded-lg transition-all duration-200 ${viewMode === "grid" ? "shadow-sm" : "hover:bg-gray-200"}`}
+                >
+                  <Grid className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  onClick={() => setViewMode("list")}
+                  className={`h-8 w-8 rounded-lg transition-all duration-200 ${viewMode === "list" ? "shadow-sm" : "hover:bg-gray-200"}`}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Mobile Filters */}
+              <Sheet>
+                <SheetTrigger asChild className="md:hidden">
+                  <Button variant="outline" size="icon" className="rounded-xl h-10 w-10 shadow-sm border-gray-200">
+                    <SlidersHorizontal className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent
+                  side="left"
+                  className="bg-white border-gray-200 w-80"
+                >
+                  <SheetHeader>
+                    <SheetTitle className="text-gray-900">Bộ lọc</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6">
+                    <FiltersContent
+                      categories={categories}
+                      selectedCategories={selectedCategories}
+                      toggleCategory={toggleCategory}
+                      priceRange={priceRange}
+                      handlePriceRangeChange={handlePriceRangeChange}
+                      brands={brands}
+                      selectedBrands={selectedBrands}
+                      toggleBrand={toggleBrand}
+                      selectedRating={selectedRating}
+                      setSelectedRating={setSelectedRating}
+                      clearFilters={clearFilters}
+                    />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </motion.div>
         </div>
+      </div>
 
-        <div className="flex items-center gap-4">
-          {/* Sort */}
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[180px] bg-white/5 border-white/10">
-              <SelectValue placeholder="Sắp xếp" />
-            </SelectTrigger>
-            <SelectContent className="bg-zinc-950 border-white/10">
-              <SelectItem value="popularity">Phổ biến nhất</SelectItem>
-              <SelectItem value="price-low">Giá: Thấp đến Cao</SelectItem>
-              <SelectItem value="price-high">Giá: Cao đến Thấp</SelectItem>
-              <SelectItem value="rating">Đánh giá cao nhất</SelectItem>
-              <SelectItem value="newest">Mới nhất</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="container mx-auto px-4 py-8">
+        {/* ── Active Filters ── */}
+        <AnimatePresence>
+          {hasActiveFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease }}
+              className="overflow-hidden"
+            >
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                <span className="text-sm text-gray-500 mr-1">Bộ lọc:</span>
+                {searchQuery && (
+                  <Badge
+                    variant="secondary"
+                    className="cursor-pointer bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors duration-200 rounded-lg px-3 py-1 gap-1.5"
+                    onClick={() => setSearchQuery("")}
+                  >
+                    <Search className="h-3 w-3" />
+                    "{searchQuery}"
+                    <X className="h-3 w-3 ml-0.5" />
+                  </Badge>
+                )}
+                {selectedCategories.map((cat) => (
+                  <Badge
+                    key={cat}
+                    variant="secondary"
+                    className="cursor-pointer bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors duration-200 rounded-lg px-3 py-1 gap-1.5"
+                    onClick={() => toggleCategory(cat)}
+                  >
+                    {cat}
+                    <X className="h-3 w-3 ml-0.5" />
+                  </Badge>
+                ))}
+                {selectedBrands.map((brand) => (
+                  <Badge
+                    key={brand}
+                    variant="secondary"
+                    className="cursor-pointer bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors duration-200 rounded-lg px-3 py-1 gap-1.5"
+                    onClick={() => toggleBrand(brand)}
+                  >
+                    {brand}
+                    <X className="h-3 w-3 ml-0.5" />
+                  </Badge>
+                ))}
+                {selectedRating !== null && (
+                  <Badge
+                    variant="secondary"
+                    className="cursor-pointer bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors duration-200 rounded-lg px-3 py-1 gap-1.5"
+                    onClick={() => setSelectedRating(null)}
+                  >
+                    {"⭐".repeat(selectedRating)} trở lên
+                    <X className="h-3 w-3 ml-0.5" />
+                  </Badge>
+                )}
+                <button
+                  onClick={clearFilters}
+                  className="text-sm text-gray-500 hover:text-red-600 transition-colors duration-200 ml-2 underline underline-offset-2"
+                >
+                  Xóa tất cả
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          {/* View Mode */}
-          <div className="hidden md:flex items-center gap-1 bg-white/5 rounded-lg p-1">
-            <Button
-              size="icon"
-              variant={viewMode === "grid" ? "default" : "ghost"}
-              onClick={() => setViewMode("grid")}
-              className="h-8 w-8"
+        {/* ── Content Grid ── */}
+        <div className="grid lg:grid-cols-4 gap-8">
+          {/* Desktop Filters */}
+          <aside className="hidden md:block">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1, ease }}
+              className="sticky top-24"
             >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button
-              size="icon"
-              variant={viewMode === "list" ? "default" : "ghost"}
-              onClick={() => setViewMode("list")}
-              className="h-8 w-8"
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Mobile Filters */}
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="outline" size="icon">
-                <SlidersHorizontal className="h-4 w-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="left"
-              className="bg-zinc-950 border-white/10 w-80"
-            >
-              <SheetHeader>
-                <SheetTitle className="text-white">Bộ lọc</SheetTitle>
-              </SheetHeader>
-              <div className="mt-6">
+              <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+                <h2 className="text-base font-semibold text-gray-900 mb-6 flex items-center gap-2.5 pb-4 border-b border-gray-100">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <SlidersHorizontal className="h-4 w-4 text-blue-600" />
+                  </div>
+                  Bộ lọc
+                </h2>
                 <FiltersContent
                   categories={categories}
                   selectedCategories={selectedCategories}
@@ -407,119 +546,68 @@ export function ShopPage({
                   clearFilters={clearFilters}
                 />
               </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </div>
+            </motion.div>
+          </aside>
 
-      {/* Active Filters */}
-      {(selectedCategories.length > 0 ||
-        selectedBrands.length > 0 ||
-        selectedRating !== null ||
-        searchQuery) && (
-        <div className="flex flex-wrap gap-2 mb-6">
-          {searchQuery && (
-            <Badge
-              variant="secondary"
-              className="cursor-pointer"
-              onClick={() => setSearchQuery("")}
-            >
-              🔍 "{searchQuery}" ×
-            </Badge>
-          )}
-          {selectedCategories.map((cat) => (
-            <Badge
-              key={cat}
-              variant="secondary"
-              className="cursor-pointer"
-              onClick={() => toggleCategory(cat)}
-            >
-              {cat} ×
-            </Badge>
-          ))}
-          {selectedBrands.map((brand) => (
-            <Badge
-              key={brand}
-              variant="secondary"
-              className="cursor-pointer"
-              onClick={() => toggleBrand(brand)}
-            >
-              {brand} ×
-            </Badge>
-          ))}
-          {selectedRating !== null && (
-            <Badge
-              variant="secondary"
-              className="cursor-pointer"
-              onClick={() => setSelectedRating(null)}
-            >
-              {"⭐".repeat(selectedRating)} trở lên ×
-            </Badge>
-          )}
-        </div>
-      )}
-
-      {/* Content Grid */}
-      <div className="grid lg:grid-cols-4 gap-8">
-        {/* Desktop Filters */}
-        <aside className="hidden md:block">
-          <div className="sticky top-24 bg-white/5 border border-white/10 rounded-2xl p-6">
-            <h2 className="text-xl text-white mb-6 flex items-center gap-2">
-              <SlidersHorizontal className="h-5 w-5" />
-              Bộ lọc
-            </h2>
-            <FiltersContent
-              categories={categories}
-              selectedCategories={selectedCategories}
-              toggleCategory={toggleCategory}
-              priceRange={priceRange}
-              handlePriceRangeChange={handlePriceRangeChange}
-              brands={brands}
-              selectedBrands={selectedBrands}
-              toggleBrand={toggleBrand}
-              selectedRating={selectedRating}
-              setSelectedRating={setSelectedRating}
-              clearFilters={clearFilters}
-            />
-          </div>
-        </aside>
-
-        {/* Products Grid */}
-        <div className="lg:col-span-3">
-          {loading ? (
-            <div className="flex items-center justify-center py-24">
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-10 h-10 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
-                <p className="text-white/60 text-sm">Đang tải sản phẩm...</p>
+          {/* Products Grid */}
+          <div className="lg:col-span-3">
+            {loading ? (
+              <div className="flex items-center justify-center py-32">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4 }}
+                  className="flex flex-col items-center gap-4"
+                >
+                  <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 rounded-full border-[3px] border-blue-100" />
+                    <div className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-blue-600 animate-spin" />
+                  </div>
+                  <p className="text-gray-400 text-sm">Đang tải sản phẩm...</p>
+                </motion.div>
               </div>
-            </div>
-          ) : products.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-xl text-white/60">Không tìm thấy sản phẩm</p>
-              <Button className="mt-4" onClick={clearFilters}>
-                Xóa bộ lọc
-              </Button>
-            </div>
-          ) : (
-            <div
-              className={
-                viewMode === "grid"
-                  ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                  : "space-y-6"
-              }
-            >
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onView={handleViewProduct}
-                  onAddToCart={handleAddToCart}
-                  onAddToWishlist={onAddToWishlist}
-                  isInWishlist={isInWishlist?.(product.id)}
-                />
-              ))}
-            </div>
-          )}
+            ) : products.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease }}
+                className="text-center py-24"
+              >
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gray-100 mb-6">
+                  <Package className="h-10 w-10 text-gray-400" />
+                </div>
+                <p className="text-xl font-semibold text-gray-700 mb-2">Không tìm thấy sản phẩm</p>
+                <p className="text-gray-500 mb-6 max-w-sm mx-auto">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm để xem thêm sản phẩm</p>
+                <Button onClick={clearFilters} className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5">
+                  Xóa bộ lọc
+                </Button>
+              </motion.div>
+            ) : (
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+                key={`${sortBy}-${selectedCategories.join()}-${selectedBrands.join()}-${selectedRating}-${searchQuery}-${debouncedPriceRange.join()}`}
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+                    : "space-y-4"
+                }
+              >
+                {products.map((product) => (
+                  <motion.div key={product.id} variants={staggerItem}>
+                    <ProductCard
+                      product={product}
+                      onView={handleViewProduct}
+                      onAddToCart={handleAddToCart}
+                      onAddToWishlist={onAddToWishlist}
+                      isInWishlist={isInWishlist?.(product.id)}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </div>
         </div>
       </div>
     </div>

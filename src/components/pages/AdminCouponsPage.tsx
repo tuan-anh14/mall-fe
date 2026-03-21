@@ -176,10 +176,10 @@ export function AdminCouponsPage() {
     <div className="container mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Quản lý mã giảm giá</h1>
-          <p className="text-white/50 text-sm mt-0.5">{total} mã giảm giá</p>
+          <h1 className="text-2xl font-bold text-gray-900">Quản lý mã giảm giá</h1>
+          <p className="text-gray-500 text-sm mt-0.5">{total} mã giảm giá</p>
         </div>
-        <Button onClick={openCreate} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+        <Button onClick={openCreate} className="bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700">
           <Plus className="h-4 w-4 mr-2" />
           Thêm mã
         </Button>
@@ -187,72 +187,72 @@ export function AdminCouponsPage() {
 
       {/* Form */}
       {showForm && (
-        <Card className="bg-white/5 border-purple-500/30 p-5">
-          <h3 className="text-white font-semibold mb-4">{editTarget ? "Sửa mã giảm giá" : "Tạo mã giảm giá mới"}</h3>
+        <Card className="bg-gray-50 border-blue-500/30 p-5">
+          <h3 className="text-gray-900 font-semibold mb-4">{editTarget ? "Sửa mã giảm giá" : "Tạo mã giảm giá mới"}</h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Mã code *</label>
-              <Input value={form.code} onChange={(e) => setForm(f => ({ ...f, code: e.target.value.toUpperCase() }))} placeholder="SUMMER20" className="bg-white/5 border-white/10 text-white font-mono" />
+              <label className="text-gray-500 text-xs mb-1 block">Mã code *</label>
+              <Input value={form.code} onChange={(e) => setForm(f => ({ ...f, code: e.target.value.toUpperCase() }))} placeholder="SUMMER20" className="bg-gray-50 border-gray-200 text-gray-900 font-mono" />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Tên hiển thị</label>
-              <Input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Black Friday 2024" className="bg-white/5 border-white/10 text-white" />
+              <label className="text-gray-500 text-xs mb-1 block">Tên hiển thị</label>
+              <Input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Black Friday 2024" className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Mô tả ngắn (hiển thị trên banner)</label>
-              <Input value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Giảm đến 50% cho tất cả sản phẩm" className="bg-white/5 border-white/10 text-white" />
+              <label className="text-gray-500 text-xs mb-1 block">Mô tả ngắn (hiển thị trên banner)</label>
+              <Input value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Giảm đến 50% cho tất cả sản phẩm" className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Loại *</label>
+              <label className="text-gray-500 text-xs mb-1 block">Loại *</label>
               <Select value={form.type} onValueChange={(v) => setForm(f => ({ ...f, type: v as any }))}>
-                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-white/10">
-                  <SelectItem value="PERCENTAGE" className="text-white">Phần trăm (%)</SelectItem>
-                  <SelectItem value="FIXED_AMOUNT" className="text-white">Số tiền cố định ($)</SelectItem>
+                <SelectContent className="bg-white border-gray-200">
+                  <SelectItem value="PERCENTAGE" className="text-gray-900">Phần trăm (%)</SelectItem>
+                  <SelectItem value="FIXED_AMOUNT" className="text-gray-900">Số tiền cố định ($)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Giá trị * {form.type === "PERCENTAGE" ? "(%)" : "($)"}</label>
-              <Input type="number" value={form.value} onChange={(e) => setForm(f => ({ ...f, value: e.target.value }))} placeholder={form.type === "PERCENTAGE" ? "20" : "50"} className="bg-white/5 border-white/10 text-white" />
+              <label className="text-gray-500 text-xs mb-1 block">Giá trị * {form.type === "PERCENTAGE" ? "(%)" : "($)"}</label>
+              <Input type="number" value={form.value} onChange={(e) => setForm(f => ({ ...f, value: e.target.value }))} placeholder={form.type === "PERCENTAGE" ? "20" : "50"} className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Đơn hàng tối thiểu ($)</label>
-              <Input type="number" value={form.minOrderAmount} onChange={(e) => setForm(f => ({ ...f, minOrderAmount: e.target.value }))} placeholder="100" className="bg-white/5 border-white/10 text-white" />
+              <label className="text-gray-500 text-xs mb-1 block">Đơn hàng tối thiểu ($)</label>
+              <Input type="number" value={form.minOrderAmount} onChange={(e) => setForm(f => ({ ...f, minOrderAmount: e.target.value }))} placeholder="100" className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
             {form.type === "PERCENTAGE" && (
               <div>
-                <label className="text-white/60 text-xs mb-1 block">Giảm tối đa ($)</label>
-                <Input type="number" value={form.maxDiscount} onChange={(e) => setForm(f => ({ ...f, maxDiscount: e.target.value }))} placeholder="50" className="bg-white/5 border-white/10 text-white" />
+                <label className="text-gray-500 text-xs mb-1 block">Giảm tối đa ($)</label>
+                <Input type="number" value={form.maxDiscount} onChange={(e) => setForm(f => ({ ...f, maxDiscount: e.target.value }))} placeholder="50" className="bg-gray-50 border-gray-200 text-gray-900" />
               </div>
             )}
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Giới hạn lượt dùng</label>
-              <Input type="number" value={form.usageLimit} onChange={(e) => setForm(f => ({ ...f, usageLimit: e.target.value }))} placeholder="Không giới hạn" className="bg-white/5 border-white/10 text-white" />
+              <label className="text-gray-500 text-xs mb-1 block">Giới hạn lượt dùng</label>
+              <Input type="number" value={form.usageLimit} onChange={(e) => setForm(f => ({ ...f, usageLimit: e.target.value }))} placeholder="Không giới hạn" className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Hiệu lực từ *</label>
-              <Input type="datetime-local" value={form.validFrom} onChange={(e) => setForm(f => ({ ...f, validFrom: e.target.value }))} className="bg-white/5 border-white/10 text-white" />
+              <label className="text-gray-500 text-xs mb-1 block">Hiệu lực từ *</label>
+              <Input type="datetime-local" value={form.validFrom} onChange={(e) => setForm(f => ({ ...f, validFrom: e.target.value }))} className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Hết hạn</label>
-              <Input type="datetime-local" value={form.validUntil} onChange={(e) => setForm(f => ({ ...f, validUntil: e.target.value }))} className="bg-white/5 border-white/10 text-white" />
+              <label className="text-gray-500 text-xs mb-1 block">Hết hạn</label>
+              <Input type="datetime-local" value={form.validUntil} onChange={(e) => setForm(f => ({ ...f, validUntil: e.target.value }))} className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
             <div className="flex items-end gap-2">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={form.isActive} onChange={(e) => setForm(f => ({ ...f, isActive: e.target.checked }))} className="accent-purple-500" />
-                <span className="text-white/70 text-sm">Đang hoạt động</span>
+                <input type="checkbox" checked={form.isActive} onChange={(e) => setForm(f => ({ ...f, isActive: e.target.checked }))} className="accent-blue-500" />
+                <span className="text-gray-600 text-sm">Đang hoạt động</span>
               </label>
             </div>
           </div>
           <div className="flex gap-2 mt-4">
-            <Button size="sm" onClick={handleSave} disabled={saving} className="bg-purple-600 hover:bg-purple-700">
+            <Button size="sm" onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
               <Check className="h-4 w-4 mr-1" />
               {saving ? "Đang lưu..." : "Lưu"}
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => setShowForm(false)} className="border border-white/10">
+            <Button size="sm" variant="ghost" onClick={() => setShowForm(false)} className="border border-gray-200">
               <X className="h-4 w-4 mr-1" />
               Hủy
             </Button>
@@ -260,62 +260,62 @@ export function AdminCouponsPage() {
         </Card>
       )}
 
-      <Card className="bg-white/5 border-white/10 overflow-hidden">
+      <Card className="bg-gray-50 border-gray-200 overflow-hidden">
         {loading ? (
           <div className="flex justify-center items-center h-48">
-            <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[700px]">
               <thead>
-                <tr className="border-b border-white/10 text-left">
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Mã code</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Tên / Mô tả</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Loại</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Giá trị</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Đã dùng</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Hiệu lực</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Trạng thái</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium text-right">Hành động</th>
+                <tr className="border-b border-gray-200 text-left">
+                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Mã code</th>
+                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Tên / Mô tả</th>
+                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Loại</th>
+                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Giá trị</th>
+                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Đã dùng</th>
+                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Hiệu lực</th>
+                  <th className="px-6 py-4 text-gray-500 text-sm font-medium">Trạng thái</th>
+                  <th className="px-6 py-4 text-gray-500 text-sm font-medium text-right">Hành động</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-gray-100">
                 {coupons.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-6 py-16 text-center">
-                      <Tag className="h-10 w-10 text-white/20 mx-auto mb-3" />
-                      <p className="text-white/30 text-sm">Chưa có mã giảm giá nào</p>
+                      <Tag className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-400 text-sm">Chưa có mã giảm giá nào</p>
                     </td>
                   </tr>
                 ) : coupons.map((coupon) => (
-                  <tr key={coupon.id} className="hover:bg-white/[0.02]">
+                  <tr key={coupon.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
-                      <span className="text-white font-mono font-semibold text-sm flex items-center gap-1.5">
-                        <Tag className="h-3.5 w-3.5 text-purple-400" />
+                      <span className="text-gray-900 font-mono font-semibold text-sm flex items-center gap-1.5">
+                        <Tag className="h-3.5 w-3.5 text-blue-400" />
                         {coupon.code}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       {coupon.name ? (
                         <div>
-                          <p className="text-white text-sm">{coupon.name}</p>
-                          {coupon.description && <p className="text-white/40 text-xs mt-0.5 max-w-[200px] truncate">{coupon.description}</p>}
+                          <p className="text-gray-900 text-sm">{coupon.name}</p>
+                          {coupon.description && <p className="text-gray-400 text-xs mt-0.5 max-w-[200px] truncate">{coupon.description}</p>}
                         </div>
                       ) : (
-                        <span className="text-white/20 text-xs">—</span>
+                        <span className="text-gray-300 text-xs">—</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-white/60 text-sm">
+                    <td className="px-6 py-4 text-gray-500 text-sm">
                       {coupon.type === "PERCENTAGE" ? "Phần trăm" : "Số tiền cố định"}
                     </td>
-                    <td className="px-6 py-4 text-white text-sm font-medium">
+                    <td className="px-6 py-4 text-gray-900 text-sm font-medium">
                       {coupon.type === "PERCENTAGE" ? `${coupon.value}%` : `${formatCurrency(Number(coupon.value))}`}
                     </td>
-                    <td className="px-6 py-4 text-white/50 text-sm">
+                    <td className="px-6 py-4 text-gray-500 text-sm">
                       {coupon._count.usages}{coupon.usageLimit ? `/${coupon.usageLimit}` : ""}
                     </td>
-                    <td className="px-6 py-4 text-white/50 text-xs">
+                    <td className="px-6 py-4 text-gray-500 text-xs">
                       <div>{new Date(coupon.validFrom).toLocaleDateString("vi-VN")}</div>
                       {coupon.validUntil && <div>→ {new Date(coupon.validUntil).toLocaleDateString("vi-VN")}</div>}
                     </td>
@@ -348,7 +348,7 @@ export function AdminCouponsPage() {
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-white/40 text-sm">Trang {page} / {totalPages}</p>
+          <p className="text-gray-400 text-sm">Trang {page} / {totalPages}</p>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}><ChevronLeft className="h-4 w-4" /></Button>
             <Button variant="ghost" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}><ChevronRight className="h-4 w-4" /></Button>
@@ -357,15 +357,15 @@ export function AdminCouponsPage() {
       )}
 
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-white/10">
+        <AlertDialogContent className="bg-white border-gray-200">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Xóa mã giảm giá?</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
-              Xóa mã <strong className="text-white font-mono">{deleteTarget?.code}</strong>. Không thể xóa nếu đã được dùng trong đơn hàng.
+            <AlertDialogTitle className="text-gray-900">Xóa mã giảm giá?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500">
+              Xóa mã <strong className="text-gray-900 font-mono">{deleteTarget?.code}</strong>. Không thể xóa nếu đã được dùng trong đơn hàng.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Hủy</AlertDialogCancel>
+            <AlertDialogCancel className="bg-gray-50 border-gray-200 text-gray-900 hover:bg-gray-100">Hủy</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">Xóa</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -514,18 +514,18 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-4 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[calc(100vh-8rem)]">
           {/* Conversations List */}
-          <div className="lg:col-span-4 bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col">
+          <div className="lg:col-span-4 bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col">
             {/* Search */}
-            <div className="p-4 border-b border-white/10">
+            <div className="p-4 border-b border-gray-200">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Tìm kiếm cuộc trò chuyện..."
-                  className="pl-10 bg-white/5 border-white/10 text-white"
+                  className="pl-10 bg-gray-50 border-gray-200 text-gray-900"
                   value={conversationSearch}
                   onChange={(e) => setConversationSearch(e.target.value)}
                 />
@@ -535,13 +535,13 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
             {/* Conversations */}
             <div className="flex-1 overflow-y-auto">
               {isLoadingConversations ? (
-                <div className="p-8 text-center text-white/40 text-sm">
+                <div className="p-8 text-center text-gray-400 text-sm">
                   Đang tải cuộc trò chuyện...
                 </div>
               ) : conversations.length === 0 ? (
                 <div className="p-8 text-center">
-                  <MessageSquare className="h-10 w-10 text-white/20 mx-auto mb-3" />
-                  <p className="text-white/40 text-sm">Chưa có cuộc trò chuyện</p>
+                  <MessageSquare className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-400 text-sm">Chưa có cuộc trò chuyện</p>
                 </div>
               ) : (
                 (() => {
@@ -552,40 +552,40 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                   );
                   return filtered.length === 0 ? (
                     <div className="p-8 text-center">
-                      <Search className="h-8 w-8 text-white/20 mx-auto mb-3" />
-                      <p className="text-white/40 text-sm">Không tìm thấy cuộc trò chuyện</p>
+                      <Search className="h-8 w-8 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-400 text-sm">Không tìm thấy cuộc trò chuyện</p>
                     </div>
                   ) : (
                     <>
                       {filtered.map((conv) => (
                         <motion.div
                           key={conv.id}
-                          whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+                          whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
                           onClick={() => selectConversation(conv.id)}
-                          className={`p-4 cursor-pointer border-b border-white/5 ${
-                            conv.id === activeConversationId ? "bg-white/10" : ""
+                          className={`p-4 cursor-pointer border-b border-gray-100 ${
+                            conv.id === activeConversationId ? "bg-gray-100" : ""
                           }`}
                         >
                           <div className="flex gap-3">
                             <div className="relative">
                               <Avatar className="h-12 w-12">
-                                <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+                                <AvatarFallback className="bg-blue-600 text-white">
                                   {conv.avatar}
                                 </AvatarFallback>
                               </Avatar>
                               {conv.online && (
-                                <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-black" />
+                                <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white" />
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between mb-1">
-                                <p className="text-white truncate">{conv.name}</p>
-                                <span className="text-xs text-white/50">{conv.time}</span>
+                                <p className="text-gray-900 truncate">{conv.name}</p>
+                                <span className="text-xs text-gray-400">{conv.time}</span>
                               </div>
                               <div className="flex items-center justify-between">
-                                <p className="text-sm text-white/60 truncate">{conv.lastMessage}</p>
+                                <p className="text-sm text-gray-500 truncate">{conv.lastMessage}</p>
                                 {conv.unread > 0 && (
-                                  <Badge className="bg-purple-600 text-white text-xs ml-2">{conv.unread}</Badge>
+                                  <Badge className="bg-blue-600 text-white text-xs ml-2">{conv.unread}</Badge>
                                 )}
                               </div>
                             </div>
@@ -600,34 +600,34 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
           </div>
 
           {/* Chat Area */}
-          <div className="lg:col-span-8 bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col">
+          <div className="lg:col-span-8 bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col">
             {activeConversation ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b border-white/10 bg-white/5">
+                <div className="p-4 border-b border-gray-200 bg-gray-50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => onNavigate("shop")}
-                        className="lg:hidden text-white"
+                        className="lg:hidden text-gray-900"
                       >
                         <ArrowLeft className="h-5 w-5" />
                       </Button>
                       <div className="relative">
                         <Avatar className="h-12 w-12">
-                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+                          <AvatarFallback className="bg-blue-600 text-white">
                             {activeConversation.avatar}
                           </AvatarFallback>
                         </Avatar>
                         {activeConversation.online && (
-                          <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-black" />
+                          <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white" />
                         )}
                       </div>
                       <div>
-                        <p className="text-white">{activeConversation.name}</p>
-                        <p className="text-sm text-white/60">
+                        <p className="text-gray-900">{activeConversation.name}</p>
+                        <p className="text-sm text-gray-500">
                           {activeConversation.online ? "Trực tuyến" : "Ngoại tuyến"}
                         </p>
                       </div>
@@ -637,7 +637,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                         variant="ghost"
                         size="icon"
                         onClick={handleVoiceCall}
-                        className="text-white hover:bg-white/10"
+                        className="text-gray-600 hover:bg-gray-100"
                       >
                         <Phone className="h-5 w-5" />
                       </Button>
@@ -645,42 +645,42 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                         variant="ghost"
                         size="icon"
                         onClick={handleVideoCall}
-                        className="text-white hover:bg-white/10"
+                        className="text-gray-600 hover:bg-gray-100"
                       >
                         <Video className="h-5 w-5" />
                       </Button>
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="inline-flex items-center justify-center size-9 rounded-md text-white hover:bg-white/10 transition-colors focus:outline-none">
+                        <DropdownMenuTrigger className="inline-flex items-center justify-center size-9 rounded-md text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none">
                           <MoreVertical className="h-5 w-5" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56 bg-zinc-900 border-white/10 z-[200]">
-                          <DropdownMenuLabel className="text-white">Tùy chọn trò chuyện</DropdownMenuLabel>
-                          <DropdownMenuSeparator className="bg-white/10" />
+                        <DropdownMenuContent align="end" className="w-56 bg-white border-gray-200 z-[200]">
+                          <DropdownMenuLabel className="text-gray-900">Tùy chọn trò chuyện</DropdownMenuLabel>
+                          <DropdownMenuSeparator className="bg-gray-200" />
                           <DropdownMenuItem
                             onClick={handleViewProfile}
-                            className="text-white hover:bg-white/10 cursor-pointer"
+                            className="text-gray-700 hover:bg-gray-50 cursor-pointer"
                           >
                             <UserCircle className="mr-2 h-4 w-4" />
                             {userType?.toUpperCase() === "SELLER" ? "Xem hồ sơ người mua" : "Xem hồ sơ người bán"}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={handleToggleMute}
-                            className="text-white hover:bg-white/10 cursor-pointer"
+                            className="text-gray-700 hover:bg-gray-50 cursor-pointer"
                           >
                             <BellOff className="mr-2 h-4 w-4" />
                             {isMuted ? "Bật" : "Tắt"} thông báo
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={handleArchiveChat}
-                            className="text-white hover:bg-white/10 cursor-pointer"
+                            className="text-gray-700 hover:bg-gray-50 cursor-pointer"
                           >
                             <Archive className="mr-2 h-4 w-4" />
                             Lưu trữ trò chuyện
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-white/10" />
+                          <DropdownMenuSeparator className="bg-gray-200" />
                           <DropdownMenuItem
                             onClick={handleClearChat}
-                            className="text-white hover:bg-white/10 cursor-pointer"
+                            className="text-gray-700 hover:bg-gray-50 cursor-pointer"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Xóa trò chuyện
@@ -709,11 +709,11 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                 {/* Messages Area */}
                 <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
                   {isLoadingMessages ? (
-                    <div className="text-center text-white/40 text-sm py-8">
+                    <div className="text-center text-gray-400 text-sm py-8">
                       Đang tải tin nhắn...
                     </div>
                   ) : messages.length === 0 ? (
-                    <div className="text-center text-white/40 text-sm py-8">
+                    <div className="text-center text-gray-400 text-sm py-8">
                       Chưa có tin nhắn. Hãy gửi lời chào!
                     </div>
                   ) : (
@@ -733,8 +733,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                             <AvatarFallback
                               className={
                                 message.sender === "user"
-                                  ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white text-xs"
-                                  : "bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xs"
+                                  ? "bg-blue-600 text-white text-xs"
+                                  : "bg-blue-600 text-white text-xs"
                               }
                             >
                               {message.sender === "user" ? "ME" : activeConversation.avatar}
@@ -744,8 +744,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                             <div
                               className={`rounded-2xl p-3 ${
                                 message.sender === "user"
-                                  ? "bg-gradient-to-r from-purple-600 to-blue-600 rounded-tr-sm"
-                                  : "bg-white/10 rounded-tl-sm"
+                                  ? "bg-blue-600 rounded-tr-sm"
+                                  : "bg-gray-100 rounded-tl-sm"
                               }`}
                             >
                               {message.attachmentType === "image" && message.attachmentUrl ? (
@@ -757,7 +757,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                                 />
                               ) : null}
                               {message.text && message.text !== "📷 Hình ảnh" && (
-                                <p className="text-sm text-white">{message.text}</p>
+                                <p className={`text-sm ${message.sender === "user" ? "text-white" : "text-gray-900"}`}>{message.text}</p>
                               )}
                             </div>
                             {/* Delete button - only for current user's messages */}
@@ -775,9 +775,9 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                                 message.sender === "user" ? "justify-end" : "justify-start"
                               }`}
                             >
-                              <p className="text-xs text-white/50">{message.timestamp}</p>
+                              <p className="text-xs text-gray-400">{message.timestamp}</p>
                               {message.sender === "user" && message.status && (
-                                <span className="text-xs text-white/50">
+                                <span className="text-xs text-gray-400">
                                   {message.status === "sent" && "✓"}
                                   {message.status === "delivered" && "✓✓"}
                                   {message.status === "read" && "✓✓"}
@@ -798,15 +798,15 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                       className="flex gap-2"
                     >
                       <Avatar className="h-8 w-8 flex-shrink-0">
-                        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xs">
+                        <AvatarFallback className="bg-blue-600 text-white text-xs">
                           {activeConversation.avatar}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="bg-white/10 rounded-2xl rounded-tl-sm p-3">
+                      <div className="bg-gray-100 rounded-2xl rounded-tl-sm p-3">
                         <div className="flex gap-1">
-                          <div className="h-2 w-2 bg-white/60 rounded-full animate-bounce" />
-                          <div className="h-2 w-2 bg-white/60 rounded-full animate-bounce delay-100" />
-                          <div className="h-2 w-2 bg-white/60 rounded-full animate-bounce delay-200" />
+                          <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" />
+                          <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce delay-100" />
+                          <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce delay-200" />
                         </div>
                       </div>
                     </motion.div>
@@ -816,10 +816,10 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                 </div>
 
                 {/* Message Input */}
-                <div className="p-4 border-t border-white/10 bg-white/5">
+                <div className="p-4 border-t border-gray-200 bg-white">
                   {/* Emoji Picker */}
                   {showEmojiPicker && (
-                    <div className="mb-3 p-3 bg-zinc-900 border border-white/10 rounded-xl">
+                    <div className="mb-3 p-3 bg-gray-50 border border-gray-200 rounded-xl">
                       <div className="flex flex-wrap gap-2">
                         {EMOJIS.map((emoji) => (
                           <button
@@ -845,7 +845,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-white hover:bg-white/10 flex-shrink-0"
+                      className="text-gray-600 hover:bg-gray-100 flex-shrink-0"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploadingImage}
                     >
@@ -856,13 +856,13 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       onKeyDown={handleKeyPress}
-                      className="flex-1 bg-white/5 border-white/10 text-white"
+                      className="flex-1 bg-gray-50 border-gray-200 text-gray-900"
                       disabled={isSending || isUploadingImage}
                     />
                     <Button
                       variant="ghost"
                       size="icon"
-                      className={`text-white hover:bg-white/10 flex-shrink-0 ${showEmojiPicker ? "bg-white/10" : ""}`}
+                      className={`text-gray-600 hover:bg-gray-100 flex-shrink-0 ${showEmojiPicker ? "bg-gray-100" : ""}`}
                       onClick={() => setShowEmojiPicker((v) => !v)}
                     >
                       <Smile className="h-5 w-5" />
@@ -870,7 +870,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                     <Button
                       size="icon"
                       onClick={handleSendMessage}
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 flex-shrink-0"
+                      className="bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0"
                       disabled={!newMessage.trim() || isSending || isUploadingImage}
                     >
                       <Send className="h-5 w-5" />
@@ -880,7 +880,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
               </>
             ) : (
               /* No conversation selected */
-              <div className="flex-1 flex flex-col items-center justify-center text-white/40">
+              <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
                 <MessageSquare className="h-16 w-16 mb-4 opacity-30" />
                 <p className="text-lg">Chọn cuộc trò chuyện để bắt đầu nhắn tin</p>
               </div>
@@ -891,22 +891,22 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
 
       {/* Voice Call Dialog */}
       <Dialog open={showCallDialog} onOpenChange={setShowCallDialog}>
-        <DialogContent className="bg-zinc-900 border-white/10">
+        <DialogContent className="bg-white border-gray-200">
           <DialogHeader>
-            <DialogTitle className="text-white">Cuộc gọi thoại</DialogTitle>
-            <DialogDescription className="text-white/60">
+            <DialogTitle className="text-gray-900">Cuộc gọi thoại</DialogTitle>
+            <DialogDescription className="text-gray-500">
               Đang gọi {activeConversation?.name}...
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center py-8 gap-6">
             <Avatar className="h-24 w-24">
-              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-2xl">
+              <AvatarFallback className="bg-blue-600 text-white text-2xl">
                 {activeConversation?.avatar}
               </AvatarFallback>
             </Avatar>
             <div className="text-center">
-              <p className="text-white text-xl mb-2">{activeConversation?.name}</p>
-              <p className="text-white/60 text-sm">Đang đổ chuông...</p>
+              <p className="text-gray-900 text-xl mb-2">{activeConversation?.name}</p>
+              <p className="text-gray-500 text-sm">Đang đổ chuông...</p>
             </div>
             <div className="flex gap-4">
               <Button
@@ -927,22 +927,22 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
 
       {/* Video Call Dialog */}
       <Dialog open={showVideoDialog} onOpenChange={setShowVideoDialog}>
-        <DialogContent className="bg-zinc-900 border-white/10">
+        <DialogContent className="bg-white border-gray-200">
           <DialogHeader>
-            <DialogTitle className="text-white">Cuộc gọi video</DialogTitle>
-            <DialogDescription className="text-white/60">
+            <DialogTitle className="text-gray-900">Cuộc gọi video</DialogTitle>
+            <DialogDescription className="text-gray-500">
               Bắt đầu cuộc gọi video với {activeConversation?.name}...
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center py-8 gap-6">
             <Avatar className="h-24 w-24">
-              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-2xl">
+              <AvatarFallback className="bg-blue-600 text-white text-2xl">
                 {activeConversation?.avatar}
               </AvatarFallback>
             </Avatar>
             <div className="text-center">
-              <p className="text-white text-xl mb-2">{activeConversation?.name}</p>
-              <p className="text-white/60 text-sm">Đang kết nối...</p>
+              <p className="text-gray-900 text-xl mb-2">{activeConversation?.name}</p>
+              <p className="text-gray-500 text-sm">Đang kết nối...</p>
             </div>
             <div className="flex gap-4">
               <Button
@@ -963,15 +963,15 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
 
       {/* Clear Chat Confirmation Dialog */}
       <AlertDialog open={showClearChatDialog} onOpenChange={setShowClearChatDialog}>
-        <AlertDialogContent className="bg-zinc-900 border-white/10">
+        <AlertDialogContent className="bg-white border-gray-200">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Xóa lịch sử trò chuyện?</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
+            <AlertDialogTitle className="text-gray-900">Xóa lịch sử trò chuyện?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500">
               Thao tác này sẽ xóa vĩnh viễn tất cả tin nhắn với {activeConversation?.name}. Không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+            <AlertDialogCancel className="bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100">
               Hủy
             </AlertDialogCancel>
             <AlertDialogAction

@@ -120,7 +120,7 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto flex items-center justify-center py-32">
-          <div className="text-white/60 text-lg">Đang tải đơn hàng...</div>
+          <div className="text-gray-500 text-lg">Đang tải đơn hàng...</div>
         </div>
       </div>
     );
@@ -135,12 +135,12 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
               ← Quay lại đơn hàng
             </Button>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-16 text-center">
-            <Package className="h-16 w-16 text-white/20 mx-auto mb-4" />
-            <h2 className="text-2xl text-white mb-2">Chưa có đơn hàng</h2>
-            <p className="text-white/60 mb-6">Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm!</p>
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-16 text-center">
+            <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h2 className="text-2xl text-gray-900 mb-2">Chưa có đơn hàng</h2>
+            <p className="text-gray-500 mb-6">Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm!</p>
             <Button
-              className="bg-gradient-to-r from-purple-600 to-blue-600"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => onNavigate("shop")}
             >
               Bắt đầu mua sắm
@@ -165,7 +165,7 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
         {/* Order List */}
         {orders.length > 1 && (
           <div className="mb-6 space-y-2">
-            <h2 className="text-white/70 text-sm uppercase tracking-wider mb-3">Chọn đơn hàng</h2>
+            <h2 className="text-gray-500 text-sm uppercase tracking-wider mb-3">Chọn đơn hàng</h2>
             <div className="flex flex-wrap gap-2">
               {orders.map((order) => (
                 <button
@@ -173,8 +173,8 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                   onClick={() => setSelectedOrder(order)}
                   className={`px-4 py-2 rounded-lg border text-sm transition-all ${
                     selectedOrder?.id === order.id
-                      ? "border-purple-500 bg-purple-500/20 text-white"
-                      : "border-white/10 bg-white/5 text-white/60 hover:border-white/30"
+                      ? "border-blue-600 bg-blue-50 text-gray-900"
+                      : "border-gray-200 bg-white text-gray-500 hover:border-gray-400"
                   }`}
                 >
                   {order.id}
@@ -186,22 +186,22 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
 
         {currentOrder && (
           <>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-8">
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 mb-8">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
-                  <h1 className="text-3xl text-white mb-2">Theo dõi đơn hàng</h1>
-                  <p className="text-white/60">Mã đơn hàng: {currentOrder.id}</p>
+                  <h1 className="text-3xl text-gray-900 mb-2">Theo dõi đơn hàng</h1>
+                  <p className="text-gray-500">Mã đơn hàng: {currentOrder.id}</p>
                 </div>
-                <Badge className="bg-gradient-to-r from-purple-600 to-blue-600">
+                <Badge className="bg-blue-600 hover:bg-blue-700 text-white">
                   {currentOrder.status}
                 </Badge>
               </div>
 
               {/* Order Details */}
               <div className="grid md:grid-cols-2 gap-4 mb-8">
-                <div className="bg-white/5 rounded-lg p-4">
-                  <p className="text-sm text-white/60 mb-1">Ngày đặt hàng</p>
-                  <p className="text-white">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-500 mb-1">Ngày đặt hàng</p>
+                  <p className="text-gray-900">
                     {currentOrder.date
                       ? new Date(currentOrder.date).toLocaleDateString("vi-VN", {
                           year: "numeric",
@@ -211,13 +211,13 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                       : "—"}
                   </p>
                 </div>
-                <div className="bg-white/5 rounded-lg p-4">
-                  <p className="text-sm text-white/60 mb-1">Dự kiến giao hàng</p>
-                  <p className="text-white">Hôm nay trước 18:00</p>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-500 mb-1">Dự kiến giao hàng</p>
+                  <p className="text-gray-900">Hôm nay trước 18:00</p>
                 </div>
               </div>
 
-              <Separator className="bg-white/10 mb-8" />
+              <Separator className="bg-gray-200 mb-8" />
 
               {/* Tracking Steps */}
               {currentOrder.tracking?.steps && currentOrder.tracking.steps.length > 0 ? (
@@ -233,22 +233,22 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                           <div
                             className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all ${
                               isCompleted
-                                ? "bg-gradient-to-r from-purple-600 to-blue-600 border-purple-500"
+                                ? "bg-blue-600 border-blue-600"
                                 : isCurrent
-                                ? "border-purple-500 bg-purple-500/20 animate-pulse"
-                                : "border-white/20 bg-white/5"
+                                ? "border-blue-600 bg-blue-50 animate-pulse"
+                                : "border-gray-200 bg-gray-50"
                             }`}
                           >
                             <Icon
                               className={`h-6 w-6 ${
-                                isCompleted || isCurrent ? "text-white" : "text-white/30"
+                                isCompleted || isCurrent ? "text-white" : "text-gray-300"
                               }`}
                             />
                           </div>
                           {index < currentOrder.tracking.steps.length - 1 && (
                             <div
                               className={`w-0.5 h-16 ${
-                                isCompleted ? "bg-purple-500" : "bg-white/10"
+                                isCompleted ? "bg-blue-600" : "bg-gray-200"
                               }`}
                             />
                           )}
@@ -257,12 +257,12 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                         <div className="flex-1 pb-8">
                           <h3
                             className={`text-lg mb-1 ${
-                              isCompleted || isCurrent ? "text-white" : "text-white/50"
+                              isCompleted || isCurrent ? "text-gray-900" : "text-gray-400"
                             }`}
                           >
                             {step.label}
                           </h3>
-                          <p className="text-sm text-white/60">
+                          <p className="text-sm text-gray-500">
                             {step.date
                               ? new Date(step.date).toLocaleDateString("vi-VN", {
                                   year: "numeric",
@@ -274,10 +274,10 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                               : ""}
                           </p>
                           {step.description && (
-                            <p className="text-sm text-white/50 mt-1">{step.description}</p>
+                            <p className="text-sm text-gray-400 mt-1">{step.description}</p>
                           )}
                           {isCurrent && (
-                            <Badge className="mt-2 bg-purple-500/20 text-purple-400 border-purple-500/30">
+                            <Badge className="mt-2 bg-blue-50 text-blue-600 border-blue-200">
                               Trạng thái hiện tại
                             </Badge>
                           )}
@@ -287,25 +287,25 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                   })}
                 </div>
               ) : (
-                <div className="text-white/50 text-sm py-4">Không có thông tin theo dõi.</div>
+                <div className="text-gray-400 text-sm py-4">Không có thông tin theo dõi.</div>
               )}
 
               {/* Delivery Map Placeholder */}
-              <div className="mt-8 bg-white/5 rounded-xl p-8 text-center border-2 border-dashed border-white/10">
-                <MapPin className="h-12 w-12 text-purple-400 mx-auto mb-3" />
-                <h3 className="text-xl text-white mb-2">Theo dõi trên bản đồ</h3>
-                <p className="text-white/60 mb-4">
+              <div className="mt-8 bg-gray-50 rounded-xl p-8 text-center border-2 border-dashed border-gray-200">
+                <MapPin className="h-12 w-12 text-blue-600 mx-auto mb-3" />
+                <h3 className="text-xl text-gray-900 mb-2">Theo dõi trên bản đồ</h3>
+                <p className="text-gray-500 mb-4">
                   Gói hàng của bạn đang trên đường! Theo dõi người giao hàng theo thời gian thực.
                 </p>
-                <Button className="bg-gradient-to-r from-purple-600 to-blue-600">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                   Xem theo dõi trực tiếp
                 </Button>
               </div>
             </div>
 
             {/* Order Items */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-              <h2 className="text-2xl text-white mb-6">Sản phẩm trong đơn</h2>
+            <div className="bg-white border border-gray-200 rounded-2xl p-8">
+              <h2 className="text-2xl text-gray-900 mb-6">Sản phẩm trong đơn</h2>
 
               <div className="space-y-4">
                 {currentOrder.items.map((item) => {
@@ -315,9 +315,9 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                   return (
                     <div
                       key={item.id}
-                      className="flex gap-4 bg-white/5 rounded-xl p-4"
+                      className="flex gap-4 bg-gray-50 rounded-xl p-4"
                     >
-                      <div className="w-20 h-20 bg-white/5 rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                         <ImageWithFallback
                           src={image}
                           alt={name}
@@ -325,17 +325,17 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                         />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-white mb-1">{name}</h3>
-                        <p className="text-sm text-white/60">Số lượng: {item.quantity}</p>
+                        <h3 className="text-gray-900 mb-1">{name}</h3>
+                        <p className="text-sm text-gray-500">Số lượng: {item.quantity}</p>
                         {item.selectedColor && (
-                          <p className="text-sm text-white/60">Màu: {item.selectedColor}</p>
+                          <p className="text-sm text-gray-500">Màu: {item.selectedColor}</p>
                         )}
                         {item.selectedSize && (
-                          <p className="text-sm text-white/60">Kích cỡ: {item.selectedSize}</p>
+                          <p className="text-sm text-gray-500">Kích cỡ: {item.selectedSize}</p>
                         )}
                       </div>
                       <div className="text-right">
-                        <p className="text-xl text-white">
+                        <p className="text-xl text-gray-900">
                           ${(item.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
@@ -344,14 +344,14 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                 })}
               </div>
 
-              <Separator className="bg-white/10 my-6" />
+              <Separator className="bg-gray-200 my-6" />
 
               <div className="space-y-2">
-                <div className="flex justify-between text-white/70">
+                <div className="flex justify-between text-gray-500">
                   <span>Tạm tính</span>
                   <span>${(currentOrder.subtotal ?? currentOrder.total).toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-white/70">
+                <div className="flex justify-between text-gray-500">
                   <span>Vận chuyển</span>
                   <Badge variant="secondary" className="bg-green-500/20 text-green-400">
                     MIỄN PHÍ
@@ -364,15 +364,15 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                   </div>
                 )}
                 {currentOrder.tax != null && currentOrder.tax > 0 && (
-                  <div className="flex justify-between text-white/70">
+                  <div className="flex justify-between text-gray-500">
                     <span>Thuế</span>
                     <span>${Number(currentOrder.tax).toFixed(2)}</span>
                   </div>
                 )}
-                <Separator className="bg-white/10" />
+                <Separator className="bg-gray-200" />
                 <div className="flex justify-between items-center">
-                  <span className="text-xl text-white">Tổng cộng</span>
-                  <span className="text-2xl text-white">
+                  <span className="text-xl text-gray-900">Tổng cộng</span>
+                  <span className="text-2xl text-gray-900">
                     ${Number(currentOrder.total).toFixed(2)}
                   </span>
                 </div>
@@ -389,7 +389,7 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                 Liên hệ hỗ trợ
               </Button>
               <Button
-                className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => onNavigate("shop")}
               >
                 Tiếp tục mua sắm

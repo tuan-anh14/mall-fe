@@ -55,17 +55,17 @@ export function RecentlyViewedSection({
     <section className="py-12 container mx-auto px-4">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Clock className="h-5 w-5 text-purple-400" />
+          <Clock className="h-5 w-5 text-blue-600" />
           <div>
-            <h2 className="text-2xl text-white">Sản phẩm đã xem gần đây</h2>
-            <p className="text-sm text-white/50">{items.length} sản phẩm</p>
+            <h2 className="text-2xl text-gray-900">Sản phẩm đã xem gần đây</h2>
+            <p className="text-sm text-gray-500">{items.length} sản phẩm</p>
           </div>
         </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleClearAll}
-          className="text-white/40 hover:text-red-400"
+          className="text-gray-400 hover:text-red-500"
         >
           <Trash2 className="h-4 w-4 mr-1" />
           Xóa tất cả
@@ -77,7 +77,7 @@ export function RecentlyViewedSection({
           <div key={item.id} className="relative group">
             <button
               onClick={(e) => handleRemove(item.productId, e)}
-              className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80"
+              className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-gray-700/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
             >
               <X className="h-3 w-3 text-white" />
             </button>
@@ -89,7 +89,7 @@ export function RecentlyViewedSection({
               isInWishlist={isInWishlist?.(item.productId)}
             />
             {item.viewCount > 1 && (
-              <div className="mt-1 text-center text-xs text-white/40">
+              <div className="mt-1 text-center text-xs text-gray-400">
                 Đã xem {item.viewCount} lần
               </div>
             )}

@@ -200,22 +200,22 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
           <ArrowLeft className="h-4 w-4 mr-2" />
           Quay lại sản phẩm
         </Button>
-        <h1 className="text-4xl text-white mb-2">
+        <h1 className="text-4xl text-gray-900 mb-2">
           {isEditMode ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}
         </h1>
-        <p className="text-white/60">
+        <p className="text-gray-500">
           {isEditMode ? "Cập nhật thông tin sản phẩm" : "Tạo sản phẩm mới cho cửa hàng của bạn"}
         </p>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
-          <h2 className="text-2xl text-white mb-6">Thông tin sản phẩm</h2>
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
+          <h2 className="text-2xl text-gray-900 mb-6">Thông tin sản phẩm</h2>
 
           <div className="space-y-6">
             {/* Product Name */}
             <div>
-              <Label htmlFor="name" className="text-white mb-2 block">
+              <Label htmlFor="name" className="text-gray-900 mb-2 block">
                 Tên sản phẩm <span className="text-red-400">*</span>
               </Label>
               <Input
@@ -224,14 +224,14 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="Nhập tên sản phẩm"
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
                 required
               />
             </div>
 
             {/* Description */}
             <div>
-              <Label htmlFor="description" className="text-white mb-2 block">
+              <Label htmlFor="description" className="text-gray-900 mb-2 block">
                 Mô tả
               </Label>
               <Textarea
@@ -240,7 +240,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                 value={formData.description}
                 onChange={handleInputChange}
                 placeholder="Nhập mô tả sản phẩm"
-                className="bg-white/5 border-white/10 text-white min-h-[120px]"
+                className="bg-gray-50 border-gray-200 text-gray-900 min-h-[120px]"
                 rows={5}
               />
             </div>
@@ -248,7 +248,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             {/* Category and Brand */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label htmlFor="categoryId" className="text-white mb-2 block">
+                <Label htmlFor="categoryId" className="text-gray-900 mb-2 block">
                   Danh mục <span className="text-red-400">*</span>
                 </Label>
                 <Select
@@ -256,10 +256,10 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   value={formData.categoryId}
                   onValueChange={(value: string) => setFormData((prev) => ({ ...prev, categoryId: value }))}
                 >
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                  <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-900">
                     <SelectValue placeholder="Chọn danh mục" />
                   </SelectTrigger>
-                  <SelectContent className="bg-black border-white/10">
+                  <SelectContent className="bg-white border-gray-200">
                     {categories.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>
                         {cat.name}
@@ -270,7 +270,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
               </div>
 
               <div>
-                <Label htmlFor="brand" className="text-white mb-2 block">
+                <Label htmlFor="brand" className="text-gray-900 mb-2 block">
                   Thương hiệu
                 </Label>
                 <Input
@@ -279,7 +279,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   value={formData.brand}
                   onChange={handleInputChange}
                   placeholder="Nhập tên thương hiệu"
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
             </div>
@@ -287,7 +287,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             {/* Price and Original Price */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label htmlFor="price" className="text-white mb-2 block">
+                <Label htmlFor="price" className="text-gray-900 mb-2 block">
                   Giá (₫) <span className="text-red-400">*</span>
                 </Label>
                 <Input
@@ -299,13 +299,13 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   value={formData.price}
                   onChange={handleInputChange}
                   placeholder="0.00"
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                   required
                 />
               </div>
 
               <div>
-                <Label htmlFor="originalPrice" className="text-white mb-2 block">
+                <Label htmlFor="originalPrice" className="text-gray-900 mb-2 block">
                   Giá gốc (₫)
                 </Label>
                 <Input
@@ -317,7 +317,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   value={formData.originalPrice}
                   onChange={handleInputChange}
                   placeholder="0 (tùy chọn, dùng cho giảm giá)"
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
             </div>
@@ -325,7 +325,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             {/* Stock and SKU */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label htmlFor="stock" className="text-white mb-2 block">
+                <Label htmlFor="stock" className="text-gray-900 mb-2 block">
                   Số lượng tồn kho <span className="text-red-400">*</span>
                 </Label>
                 <Input
@@ -336,13 +336,13 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   value={formData.stock}
                   onChange={handleInputChange}
                   placeholder="0"
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                   required
                 />
               </div>
 
               <div>
-                <Label htmlFor="sku" className="text-white mb-2 block">
+                <Label htmlFor="sku" className="text-gray-900 mb-2 block">
                   SKU
                 </Label>
                 <Input
@@ -351,7 +351,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   value={formData.sku}
                   onChange={handleInputChange}
                   placeholder="SKU-001"
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
             </div>
@@ -359,11 +359,11 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
         </div>
 
         {/* Product Images */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl text-white">Hình ảnh sản phẩm</h2>
+            <h2 className="text-2xl text-gray-900">Hình ảnh sản phẩm</h2>
             {images.length > 0 && (
-              <span className="text-white/40 text-sm">{images.length} ảnh · Ảnh đầu tiên là ảnh đại diện</span>
+              <span className="text-gray-400 text-sm">{images.length} ảnh · Ảnh đầu tiên là ảnh đại diện</span>
             )}
           </div>
 
@@ -381,8 +381,8 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             <div
               className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
                 uploading
-                  ? "border-purple-500/50 bg-purple-500/5"
-                  : "border-white/20 hover:border-purple-500/50 hover:bg-white/3"
+                  ? "border-blue-500/50 bg-blue-50"
+                  : "border-gray-200 hover:border-blue-400 hover:bg-gray-50"
               }`}
               onClick={() => !uploading && fileInputRef.current?.click()}
               onDragOver={(e) => e.preventDefault()}
@@ -397,14 +397,14 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             >
               {uploading ? (
                 <>
-                  <div className="w-10 h-10 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin mx-auto mb-3" />
-                  <p className="text-purple-300 text-sm">Đang tải lên Cloudinary...</p>
+                  <div className="w-10 h-10 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin mx-auto mb-3" />
+                  <p className="text-blue-600 text-sm">Đang tải lên Cloudinary...</p>
                 </>
               ) : (
                 <>
-                  <Upload className="h-10 w-10 text-white/40 mx-auto mb-3" />
-                  <p className="text-white mb-1">Kéo thả hoặc nhấn để tải ảnh lên</p>
-                  <p className="text-sm text-white/50">PNG, JPG, WEBP · tối đa 10MB · tối đa 10 ảnh</p>
+                  <Upload className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-900 mb-1">Kéo thả hoặc nhấn để tải ảnh lên</p>
+                  <p className="text-sm text-gray-400">PNG, JPG, WEBP · tối đa 10MB · tối đa 10 ảnh</p>
                 </>
               )}
             </div>
@@ -415,7 +415,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                 {images.map((url, index) => (
                   <div
                     key={url + index}
-                    className="relative aspect-square bg-white/5 rounded-xl overflow-hidden group border border-white/10"
+                    className="relative aspect-square bg-gray-50 rounded-xl overflow-hidden group border border-gray-200"
                   >
                     <img
                       src={url}
@@ -448,7 +448,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                           <button
                             type="button"
                             onClick={() => handleMoveImage(index, index - 1)}
-                            className="bg-white/20 hover:bg-white/30 text-white text-xs px-2 py-1 rounded-lg transition-colors"
+                            className="bg-gray-200 hover:bg-gray-300 text-gray-900 text-xs px-2 py-1 rounded-lg transition-colors"
                           >
                             ←
                           </button>
@@ -457,7 +457,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                           <button
                             type="button"
                             onClick={() => handleMoveImage(index, index + 1)}
-                            className="bg-white/20 hover:bg-white/30 text-white text-xs px-2 py-1 rounded-lg transition-colors"
+                            className="bg-gray-200 hover:bg-gray-300 text-gray-900 text-xs px-2 py-1 rounded-lg transition-colors"
                           >
                             →
                           </button>
@@ -486,7 +486,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                     type="button"
                     onClick={() => !uploading && fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="aspect-square border-2 border-dashed border-white/20 rounded-xl flex flex-col items-center justify-center gap-2 text-white/40 hover:text-white/60 hover:border-purple-500/40 transition-colors disabled:opacity-40"
+                    className="aspect-square border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-gray-600 hover:border-blue-400 transition-colors disabled:opacity-40"
                   >
                     <Plus className="h-6 w-6" />
                     <span className="text-xs">Thêm ảnh</span>
@@ -498,9 +498,9 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
         </div>
 
         {/* Specifications */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl text-white">Thông số kỹ thuật</h2>
+            <h2 className="text-2xl text-gray-900">Thông số kỹ thuật</h2>
             <Button
               type="button"
               variant="outline"
@@ -513,7 +513,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
           </div>
 
           {specifications.length === 0 ? (
-            <p className="text-white/40 text-sm text-center py-4">
+            <p className="text-gray-400 text-sm text-center py-4">
               Chưa có thông số kỹ thuật. Nhấn "Thêm thông số" để thêm các thông số như kích thước, chất liệu, tương thích, v.v.
             </p>
           ) : (
@@ -528,7 +528,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                         prev.map((s, i) => (i === index ? { ...s, key: e.target.value } : s))
                       )
                     }
-                    className="bg-white/5 border-white/10 text-white flex-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 flex-1"
                   />
                   <Input
                     placeholder="VD: 200g, Đỏ, Nhôm"
@@ -538,14 +538,14 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                         prev.map((s, i) => (i === index ? { ...s, value: e.target.value } : s))
                       )
                     }
-                    className="bg-white/5 border-white/10 text-white flex-1"
+                    className="bg-gray-50 border-gray-200 text-gray-900 flex-1"
                   />
                   <button
                     type="button"
                     onClick={() =>
                       setSpecifications((prev) => prev.filter((_, i) => i !== index))
                     }
-                    className="h-9 w-9 flex items-center justify-center text-white/40 hover:text-red-400 transition-colors flex-shrink-0"
+                    className="h-9 w-9 flex items-center justify-center text-gray-400 hover:text-red-400 transition-colors flex-shrink-0"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -568,7 +568,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
           <Button
             type="submit"
             disabled={submitting || uploading}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 sm:w-auto w-full"
+            className="bg-blue-600 hover:bg-blue-700 text-white sm:w-auto w-full"
           >
             {submitting
               ? isEditMode ? "Đang lưu..." : "Đang thêm..."

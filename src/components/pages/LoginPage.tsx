@@ -54,38 +54,38 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
         {/* Left Side - Branding */}
         <div className="hidden lg:block">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-3xl" />
-            <div className="relative bg-gradient-to-br from-purple-600/10 to-blue-600/10 border border-white/10 rounded-3xl p-12">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-blue-800/10 rounded-3xl" />
+            <div className="relative bg-gradient-to-br from-blue-700 to-blue-900 border border-blue-500/30 rounded-3xl p-12">
               <div className="flex items-center gap-3 mb-8">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center">
                   <ShoppingCart className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-3xl text-white">ShopHub</span>
+                <span className="text-3xl tracking-tight text-white"><span className="font-light">Shop</span> <span className="font-bold">MALL</span></span>
               </div>
               <h2 className="text-4xl text-white mb-4">
                 Chào mừng đến với Tương lai Mua sắm
               </h2>
-              <p className="text-xl text-white/70 mb-8">
+              <p className="text-xl text-blue-100 mb-8">
                 Tham gia cùng hàng nghìn người bán và người mua trên sàn thương mại cao cấp của chúng tôi.
               </p>
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                  <div className="h-12 w-12 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">✓</span>
                   </div>
-                  <p className="text-white/80">Thanh toán an toàn & bảo vệ dữ liệu</p>
+                  <p className="text-blue-100">Thanh toán an toàn & bảo vệ dữ liệu</p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                  <div className="h-12 w-12 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">✓</span>
                   </div>
-                  <p className="text-white/80">Giao hàng nhanh & đổi trả dễ dàng</p>
+                  <p className="text-blue-100">Giao hàng nhanh & đổi trả dễ dàng</p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                  <div className="h-12 w-12 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">✓</span>
                   </div>
-                  <p className="text-white/80">Hỗ trợ khách hàng 24/7</p>
+                  <p className="text-blue-100">Hỗ trợ khách hàng 24/7</p>
                 </div>
               </div>
             </div>
@@ -95,32 +95,36 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
         {/* Right Side - Forms */}
         <div>
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-white/5 p-1">
-              <TabsTrigger value="login">Đăng nhập</TabsTrigger>
-              <TabsTrigger value="register">Đăng ký</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 gap-1 p-1">
+              <TabsTrigger value="login" className="min-w-0 w-full">
+                Đăng nhập
+              </TabsTrigger>
+              <TabsTrigger value="register" className="min-w-0 w-full">
+                Đăng ký
+              </TabsTrigger>
             </TabsList>
 
             {/* Login Tab */}
             <TabsContent value="login">
-              <form onSubmit={handleLogin} className="bg-white/5 border border-white/10 rounded-2xl p-8">
-                <h2 className="text-2xl text-white mb-2">Chào mừng trở lại</h2>
-                <p className="text-white/60 mb-6">Đăng nhập vào tài khoản</p>
+              <form onSubmit={handleLogin} className="bg-white border border-gray-200 rounded-2xl p-8">
+                <h2 className="text-2xl text-gray-900 mb-2">Chào mừng trở lại</h2>
+                <p className="text-gray-500 mb-6">Đăng nhập vào tài khoản</p>
 
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="login-email">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                       <Input
                         id="login-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10"
                         {...loginForm.register("email")}
                       />
                     </div>
                     {loginForm.formState.errors.email && (
-                      <p className="text-xs text-red-400 mt-1">{loginForm.formState.errors.email.message}</p>
+                      <p className="text-xs text-red-500 mt-1">{loginForm.formState.errors.email.message}</p>
                     )}
                   </div>
 
@@ -129,24 +133,24 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                       <Label htmlFor="login-password">Mật khẩu</Label>
                       <button
                         type="button"
-                        className="text-sm text-purple-400 hover:text-purple-300"
+                        className="text-sm text-blue-600 hover:text-blue-700"
                         onClick={() => onNavigate("forgot-password")}
                       >
                         Quên mật khẩu?
                       </button>
                     </div>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                       <Input
                         id="login-password"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10"
                         {...loginForm.register("password")}
                       />
                     </div>
                     {loginForm.formState.errors.password && (
-                      <p className="text-xs text-red-400 mt-1">{loginForm.formState.errors.password.message}</p>
+                      <p className="text-xs text-red-500 mt-1">{loginForm.formState.errors.password.message}</p>
                     )}
                   </div>
 
@@ -154,15 +158,15 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                     type="submit"
                     size="lg"
                     disabled={loginForm.formState.isSubmitting}
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     {loginForm.formState.isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
                   </Button>
                 </div>
 
                 <div className="relative my-6">
-                  <Separator className="bg-white/10" />
-                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-950 px-3 text-sm text-white/60">
+                  <Separator className="bg-gray-200" />
+                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-sm text-gray-500">
                     hoặc tiếp tục với
                   </span>
                 </div>
@@ -199,15 +203,15 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
 
             {/* Register Tab */}
             <TabsContent value="register">
-              <form onSubmit={handleRegister} className="bg-white/5 border border-white/10 rounded-2xl p-8">
-                <h2 className="text-2xl text-white mb-2">Tạo tài khoản</h2>
-                <p className="text-white/60 mb-6">Tham gia ShopHub ngay hôm nay</p>
+              <form onSubmit={handleRegister} className="bg-white border border-gray-200 rounded-2xl p-8">
+                <h2 className="text-2xl text-gray-900 mb-2">Tạo tài khoản</h2>
+                <p className="text-gray-500 mb-6">Tham gia Shop MALL ngay hôm nay</p>
 
-                <div className="flex items-center gap-3 mb-6 p-4 rounded-xl border border-purple-500/30 bg-purple-500/10">
-                  <ShoppingCart className="h-6 w-6 text-purple-400 flex-shrink-0" />
+                <div className="flex items-center gap-3 mb-6 p-4 rounded-xl border border-blue-200 bg-blue-50">
+                  <ShoppingCart className="h-6 w-6 text-blue-600 flex-shrink-0" />
                   <div>
-                    <p className="text-white text-sm font-medium">Tài khoản Người mua</p>
-                    <p className="text-white/50 text-xs mt-0.5">Bạn có thể đăng ký trở thành người bán sau khi có tài khoản</p>
+                    <p className="text-gray-900 text-sm font-medium">Tài khoản Người mua</p>
+                    <p className="text-gray-500 text-xs mt-0.5">Bạn có thể đăng ký trở thành người bán sau khi có tài khoản</p>
                   </div>
                 </div>
 
@@ -215,67 +219,67 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   <div>
                     <Label htmlFor="register-name">Họ và tên</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                       <Input
                         id="register-name"
                         placeholder="Nguyễn Văn A"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10"
                         {...registerForm.register("name")}
                       />
                     </div>
                     {registerForm.formState.errors.name && (
-                      <p className="text-xs text-red-400 mt-1">{registerForm.formState.errors.name.message}</p>
+                      <p className="text-xs text-red-500 mt-1">{registerForm.formState.errors.name.message}</p>
                     )}
                   </div>
 
                   <div>
                     <Label htmlFor="register-email">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                       <Input
                         id="register-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10"
                         {...registerForm.register("email")}
                       />
                     </div>
                     {registerForm.formState.errors.email && (
-                      <p className="text-xs text-red-400 mt-1">{registerForm.formState.errors.email.message}</p>
+                      <p className="text-xs text-red-500 mt-1">{registerForm.formState.errors.email.message}</p>
                     )}
                   </div>
 
                   <div>
                     <Label htmlFor="register-password">Mật khẩu</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                       <Input
                         id="register-password"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10"
                         {...registerForm.register("password")}
                       />
                     </div>
                     {registerForm.formState.errors.password && (
-                      <p className="text-xs text-red-400 mt-1">{registerForm.formState.errors.password.message}</p>
+                      <p className="text-xs text-red-500 mt-1">{registerForm.formState.errors.password.message}</p>
                     )}
                   </div>
 
                   <div>
                     <Label htmlFor="register-confirm">Xác nhận mật khẩu</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                       <Input
                         id="register-confirm"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-white/5 border-white/10"
+                        className="pl-10"
                         {...registerForm.register("confirmPassword")}
                       />
                     </div>
                     {registerForm.formState.errors.confirmPassword && (
-                      <p className="text-xs text-red-400 mt-1">{registerForm.formState.errors.confirmPassword.message}</p>
+                      <p className="text-xs text-red-500 mt-1">{registerForm.formState.errors.confirmPassword.message}</p>
                     )}
                   </div>
 
@@ -283,19 +287,19 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                     type="submit"
                     size="lg"
                     disabled={registerForm.formState.isSubmitting}
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     {registerForm.formState.isSubmitting ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
                   </Button>
                 </div>
 
-                <p className="text-center text-sm text-white/60 mt-6">
+                <p className="text-center text-sm text-gray-500 mt-6">
                   Bằng việc đăng ký, bạn đồng ý với{" "}
-                  <button type="button" className="text-purple-400 hover:text-purple-300" onClick={() => onNavigate("terms")}>
+                  <button type="button" className="text-blue-600 hover:text-blue-700" onClick={() => onNavigate("terms")}>
                     Điều khoản dịch vụ
                   </button>{" "}
                   và{" "}
-                  <button type="button" className="text-purple-400 hover:text-purple-300" onClick={() => onNavigate("privacy")}>
+                  <button type="button" className="text-blue-600 hover:text-blue-700" onClick={() => onNavigate("privacy")}>
                     Chính sách bảo mật
                   </button>
                 </p>

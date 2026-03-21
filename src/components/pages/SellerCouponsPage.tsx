@@ -178,8 +178,8 @@ export function SellerCouponsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Mã giảm giá của shop</h1>
-          <p className="text-white/60 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-gray-900">Mã giảm giá của shop</h1>
+          <p className="text-gray-500 text-sm mt-1">
             Quản lý mã giảm giá áp dụng cho sản phẩm của shop bạn
           </p>
         </div>
@@ -201,59 +201,59 @@ export function SellerCouponsPage() {
       {/* Content */}
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-8 h-8 rounded-full border-4 border-purple-500/30 border-t-purple-500 animate-spin" />
+          <div className="w-8 h-8 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin" />
         </div>
       ) : coupons.length === 0 ? (
-        <div className="text-center py-20 text-white/40">
+        <div className="text-center py-20 text-gray-400">
           <Tag className="h-12 w-12 mx-auto mb-4 opacity-40" />
           <p className="text-lg">Chưa có mã giảm giá nào</p>
           <p className="text-sm mt-1">Tạo mã giảm giá đầu tiên để thu hút khách hàng</p>
         </div>
       ) : (
-        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[750px]">
               <thead>
-                <tr className="border-b border-white/10 text-left">
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Mã code</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Loại / Giá trị</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Đã dùng</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Đơn tối thiểu</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Hiệu lực</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium">Trạng thái</th>
-                  <th className="px-6 py-4 text-white/50 text-sm font-medium text-right">Hành động</th>
+                <tr className="border-b border-gray-200 text-left">
+                  <th className="px-6 py-4 text-gray-400 text-sm font-medium">Mã code</th>
+                  <th className="px-6 py-4 text-gray-400 text-sm font-medium">Loại / Giá trị</th>
+                  <th className="px-6 py-4 text-gray-400 text-sm font-medium">Đã dùng</th>
+                  <th className="px-6 py-4 text-gray-400 text-sm font-medium">Đơn tối thiểu</th>
+                  <th className="px-6 py-4 text-gray-400 text-sm font-medium">Hiệu lực</th>
+                  <th className="px-6 py-4 text-gray-400 text-sm font-medium">Trạng thái</th>
+                  <th className="px-6 py-4 text-gray-400 text-sm font-medium text-right">Hành động</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-gray-100">
                 {coupons.map((c) => {
                   const status = getCouponStatus(c);
                   return (
-                    <tr key={c.id} className="hover:bg-white/[0.02]">
+                    <tr key={c.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
-                        <span className="font-mono font-bold text-white text-sm flex items-center gap-2">
-                          <Tag className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                        <span className="font-mono font-bold text-gray-900 text-sm flex items-center gap-2">
+                          <Tag className="h-4 w-4 text-blue-600 flex-shrink-0" />
                           {c.code}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-white text-sm font-medium">
+                        <span className="text-gray-900 text-sm font-medium">
                           {c.type === "PERCENTAGE" ? `${c.value}%` : `${formatCurrency(Number(c.value))}`}
                         </span>
-                        <p className="text-white/40 text-xs mt-0.5">
+                        <p className="text-gray-400 text-xs mt-0.5">
                           {c.type === "PERCENTAGE" ? "Phần trăm" : "Số tiền cố định"}
                         </p>
                       </td>
-                      <td className="px-6 py-4 text-white/60 text-sm">
+                      <td className="px-6 py-4 text-gray-500 text-sm">
                         {c.usageCount}{c.usageLimit != null ? `/${c.usageLimit}` : ""}
                       </td>
-                      <td className="px-6 py-4 text-white/60 text-sm">
+                      <td className="px-6 py-4 text-gray-500 text-sm">
                         {c.minOrderAmount != null ? formatCurrency(Number(c.minOrderAmount)) : "—"}
                       </td>
-                      <td className="px-6 py-4 text-white/50 text-xs">
+                      <td className="px-6 py-4 text-gray-400 text-xs">
                         <div>{new Date(c.validFrom).toLocaleDateString("vi-VN")}</div>
                         {c.validUntil
                           ? <div>→ {new Date(c.validUntil).toLocaleDateString("vi-VN")}</div>
-                          : <div className="text-white/30">Không giới hạn</div>}
+                          : <div className="text-gray-400">Không giới hạn</div>}
                       </td>
                       <td className="px-6 py-4">
                         <Badge variant={status.variant}>{status.label}</Badge>
@@ -264,7 +264,7 @@ export function SellerCouponsPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => openEdit(c)}
-                            className="h-8 w-8 text-white/60 hover:text-white"
+                            className="h-8 w-8 text-gray-500 hover:text-gray-900"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -289,7 +289,7 @@ export function SellerCouponsPage() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="bg-zinc-900 border-white/10 text-white max-w-md">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-md">
           <DialogHeader>
             <DialogTitle>
               {editingCoupon ? "Chỉnh sửa mã giảm giá" : "Tạo mã giảm giá mới"}
@@ -305,7 +305,7 @@ export function SellerCouponsPage() {
                     setForm((f) => ({ ...f, code: e.target.value.toUpperCase() }))
                   }
                   placeholder="VD: SHOP20"
-                  className="bg-white/5 border-white/10 uppercase"
+                  className="bg-gray-50 border-gray-200 uppercase"
                 />
               </div>
               <div className="space-y-1.5">
@@ -314,7 +314,7 @@ export function SellerCouponsPage() {
                   value={form.type}
                   onValueChange={(v: string) => setForm((f) => ({ ...f, type: v as any }))}
                 >
-                  <SelectTrigger className="bg-white/5 border-white/10">
+                  <SelectTrigger className="bg-gray-50 border-gray-200">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -333,7 +333,7 @@ export function SellerCouponsPage() {
                   value={form.value}
                   onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
                   placeholder={form.type === "PERCENTAGE" ? "VD: 20" : "VD: 50"}
-                  className="bg-white/5 border-white/10"
+                  className="bg-gray-50 border-gray-200"
                 />
               </div>
               <div className="space-y-1.5">
@@ -345,7 +345,7 @@ export function SellerCouponsPage() {
                     setForm((f) => ({ ...f, minOrderAmount: e.target.value }))
                   }
                   placeholder="Không giới hạn"
-                  className="bg-white/5 border-white/10"
+                  className="bg-gray-50 border-gray-200"
                 />
               </div>
             </div>
@@ -360,7 +360,7 @@ export function SellerCouponsPage() {
                     setForm((f) => ({ ...f, maxDiscount: e.target.value }))
                   }
                   placeholder="Không giới hạn"
-                  className="bg-white/5 border-white/10"
+                  className="bg-gray-50 border-gray-200"
                 />
               </div>
               <div className="space-y-1.5">
@@ -372,7 +372,7 @@ export function SellerCouponsPage() {
                     setForm((f) => ({ ...f, usageLimit: e.target.value }))
                   }
                   placeholder="Không giới hạn"
-                  className="bg-white/5 border-white/10"
+                  className="bg-gray-50 border-gray-200"
                 />
               </div>
             </div>
@@ -384,7 +384,7 @@ export function SellerCouponsPage() {
                   type="date"
                   value={form.validFrom}
                   onChange={(e) => setForm((f) => ({ ...f, validFrom: e.target.value }))}
-                  className="bg-white/5 border-white/10"
+                  className="bg-gray-50 border-gray-200"
                 />
               </div>
               <div className="space-y-1.5">
@@ -395,7 +395,7 @@ export function SellerCouponsPage() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, validUntil: e.target.value }))
                   }
-                  className="bg-white/5 border-white/10"
+                  className="bg-gray-50 border-gray-200"
                 />
               </div>
             </div>
@@ -406,7 +406,7 @@ export function SellerCouponsPage() {
                 type="checkbox"
                 checked={form.isActive}
                 onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
-                className="h-4 w-4 rounded border-white/20 cursor-pointer"
+                className="h-4 w-4 rounded border-gray-300 cursor-pointer"
               />
               <Label htmlFor="isActive" className="cursor-pointer">
                 Kích hoạt ngay
@@ -426,10 +426,10 @@ export function SellerCouponsPage() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteId} onOpenChange={(o: boolean) => !o && setDeleteId(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-white/10 text-white">
+        <AlertDialogContent className="bg-white border-gray-200 text-gray-900">
           <AlertDialogHeader>
             <AlertDialogTitle>Xóa mã giảm giá?</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
+            <AlertDialogDescription className="text-gray-500">
               Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>

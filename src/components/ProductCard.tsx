@@ -26,11 +26,11 @@ export const ProductCard = memo(function ProductCard({
     <motion.div
       whileHover={{ y: -8 }}
       transition={{ duration: 0.3 }}
-      className="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-purple-500/50 transition-all"
+      className="group relative bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-blue-400 hover:shadow-lg transition-all"
     >
       {/* Discount Badge */}
       {product.discount && (
-        <Badge className="absolute top-3 left-3 z-10 bg-gradient-to-r from-purple-600 to-blue-600">
+        <Badge className="absolute top-3 left-3 z-10 bg-red-500 text-white">
           -{product.discount}%
         </Badge>
       )}
@@ -41,14 +41,14 @@ export const ProductCard = memo(function ProductCard({
           size="icon"
           variant="ghost"
           onClick={() => onAddToWishlist(product)}
-          className="absolute top-3 right-3 z-10 bg-black/50 backdrop-blur-sm hover:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute top-3 right-3 z-10 bg-white/90 hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
         >
           <Heart className={`h-4 w-4 ${isInWishlist ? "fill-red-500 text-red-500" : ""}`} />
         </Button>
       )}
 
       {/* Product Image */}
-      <div className="relative aspect-square overflow-hidden bg-white/5">
+      <div className="relative aspect-square overflow-hidden bg-gray-50">
         <ImageWithFallback
           src={product.image}
           alt={product.name}
@@ -56,7 +56,7 @@ export const ProductCard = memo(function ProductCard({
         />
 
         {/* Quick View Overlay */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+        <div className="absolute inset-0 bg-gray-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
           <Button
             size="sm"
             onClick={() => onView(product.id)}
@@ -71,8 +71,8 @@ export const ProductCard = memo(function ProductCard({
       {/* Product Info */}
       <div className="p-4 space-y-3">
         <div>
-          <p className="text-xs text-purple-400 mb-1">{product.category}</p>
-          <h3 className="text-white line-clamp-2 group-hover:text-purple-400 transition-colors">
+          <p className="text-xs text-blue-600 mb-1">{product.category}</p>
+          <h3 className="text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
             {product.name}
           </h3>
         </div>
@@ -81,16 +81,16 @@ export const ProductCard = memo(function ProductCard({
         <div className="flex items-center gap-2">
           <div className="flex items-center">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="ml-1 text-sm text-white">{product.rating}</span>
+            <span className="ml-1 text-sm text-gray-700">{product.rating}</span>
           </div>
-          <span className="text-xs text-white/50">({product.reviews})</span>
+          <span className="text-xs text-gray-400">({product.reviews})</span>
         </div>
 
         {/* Price */}
         <div className="flex items-baseline gap-2">
-          <span className="text-xl text-white">{formatCurrency(product.price)}</span>
+          <span className="text-xl text-gray-900 font-semibold">{formatCurrency(product.price)}</span>
           {product.originalPrice && (
-            <span className="text-sm text-white/50 line-through">
+            <span className="text-sm text-gray-400 line-through">
               {formatCurrency(product.originalPrice)}
             </span>
           )}
@@ -98,13 +98,13 @@ export const ProductCard = memo(function ProductCard({
 
         {/* Stock Status */}
         {product.stock < 10 && (
-          <p className="text-xs text-orange-400">Chỉ còn {product.stock} sản phẩm!</p>
+          <p className="text-xs text-amber-600">Chỉ còn {product.stock} sản phẩm!</p>
         )}
 
         {/* Add to Cart Button */}
         <Button
           onClick={() => onAddToCart(product)}
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          className="w-full bg-amber-500 hover:bg-amber-600 text-white"
         >
           <ShoppingCart className="h-4 w-4 mr-2" />
           Thêm vào giỏ

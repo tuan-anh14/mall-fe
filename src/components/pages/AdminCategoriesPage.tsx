@@ -115,12 +115,12 @@ export function AdminCategoriesPage() {
     <div className="container mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Quản lý danh mục</h1>
-          <p className="text-white/50 text-sm mt-0.5">{categories.length} danh mục</p>
+          <h1 className="text-2xl font-bold text-gray-900">Quản lý danh mục</h1>
+          <p className="text-gray-500 text-sm mt-0.5">{categories.length} danh mục</p>
         </div>
         <Button
           onClick={openCreate}
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          className="bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700"
         >
           <Plus className="h-4 w-4 mr-2" />
           Thêm danh mục
@@ -129,52 +129,52 @@ export function AdminCategoriesPage() {
 
       {/* Form */}
       {showForm && (
-        <Card className="bg-white/5 border-purple-500/30 p-5">
-          <h3 className="text-white font-semibold mb-4">{editTarget ? "Sửa danh mục" : "Thêm danh mục mới"}</h3>
+        <Card className="bg-white border-blue-500/30 p-5">
+          <h3 className="text-gray-900 font-semibold mb-4">{editTarget ? "Sửa danh mục" : "Thêm danh mục mới"}</h3>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Tên danh mục *</label>
+              <label className="text-gray-500 text-xs mb-1 block">Tên danh mục *</label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm(f => ({ ...f, name: e.target.value, slug: autoSlug(e.target.value) }))}
                 placeholder="Electronics"
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Slug *</label>
+              <label className="text-gray-500 text-xs mb-1 block">Slug *</label>
               <Input
                 value={form.slug}
                 onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))}
                 placeholder="electronics"
-                className="bg-white/5 border-white/10 text-white font-mono text-sm"
+                className="bg-gray-50 border-gray-200 text-gray-900 font-mono text-sm"
               />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Icon (Lucide name)</label>
+              <label className="text-gray-500 text-xs mb-1 block">Icon (Lucide name)</label>
               <Input
                 value={form.icon}
                 onChange={(e) => setForm(f => ({ ...f, icon: e.target.value }))}
                 placeholder="Laptop"
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
             <div>
-              <label className="text-white/60 text-xs mb-1 block">Thứ tự</label>
+              <label className="text-gray-500 text-xs mb-1 block">Thứ tự</label>
               <Input
                 type="number"
                 value={form.sortOrder}
                 onChange={(e) => setForm(f => ({ ...f, sortOrder: e.target.value }))}
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-gray-50 border-gray-200 text-gray-900"
               />
             </div>
           </div>
           <div className="flex gap-2 mt-4">
-            <Button size="sm" onClick={handleSave} disabled={saving} className="bg-purple-600 hover:bg-purple-700">
+            <Button size="sm" onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
               <Check className="h-4 w-4 mr-1" />
               {saving ? "Đang lưu..." : "Lưu"}
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => setShowForm(false)} className="border border-white/10">
+            <Button size="sm" variant="ghost" onClick={() => setShowForm(false)} className="border border-gray-200">
               <X className="h-4 w-4 mr-1" />
               Hủy
             </Button>
@@ -183,33 +183,33 @@ export function AdminCategoriesPage() {
       )}
 
       {/* Category Table */}
-      <Card className="bg-white/5 border-white/10 overflow-hidden">
+      <Card className="bg-white border-gray-200 overflow-hidden">
         {loading ? (
           <div className="flex justify-center items-center h-48">
-            <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
           </div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/10 text-left">
-                <th className="px-4 py-3 text-white/50 text-sm font-medium">Tên</th>
-                <th className="px-4 py-3 text-white/50 text-sm font-medium">Slug</th>
-                <th className="px-4 py-3 text-white/50 text-sm font-medium">Icon</th>
-                <th className="px-4 py-3 text-white/50 text-sm font-medium">Sản phẩm</th>
-                <th className="px-4 py-3 text-white/50 text-sm font-medium">Thứ tự</th>
-                <th className="px-4 py-3 text-white/50 text-sm font-medium text-right">Hành động</th>
+              <tr className="border-b border-gray-200 text-left">
+                <th className="px-4 py-3 text-gray-500 text-sm font-medium">Tên</th>
+                <th className="px-4 py-3 text-gray-500 text-sm font-medium">Slug</th>
+                <th className="px-4 py-3 text-gray-500 text-sm font-medium">Icon</th>
+                <th className="px-4 py-3 text-gray-500 text-sm font-medium">Sản phẩm</th>
+                <th className="px-4 py-3 text-gray-500 text-sm font-medium">Thứ tự</th>
+                <th className="px-4 py-3 text-gray-500 text-sm font-medium text-right">Hành động</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-gray-100">
               {categories.map((cat) => (
-                <tr key={cat.id} className="hover:bg-white/[0.02]">
-                  <td className="px-4 py-3 text-white font-medium">{cat.name}</td>
-                  <td className="px-4 py-3 text-white/50 text-sm font-mono">{cat.slug}</td>
-                  <td className="px-4 py-3 text-white/50 text-sm">{cat.icon || "—"}</td>
+                <tr key={cat.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-gray-900 font-medium">{cat.name}</td>
+                  <td className="px-4 py-3 text-gray-500 text-sm font-mono">{cat.slug}</td>
+                  <td className="px-4 py-3 text-gray-500 text-sm">{cat.icon || "—"}</td>
                   <td className="px-4 py-3">
                     <Badge className="bg-blue-500/20 text-blue-400 border-0">{cat._count.products}</Badge>
                   </td>
-                  <td className="px-4 py-3 text-white/50 text-sm">{cat.sortOrder}</td>
+                  <td className="px-4 py-3 text-gray-500 text-sm">{cat.sortOrder}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
                       <Button
@@ -238,15 +238,15 @@ export function AdminCategoriesPage() {
       </Card>
 
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-white/10">
+        <AlertDialogContent className="bg-white border-gray-200">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Xóa danh mục?</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/60">
-              Xóa danh mục <strong className="text-white">{deleteTarget?.name}</strong>. Chỉ xóa được nếu không có sản phẩm nào.
+            <AlertDialogTitle className="text-gray-900">Xóa danh mục?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500">
+              Xóa danh mục <strong className="text-gray-900">{deleteTarget?.name}</strong>. Chỉ xóa được nếu không có sản phẩm nào.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Hủy</AlertDialogCancel>
+            <AlertDialogCancel className="bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100">Hủy</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">Xóa</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

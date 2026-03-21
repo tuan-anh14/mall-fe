@@ -152,7 +152,7 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-black py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <motion.div
@@ -160,11 +160,11 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-4">
+          <div className="h-16 w-16 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-4">
             <HelpCircle className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-white mb-2">Chúng tôi có thể giúp gì cho bạn?</h1>
-          <p className="text-white/60">Tìm câu trả lời cho các câu hỏi phổ biến hoặc liên hệ hỗ trợ</p>
+          <h1 className="text-gray-900 mb-2">Chúng tôi có thể giúp gì cho bạn?</h1>
+          <p className="text-gray-500">Tìm câu trả lời cho các câu hỏi phổ biến hoặc liên hệ hỗ trợ</p>
         </motion.div>
 
         {/* Search */}
@@ -175,12 +175,12 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
           className="mb-12"
         >
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/50" />
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <Input
               placeholder="Tìm kiếm trợ giúp..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-14 bg-white/5 border-white/10 text-white placeholder:text-white/50 text-lg"
+              className="pl-12 h-14 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 text-lg"
             />
           </div>
         </motion.div>
@@ -192,30 +192,30 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
           transition={{ delay: 0.2 }}
           className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12"
         >
-          <Card className="bg-white/5 border-white/10 hover:border-white/20 transition-colors cursor-pointer">
+          <Card className="bg-white border-gray-200 hover:border-blue-300 transition-colors cursor-pointer">
             <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-3">
+              <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-3">
                 <MessageCircle className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-white mb-1">Trò chuyện trực tiếp</h3>
-              <p className="text-sm text-white/60 mb-3">Trò chuyện với đội ngũ hỗ trợ</p>
-              <Button variant="ghost" size="sm" className="text-purple-400">
+              <h3 className="text-gray-900 mb-1">Trò chuyện trực tiếp</h3>
+              <p className="text-sm text-gray-500 mb-3">Trò chuyện với đội ngũ hỗ trợ</p>
+              <Button variant="ghost" size="sm" className="text-blue-600">
                 Bắt đầu trò chuyện
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/5 border-white/10 hover:border-white/20 transition-colors cursor-pointer">
+          <Card className="bg-white border-gray-200 hover:border-blue-300 transition-colors cursor-pointer">
             <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-3">
+              <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-3">
                 <Mail className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-white mb-1">Hỗ trợ qua Email</h3>
-              <p className="text-sm text-white/60 mb-3">Nhận trợ giúp qua email</p>
+              <h3 className="text-gray-900 mb-1">Hỗ trợ qua Email</h3>
+              <p className="text-sm text-gray-500 mb-3">Nhận trợ giúp qua email</p>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-purple-400"
+                className="text-blue-600"
                 onClick={() => onNavigate?.("contact")}
               >
                 Gửi Email
@@ -223,14 +223,14 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/5 border-white/10 hover:border-white/20 transition-colors cursor-pointer">
+          <Card className="bg-white border-gray-200 hover:border-blue-300 transition-colors cursor-pointer">
             <CardContent className="p-6 text-center">
-              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-3">
+              <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-3">
                 <Phone className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-white mb-1">Hỗ trợ qua điện thoại</h3>
-              <p className="text-sm text-white/60 mb-3">Gọi cho chúng tôi: +84 234 567 890</p>
-              <Button variant="ghost" size="sm" className="text-purple-400">
+              <h3 className="text-gray-900 mb-1">Hỗ trợ qua điện thoại</h3>
+              <p className="text-sm text-gray-500 mb-3">Gọi cho chúng tôi: +84 234 567 890</p>
+              <Button variant="ghost" size="sm" className="text-blue-600">
                 Gọi ngay
               </Button>
             </CardContent>
@@ -243,7 +243,7 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h2 className="text-white mb-6">Câu hỏi thường gặp</h2>
+          <h2 className="text-gray-900 mb-6">Câu hỏi thường gặp</h2>
           <div className="space-y-6">
             {categories.map((category, index) => (
               <motion.div
@@ -252,9 +252,9 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + index * 0.1 }}
               >
-                <Card className="bg-white/5 border-white/10">
+                <Card className="bg-white border-gray-200">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-3">
+                    <CardTitle className="text-gray-900 flex items-center gap-3">
                       <span className="text-2xl">{category.icon}</span>
                       {category.title}
                     </CardTitle>
@@ -265,12 +265,12 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
                         <AccordionItem
                           key={qIndex}
                           value={`${category.id}-${qIndex}`}
-                          className="border-white/10"
+                          className="border-gray-200"
                         >
-                          <AccordionTrigger className="text-white hover:text-purple-400 text-left">
+                          <AccordionTrigger className="text-gray-900 hover:text-blue-600 text-left">
                             {item.question}
                           </AccordionTrigger>
-                          <AccordionContent className="text-white/70">
+                          <AccordionContent className="text-gray-600">
                             {item.answer}
                           </AccordionContent>
                         </AccordionItem>
@@ -290,14 +290,14 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
           transition={{ delay: 0.8 }}
           className="mt-12"
         >
-          <Card className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border-purple-500/30">
+          <Card className="bg-blue-50 border-blue-200">
             <CardContent className="p-8 text-center">
-              <h3 className="text-white mb-2">Vẫn cần trợ giúp?</h3>
-              <p className="text-white/60 mb-6">
+              <h3 className="text-gray-900 mb-2">Vẫn cần trợ giúp?</h3>
+              <p className="text-gray-500 mb-6">
                 Đội ngũ hỗ trợ khách hàng của chúng tôi luôn sẵn sàng 24/7 để hỗ trợ bạn
               </p>
               <Button
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => onNavigate?.("contact")}
               >
                 Liên hệ hỗ trợ
