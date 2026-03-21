@@ -1,7 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { User, ShoppingBag, Heart, Settings, LogOut, Package, LayoutDashboard, ChevronRight, MapPin, CreditCard, Bell, Lock, Shield, Wallet, Trash2 } from "lucide-react";
+import { motion } from "motion/react";
+import {
+  User,
+  ShoppingBag,
+  Heart,
+  Settings,
+  LogOut,
+  Package,
+  LayoutDashboard,
+  ChevronRight,
+  MapPin,
+  CreditCard,
+  Bell,
+  Lock,
+  Shield,
+  Wallet,
+  Trash2,
+  MessageCircle,
+} from "lucide-react";
 import { Button } from "../ui/button";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Separator } from "../ui/separator";
@@ -59,6 +77,27 @@ function getStatusBadgeClass(status: string): string {
   if (s === "processing" || s === "confirmed") return "bg-blue-50 text-blue-700 border-blue-200";
   return "bg-amber-50 text-amber-700 border-amber-200";
 }
+
+function statusLabelVi(status: string): string {
+  const s = status?.toLowerCase().replace(/_/g, " ");
+  const map: Record<string, string> = {
+    pending: "Chờ xử lý",
+    processing: "Đang xử lý",
+    confirmed: "Đã xác nhận",
+    shipped: "Đang giao",
+    shipping: "Đang giao",
+    delivering: "Đang giao",
+    "in transit": "Đang giao",
+    delivered: "Đã giao",
+    completed: "Hoàn tất",
+    cancelled: "Đã hủy",
+    canceled: "Đã hủy",
+    refunded: "Hoàn tiền",
+  };
+  return map[s] ?? status;
+}
+
+const motionEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePageProps) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -120,10 +159,14 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
     : (userProp?.name ?? "");
 
   const displayEmail = profile?.email ?? userProp?.email ?? "";
+  const displayPhone = profile?.phone?.trim();
+  const avatarUrl = profile?.avatar ?? userProp?.avatar;
 
   const displayAvatar = profile
     ? `${profile.firstName?.[0] ?? ""}${profile.lastName?.[0] ?? ""}`.toUpperCase()
-    : (userProp?.avatar ?? (displayName ? displayName.slice(0, 2).toUpperCase() : "U"));
+    : displayName
+      ? displayName.slice(0, 2).toUpperCase()
+      : "U";
 
   const displayMemberSince = profile
     ? formatMemberSince(profile.memberSince ?? profile.createdAt)
@@ -148,85 +191,183 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
     }
   };
 
-  const statsData = [
-    { icon: ShoppingBag, label: "Tổng đơn hàng", value: ordersLoading ? "—" : ordersTotal, color: "text-blue-600 bg-blue-50" },
-    { icon: Package, label: "Đang giao", value: ordersLoading ? "—" : inTransitCount, color: "text-orange-600 bg-orange-50" },
-    { icon: Heart, label: "Yêu thích", value: wishlistLoading ? "—" : wishlistItems.length, color: "text-rose-600 bg-rose-50" },
-    { icon: Wallet, label: "Tổng chi tiêu", value: ordersLoading ? "—" : formatCurrency(orders.reduce((sum, o) => sum + Number(o.total), 0)), color: "text-emerald-600 bg-emerald-50" },
+  const statCards = [
+    {
+      icon: ShoppingBag,
+      label: "Tổng đơn hàng",
+      value: ordersLoading ? "—" : String(ordersTotal),
+      iconBg: "bg-blue-50 text-blue-600 border-blue-100",
+      bar: "bg-blue-500",
+    },
+    {
+      icon: Package,
+      label: "Đang giao",
+      value: ordersLoading ? "—" : String(inTransitCount),
+      iconBg: "bg-amber-50 text-amber-600 border-amber-100",
+      bar: "bg-amber-500",
+    },
+    {
+      icon: Heart,
+      label: "Yêu thích",
+      value: wishlistLoading ? "—" : String(wishlistItems.length),
+      iconBg: "bg-rose-50 text-rose-600 border-rose-100",
+      bar: "bg-rose-500",
+    },
+    {
+      icon: Wallet,
+      label: "Tổng chi tiêu",
+      value: ordersLoading ? "—" : formatCurrency(orders.reduce((sum, o) => sum + Number(o.total), 0)),
+      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
+      bar: "bg-emerald-500",
+    },
+  ] as const;
+
+  const quickLinks = [
+    { icon: Wallet, label: "Ví", page: "wallet" as const },
+    { icon: Package, label: "Đơn hàng", page: "orders" as const },
+    { icon: Heart, label: "Yêu thích", page: "wishlist" as const },
+    { icon: Bell, label: "Thông báo", page: "notifications" as const },
+    { icon: MessageCircle, label: "Hỗ trợ", page: "chat" as const },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
-      <div className="container mx-auto px-4 py-8 lg:py-10">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-50/80">
+      <div className="container mx-auto px-4 py-8 lg:py-10 max-w-6xl">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: motionEase }}
+          className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6"
+        >
+          <div>
+            <div className="inline-flex items-center gap-2 text-blue-600 text-xs font-semibold uppercase tracking-wider mb-1.5">
+              <User className="h-3.5 w-3.5" />
+              Hồ sơ
+            </div>
+            <h2 className="text-lg font-semibold text-gray-900">Tài khoản của bạn</h2>
+            <p className="text-sm text-gray-500 mt-0.5">Theo dõi đơn hàng, yêu thích và cài đặt một chỗ.</p>
+          </div>
+        </motion.div>
 
       {/* Profile Header */}
-      <div className="bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden mb-6">
-        <div className="h-28 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 relative">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.15),transparent_70%)]" />
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: motionEase, delay: 0.04 }}
+        className="bg-white border border-gray-200/80 rounded-2xl shadow-sm mb-6 overflow-visible"
+      >
+        <div className="relative z-0 h-32 sm:h-36 shrink-0 rounded-t-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(255,255,255,0.2),transparent_55%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_100%,rgba(0,0,0,0.08),transparent_50%)]" />
         </div>
-        <div className="px-6 lg:px-8 pb-6">
-          <div className="flex flex-col md:flex-row items-center md:items-end gap-5 -mt-12">
-            <Avatar className="h-24 w-24 border-4 border-white shadow-lg ring-2 ring-white/50">
-              <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
-                {profileLoading ? "..." : displayAvatar}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 text-center md:text-left pt-2">
+        {/* Avatar absolute tại mép banner — không dùng -mt trên cả hàng (tránh kéo chữ/email lên dưới gradient) */}
+        <div className="relative z-10 overflow-visible rounded-b-2xl bg-white px-6 lg:px-8 pb-6">
+          <Avatar className="absolute z-20 h-28 w-28 border-4 border-white shadow-xl ring-2 ring-white/60 left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 md:left-6 lg:left-8 md:translate-x-0">
+            {avatarUrl ? (
+              <AvatarImage src={avatarUrl} alt={displayName || "Avatar"} className="object-cover" />
+            ) : null}
+            <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
+              {profileLoading ? "…" : displayAvatar}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col items-center gap-5 pt-[4.75rem] text-center md:flex-row md:items-end md:justify-between md:gap-6 md:pt-5 md:pl-[9.5rem] lg:pl-[10rem] md:text-left">
+            <div className="flex-1 min-w-0 w-full md:w-auto">
               <div className="flex flex-col md:flex-row md:items-center gap-2 mb-1">
-                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-                  {profileLoading ? "Đang tải..." : displayName}
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight break-words">
+                  {profileLoading ? "Đang tải…" : displayName || "Khách"}
                 </h1>
                 {displayUserType && (
-                  <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 font-medium text-xs w-fit mx-auto md:mx-0">
+                  <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200/80 font-medium text-xs w-fit mx-auto md:mx-0 rounded-lg px-2.5 py-0.5 shrink-0">
                     {displayUserType?.toUpperCase() === "SELLER" ? "Người bán" : "Người mua"}
                   </Badge>
                 )}
               </div>
-              <p className="text-gray-500 text-sm">{displayEmail}</p>
-              {displayMemberSince && (
-                <p className="text-xs text-gray-400 mt-0.5">Thành viên từ {displayMemberSince}</p>
-              )}
+              <p className="text-gray-600 text-sm break-words">{displayEmail || "—"}</p>
+              {displayPhone ? (
+                <p className="text-sm text-gray-500 mt-0.5 tabular-nums">{displayPhone}</p>
+              ) : null}
+              {displayMemberSince ? (
+                <p className="text-xs text-gray-400 mt-1">Thành viên từ {displayMemberSince}</p>
+              ) : null}
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 pb-1">
+            <div className="flex flex-col sm:flex-row gap-2 pb-1 w-full sm:w-auto shrink-0 justify-center md:justify-end">
               {displayUserType?.toUpperCase() === "SELLER" && (
                 <Button
-                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-10 font-medium shadow-sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 font-medium shadow-md shadow-blue-600/20"
                   onClick={() => onNavigate("dashboard")}
                 >
                   <LayoutDashboard className="h-4 w-4 mr-2" />
                   Bảng điều khiển
                 </Button>
               )}
-              <Button variant="outline" onClick={() => onNavigate("settings")} className="rounded-xl h-10 font-medium">
+              <Button variant="outline" onClick={() => onNavigate("settings")} className="rounded-xl h-11 font-medium border-gray-200 bg-white hover:bg-gray-50">
                 <Settings className="h-4 w-4 mr-2" />
                 Chỉnh sửa hồ sơ
               </Button>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
+
+      {/* Quick links */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: motionEase, delay: 0.1 }}
+        className="flex gap-2 overflow-x-auto pb-2 mb-5 -mx-1 px-1 [scrollbar-width:thin]"
+      >
+        {quickLinks.map(({ icon: QIcon, label, page }) => (
+          <Button
+            key={page}
+            type="button"
+            variant="outline"
+            size="sm"
+            className="shrink-0 rounded-full h-9 px-4 border-gray-200/90 bg-white/90 hover:bg-gray-50 text-gray-700 shadow-sm"
+            onClick={() => onNavigate(page)}
+          >
+            <QIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
+            {label}
+          </Button>
+        ))}
+      </motion.div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        {statsData.map(({ icon: Icon, label, value, color }) => (
-          <div key={label} className="bg-white border border-gray-200/80 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3">
-              <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
-                <Icon className="h-5 w-5" />
+        {statCards.map((card, i) => {
+          const StatIcon = card.icon;
+          return (
+            <motion.div
+              key={card.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: motionEase, delay: 0.12 + i * 0.05 }}
+              className="relative bg-white border border-gray-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+            >
+              <div className={`absolute left-0 top-3 bottom-3 w-1 rounded-full ${card.bar}`} aria-hidden />
+              <div className="pl-3 flex items-center gap-3">
+                <div className={`h-11 w-11 rounded-xl flex items-center justify-center flex-shrink-0 border ${card.iconBg}`}>
+                  <StatIcon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-lg sm:text-xl font-bold text-gray-900 tabular-nums truncate leading-tight">{card.value}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{card.label}</p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="text-xl font-bold text-gray-900 tabular-nums truncate">{value}</p>
-                <p className="text-xs text-gray-500">{label}</p>
-              </div>
-            </div>
-          </div>
-        ))}
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden">
-      <Tabs defaultValue="orders" variant="underline" className="w-full">
-        <TabsList>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: motionEase, delay: 0.18 }}
+        className="bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden"
+      >
+      <Tabs defaultValue="orders" variant="underline" className="w-full gap-0">
+        <div className="px-4 lg:px-6 pt-2">
+        <TabsList className="w-full">
           <TabsTrigger value="orders">
             <ShoppingBag className="h-4 w-4" />
             Đơn hàng
@@ -240,8 +381,10 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
             Cài đặt
           </TabsTrigger>
         </TabsList>
+        </div>
 
-        <TabsContent value="orders" className="p-5 lg:p-6">
+        <TabsContent value="orders" className="mt-0 border-t border-gray-100 p-0">
+          <div className="p-5 lg:p-6">
           {ordersLoading ? (
             <div className="flex flex-col items-center justify-center py-16">
               <div className="h-8 w-8 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
@@ -263,6 +406,12 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
             </div>
           ) : (
             <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 pb-1">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900">Đơn gần đây</h3>
+                  <p className="text-xs text-gray-500">Tối đa 5 đơn mới nhất trên hồ sơ</p>
+                </div>
+              </div>
               {orders.map((order) => {
                 const orderDate = order.date ?? order.createdAt;
                 const formattedDate = orderDate
@@ -276,15 +425,15 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                 return (
                   <div
                     key={order.id}
-                    className="group bg-gray-50/50 border border-gray-100 rounded-xl p-4 lg:p-5 hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all cursor-pointer"
+                    className="group bg-gray-50/50 border border-gray-100 rounded-2xl p-4 lg:p-5 hover:bg-white hover:border-gray-200/90 hover:shadow-sm transition-all cursor-pointer"
                     onClick={() => onNavigate("orders", { orderId: order.id })}
                   >
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
                       <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-semibold text-gray-900">#{order.id.slice(-8)}</h3>
-                          <Badge variant="secondary" className={`text-xs font-medium ${getStatusBadgeClass(order.status)}`}>
-                            {order.status}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="text-sm font-semibold text-gray-900 tabular-nums">#{order.id.slice(-8)}</h3>
+                          <Badge variant="secondary" className={`text-xs font-medium rounded-lg ${getStatusBadgeClass(order.status)}`}>
+                            {statusLabelVi(order.status)}
                           </Badge>
                         </div>
                         <p className="text-xs text-gray-400 mt-0.5">{formattedDate}</p>
@@ -331,9 +480,11 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
               )}
             </div>
           )}
+          </div>
         </TabsContent>
 
-        <TabsContent value="wishlist" className="p-5 lg:p-6">
+        <TabsContent value="wishlist" className="mt-0 border-t border-gray-100 p-0">
+          <div className="p-5 lg:p-6">
           {wishlistLoading ? (
             <div className="flex flex-col items-center justify-center py-16">
               <div className="h-8 w-8 border-2 border-rose-500/30 border-t-rose-500 rounded-full animate-spin" />
@@ -391,30 +542,43 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
               )}
             </div>
           )}
+          </div>
         </TabsContent>
 
-        <TabsContent value="settings" className="p-5 lg:p-6">
-          <div className="max-w-2xl">
+        <TabsContent value="settings" className="mt-0 border-t border-gray-100 p-0">
+          <div className="p-5 lg:p-6 max-w-2xl">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Lối tắt cài đặt</p>
             <div className="space-y-2">
               {[
-                { icon: Bell, label: "Thông báo email", desc: "Nhận cập nhật về đơn hàng của bạn", action: "Cấu hình", color: "text-blue-600 bg-blue-50" },
-                { icon: Lock, label: "Mật khẩu", desc: "Đổi mật khẩu tài khoản", action: "Cập nhật", color: "text-violet-600 bg-violet-50" },
-                { icon: CreditCard, label: "Phương thức thanh toán", desc: "Quản lý thẻ đã lưu", action: "Quản lý", color: "text-emerald-600 bg-emerald-50" },
-                { icon: MapPin, label: "Địa chỉ giao hàng", desc: "Quản lý địa chỉ giao hàng", action: "Quản lý", color: "text-orange-600 bg-orange-50" },
-                { icon: Shield, label: "Bảo mật", desc: "Xác thực hai yếu tố & bảo mật", action: "Cài đặt", color: "text-sky-600 bg-sky-50" },
+                { icon: Bell, label: "Thông báo email", desc: "Nhận cập nhật về đơn hàng của bạn", action: "Cấu hình", color: "text-blue-600 bg-blue-50 border-blue-100" },
+                { icon: Lock, label: "Mật khẩu", desc: "Đổi mật khẩu tài khoản", action: "Cập nhật", color: "text-violet-600 bg-violet-50 border-violet-100" },
+                { icon: CreditCard, label: "Phương thức thanh toán", desc: "Quản lý thẻ đã lưu", action: "Quản lý", color: "text-emerald-600 bg-emerald-50 border-emerald-100" },
+                { icon: MapPin, label: "Địa chỉ giao hàng", desc: "Quản lý địa chỉ giao hàng", action: "Quản lý", color: "text-orange-600 bg-orange-50 border-orange-100" },
+                { icon: Shield, label: "Bảo mật", desc: "Xác thực hai yếu tố & bảo mật", action: "Cài đặt", color: "text-sky-600 bg-sky-50 border-sky-100" },
               ].map(({ icon: Icon, label, desc, action, color }) => (
                 <div
                   key={label}
                   onClick={() => onNavigate("settings")}
-                  className="group flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onNavigate("settings");
+                    }
+                  }}
+                  className="group flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-gray-50/40 hover:bg-white hover:border-gray-200 hover:shadow-sm cursor-pointer transition-all"
                 >
-                  <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
+                  <div className={`h-11 w-11 rounded-xl flex items-center justify-center flex-shrink-0 border ${color}`}>
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-gray-900 text-sm font-semibold">{label}</p>
-                    <p className="text-xs text-gray-400">{desc}</p>
+                    <p className="text-xs text-gray-500">{desc}</p>
                   </div>
+                  <span className="text-xs font-medium text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline">
+                    {action}
+                  </span>
                   <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
                 </div>
               ))}
@@ -454,7 +618,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
           </div>
         </TabsContent>
       </Tabs>
-      </div>
+      </motion.div>
       </div>
     </div>
   );

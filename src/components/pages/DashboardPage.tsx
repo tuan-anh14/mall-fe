@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { TrendingUp, ShoppingBag, Users, Package, Plus } from "lucide-react";
+import { motion } from "motion/react";
+import { TrendingUp, ShoppingBag, Users, Package, Plus, LayoutDashboard } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -77,212 +78,275 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
     fetchData();
   }, []);
 
+  const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
   const changeClass = (val: number) =>
     val >= 0
-      ? "bg-green-500/20 text-green-400 border-green-500/30"
-      : "bg-red-500/20 text-red-400 border-red-500/30";
+      ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold"
+      : "bg-red-50 text-red-700 border-red-200 font-semibold";
 
   const changeLabel = (val: number) => `${val >= 0 ? "+" : ""}${val}%`;
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
-        <p className="text-gray-500">Đang tải bảng điều khiển...</p>
+      <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-10 w-10 rounded-full border-2 border-blue-600/30 border-t-blue-600 animate-spin" />
+          <p className="text-gray-500 text-sm">Đang tải bảng điều khiển...</p>
+        </div>
       </div>
     );
   }
 
+  const statCards = [
+    {
+      label: "Tổng doanh thu",
+      value: formatCurrencyCompact(stats?.totalRevenue ?? 0),
+      change: stats?.revenueChange ?? 0,
+      icon: TrendingUp,
+      iconBg: "bg-blue-50 text-blue-600 border-blue-100",
+    },
+    {
+      label: "Tổng đơn hàng",
+      value: (stats?.totalOrders ?? 0).toLocaleString("vi-VN"),
+      change: stats?.ordersChange ?? 0,
+      icon: ShoppingBag,
+      iconBg: "bg-indigo-50 text-indigo-600 border-indigo-100",
+    },
+    {
+      label: "Sản phẩm",
+      value: String(stats?.totalProducts ?? 0),
+      change: stats?.productsChange ?? 0,
+      icon: Package,
+      iconBg: "bg-violet-50 text-violet-600 border-violet-100",
+    },
+    {
+      label: "Khách hàng",
+      value: (stats?.totalCustomers ?? 0).toLocaleString("vi-VN"),
+      change: stats?.customersChange ?? 0,
+      icon: Users,
+      iconBg: "bg-orange-50 text-orange-600 border-orange-100",
+    },
+  ];
+
+  const chartCardClass =
+    "bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden";
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-4xl text-gray-900 mb-2">Bảng điều khiển</h1>
-          <p className="text-gray-500">Chào mừng trở lại! Đây là tổng quan cửa hàng của bạn.</p>
+    <div className="min-h-screen bg-gray-50/50">
+      <div className="container mx-auto px-4 py-8 lg:py-10">
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease }}
+        className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8"
+      >
+        <div className="flex items-start gap-4">
+          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-600/20 flex-shrink-0">
+            <LayoutDashboard className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">Bảng điều khiển</h1>
+            <p className="text-gray-500 text-sm mt-1">Tổng quan doanh thu, đơn hàng và cửa hàng của bạn</p>
+          </div>
         </div>
         <Button
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 font-semibold shadow-lg shadow-blue-600/20 w-full sm:w-auto"
           onClick={() => onNavigate("add-product")}
         >
           <Plus className="h-4 w-4 mr-2" />
           Thêm sản phẩm
         </Button>
-      </div>
+      </motion.div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-blue-600" />
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease, delay: 0.05 }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+      >
+        {statCards.map((card, i) => {
+          const StatIcon = card.icon;
+          return (
+          <motion.div
+            key={card.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease, delay: 0.08 + i * 0.05 }}
+            className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-start justify-between gap-2 mb-3">
+              <div className={`h-11 w-11 rounded-xl flex items-center justify-center border ${card.iconBg}`}>
+                <StatIcon className="h-5 w-5" />
+              </div>
+              <Badge variant="secondary" className={`text-xs border ${changeClass(card.change)}`}>
+                {changeLabel(card.change)}
+              </Badge>
             </div>
-            <Badge className={changeClass(stats?.revenueChange ?? 0)}>
-              {changeLabel(stats?.revenueChange ?? 0)}
-            </Badge>
-          </div>
-          <p className="text-sm text-gray-500 mb-1">Tổng doanh thu</p>
-          <p className="text-3xl text-gray-900">{formatCurrencyCompact(stats?.totalRevenue ?? 0)}</p>
-        </div>
-
-        <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="h-12 w-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-              <ShoppingBag className="h-6 w-6 text-blue-400" />
-            </div>
-            <Badge className={changeClass(stats?.ordersChange ?? 0)}>
-              {changeLabel(stats?.ordersChange ?? 0)}
-            </Badge>
-          </div>
-          <p className="text-sm text-gray-500 mb-1">Tổng đơn hàng</p>
-          <p className="text-3xl text-gray-900">{(stats?.totalOrders ?? 0).toLocaleString()}</p>
-        </div>
-
-        <div className="bg-gradient-to-br from-pink-500/10 to-pink-600/10 border border-pink-500/20 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="h-12 w-12 rounded-xl bg-pink-500/20 flex items-center justify-center">
-              <Package className="h-6 w-6 text-pink-400" />
-            </div>
-            <Badge className={changeClass(stats?.productsChange ?? 0)}>
-              {changeLabel(stats?.productsChange ?? 0)}
-            </Badge>
-          </div>
-          <p className="text-sm text-gray-500 mb-1">Sản phẩm</p>
-          <p className="text-3xl text-gray-900">{stats?.totalProducts ?? 0}</p>
-        </div>
-
-        <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="h-12 w-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
-              <Users className="h-6 w-6 text-orange-400" />
-            </div>
-            <Badge className={changeClass(stats?.customersChange ?? 0)}>
-              {changeLabel(stats?.customersChange ?? 0)}
-            </Badge>
-          </div>
-          <p className="text-sm text-gray-500 mb-1">Khách hàng</p>
-          <p className="text-3xl text-gray-900">{((stats?.totalCustomers ?? 0) / 1000).toFixed(1)}K</p>
-        </div>
-      </div>
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{card.label}</p>
+            <p className="text-2xl font-bold text-gray-900 tabular-nums mt-1">{card.value}</p>
+          </motion.div>
+          );
+        })}
+      </motion.div>
 
       {/* Charts */}
-      <div className="grid lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white border border-gray-200 rounded-2xl p-6">
-          <h2 className="text-xl text-gray-900 mb-6">Tổng quan doanh thu</h2>
-          <ResponsiveContainer width="100%" height={300}>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease, delay: 0.12 }}
+        className="grid lg:grid-cols-2 gap-5 mb-8"
+      >
+        <div className={chartCardClass}>
+          <div className="px-5 pt-5 pb-2 border-b border-gray-100 bg-gray-50/40">
+            <h2 className="text-base font-bold text-gray-900">Tổng quan doanh thu</h2>
+            <p className="text-xs text-gray-500 mt-0.5">Xu hướng theo tháng</p>
+          </div>
+          <div className="p-4 lg:p-5">
+            <div className="rounded-xl bg-gray-50/80 border border-gray-100 p-2">
+          <ResponsiveContainer width="100%" height={280}>
             <LineChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
-              <XAxis dataKey="month" stroke="rgba(0,0,0,0.4)" />
-              <YAxis stroke="rgba(0,0,0,0.4)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <XAxis dataKey="month" stroke="#9ca3af" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+              <YAxis stroke="#9ca3af" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "#ffffff",
                   border: "1px solid #e5e7eb",
-                  borderRadius: "8px",
+                  borderRadius: "12px",
                   color: "#111827",
+                  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.08)",
                 }}
               />
               <Line
                 type="monotone"
                 dataKey="revenue"
                 stroke="#2563eb"
-                strokeWidth={3}
-                dot={false}
+                strokeWidth={2.5}
+                dot={{ r: 3, fill: "#2563eb", strokeWidth: 2, stroke: "#fff" }}
+                activeDot={{ r: 5 }}
               />
             </LineChart>
           </ResponsiveContainer>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-2xl p-6">
-          <h2 className="text-xl text-gray-900 mb-6">Đơn hàng theo tháng</h2>
-          <ResponsiveContainer width="100%" height={300}>
+        <div className={chartCardClass}>
+          <div className="px-5 pt-5 pb-2 border-b border-gray-100 bg-gray-50/40">
+            <h2 className="text-base font-bold text-gray-900">Đơn hàng theo tháng</h2>
+            <p className="text-xs text-gray-500 mt-0.5">Số lượng đơn đã tạo</p>
+          </div>
+          <div className="p-4 lg:p-5">
+            <div className="rounded-xl bg-gray-50/80 border border-gray-100 p-2">
+          <ResponsiveContainer width="100%" height={280}>
             <BarChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
-              <XAxis dataKey="month" stroke="rgba(0,0,0,0.4)" />
-              <YAxis stroke="rgba(0,0,0,0.4)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <XAxis dataKey="month" stroke="#9ca3af" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+              <YAxis stroke="#9ca3af" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "#ffffff",
                   border: "1px solid #e5e7eb",
-                  borderRadius: "8px",
+                  borderRadius: "12px",
                   color: "#111827",
+                  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.08)",
                 }}
               />
-              <Bar dataKey="orders" fill="#2563eb" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="orders" fill="#3b82f6" radius={[8, 8, 0, 0]} maxBarSize={48} />
             </BarChart>
           </ResponsiveContainer>
+            </div>
+          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Tabs */}
-      <Tabs defaultValue="products" className="w-full">
-        <TabsList className="w-full">
+      <div className="bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden">
+      <Tabs defaultValue="products" variant="underline" className="w-full gap-0">
+        <TabsList className="w-full px-2 sm:px-4">
           <TabsTrigger value="products">Sản phẩm</TabsTrigger>
           <TabsTrigger value="orders">Đơn hàng gần đây</TabsTrigger>
           <TabsTrigger value="customers">Khách hàng</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="products" className="mt-6">
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-xl text-gray-900">Quản lý sản phẩm</h2>
+        <TabsContent value="products" className="mt-0 p-0 focus-visible:outline-none">
+          <div className="border-t border-gray-100">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/40 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+              <div>
+                <h2 className="text-base font-bold text-gray-900">Quản lý sản phẩm</h2>
+                <p className="text-xs text-gray-500 mt-0.5">Tối đa 6 sản phẩm hiển thị nhanh</p>
+              </div>
               <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-10 font-medium shadow-sm w-full sm:w-auto"
                 onClick={() => onNavigate("add-product")}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Thêm sản phẩm
               </Button>
             </div>
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-gray-200 hover:bg-gray-50">
-                  <TableHead className="text-gray-500">Sản phẩm</TableHead>
-                  <TableHead className="text-gray-500">Danh mục</TableHead>
-                  <TableHead className="text-gray-500">Giá</TableHead>
-                  <TableHead className="text-gray-500">Tồn kho</TableHead>
-                  <TableHead className="text-gray-500">Trạng thái</TableHead>
-                  <TableHead className="text-gray-500">Thao tác</TableHead>
+                <TableRow className="border-gray-100 hover:bg-transparent bg-gray-50/50">
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Sản phẩm</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Danh mục</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Giá</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Tồn kho</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Trạng thái</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {products.slice(0, 6).map((product) => (
-                  <TableRow key={product.id} className="border-gray-200 hover:bg-gray-50">
+                  <TableRow key={product.id} className="border-gray-100 hover:bg-gray-50/80">
                     <TableCell className="text-gray-900">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gray-50 rounded-lg overflow-hidden">
+                      <div className="flex items-center gap-3 min-w-[200px]">
+                        <div className="w-11 h-11 bg-gray-100 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0">
                           <img
                             src={product.images[0]?.url || ""}
                             alt={product.name}
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <span>{product.name}</span>
+                        <span className="font-medium text-sm line-clamp-2">{product.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-500">{product.category?.name ?? "-"}</TableCell>
-                    <TableCell className="text-gray-900">{formatCurrency(product.price)}</TableCell>
+                    <TableCell className="text-gray-500 text-sm">{product.category?.name ?? "—"}</TableCell>
+                    <TableCell className="text-gray-900 font-semibold tabular-nums text-sm">{formatCurrency(product.price)}</TableCell>
                     <TableCell>
                       <Badge
+                        variant="secondary"
                         className={
                           product.stock > 20
-                            ? "bg-green-500/20 text-green-400"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-medium"
                             : product.stock > 10
-                            ? "bg-yellow-500/20 text-yellow-400"
-                            : "bg-red-500/20 text-red-400"
+                            ? "bg-amber-50 text-amber-800 border-amber-200 font-medium"
+                            : "bg-red-50 text-red-700 border-red-200 font-medium"
                         }
                       >
-                        {product.stock} sản phẩm
+                        {product.stock}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={product.stock > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
+                      <Badge
+                        variant="secondary"
+                        className={
+                          product.stock > 0
+                            ? "bg-blue-50 text-blue-700 border-blue-200 font-medium"
+                            : "bg-gray-100 text-gray-600 border-gray-200 font-medium"
+                        }
+                      >
                         {product.stock > 0 ? "Đang bán" : "Hết hàng"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
+                    <TableCell className="text-right">
+                      <div className="flex gap-2 justify-end flex-wrap">
                         <Button
                           size="sm"
                           variant="outline"
+                          className="rounded-lg h-8 text-xs font-medium"
                           onClick={() => onNavigate("edit-product", product)}
                         >
                           Sửa
@@ -290,10 +354,10 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-red-400"
+                          className="rounded-lg h-8 text-xs font-medium text-red-600 border-red-200 hover:bg-red-50"
                           onClick={() => onNavigate("seller-products")}
                         >
-                          Xóa
+                          Quản lý
                         </Button>
                       </div>
                     </TableCell>
@@ -301,85 +365,96 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 ))}
                 {products.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-gray-500 py-8">
-                      Chưa có sản phẩm
+                    <TableCell colSpan={6} className="text-center text-gray-500 py-14">
+                      <Package className="h-10 w-10 text-gray-200 mx-auto mb-2" />
+                      <p className="font-medium text-gray-700">Chưa có sản phẩm</p>
+                      <p className="text-sm text-gray-400 mt-1">Thêm sản phẩm để bắt đầu bán hàng</p>
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
+            </div>
           </div>
         </TabsContent>
 
-        <TabsContent value="orders" className="mt-6">
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-gray-200">
-              <h2 className="text-xl text-gray-900">Đơn hàng gần đây</h2>
+        <TabsContent value="orders" className="mt-0 p-0 focus-visible:outline-none">
+          <div className="border-t border-gray-100">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/40">
+              <h2 className="text-base font-bold text-gray-900">Đơn hàng gần đây</h2>
+              <p className="text-xs text-gray-500 mt-0.5">Danh sách đơn từ API người bán</p>
             </div>
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-gray-200 hover:bg-gray-50">
-                  <TableHead className="text-gray-500">Mã đơn hàng</TableHead>
-                  <TableHead className="text-gray-500">Ngày</TableHead>
-                  <TableHead className="text-gray-500">Khách hàng</TableHead>
-                  <TableHead className="text-gray-500">Tổng</TableHead>
-                  <TableHead className="text-gray-500">Trạng thái</TableHead>
-                  <TableHead className="text-gray-500">Thao tác</TableHead>
+                <TableRow className="border-gray-100 hover:bg-transparent bg-gray-50/50">
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Mã đơn</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Ngày</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Khách hàng</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Tổng</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Trạng thái</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {orders.map((order) => (
-                  <TableRow key={order.id} className="border-gray-200 hover:bg-gray-50">
-                    <TableCell className="text-gray-900">{order.id}</TableCell>
-                    <TableCell className="text-gray-500">{order.date}</TableCell>
-                    <TableCell className="text-gray-500">{order.customer.name}</TableCell>
-                    <TableCell className="text-gray-900">{formatCurrency(order.total)}</TableCell>
+                  <TableRow key={order.id} className="border-gray-100 hover:bg-gray-50/80">
+                    <TableCell className="text-gray-900 font-mono text-xs font-medium">#{String(order.id).slice(-8)}</TableCell>
+                    <TableCell className="text-gray-500 text-sm">{order.date}</TableCell>
+                    <TableCell className="text-gray-700 text-sm font-medium">{order.customer.name}</TableCell>
+                    <TableCell className="text-gray-900 font-semibold tabular-nums text-sm">{formatCurrency(order.total)}</TableCell>
                     <TableCell>
                       <Badge
+                        variant="secondary"
                         className={
                           order.status === "Delivered"
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-blue-500/20 text-blue-400"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-medium"
+                            : "bg-blue-50 text-blue-700 border-blue-200 font-medium"
                         }
                       >
                         {order.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-right">
                       <Button
                         size="sm"
                         variant="outline"
+                        className="rounded-lg h-8 text-xs font-medium"
                         onClick={() => onNavigate("seller-orders")}
                       >
-                        Xem chi tiết
+                        Chi tiết
                       </Button>
                     </TableCell>
                   </TableRow>
                 ))}
                 {orders.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-gray-500 py-8">
-                      Chưa có đơn hàng
+                    <TableCell colSpan={6} className="text-center text-gray-500 py-14">
+                      <ShoppingBag className="h-10 w-10 text-gray-200 mx-auto mb-2" />
+                      <p className="font-medium text-gray-700">Chưa có đơn hàng</p>
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
+            </div>
           </div>
         </TabsContent>
 
-        <TabsContent value="customers" className="mt-6">
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-gray-200">
-              <h2 className="text-xl text-gray-900">Quản lý khách hàng</h2>
+        <TabsContent value="customers" className="mt-0 p-0 focus-visible:outline-none">
+          <div className="border-t border-gray-100">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/40">
+              <h2 className="text-base font-bold text-gray-900">Khách hàng</h2>
+              <p className="text-xs text-gray-500 mt-0.5">Gom từ đơn hàng của bạn</p>
             </div>
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-gray-200 hover:bg-gray-50">
-                  <TableHead className="text-gray-500">Khách hàng</TableHead>
-                  <TableHead className="text-gray-500">Email</TableHead>
-                  <TableHead className="text-gray-500">Đơn hàng</TableHead>
-                  <TableHead className="text-gray-500">Tổng chi tiêu</TableHead>
+                <TableRow className="border-gray-100 hover:bg-transparent bg-gray-50/50">
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Khách hàng</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Email</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Đơn hàng</TableHead>
+                  <TableHead className="text-gray-600 text-xs font-semibold uppercase tracking-wide">Tổng chi tiêu</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -399,33 +474,38 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                   if (customers.length === 0) {
                     return (
                       <TableRow>
-                        <TableCell colSpan={4} className="text-center text-gray-500 py-8">
-                          Chưa có khách hàng
+                        <TableCell colSpan={4} className="text-center text-gray-500 py-14">
+                          <Users className="h-10 w-10 text-gray-200 mx-auto mb-2" />
+                          <p className="font-medium text-gray-700">Chưa có khách hàng</p>
+                          <p className="text-sm text-gray-400 mt-1">Xuất hiện khi có đơn hàng</p>
                         </TableCell>
                       </TableRow>
                     );
                   }
                   return customers.map((customer) => (
-                    <TableRow key={customer.id} className="border-gray-200 hover:bg-gray-50">
+                    <TableRow key={customer.id} className="border-gray-100 hover:bg-gray-50/80">
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="h-9 w-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm">
+                          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm font-semibold shadow-sm">
                             {customer.name[0]?.toUpperCase() || "?"}
                           </div>
-                          <span className="text-gray-900">{customer.name}</span>
+                          <span className="text-gray-900 font-medium text-sm">{customer.name}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-gray-500">{customer.email}</TableCell>
-                      <TableCell className="text-gray-900">{customer.orderCount}</TableCell>
-                      <TableCell className="text-gray-900">{formatCurrency(customer.totalSpent)}</TableCell>
+                      <TableCell className="text-gray-500 text-sm">{customer.email}</TableCell>
+                      <TableCell className="text-gray-900 font-semibold tabular-nums text-sm">{customer.orderCount}</TableCell>
+                      <TableCell className="text-gray-900 font-semibold tabular-nums text-sm">{formatCurrency(customer.totalSpent)}</TableCell>
                     </TableRow>
                   ));
                 })()}
               </TableBody>
             </Table>
+            </div>
           </div>
         </TabsContent>
       </Tabs>
+      </div>
+      </div>
     </div>
   );
 }
