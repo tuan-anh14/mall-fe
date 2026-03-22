@@ -215,7 +215,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                   size="lg"
                   variant="outline"
                   onClick={() => onNavigate("about")}
-                  className="border-white/30 text-white hover:bg-white hover:text-blue-800 backdrop-blur-sm transition-all duration-300"
+                  className="bg-white text-blue-950 font-medium hover:bg-blue-50 shadow-lg shadow-white/10 transition-all duration-300"
                 >
                   Tìm hiểu thêm
                 </Button>
