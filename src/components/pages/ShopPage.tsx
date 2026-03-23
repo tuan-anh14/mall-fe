@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from "react";
-import { Grid, List, SlidersHorizontal, Search, Package, X } from "lucide-react";
+import { Grid, List, SlidersHorizontal, Search, Package, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { ProductCard } from "../ProductCard";
 import { Slider } from "../ui/slider";
@@ -206,6 +206,8 @@ export function ShopPage({
 
   const [products, setProducts] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
   const [categories, setCategories] = useState<any[]>([]);
@@ -237,8 +239,9 @@ export function ShopPage({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await get<{ categories: any[] }>("/api/v1/categories");
-        setCategories(res.categories ?? []);
+        const res = await get<{ categories: any[] } | any[]>("/api/v1/categories");
+        const rawCats = res as any;
+        setCategories(Array.isArray(rawCats) ? rawCats : (rawCats.categories ?? []));
       } catch (err) {
         console.error("Failed to load categories:", err);
       }
@@ -246,23 +249,28 @@ export function ShopPage({
     fetchCategories();
   }, []);
 
-  // Fetch products whenever filters change
+  // Reset to page 1 when filters change (not when page itself changes)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategories, selectedBrands, selectedRating, debouncedPriceRange, sortBy, searchQuery]);
+
+  // Fetch products whenever filters or page changes
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
         const params = new URLSearchParams();
         params.set("limit", "12");
-        params.set("page", "1");
+        params.set("page", String(currentPage));
 
         if (searchQuery.trim()) {
           params.set("search", searchQuery.trim());
         }
-        if (selectedCategories.length === 1) {
-          params.set("category", selectedCategories[0]);
+        if (selectedCategories.length > 0) {
+          params.set("category", selectedCategories.join(","));
         }
-        if (selectedBrands.length === 1) {
-          params.set("brand", selectedBrands[0]);
+        if (selectedBrands.length > 0) {
+          params.set("brand", selectedBrands.join(","));
         }
         if (debouncedPriceRange[0] > 0) {
           params.set("minPrice", String(debouncedPriceRange[0]));
@@ -273,9 +281,7 @@ export function ShopPage({
         if (selectedRating !== null) {
           params.set("rating", String(selectedRating));
         }
-        if (sortBy && SORT_MAP[sortBy]) {
-          params.set("sort", SORT_MAP[sortBy]);
-        }
+        params.set("sort", SORT_MAP[sortBy] ?? "popular");
 
         const res = await get<{
           products: any[];
@@ -288,13 +294,13 @@ export function ShopPage({
         const fetched = res.products ?? [];
         setProducts(fetched);
         setTotal(res.total ?? 0);
+        setTotalPages(res.totalPages ?? 1);
 
         // Derive brands from fetched products
         const uniqueBrands = Array.from(
           new Set(fetched.map((p: any) => p.brand).filter(Boolean)),
         ) as string[];
         setBrands((prev) => {
-          // Merge with previously known brands so filter options don't disappear
           const merged = Array.from(new Set([...prev, ...uniqueBrands]));
           return merged;
         });
@@ -313,6 +319,7 @@ export function ShopPage({
     debouncedPriceRange,
     sortBy,
     searchQuery,
+    currentPage,
   ]);
 
   const toggleCategory = useCallback((category: string) => {
@@ -336,6 +343,7 @@ export function ShopPage({
     setPriceRange([0, 3000]);
     setDebouncedPriceRange([0, 3000]);
     setSearchQuery("");
+    setCurrentPage(1);
   }, []);
 
   const handleViewProduct = useCallback(
@@ -606,6 +614,58 @@ export function ShopPage({
                   </motion.div>
                 ))}
               </motion.div>
+            )}
+
+            {/* Pagination */}
+            {!loading && totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage <= 1}
+                  onClick={() => setCurrentPage((p) => p - 1)}
+                  className="h-9 w-9 p-0 rounded-xl border-gray-200"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+                  .reduce<(number | string)[]>((acc, p, idx, arr) => {
+                    if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("…");
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((item, idx) =>
+                    item === "…" ? (
+                      <span key={`ellipsis-${idx}`} className="text-gray-400 text-sm px-1">…</span>
+                    ) : (
+                      <Button
+                        key={item}
+                        variant={currentPage === item ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(item as number)}
+                        className={`h-9 w-9 p-0 rounded-xl text-sm font-medium transition-all duration-200 ${
+                          currentPage === item
+                            ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm"
+                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        {item}
+                      </Button>
+                    )
+                  )}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  className="h-9 w-9 p-0 rounded-xl border-gray-200"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             )}
           </div>
         </div>

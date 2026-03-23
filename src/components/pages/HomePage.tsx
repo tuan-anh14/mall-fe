@@ -80,13 +80,14 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
           get<{ products: any[]; total: number; page: number; limit: number; totalPages: number }>(
             "/api/v1/products?trending=true&limit=6"
           ),
-          get<{ categories: any[] }>("/api/v1/categories"),
+          get<{ categories: any[] } | any[]>("/api/v1/categories"),
           get<{ promotions: Promotion[] }>("/api/v1/products/promotions").catch(() => ({ promotions: [] })),
         ]);
 
         setFeaturedProducts(featuredRes.products ?? []);
         setTrendingProducts(trendingRes.products ?? []);
-        setCategories(categoriesRes.categories ?? []);
+        const rawCats = categoriesRes as any;
+        setCategories(Array.isArray(rawCats) ? rawCats : (rawCats.categories ?? []));
         const activePromos = promotionsRes.promotions ?? [];
         setPromotions(activePromos);
         // Show popup if there are active promotions and user hasn't dismissed today

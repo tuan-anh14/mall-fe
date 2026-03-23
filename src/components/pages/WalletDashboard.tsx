@@ -102,12 +102,12 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
 
   const handleDeposit = async () => {
     const amount = parseFloat(depositAmount);
-    if (!amount || amount < 1) {
-      toast.error("Vui lòng nhập số tiền tối thiểu 1 ₫");
+    if (!amount || amount < 10000) {
+      toast.error("Vui lòng nhập số tiền tối thiểu 10.000 ₫");
       return;
     }
-    if (amount > 10000) {
-      toast.error("Số tiền nạp tối đa 10.000 ₫");
+    if (amount > 50000000) {
+      toast.error("Số tiền nạp tối đa 50.000.000 ₫");
       return;
     }
 
@@ -366,7 +366,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
             <div>
               <Label className="text-gray-700 text-sm font-medium mb-2.5 block">Số tiền nhanh</Label>
               <div className="grid grid-cols-4 gap-2">
-                {[10, 20, 50, 100].map((amt) => (
+                {[20000, 50000, 100000, 200000].map((amt) => (
                   <button
                     key={amt}
                     onClick={() => setDepositAmount(String(amt))}
@@ -387,10 +387,10 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
               <Input
                 id="deposit-amount"
                 type="number"
-                min="1"
-                max="10000"
-                step="0.01"
-                placeholder="Nhập số tiền..."
+                min="10000"
+                max="50000000"
+                step="1000"
+                placeholder="Nhập số tiền (tối thiểu 10.000 ₫)..."
                 className="bg-gray-50/50 border-gray-200 rounded-xl h-11 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(e.target.value)}
@@ -452,7 +452,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
               <Button
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 font-semibold shadow-lg shadow-blue-600/20 disabled:opacity-50 disabled:shadow-none transition-all"
                 onClick={handleDeposit}
-                disabled={isDepositing || !depositAmount || parseFloat(depositAmount) < 1}
+                disabled={isDepositing || !depositAmount || parseFloat(depositAmount) < 10000}
               >
                 {isDepositing ? (
                   <span className="flex items-center gap-2">

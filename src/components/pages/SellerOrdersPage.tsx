@@ -53,6 +53,14 @@ interface SellerOrdersPageProps {
   onNavigate: (page: string, data?: any) => void;
 }
 
+const STATUS_VI: Record<string, string> = {
+  Processing: "Đang xử lý",
+  Shipped: "Đang giao",
+  Delivered: "Đã giao",
+  Cancelled: "Đã hủy",
+  Refunded: "Hoàn tiền",
+};
+
 export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPageProps) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<OrderStats>({ total: 0, pending: 0, shipped: 0, delivered: 0 });
@@ -135,7 +143,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                           : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
                       }
                     >
-                      {order.status}
+                      {STATUS_VI[order.status] ?? order.status}
                     </Badge>
                   </TableCell>
                 )}
@@ -321,7 +329,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                         ? "text-blue-600"
                         : "text-yellow-400"
                     }>
-                      {selectedOrder.status}
+                      {STATUS_VI[selectedOrder.status] ?? selectedOrder.status}
                     </span>
                   </p>
                 </div>

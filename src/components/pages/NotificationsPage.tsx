@@ -482,7 +482,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
               </TabsList>
             </motion.div>
 
-            <div className="max-w-3xl">
+            <div className="max-w-3xl mx-auto">
               <TabsContent value="all">{renderList(notifications)}</TabsContent>
               <TabsContent value="orders">
                 {renderList(orderNotifications) || (

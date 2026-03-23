@@ -5,6 +5,7 @@ import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { get } from "../../lib/api";
+import { formatCurrency } from "../../lib/currency";
 
 interface TrackingStep {
   status: string;
@@ -61,6 +62,17 @@ interface OrderTrackingPageProps {
   onNavigate: (page: string, data?: any) => void;
   orderId?: string;
 }
+
+const STATUS_LABEL_VI: Record<string, string> = {
+  PENDING: "Chờ xác nhận",
+  CONFIRMED: "Đã xác nhận",
+  PROCESSING: "Đang xử lý",
+  SHIPPED: "Đang giao hàng",
+  OUT_FOR_DELIVERY: "Đang giao tới bạn",
+  DELIVERED: "Đã giao thành công",
+  CANCELLED: "Đã hủy",
+  REFUNDED: "Đã hoàn tiền",
+};
 
 const STATUS_ICON_MAP: Record<string, React.ElementType> = {
   ORDERED: Package,
@@ -193,7 +205,7 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                   <p className="text-gray-500">Mã đơn hàng: {currentOrder.id}</p>
                 </div>
                 <Badge className="bg-blue-600 hover:bg-blue-700 text-white">
-                  {currentOrder.status}
+                  {STATUS_LABEL_VI[currentOrder.status] ?? currentOrder.status}
                 </Badge>
               </div>
 
@@ -336,7 +348,7 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                       </div>
                       <div className="text-right">
                         <p className="text-xl text-gray-900">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          {formatCurrency(item.price * item.quantity)}
                         </p>
                       </div>
                     </div>
@@ -349,7 +361,7 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
               <div className="space-y-2">
                 <div className="flex justify-between text-gray-500">
                   <span>Tạm tính</span>
-                  <span>${(currentOrder.subtotal ?? currentOrder.total).toFixed(2)}</span>
+                  <span>{formatCurrency(currentOrder.subtotal ?? currentOrder.total)}</span>
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Vận chuyển</span>
@@ -360,20 +372,20 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
                 {currentOrder.couponDiscount != null && currentOrder.couponDiscount > 0 && (
                   <div className="flex justify-between text-green-400">
                     <span>Giảm giá {currentOrder.couponCode ? `(${currentOrder.couponCode})` : ""}</span>
-                    <span>-${Number(currentOrder.couponDiscount).toFixed(2)}</span>
+                    <span>-{formatCurrency(Number(currentOrder.couponDiscount))}</span>
                   </div>
                 )}
                 {currentOrder.tax != null && currentOrder.tax > 0 && (
                   <div className="flex justify-between text-gray-500">
                     <span>Thuế</span>
-                    <span>${Number(currentOrder.tax).toFixed(2)}</span>
+                    <span>{formatCurrency(Number(currentOrder.tax))}</span>
                   </div>
                 )}
                 <Separator className="bg-gray-200" />
                 <div className="flex justify-between items-center">
                   <span className="text-xl text-gray-900">Tổng cộng</span>
                   <span className="text-2xl text-gray-900">
-                    ${Number(currentOrder.total).toFixed(2)}
+                    {formatCurrency(Number(currentOrder.total))}
                   </span>
                 </div>
               </div>

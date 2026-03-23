@@ -96,6 +96,7 @@ export function Header({
 
   const isBuyer = user?.userType === "buyer";
   const isAdmin = user?.userType === "admin";
+  const isSeller = user?.userType === "seller";
   const hasPendingRequest = user?.sellerRequestStatus === "PENDING";
   const hasRejectedRequest = user?.sellerRequestStatus === "REJECTED";
 
@@ -110,8 +111,8 @@ export function Header({
     <>
       <header className="sticky top-0 z-50 w-full">
         {/* Top Banner */}
-        <div className="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950 px-4 py-1.5 text-center">
-          <p className="text-xs text-blue-100/80 tracking-wide">
+        <div className="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950 py-1.5">
+          <p className="text-xs text-blue-100/80 tracking-wide text-center w-full">
             🎉 Sale Black Friday — Giảm đến <span className="font-semibold text-amber-300">50%</span> cho các sản phẩm được chọn!
           </p>
         </div>
@@ -345,9 +346,9 @@ export function Header({
                         <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
                         <p className="text-xs text-gray-500 mt-0.5">{user?.email}</p>
                         <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md mt-2 inline-block ${
-                          isAdmin ? "bg-red-50 text-red-600" : "bg-blue-50 text-blue-600"
+                          isAdmin ? "bg-red-50 text-red-600" : isSeller ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
                         }`}>
-                          {isAdmin ? "Admin" : "Người mua"}
+                          {isAdmin ? "Admin" : isSeller ? "Người bán" : "Người mua"}
                         </span>
                       </div>
                       <DropdownMenuSeparator className="bg-gray-100" />

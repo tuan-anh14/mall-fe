@@ -277,8 +277,18 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                   {profileLoading ? "Đang tải…" : displayName || "Khách"}
                 </h1>
                 {displayUserType && (
-                  <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200/80 font-medium text-xs w-fit mx-auto md:mx-0 rounded-lg px-2.5 py-0.5 shrink-0">
-                    {displayUserType?.toUpperCase() === "SELLER" ? "Người bán" : "Người mua"}
+                  <Badge variant="secondary" className={`font-medium text-xs w-fit mx-auto md:mx-0 rounded-lg px-2.5 py-0.5 shrink-0 ${
+                    displayUserType?.toUpperCase() === "ADMIN"
+                      ? "bg-red-50 text-red-600 border-red-200/80"
+                      : displayUserType?.toUpperCase() === "SELLER"
+                      ? "bg-emerald-50 text-emerald-600 border-emerald-200/80"
+                      : "bg-blue-50 text-blue-700 border-blue-200/80"
+                  }`}>
+                    {displayUserType?.toUpperCase() === "ADMIN"
+                      ? "Admin"
+                      : displayUserType?.toUpperCase() === "SELLER"
+                      ? "Người bán"
+                      : "Người mua"}
                   </Badge>
                 )}
               </div>

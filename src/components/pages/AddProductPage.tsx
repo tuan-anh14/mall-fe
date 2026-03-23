@@ -63,14 +63,24 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
   const [specifications, setSpecifications] = useState<{ key: string; value: string }[]>(() =>
     (initialProduct?.specifications ?? []).map((s) => ({ key: s.key, value: s.value }))
   );
+  const [colors, setColors] = useState<string[]>(() =>
+    (initialProduct?.colors ?? []).map((c) => c.name)
+  );
+  const [sizes, setSizes] = useState<string[]>(() =>
+    (initialProduct?.sizes ?? []).map((s) => s.value)
+  );
+  const [newColor, setNewColor] = useState("");
+  const [newSize, setNewSize] = useState("");
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load categories
   useEffect(() => {
-    get<Category[]>('/api/v1/categories')
-      .then((cats) => {
+    get<{ categories: Category[] } | Category[]>('/api/v1/categories')
+      .then((res) => {
+        const raw = res as any;
+        const cats: Category[] = Array.isArray(raw) ? raw : (raw.categories ?? []);
         setCategories(cats);
         setCategoriesLoaded(true);
       })
@@ -166,6 +176,8 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
       sku: formData.sku || undefined,
       brand: formData.brand || undefined,
       images: images.length > 0 ? images : undefined,
+      colors: colors.filter(Boolean).length > 0 ? colors.filter(Boolean) : undefined,
+      sizes: sizes.filter(Boolean).length > 0 ? sizes.filter(Boolean) : undefined,
       specifications: specifications.filter((s) => s.key.trim() && s.value.trim()).length > 0
         ? specifications.filter((s) => s.key.trim() && s.value.trim())
         : undefined,
@@ -494,6 +506,125 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                 )}
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Colors & Sizes */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
+          <h2 className="text-2xl text-gray-900 mb-6">Màu sắc & Kích cỡ</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Colors */}
+            <div>
+              <Label className="text-gray-900 mb-3 block font-medium">Màu sắc</Label>
+              <div className="flex gap-2 mb-3">
+                <Input
+                  placeholder="VD: Đỏ, Xanh, Đen..."
+                  value={newColor}
+                  onChange={(e) => setNewColor(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const val = newColor.trim();
+                      if (val && !colors.includes(val)) {
+                        setColors((prev) => [...prev, val]);
+                        setNewColor("");
+                      }
+                    }
+                  }}
+                  className="bg-gray-50 border-gray-200 text-gray-900 flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const val = newColor.trim();
+                    if (val && !colors.includes(val)) {
+                      setColors((prev) => [...prev, val]);
+                      setNewColor("");
+                    }
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {colors.map((color) => (
+                  <span
+                    key={color}
+                    className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full border border-gray-200"
+                  >
+                    {color}
+                    <button
+                      type="button"
+                      onClick={() => setColors((prev) => prev.filter((c) => c !== color))}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                {colors.length === 0 && (
+                  <p className="text-gray-400 text-sm">Chưa có màu sắc. Nhập và nhấn Enter hoặc nút +</p>
+                )}
+              </div>
+            </div>
+
+            {/* Sizes */}
+            <div>
+              <Label className="text-gray-900 mb-3 block font-medium">Kích cỡ</Label>
+              <div className="flex gap-2 mb-3">
+                <Input
+                  placeholder="VD: S, M, L, XL, 39, 40..."
+                  value={newSize}
+                  onChange={(e) => setNewSize(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const val = newSize.trim();
+                      if (val && !sizes.includes(val)) {
+                        setSizes((prev) => [...prev, val]);
+                        setNewSize("");
+                      }
+                    }
+                  }}
+                  className="bg-gray-50 border-gray-200 text-gray-900 flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const val = newSize.trim();
+                    if (val && !sizes.includes(val)) {
+                      setSizes((prev) => [...prev, val]);
+                      setNewSize("");
+                    }
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {sizes.map((size) => (
+                  <span
+                    key={size}
+                    className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full border border-blue-200"
+                  >
+                    {size}
+                    <button
+                      type="button"
+                      onClick={() => setSizes((prev) => prev.filter((s) => s !== size))}
+                      className="text-blue-400 hover:text-red-500 transition-colors"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                {sizes.length === 0 && (
+                  <p className="text-gray-400 text-sm">Chưa có kích cỡ. Nhập và nhấn Enter hoặc nút +</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
