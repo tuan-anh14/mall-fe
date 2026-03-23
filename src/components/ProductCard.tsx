@@ -70,12 +70,17 @@ export const ProductCard = memo(function ProductCard({
 
       {/* Product Info */}
       <div className="p-4 space-y-3">
-        <div>
-          <p className="text-xs text-blue-600 mb-1">{product.category}</p>
-          <h3 className="text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
-            {product.name}
-          </h3>
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-xs text-blue-600 font-medium truncate mr-2">{product.category}</p>
+          {product.stock < 10 && (
+            <Badge variant="outline" className="h-4.5 px-1.5 text-[10px] bg-amber-50 text-amber-700 border-amber-200 shrink-0">
+              Sắp hết
+            </Badge>
+          )}
         </div>
+        <h3 className="text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+          {product.name}
+        </h3>
 
         {/* Rating */}
         <div className="flex items-center gap-2">
@@ -96,10 +101,6 @@ export const ProductCard = memo(function ProductCard({
           )}
         </div>
 
-        {/* Stock Status */}
-        {product.stock < 10 && (
-          <p className="text-xs text-amber-600">Chỉ còn {product.stock} sản phẩm!</p>
-        )}
 
         {/* Add to Cart Button */}
         <Button
