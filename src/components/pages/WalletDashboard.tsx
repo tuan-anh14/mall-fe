@@ -106,36 +106,48 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
       toast.error("Vui lòng nhập số tiền tối thiểu 10.000 ₫");
       return;
     }
-    if (amount > 50000000) {
-      toast.error("Số tiền nạp tối đa 50.000.000 ₫");
+    if (amount > 10000) {
+      toast.error("Số tiền nạp tối đa 10.000 ₫");
       return;
     }
 
     setIsDepositing(true);
     try {
-      const result = await walletService.createDeposit(amount, depositGateway);
+      // In production, returnUrl should be set to current page
+      const returnUrl = window.location.origin + "/wallet";
+      const result = await walletService.createDeposit(amount, depositGateway, returnUrl);
+      
       toast.info(`Đang chuyển hướng đến ${depositGateway}...`);
-
-      // In sandbox: simulate immediate success after 1.5s
-      setTimeout(async () => {
-        try {
-          await walletService.simulateDeposit(result.transactionId);
-          await fetchWallet();
-          await fetchTransactions(1);
-          setPage(1);
-          toast.success(`Nạp ${formatCurrency(amount)} thành công!`);
-          setShowDepositModal(false);
-          setDepositAmount("");
-        } catch {
-          toast.error("Giao dịch thất bại");
-        }
-      }, 1500);
+      
+      // Redirect to VNPay/MoMo
+      window.location.href = result.paymentUrl;
     } catch (err: any) {
       toast.error(err.message || "Không thể tạo giao dịch nạp tiền");
-    } finally {
       setIsDepositing(false);
     }
   };
+
+  // Handle Return Parameters
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const vnpResponseCode = params.get("vnp_ResponseCode");
+    const vnpTxnRef = params.get("vnp_TxnRef");
+
+    if (vnpResponseCode) {
+      if (vnpResponseCode === "00") {
+        toast.success("Nạp tiền thành công!");
+      } else {
+        toast.error(`Nạp tiền thất bại (Lỗi: ${vnpResponseCode})`);
+      }
+      
+      // Refresh wallet data
+      fetchWallet();
+      fetchTransactions(1);
+      
+      // Clear URL params without reloading
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [fetchWallet, fetchTransactions]);
 
   if (loading) {
     return (

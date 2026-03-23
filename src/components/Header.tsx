@@ -253,13 +253,13 @@ export function Header({
               {/* Search Bar */}
               <div className="hidden md:flex flex-1 max-w-md">
                 <div className="relative w-full">
-                  <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2" color="white" size={16} strokeWidth={2.5} />
                   <Input
                     placeholder="Tìm kiếm sản phẩm..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={handleSearchKeyDown}
-                    className="pl-10 pr-20 h-10 bg-white/10 border-white/15 text-white placeholder:text-white/40 rounded-xl backdrop-blur-sm focus:bg-white/15 focus:border-white/30 transition-all"
+                    className="pl-10 pr-20 h-10 bg-white/10 border-white/25 text-white placeholder:text-white/60 rounded-xl backdrop-blur-sm focus:bg-white/15 focus:border-white/40 transition-all"
                   />
                   <Button
                     size="sm"

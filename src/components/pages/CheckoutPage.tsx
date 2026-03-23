@@ -143,7 +143,9 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
   const handlePlaceOrder = async () => {
     setIsPlacingOrder(true);
     try {
-      const order = await post("/api/v1/orders", {
+      const returnUrl = window.location.origin + "/payment-result"; // You might need to create this page or use orders page
+      // In this project, let's redirect back to order detail after payment
+      const orderRes = await post("/api/v1/orders", {
         shippingAddress: {
           firstName,
           lastName,
@@ -154,7 +156,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
           state,
           zip,
         },
-        paymentMethod: paymentMethod as "card" | "paypal" | "crypto",
+        paymentMethod: paymentMethod,
         items: cartItems.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -162,13 +164,24 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
           selectedSize: item.selectedSize,
         })),
         ...(couponCode ? { couponCode } : {}),
+        returnUrl: window.location.origin + "/orders", // Simplified return
       });
+
+      const orderData = orderRes.order || orderRes;
+      const orderId = orderData.id;
+
+      if (orderRes.paymentUrl) {
+        toast.info("Đang chuyển hướng đến cổng thanh toán...");
+        window.location.href = orderRes.paymentUrl;
+        return;
+      }
+
       try { sessionStorage.removeItem("applied_coupon"); } catch {}
       toast.success("Đặt hàng thành công!");
       if (onOrderPlaced) {
         onOrderPlaced();
       }
-      onNavigate("orders", { orderId: order?.id ?? order?.order?.id });
+      onNavigate("orders", { orderId });
     } catch (err: any) {
       toast.error(err.message || "Đặt hàng thất bại. Vui lòng thử lại.");
     } finally {
