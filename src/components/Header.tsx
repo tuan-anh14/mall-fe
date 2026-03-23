@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Search,
   ShoppingCart,
@@ -14,6 +14,10 @@ import {
   Shield,
   Wallet,
   ChevronRight,
+  ArrowRight,
+  Trash2,
+  CheckCheck,
+  TrendingUp,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -34,6 +38,8 @@ import {
 } from "./ui/dialog";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { User as UserType } from "../types";
+import { get, put } from "../lib/api";
+import { formatCurrency } from "../lib/currency";
 
 interface HeaderProps {
   currentPage: string;
@@ -47,6 +53,48 @@ interface HeaderProps {
   onSearch?: (query: string) => void;
   onBecomeSellerRequest?: (message?: string) => Promise<void>;
   onNotificationsOpen?: () => void;
+}
+
+interface MiniNotification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+interface MiniCartItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image?: string | null;
+  };
+}
+
+function formatRelTime(dateStr: string): string {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diffMs / 60000);
+  const h = Math.floor(m / 60);
+  const d = Math.floor(h / 24);
+  if (m < 1) return "vừa xong";
+  if (m < 60) return `${m} phút`;
+  if (h < 24) return `${h} giờ`;
+  if (d === 1) return "hôm qua";
+  return `${d} ngày`;
+}
+
+function getNotifIcon(type: string) {
+  switch (type?.toUpperCase()) {
+    case "ORDER": return Package;
+    case "SALE":
+    case "PROMOTION": return TrendingUp;
+    default: return Bell;
+  }
 }
 
 export function Header({
@@ -66,6 +114,59 @@ export function Header({
   const [showSellerDialog, setShowSellerDialog] = useState(false);
   const [sellerMessage, setSellerMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Notification dropdown state
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [miniNotifs, setMiniNotifs] = useState<MiniNotification[]>([]);
+  const [notifLoading, setNotifLoading] = useState(false);
+  const [localUnread, setLocalUnread] = useState(notificationCount);
+
+  // Cart dropdown state
+  const [cartOpen, setCartOpen] = useState(false);
+  const [miniCart, setMiniCart] = useState<MiniCartItem[]>([]);
+  const [cartLoading, setCartLoading] = useState(false);
+  const [cartTotal, setCartTotal] = useState(0);
+
+  // Keep localUnread in sync with prop
+  useEffect(() => {
+    setLocalUnread(notificationCount);
+  }, [notificationCount]);
+
+  const fetchMiniNotifs = useCallback(async () => {
+    if (!isAuthenticated) return;
+    setNotifLoading(true);
+    try {
+      const res = await get<{ notifications: MiniNotification[] }>("/api/v1/notifications?page=1&limit=5");
+      setMiniNotifs(res.notifications ?? []);
+    } catch {
+      /* ignore */
+    } finally {
+      setNotifLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  const fetchMiniCart = useCallback(async () => {
+    if (!isAuthenticated) return;
+    setCartLoading(true);
+    try {
+      const res = await get<{ items: MiniCartItem[]; subtotal?: number; total?: number }>("/api/v1/cart");
+      const items = res.items ?? [];
+      setMiniCart(items);
+      setCartTotal(res.subtotal ?? res.total ?? items.reduce((s, i) => s + i.product.price * i.quantity, 0));
+    } catch {
+      /* ignore */
+    } finally {
+      setCartLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  const handleMarkAllRead = async () => {
+    try {
+      await put("/api/v1/notifications/read-all");
+      setMiniNotifs((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setLocalUnread(0);
+    } catch { /* ignore */ }
+  };
 
   const handleSearch = () => {
     const q = searchQuery.trim();
@@ -274,19 +375,79 @@ export function Header({
               {/* Actions */}
               <div className="flex items-center gap-1">
                 {isAuthenticated && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => { onNotificationsOpen?.(); onNavigate("notifications"); }}
-                    className="hidden md:flex relative h-9 w-9 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200"
-                  >
-                    <Bell className="h-[18px] w-[18px]" />
-                    {notificationCount > 0 && (
-                      <Badge className="absolute -right-0.5 -top-0.5 h-[18px] min-w-[18px] rounded-full px-1 flex items-center justify-center text-[10px] font-bold bg-amber-500 text-white border-2 border-blue-700">
-                        {notificationCount > 99 ? "99+" : notificationCount}
-                      </Badge>
-                    )}
-                  </Button>
+                  <DropdownMenu open={notifOpen} onOpenChange={(open) => { setNotifOpen(open); if (open) fetchMiniNotifs(); }}>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="hidden md:flex relative h-9 w-9 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200"
+                      >
+                        <Bell className="h-[18px] w-[18px]" />
+                        {localUnread > 0 && (
+                          <Badge className="absolute -right-0.5 -top-0.5 h-[18px] min-w-[18px] rounded-full px-1 flex items-center justify-center text-[10px] font-bold bg-amber-500 text-white border-2 border-blue-700">
+                            {localUnread > 99 ? "99+" : localUnread}
+                          </Badge>
+                        )}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-80 bg-white border-gray-200 rounded-xl shadow-xl shadow-gray-900/10 p-0 overflow-hidden">
+                      {/* Header */}
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                        <span className="text-sm font-semibold text-gray-900">Thông báo</span>
+                        {localUnread > 0 && (
+                          <button
+                            onClick={handleMarkAllRead}
+                            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                          >
+                            <CheckCheck className="h-3.5 w-3.5" />
+                            Đọc tất cả
+                          </button>
+                        )}
+                      </div>
+                      {/* List */}
+                      <div className="max-h-[340px] overflow-y-auto">
+                        {notifLoading ? (
+                          <div className="flex items-center justify-center py-8 text-gray-400 text-sm">Đang tải...</div>
+                        ) : miniNotifs.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center py-8 text-gray-400">
+                            <Bell className="h-8 w-8 mb-2 opacity-30" />
+                            <span className="text-sm">Không có thông báo</span>
+                          </div>
+                        ) : (
+                          miniNotifs.map((n) => {
+                            const Icon = getNotifIcon(n.type);
+                            return (
+                              <div
+                                key={n.id}
+                                onClick={() => { setNotifOpen(false); onNotificationsOpen?.(); onNavigate("notifications"); }}
+                                className={`flex gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 ${!n.isRead ? "bg-blue-50/40" : ""}`}
+                              >
+                                <div className={`mt-0.5 h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${n.type?.toUpperCase() === "ORDER" ? "bg-blue-100" : n.type?.toUpperCase() === "PROMOTION" ? "bg-amber-100" : "bg-gray-100"}`}>
+                                  <Icon className={`h-4 w-4 ${n.type?.toUpperCase() === "ORDER" ? "text-blue-600" : n.type?.toUpperCase() === "PROMOTION" ? "text-amber-600" : "text-gray-500"}`} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm leading-tight truncate ${!n.isRead ? "font-semibold text-gray-900" : "text-gray-700"}`}>{n.title}</p>
+                                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{n.message}</p>
+                                  <p className="text-[11px] text-gray-400 mt-1">{formatRelTime(n.createdAt)}</p>
+                                </div>
+                                {!n.isRead && <div className="mt-1.5 h-2 w-2 rounded-full bg-blue-500 flex-shrink-0" />}
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                      {/* Footer */}
+                      <div className="border-t border-gray-100">
+                        <button
+                          onClick={() => { setNotifOpen(false); onNotificationsOpen?.(); onNavigate("notifications"); }}
+                          className="flex items-center justify-center gap-1.5 w-full py-3 text-sm text-blue-600 hover:text-blue-700 hover:bg-gray-50 font-medium transition-colors"
+                        >
+                          Xem tất cả thông báo
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
 
                 {isAuthenticated && (
@@ -318,19 +479,93 @@ export function Header({
 
                 <div className="w-px h-6 bg-white/10 mx-1 hidden md:block" />
 
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onNavigate("cart")}
-                  className="relative h-9 w-9 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200"
-                >
-                  <ShoppingCart className="h-[18px] w-[18px]" />
-                  {cartCount > 0 && (
-                    <Badge className="absolute -right-0.5 -top-0.5 h-[18px] min-w-[18px] rounded-full px-1 flex items-center justify-center text-[10px] font-bold bg-amber-500 text-white border-2 border-blue-700">
-                      {cartCount}
-                    </Badge>
-                  )}
-                </Button>
+                <DropdownMenu open={cartOpen} onOpenChange={(open) => { setCartOpen(open); if (open) fetchMiniCart(); }}>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="relative h-9 w-9 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200"
+                    >
+                      <ShoppingCart className="h-[18px] w-[18px]" />
+                      {cartCount > 0 && (
+                        <Badge className="absolute -right-0.5 -top-0.5 h-[18px] min-w-[18px] rounded-full px-1 flex items-center justify-center text-[10px] font-bold bg-amber-500 text-white border-2 border-blue-700">
+                          {cartCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-80 bg-white border-gray-200 rounded-xl shadow-xl shadow-gray-900/10 p-0 overflow-hidden">
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                      <span className="text-sm font-semibold text-gray-900">Giỏ hàng</span>
+                      {cartCount > 0 && <span className="text-xs text-gray-500">{cartCount} sản phẩm</span>}
+                    </div>
+                    {/* List */}
+                    <div className="max-h-[320px] overflow-y-auto">
+                      {cartLoading ? (
+                        <div className="flex items-center justify-center py-8 text-gray-400 text-sm">Đang tải...</div>
+                      ) : miniCart.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-8 text-gray-400">
+                          <ShoppingCart className="h-8 w-8 mb-2 opacity-30" />
+                          <span className="text-sm">Giỏ hàng trống</span>
+                        </div>
+                      ) : (
+                        miniCart.slice(0, 5).map((item) => (
+                          <div key={item.id} className="flex gap-3 px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0">
+                            <div className="h-12 w-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                              {item.product.image ? (
+                                <img src={item.product.image} alt={item.product.name} className="h-full w-full object-cover" />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center">
+                                  <ShoppingCart className="h-5 w-5 text-gray-300" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-gray-800 font-medium truncate">{item.product.name}</p>
+                              <p className="text-xs text-gray-500 mt-0.5">x{item.quantity}</p>
+                              <p className="text-sm text-blue-600 font-semibold mt-0.5">{formatCurrency(item.product.price * item.quantity)}</p>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    {/* Footer */}
+                    {miniCart.length > 0 && (
+                      <div className="border-t border-gray-100 px-4 py-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600">Tổng cộng</span>
+                          <span className="text-sm font-bold text-gray-900">{formatCurrency(cartTotal)}</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => { setCartOpen(false); onNavigate("cart"); }}
+                            className="flex-1 py-2 text-sm text-blue-600 hover:text-blue-700 border border-blue-200 hover:border-blue-300 rounded-lg font-medium transition-colors"
+                          >
+                            Xem giỏ hàng
+                          </button>
+                          <button
+                            onClick={() => { setCartOpen(false); onNavigate("checkout"); }}
+                            className="flex-1 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+                          >
+                            Thanh toán
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {miniCart.length === 0 && (
+                      <div className="border-t border-gray-100">
+                        <button
+                          onClick={() => { setCartOpen(false); onNavigate("shop"); }}
+                          className="flex items-center justify-center gap-1.5 w-full py-3 text-sm text-blue-600 hover:text-blue-700 hover:bg-gray-50 font-medium transition-colors"
+                        >
+                          Tiếp tục mua sắm
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
                 {/* User Dropdown */}
                 {isAuthenticated ? (
