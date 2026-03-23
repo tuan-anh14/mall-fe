@@ -149,10 +149,10 @@ export function Header({
     if (!isAuthenticated) return;
     setCartLoading(true);
     try {
-      const res = await get<{ items: MiniCartItem[]; subtotal?: number; total?: number }>("/api/v1/cart");
-      const items = res.items ?? [];
+      const res = await get<{ cart: { items: MiniCartItem[]; subtotal?: number; total?: number } }>("/api/v1/cart");
+      const items = res.cart?.items ?? [];
       setMiniCart(items);
-      setCartTotal(res.subtotal ?? res.total ?? items.reduce((s, i) => s + i.product.price * i.quantity, 0));
+      setCartTotal(res.cart?.subtotal ?? res.cart?.total ?? items.reduce((s, i) => s + i.product.price * i.quantity, 0));
     } catch {
       /* ignore */
     } finally {
