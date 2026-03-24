@@ -13,6 +13,18 @@ import { API_URL } from "../../lib/api";
 import { viewHistoryService } from "../../services/viewHistory.service";
 import { formatCurrency } from "../../lib/currency";
 
+interface ReviewReply {
+  id: string;
+  comment: string;
+  images: string[];
+  createdAt: string;
+  user: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+}
+
 interface ReviewUser {
   id: string;
   name: string;
@@ -24,9 +36,12 @@ interface Review {
   productId: string;
   rating: number;
   comment: string;
+  images: string[];
+  emoji?: string;
   helpful: number;
   user: ReviewUser;
   createdAt: string;
+  replies: ReviewReply[];
 }
 
 interface RatingBreakdownItem {
@@ -57,6 +72,7 @@ interface ProductDetailPageProps {
   onRemoveFromWishlist: (productId: string) => void;
   isInWishlist: boolean;
   isAuthenticated?: boolean;
+  user?: any;
 }
 
 export function ProductDetailPage({
@@ -67,6 +83,7 @@ export function ProductDetailPage({
   onRemoveFromWishlist,
   isInWishlist: initialIsInWishlist,
   isAuthenticated = false,
+  user,
 }: ProductDetailPageProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -99,6 +116,14 @@ export function ProductDetailPage({
   const [isUploadingReviewImage, setIsUploadingReviewImage] = useState(false);
   const [showReviewEmojiPicker, setShowReviewEmojiPicker] = useState(false);
   const reviewImageInputRef = useRef<HTMLInputElement>(null);
+
+  // Threaded reply state
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+  const [replyImages, setReplyImages] = useState<string[]>([]);
+  const [isUploadingReplyImage, setIsUploadingReplyImage] = useState(false);
+  const replyImageInputRef = useRef<HTMLInputElement>(null);
 
   const REVIEW_EMOJIS = ["😊", "😁", "😍", "🤩", "👍", "🔥", "💯", "⭐", "🎉", "😢", "😞", "👎"];
 
@@ -284,6 +309,64 @@ export function ProductDetailPage({
       toast.error(err.message || "Không thể gửi đánh giá");
     } finally {
       setIsSubmittingReview(false);
+    }
+  };
+
+  const handleReplySubmit = async (reviewId: string) => {
+    if (!replyText.trim()) return;
+    setIsSubmittingReply(true);
+    try {
+      const data = await post<{ reply: ReviewReply }>(`/api/v1/reviews/${reviewId}/replies`, {
+        comment: replyText.trim(),
+        images: replyImages,
+      });
+      
+      // Update local state
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId
+            ? { ...r, replies: [...(r.replies || []), data.reply] }
+            : r
+        )
+      );
+      setReplyText("");
+      setReplyImages([]);
+      setReplyingTo(null);
+      toast.success("Đã gửi phản hồi");
+    } catch (err: any) {
+      toast.error(err.message || "Không thể gửi phản hồi");
+    } finally {
+      setIsSubmittingReply(false);
+    }
+  };
+
+  const handleReplyImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (replyImages.length >= 3) {
+      toast.error("Tối đa 3 ảnh cho một phản hồi");
+      return;
+    }
+
+    setIsUploadingReplyImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("files", file);
+      const res = await fetch(`${API_URL}/api/v1/upload/images`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      const json = await res.json();
+      const url = json?.data?.urls?.[0] ?? null;
+      if (!url) throw new Error("Tải lên thất bại");
+      setReplyImages((prev) => [...prev, url]);
+    } catch (err: any) {
+      toast.error(err.message || "Không thể tải ảnh lên");
+    } finally {
+      setIsUploadingReplyImage(false);
+      if (replyImageInputRef.current) replyImageInputRef.current.value = "";
     }
   };
 
@@ -813,14 +896,25 @@ export function ProductDetailPage({
                               </div>
                             </div>
                           </div>
+                          {isAuthenticated && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className={`h-8 gap-1.5 text-xs font-semibold ${replyingTo === review.id ? "text-blue-600 bg-blue-50" : "text-gray-400 hover:text-blue-600"}`}
+                              onClick={() => setReplyingTo(replyingTo === review.id ? null : review.id)}
+                            >
+                              <MessageCircle className="h-3.5 w-3.5" />
+                              {replyingTo === review.id ? "Đang viết..." : "Trả lời"}
+                            </Button>
+                          )}
                         </div>
-                        {(review as any).emoji && (
-                          <span className="text-2xl mb-2 block">{(review as any).emoji}</span>
+                        {review.emoji && (
+                          <span className="text-2xl mb-2 block">{review.emoji}</span>
                         )}
-                        <p className="text-gray-600 text-sm leading-relaxed mb-3">{review.comment}</p>
-                        {(review as any).images?.length > 0 && (
-                          <div className="flex gap-2 mb-3 flex-wrap">
-                            {(review as any).images.map((url: string, i: number) => (
+                        <p className="text-gray-600 text-sm leading-relaxed mb-3 pl-12">{review.comment}</p>
+                        {review.images && review.images.length > 0 && (
+                          <div className="flex gap-2 mb-3 flex-wrap pl-12">
+                            {review.images.map((url, i) => (
                               <img
                                 key={i}
                                 src={url}
@@ -831,9 +925,122 @@ export function ProductDetailPage({
                             ))}
                           </div>
                         )}
-                        <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-600 text-xs h-8 rounded-lg -ml-2">
-                          👍 Hữu ích ({review.helpful})
-                        </Button>
+                        
+                        <div className="pl-12">
+                          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-600 text-xs h-8 rounded-lg -ml-2">
+                            👍 Hữu ích ({review.helpful})
+                          </Button>
+                        </div>
+
+                        {/* Replies Thread */}
+                        {review.replies && review.replies.length > 0 && (
+                          <div className="ml-12 mt-4 space-y-4 border-l-2 border-gray-100 pl-4 mb-4">
+                            {review.replies.map((reply) => {
+                              const isSeller = reply.user?.id === product.seller?.userId;
+                              return (
+                                <div key={reply.id} className="relative group/reply">
+                                  <div className="flex gap-3 mb-1">
+                                    <Avatar className="h-7 w-7 flex-shrink-0">
+                                      <AvatarFallback className="bg-gray-100 text-gray-400 text-[10px] font-bold">
+                                        {getAvatarInitials(reply.user?.name)}
+                                      </AvatarFallback>
+                                      {reply.user?.avatar && <img src={reply.user.avatar} alt="" className="object-cover" />}
+                                    </Avatar>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2 mb-0.5">
+                                        <span className={`text-xs font-bold ${isSeller ? "text-blue-700" : "text-gray-900"}`}>
+                                          {reply.user?.name}
+                                          {isSeller && (
+                                            <Badge className="ml-1.5 bg-blue-100 text-blue-700 border-0 hover:bg-blue-100 h-4 text-[10px] px-1.5">
+                                              Cửa hàng
+                                            </Badge>
+                                          )}
+                                        </span>
+                                        <span className="text-[10px] text-gray-400">
+                                          {new Date(reply.createdAt).toLocaleDateString("vi-VN")}
+                                        </span>
+                                      </div>
+                                      <p className="text-gray-600 text-xs leading-relaxed mb-2">{reply.comment}</p>
+                                      
+                                      {reply.images && reply.images.length > 0 && (
+                                        <div className="flex gap-2 mb-2 flex-wrap">
+                                          {reply.images.map((url, i) => (
+                                            <img
+                                              key={i}
+                                              src={url}
+                                              alt=""
+                                              className="w-12 h-12 object-cover rounded-lg cursor-pointer border border-gray-100 hover:opacity-90"
+                                              onClick={() => window.open(url, "_blank")}
+                                            />
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {/* Reply Input */}
+                        {replyingTo === review.id && (
+                          <div className="ml-12 mt-3 p-3 bg-gray-50/50 rounded-xl border border-gray-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <textarea
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              placeholder={`Chào ${review.user?.name}, trả lời đánh giá này...`}
+                              className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none resize-none"
+                              rows={2}
+                              autoFocus
+                            />
+
+                            {/* Reply Images Upload */}
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {replyImages.map((url, i) => (
+                                <div key={i} className="relative w-14 h-14">
+                                  <img src={url} alt="" className="w-full h-full object-cover rounded-lg" />
+                                  <button
+                                    className="absolute -top-1 -right-1 bg-red-500 rounded-full h-4 w-4 flex items-center justify-center shadow-sm"
+                                    onClick={() => setReplyImages((prev) => prev.filter((_, idx) => idx !== i))}
+                                  >
+                                    <X className="h-2.5 w-2.5 text-white" />
+                                  </button>
+                                </div>
+                              ))}
+                              {replyImages.length < 3 && (
+                                <button
+                                  onClick={() => replyImageInputRef.current?.click()}
+                                  disabled={isUploadingReplyImage}
+                                  className="w-14 h-14 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-blue-500 hover:text-blue-500 transition-colors"
+                                >
+                                  <Upload className="h-4 w-4" />
+                                  <span className="text-[10px] mt-0.5">{isUploadingReplyImage ? "..." : "Ảnh"}</span>
+                                </button>
+                              )}
+                              <input ref={replyImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleReplyImageUpload} />
+                            </div>
+
+                            <div className="flex gap-2 justify-end mt-3 pt-3 border-t border-gray-100">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => { setReplyingTo(null); setReplyText(""); }}
+                                className="text-gray-500 h-8"
+                              >
+                                Hủy
+                              </Button>
+                              <Button
+                                size="sm"
+                                disabled={!replyText.trim() || isSubmittingReply}
+                                onClick={() => handleReplySubmit(review.id)}
+                                className="bg-blue-600 hover:bg-blue-700 h-8 font-semibold"
+                              >
+                                {isSubmittingReply ? "..." : "Gửi"}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))
                   )}

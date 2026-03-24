@@ -568,6 +568,7 @@ export default function App() {
                     onRemoveFromWishlist={removeFromWishlist}
                     isInWishlist={isInWishlist(productData?.id)}
                     isAuthenticated={isAuthenticated}
+                    user={user}
                   />
                 ) : (
                   <Navigate to="/shop" replace />

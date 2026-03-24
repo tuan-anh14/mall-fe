@@ -12,14 +12,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import { get, del } from "../../lib/api";
+import { get, del, post } from "../../lib/api";
 import { toast } from "sonner";
+import { MessageSquare, Send } from "lucide-react";
 import {
   AdminPageLayout,
   AdminSpinner,
   adminPanelClass,
   adminPaginationBarClass,
 } from "../admin/AdminPageLayout";
+
+interface ReviewReply {
+  id: string;
+  comment: string;
+  createdAt: string;
+  user: { id: string; firstName: string; lastName: string; avatar?: string | null };
+}
 
 interface Review {
   id: string;
@@ -28,6 +36,7 @@ interface Review {
   createdAt: string;
   user: { id: string; firstName: string; lastName: string; email: string; avatar?: string | null };
   product: { id: string; name: string; images: { url: string }[] };
+  replies?: ReviewReply[];
 }
 
 export function AdminReviewsPage() {
@@ -36,6 +45,9 @@ export function AdminReviewsPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<Review | null>(null);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [isSubmittingReply, setIsSubmittingReply] = useState(false);
   const limit = 20;
 
   const fetchReviews = async () => {
@@ -62,6 +74,28 @@ export function AdminReviewsPage() {
       fetchReviews();
     } catch (e: any) {
       toast.error(e.message || "Lỗi");
+    }
+  };
+
+  const handleReplySubmit = async (reviewId: string) => {
+    if (!replyText.trim()) return;
+    setIsSubmittingReply(true);
+    try {
+      const data = await post<{ reply: ReviewReply }>(`/api/v1/reviews/${reviewId}/replies`, {
+        comment: replyText.trim(),
+      });
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId ? { ...r, replies: [...(r.replies || []), data.reply] } : r
+        )
+      );
+      setReplyText("");
+      setReplyingTo(null);
+      toast.success("Đã phản hồi đánh giá");
+    } catch (e: any) {
+      toast.error(e.message || "Không thể gửi phản hồi");
+    } finally {
+      setIsSubmittingReply(false);
     }
   };
 
@@ -120,15 +154,68 @@ export function AdminReviewsPage() {
                       </Button>
                     </div>
                   </div>
-                  <div className="mt-1">
-                    <StarRating rating={review.rating} />
                     {review.comment && (
-                      <p className="text-gray-500 text-sm mt-1 line-clamp-2">{review.comment}</p>
+                      <p className="text-gray-500 text-sm mt-1 mb-3">{review.comment}</p>
+                    )}
+
+                    {/* Replies Thread */}
+                    {review.replies && review.replies.length > 0 && (
+                      <div className="mt-3 space-y-3 border-l-2 border-gray-100 pl-4 py-1">
+                        {review.replies.map((reply) => (
+                          <div key={reply.id} className="text-sm">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="font-bold text-gray-900 text-xs text-blue-700">
+                                {reply.user.firstName} {reply.user.lastName} (Admin)
+                              </span>
+                              <span className="text-[10px] text-gray-400">
+                                {new Date(reply.createdAt).toLocaleDateString("vi-VN")}
+                              </span>
+                            </div>
+                            <p className="text-gray-600 leading-relaxed">{reply.comment}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-3 mt-3">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`h-8 text-xs gap-1.5 ${replyingTo === review.id ? "text-blue-600 bg-blue-50" : "text-gray-400 hover:text-blue-600"}`}
+                        onClick={() => setReplyingTo(replyingTo === review.id ? null : review.id)}
+                      >
+                        <MessageSquare className="h-3.5 w-3.5" />
+                        {replyingTo === review.id ? "Đang viết..." : "Phản hồi"}
+                      </Button>
+                    </div>
+
+                    {replyingTo === review.id && (
+                      <div className="mt-3 flex items-start gap-2">
+                        <div className="flex-1">
+                          <textarea
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder="Nhập nội dung phản hồi của quản trị viên..."
+                            className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500/10 focus:border-blue-400 outline-none resize-none"
+                            rows={2}
+                            autoFocus
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <Button
+                            size="icon"
+                            className="h-9 w-9 bg-blue-600 hover:bg-blue-700 shadow-sm"
+                            disabled={!replyText.trim() || isSubmittingReply}
+                            onClick={() => handleReplySubmit(review.id)}
+                          >
+                            <Send className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
             {reviews.length === 0 && (
               <div className="flex flex-col items-center justify-center py-16 text-gray-500">
                 <Star className="mb-3 h-10 w-10 text-gray-300" />
