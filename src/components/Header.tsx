@@ -76,6 +76,16 @@ interface MiniCartItem {
   };
 }
 
+interface PlatformPromotion {
+  id: string;
+  code: string;
+  name?: string | null;
+  description?: string | null;
+  type: "PERCENTAGE" | "FIXED_AMOUNT";
+  value: number | string;
+  minOrderAmount?: number | string | null;
+}
+
 function formatRelTime(dateStr: string): string {
   const diffMs = Date.now() - new Date(dateStr).getTime();
   const m = Math.floor(diffMs / 60000);
@@ -95,6 +105,23 @@ function getNotifIcon(type: string) {
     case "PROMOTION": return TrendingUp;
     default: return Bell;
   }
+}
+
+function getPromotionDiscountLabel(promotion: PlatformPromotion): string {
+  return promotion.type === "PERCENTAGE"
+    ? `${promotion.value}%`
+    : formatCurrency(Number(promotion.value));
+}
+
+function getPromotionBannerText(promotion: PlatformPromotion): string {
+  const discountLabel = getPromotionDiscountLabel(promotion);
+  const title = promotion.name || `Giảm ${discountLabel}`;
+  const description = promotion.description || `Dùng mã ${promotion.code} để nhận ưu đãi ${discountLabel}`;
+  const minOrderText = promotion.minOrderAmount
+    ? ` Đơn tối thiểu ${formatCurrency(Number(promotion.minOrderAmount))}.`
+    : "";
+
+  return `${title} - ${description}.${minOrderText}`.replace(/\.\s*\./g, ".").trim();
 }
 
 export function Header({
@@ -126,11 +153,35 @@ export function Header({
   const [miniCart, setMiniCart] = useState<MiniCartItem[]>([]);
   const [cartLoading, setCartLoading] = useState(false);
   const [cartTotal, setCartTotal] = useState(0);
+  const [promotions, setPromotions] = useState<PlatformPromotion[]>([]);
 
   // Keep localUnread in sync with prop
   useEffect(() => {
     setLocalUnread(notificationCount);
   }, [notificationCount]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchPromotions = async () => {
+      try {
+        const res = await get<{ promotions: PlatformPromotion[] }>("/api/v1/products/promotions");
+        if (isMounted) {
+          setPromotions(res.promotions ?? []);
+        }
+      } catch {
+        if (isMounted) {
+          setPromotions([]);
+        }
+      }
+    };
+
+    fetchPromotions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const fetchMiniNotifs = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -200,6 +251,8 @@ export function Header({
   const isSeller = user?.userType === "seller";
   const hasPendingRequest = user?.sellerRequestStatus === "PENDING";
   const hasRejectedRequest = user?.sellerRequestStatus === "REJECTED";
+  const topPromotion = promotions[0];
+  const topBannerText = topPromotion ? getPromotionBannerText(topPromotion) : null;
 
   const navItems = [
     { key: "home", label: "Trang chủ" },
@@ -212,7 +265,16 @@ export function Header({
     <>
       <header className="sticky top-0 z-50 w-full">
         {/* Top Banner */}
-        <div className="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950 py-1.5">
+        {topPromotion && (
+          <div className="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950 py-1.5">
+            <p className="text-xs text-blue-100/80 tracking-wide text-center w-full">
+              <span className="font-mono font-semibold text-amber-300">{topPromotion.code}</span>
+              <span className="mx-2 text-blue-200/50">|</span>
+              {topBannerText}
+            </p>
+          </div>
+        )}
+        <div className="hidden bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950 py-1.5">
           <p className="text-xs text-blue-100/80 tracking-wide text-center w-full">
             🎉 Sale Black Friday — Giảm đến <span className="font-semibold text-amber-300">50%</span> cho các sản phẩm được chọn!
           </p>
