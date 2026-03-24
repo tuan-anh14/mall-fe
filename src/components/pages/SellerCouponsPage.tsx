@@ -84,7 +84,7 @@ export function SellerCouponsPage() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Coupon | null>(null);
   const [form, setForm] = useState<CouponForm>(emptyForm);
   const [saving, setSaving] = useState(false);
 
@@ -161,17 +161,20 @@ export function SellerCouponsPage() {
   };
 
   const handleDelete = async () => {
-    if (!deleteId) return;
+    if (!deleteTarget) return;
     try {
-      await del(`/api/v1/seller/coupons/${deleteId}`);
+      const res = await del<{ message: string }>(`/api/v1/seller/coupons/${deleteTarget.id}`);
       toast.success("Đã xóa mã giảm giá");
-      setCoupons((prev) => prev.filter((c) => c.id !== deleteId));
+      await fetchCoupons();
     } catch (err: any) {
       toast.error(err.response?.data?.message ?? "Không thể xóa");
     } finally {
-      setDeleteId(null);
+      setDeleteTarget(null);
     }
   };
+
+  const willSoftDelete = (coupon: Coupon | null) =>
+    !!coupon && coupon.usageCount > 0;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -271,8 +274,9 @@ export function SellerCouponsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => setDeleteId(c.id)}
+                            onClick={() => setDeleteTarget(c)}
                             className="h-8 w-8 text-red-400/70 hover:text-red-400"
+                            title={c.usageCount > 0 ? "Tắt mã giảm giá" : "Xóa mã giảm giá"}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -425,7 +429,7 @@ export function SellerCouponsPage() {
       </Dialog>
 
       {/* Delete Confirmation */}
-      <AlertDialog open={!!deleteId} onOpenChange={(o: boolean) => !o && setDeleteId(null)}>
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o: boolean) => !o && setDeleteTarget(null)}>
         <AlertDialogContent className="bg-white border-gray-200 text-gray-900">
           <AlertDialogHeader>
             <AlertDialogTitle>Xóa mã giảm giá?</AlertDialogTitle>

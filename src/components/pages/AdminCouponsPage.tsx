@@ -183,6 +183,9 @@ export function AdminCouponsPage() {
   const isExpired = (coupon: Coupon) =>
     coupon.validUntil && new Date(coupon.validUntil) < new Date();
 
+  const willSoftDelete = (coupon: Coupon | null) =>
+    !!coupon && coupon._count.usages > 0;
+
   return (
     <AdminPageLayout
       title="Quản lý mã giảm giá"
@@ -341,7 +344,7 @@ export function AdminCouponsPage() {
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-400/70 hover:text-blue-400" onClick={() => openEdit(coupon)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400/70 hover:text-red-400" onClick={() => setDeleteTarget(coupon)}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400/70 hover:text-red-400" onClick={() => setDeleteTarget(coupon)} title={coupon._count.usages > 0 ? "Tắt mã giảm giá" : "Xóa mã giảm giá"}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
