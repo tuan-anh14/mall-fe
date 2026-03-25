@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Upload, X, Plus, Star } from "lucide-react";
+import { ArrowLeft, Star, Upload, Trash2, Edit, Save, Plus, X, Package, LayoutDashboard, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -429,11 +430,12 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                     key={url + index}
                     className="relative aspect-square bg-gray-50 rounded-xl overflow-hidden group border border-gray-200"
                   >
-                    <img
-                      src={url}
-                      alt={`Ảnh sản phẩm ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
+                    <ImageWithFallback
+                    src={url}
+                    alt={`Ảnh sản phẩm ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    previewable={true}
+                  />
 
                     {/* Primary badge */}
                     {index === 0 && (

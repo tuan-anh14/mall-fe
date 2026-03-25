@@ -15,6 +15,7 @@ import {
   BellOff,
   Archive,
   MessageSquare,
+  Maximize2
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -37,6 +38,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { toast } from "sonner";
+import { useImagePreview } from "../../context/ImagePreviewContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -105,6 +107,7 @@ function getInitials(name: string): string {
 }
 
 export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageProps) {
+  const { openPreview } = useImagePreview();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -749,12 +752,21 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                               }`}
                             >
                               {message.attachmentType === "image" && message.attachmentUrl ? (
-                                <img
-                                  src={message.attachmentUrl}
-                                  alt="Hình ảnh"
-                                  className="max-w-[200px] max-h-[200px] rounded-lg object-cover cursor-pointer"
-                                  onClick={() => window.open(message.attachmentUrl, "_blank")}
-                                />
+                                <div
+                                  className="mt-2 rounded-lg overflow-hidden border border-gray-100 cursor-pointer group relative"
+                                  onClick={() => openPreview(message.attachmentUrl)}
+                                >
+                                  <img
+                                    src={message.attachmentUrl}
+                                    alt="Sent"
+                                    className="max-w-full h-auto max-h-64 object-contain transition-transform duration-500 group-hover:scale-105"
+                                  />
+                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                    <div className="bg-white/90 p-1.5 rounded-full shadow-lg">
+                                      <Maximize2 className="h-4 w-4 text-gray-900" />
+                                    </div>
+                                  </div>
+                                </div>
                               ) : null}
                               {message.text && message.text !== "📷 Hình ảnh" && (
                                 <p className={`text-sm ${message.sender === "user" ? "text-white" : "text-gray-900"}`}>{message.text}</p>

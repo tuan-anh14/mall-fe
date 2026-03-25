@@ -23,6 +23,8 @@ import {
   ADMIN_PAGES,
   getPageFromPathname,
 } from "./constants/routes";
+import { ImagePreviewProvider } from "./context/ImagePreviewContext";
+import { ImagePreview } from "./components/ui/image-preview";
 
 // Re-export types so existing imports keep working
 export type { CartItem, WishlistItem, User } from "./types";
@@ -479,8 +481,10 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 flex flex-col">
-      {showSellerHeader && (
+    <ImagePreviewProvider>
+      <div className="min-h-screen bg-white text-gray-800 flex flex-col">
+        <ImagePreview />
+        {showSellerHeader && (
         <SellerHeader
           currentPage={currentPage}
           onNavigate={navigate}
@@ -982,6 +986,7 @@ export default function App() {
       )}
 
       <Toaster />
-    </div>
+      </div>
+    </ImagePreviewProvider>
   );
 }

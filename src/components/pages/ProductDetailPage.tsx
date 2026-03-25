@@ -388,6 +388,7 @@ export function ProductDetailPage({
                 src={product.images?.[selectedImage]?.url ?? product.images?.[selectedImage] ?? product.image}
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-700"
+                previewable={true}
               />
               {product.discount && (
                 <Badge className="absolute top-4 left-4 bg-red-500 text-white border-0 shadow-sm font-bold">
@@ -767,7 +768,12 @@ export function ProductDetailPage({
                         <div className="flex flex-wrap gap-3">
                           {reviewImages.map((url, i) => (
                             <div key={i} className="relative w-20 h-20">
-                              <img src={url} alt={`Review img ${i + 1}`} className="w-full h-full object-cover rounded-lg" />
+                              <ImageWithFallback
+                                src={url}
+                                alt={`Review img ${i + 1}`}
+                                className="w-full h-full object-cover rounded-lg"
+                                previewable={true}
+                              />
                               <button
                                 className="absolute -top-1 -right-1 bg-red-500 rounded-full h-5 w-5 flex items-center justify-center"
                                 onClick={() => setReviewImages((prev) => prev.filter((_, idx) => idx !== i))}
@@ -915,12 +921,12 @@ export function ProductDetailPage({
                         {review.images && review.images.length > 0 && (
                           <div className="flex gap-2 mb-3 flex-wrap pl-12">
                             {review.images.map((url, i) => (
-                              <img
+                              <ImageWithFallback
                                 key={i}
                                 src={url}
                                 alt={`Ảnh đánh giá ${i + 1}`}
-                                className="w-16 h-16 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-100"
-                                onClick={() => window.open(url, "_blank")}
+                                className="w-16 h-16 object-cover rounded-lg"
+                                previewable={true}
                               />
                             ))}
                           </div>
@@ -965,12 +971,12 @@ export function ProductDetailPage({
                                       {reply.images && reply.images.length > 0 && (
                                         <div className="flex gap-2 mb-2 flex-wrap">
                                           {reply.images.map((url, i) => (
-                                            <img
+                                            <ImageWithFallback
                                               key={i}
                                               src={url}
-                                              alt=""
-                                              className="w-12 h-12 object-cover rounded-lg cursor-pointer border border-gray-100 hover:opacity-90"
-                                              onClick={() => window.open(url, "_blank")}
+                                              alt="Reply"
+                                              className="w-12 h-12 object-cover rounded-lg"
+                                              previewable={true}
                                             />
                                           ))}
                                         </div>
@@ -999,7 +1005,7 @@ export function ProductDetailPage({
                             <div className="mt-3 flex flex-wrap gap-2">
                               {replyImages.map((url, i) => (
                                 <div key={i} className="relative w-14 h-14">
-                                  <img src={url} alt="" className="w-full h-full object-cover rounded-lg" />
+                                    <ImageWithFallback src={url} alt="" className="w-full h-full object-cover rounded-lg" previewable={true} />
                                   <button
                                     className="absolute -top-1 -right-1 bg-red-500 rounded-full h-4 w-4 flex items-center justify-center shadow-sm"
                                     onClick={() => setReplyImages((prev) => prev.filter((_, idx) => idx !== i))}
@@ -1065,7 +1071,7 @@ export function ProductDetailPage({
                 >
                   <div className="aspect-square overflow-hidden bg-gray-50">
                     <ImageWithFallback
-                      src={related.images?.[0]?.url ?? related.images?.[0] ?? related.image ?? ""}
+                      src={(related.images?.[0] as any)?.url ?? related.images?.[0] ?? related.image ?? ""}
                       alt={related.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
@@ -1109,7 +1115,7 @@ export function ProductDetailPage({
                 >
                   <div className="aspect-square overflow-hidden bg-gray-50">
                     <ImageWithFallback
-                      src={similar.images?.[0]?.url ?? similar.images?.[0] ?? similar.image ?? ""}
+                      src={(similar.images?.[0] as any)?.url ?? similar.images?.[0] ?? similar.image ?? ""}
                       alt={similar.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
