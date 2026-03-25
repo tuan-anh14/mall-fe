@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { motion } from "motion/react";
 import { Badge } from "../ui/badge";
 import {
@@ -63,6 +63,7 @@ interface ChatPageProps {
   };
   userId?: string;
   userType?: string;
+  userAvatar?: string;
 }
 
 interface Message {
@@ -82,6 +83,7 @@ interface Conversation {
   time: string;
   unread: number;
   avatar: string;
+  avatarUrl?: string;
   online: boolean;
   sellerUserId?: string;
 }
@@ -106,7 +108,7 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageProps) {
+export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar }: ChatPageProps) {
   const { openPreview } = useImagePreview();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -183,6 +185,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
           time: conv.lastMessageAt ? formatTime(conv.lastMessageAt) : "",
           unread: conv.unreadCount ?? 0,
           avatar: getInitials(baseName),
+          avatarUrl: conv.otherUser?.avatar,
           online: false,
           sellerUserId: conv.otherUser?.id,
         };
@@ -219,6 +222,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
         time: conv.lastMessageAt ? formatTime(conv.lastMessageAt) : "",
         unread: conv.unreadCount ?? 0,
         avatar: getInitials(baseName),
+        avatarUrl: conv.otherUser?.avatar || sellerInfo?.avatar,
         online: false,
         sellerUserId: conv.otherUser?.id,
       };
@@ -572,6 +576,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                           <div className="flex gap-3">
                             <div className="relative">
                               <Avatar className="h-12 w-12">
+                                {conv.avatarUrl && <AvatarImage src={conv.avatarUrl} className="object-cover" />}
                                 <AvatarFallback className="bg-blue-600 text-white">
                                   {conv.avatar}
                                 </AvatarFallback>
@@ -620,6 +625,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                       </Button>
                       <div className="relative">
                         <Avatar className="h-12 w-12">
+                          {activeConversation.avatarUrl && <AvatarImage src={activeConversation.avatarUrl} className="object-cover" />}
                           <AvatarFallback className="bg-blue-600 text-white">
                             {activeConversation.avatar}
                           </AvatarFallback>
@@ -733,6 +739,11 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType }: ChatPageP
                           }`}
                         >
                           <Avatar className="h-8 w-8 flex-shrink-0">
+                            {message.sender === "user" ? (
+                              userAvatar && <AvatarImage src={userAvatar} className="object-cover" />
+                            ) : (
+                              activeConversation.avatarUrl && <AvatarImage src={activeConversation.avatarUrl} className="object-cover" />
+                            )}
                             <AvatarFallback
                               className={
                                 message.sender === "user"

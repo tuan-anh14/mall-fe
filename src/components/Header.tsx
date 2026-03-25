@@ -634,7 +634,11 @@ export function Header({
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200">
-                        <User className="h-[18px] w-[18px]" />
+                        {user?.avatar ? (
+                          <img src={user.avatar} alt="Avatar" className="h-full w-full rounded-lg object-cover" />
+                        ) : (
+                          <User className="h-[18px] w-[18px]" />
+                        )}
                         <div className="absolute -bottom-0 -right-0 h-2.5 w-2.5 bg-emerald-400 rounded-full border-2 border-blue-700" />
                       </Button>
                     </DropdownMenuTrigger>

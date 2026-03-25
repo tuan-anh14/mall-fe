@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, User, ShoppingBag, Star, Calendar } from "lucide-react";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { get } from "../../lib/api";
 
@@ -12,6 +12,7 @@ interface BuyerProfilePageProps {
 interface BuyerProfile {
   id: string;
   name: string;
+  avatar?: string;
   memberSince: string;
   orderCount: number;
   reviewCount: number;
@@ -74,6 +75,7 @@ export function BuyerProfilePage({ onNavigate, buyerUserId }: BuyerProfilePagePr
             {/* Profile header */}
             <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 text-center">
               <Avatar className="h-24 w-24 mx-auto mb-4 border-4 border-gray-200">
+                {profile.avatar && <AvatarImage src={profile.avatar} className="object-cover" />}
                 <AvatarFallback className="text-2xl bg-blue-600 text-white">
                   {getInitials(profile.name)}
                 </AvatarFallback>

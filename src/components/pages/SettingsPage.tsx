@@ -22,6 +22,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
 import { Separator } from "../ui/separator";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
   Select,
@@ -107,7 +108,9 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>();
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   // Password state
   const [currentPassword, setCurrentPassword] = useState("");
@@ -165,6 +168,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
       setLastName(res.user.lastName ?? "");
       setEmail(res.user.email ?? "");
       setPhone(res.user.phone ?? "");
+      setAvatarUrl(res.user.avatar ?? undefined);
     } catch (err: any) {
       toast.error(err.message || "Không thể tải hồ sơ");
     }
@@ -204,6 +208,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
     try {
       await put("/api/v1/users/me", { firstName, lastName, phone });
       toast.success("Cập nhật hồ sơ thành công!");
+      // Option: call checkAuth() to update global context if necessary
     } catch (err: any) {
       toast.error(err.message || "Không thể lưu hồ sơ");
     } finally {
@@ -362,6 +367,37 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
     setNotifSettings((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validate size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Ảnh quá lớn. Vui lòng chọn ảnh dưới 5MB");
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const uploadRes = await post<{ url: string }>("/api/v1/upload/avatar", formData);
+      
+      const newUrl = uploadRes.url;
+      await put("/api/v1/users/me", { avatar: newUrl });
+      
+      setAvatarUrl(newUrl);
+      toast.success("Cập nhật ảnh đại diện thành công!");
+    } catch (err: any) {
+      toast.error(err.message || "Không thể tải lên ảnh đại diện");
+    } finally {
+      setIsUploadingAvatar(false);
+      // Reset input
+      e.target.value = '';
+    }
+  };
+
   const inputClass =
     "bg-gray-50/50 border-gray-200 text-gray-900 rounded-xl h-11 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all";
   const cardClass = "bg-white border-gray-200/80 rounded-2xl shadow-sm overflow-hidden";
@@ -433,6 +469,32 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-5">
+                  <div className="flex items-center gap-4 mb-2">
+                    <Avatar className="h-16 w-16 border rounded-full bg-gray-50 flex items-center justify-center">
+                      {isUploadingAvatar ? (
+                        <div className="h-5 w-5 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
+                      ) : avatarUrl ? (
+                        <AvatarImage src={avatarUrl} className="object-cover" />
+                      ) : (
+                        <AvatarFallback className="bg-blue-100 text-blue-700 font-bold text-xl">
+                          {(firstName[0] || "U").toUpperCase()}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div>
+                      <Button variant="outline" size="sm" onClick={() => document.getElementById("avatar-upload")?.click()} disabled={isUploadingAvatar} className="rounded-lg h-9 font-medium border-gray-200">
+                        Đổi ảnh đại diện
+                      </Button>
+                      <input 
+                        type="file" 
+                        id="avatar-upload" 
+                        accept="image/png, image/jpeg, image/webp" 
+                        className="hidden" 
+                        onChange={handleAvatarUpload} 
+                      />
+                      <p className="text-[11px] text-gray-500 mt-1.5">JPG, PNG hoặc WEBP. Tối đa 5MB.</p>
+                    </div>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <Label htmlFor="firstName" className="text-gray-700 text-sm font-medium">Họ</Label>

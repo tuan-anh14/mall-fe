@@ -770,6 +770,7 @@ export default function App() {
                     sellerInfo={chatData}
                     userId={user?.id}
                     userType={user?.userType}
+                    userAvatar={user?.avatar}
                   />
                 )
               }

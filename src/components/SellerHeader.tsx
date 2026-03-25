@@ -1,7 +1,7 @@
 import React from "react";
 import { Package, ShoppingBag, BarChart3, LogOut, Store, Home, MessageSquare, Star, Tag } from "lucide-react";
 import { Button } from "./ui/button";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface SellerHeaderProps {
   currentPage: string;
@@ -85,9 +85,12 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
               <p className="text-xs text-blue-100">Tài khoản Người bán</p>
             </div>
             <Avatar 
-              className="h-10 w-10 cursor-pointer border-2 border-white/30"
+              className="h-10 w-10 cursor-pointer border-2 border-white/30 bg-blue-700"
               onClick={() => onNavigate("profile")}
             >
+              {user?.avatar ? (
+                <AvatarImage src={user.avatar} className="object-cover" />
+              ) : null}
               <AvatarFallback className="bg-blue-700 text-white">
                 {user?.name?.[0]?.toUpperCase() || "S"}
               </AvatarFallback>

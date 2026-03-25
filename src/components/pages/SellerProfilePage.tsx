@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ArrowLeft, Star, Package, Shield, MessageCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { get } from "../../lib/api";
 import { toast } from "sonner";
@@ -92,13 +92,10 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
           <div className="flex flex-col md:flex-row md:items-end gap-4">
             {/* Store Logo */}
             <Avatar className="h-24 w-24 border-4 border-white">
-              {seller.logoImage ? (
-                <img src={seller.logoImage} alt={seller.storeName} className="object-cover" />
-              ) : (
-                <AvatarFallback className="bg-blue-600 text-white text-3xl">
-                  {seller.storeName?.[0]?.toUpperCase() ?? "S"}
-                </AvatarFallback>
-              )}
+              {(seller.logoImage || seller.avatar) && <AvatarImage src={seller.logoImage || seller.avatar} className="object-cover bg-white" alt={seller.storeName} />}
+              <AvatarFallback className="bg-blue-600 text-white text-3xl">
+                {seller.storeName?.[0]?.toUpperCase() ?? "S"}
+              </AvatarFallback>
             </Avatar>
 
             <div className="flex-1">

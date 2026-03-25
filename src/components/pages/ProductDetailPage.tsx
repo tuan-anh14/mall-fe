@@ -3,7 +3,7 @@ import { Star, Heart, Share2, Truck, Shield, RotateCcw, MessageCircle, Minus, Pl
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Progress } from "../ui/progress";
 import { Separator } from "../ui/separator";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
@@ -620,6 +620,7 @@ export function ProductDetailPage({
                   }}
                 >
                   <Avatar className="h-11 w-11 flex-shrink-0">
+                    {product.seller?.avatar && <AvatarImage src={product.seller.avatar} className="object-cover" />}
                     <AvatarFallback className="bg-gradient-to-br from-blue-600 to-blue-700 text-white font-semibold">
                       {(product.seller?.storeName?.[0] || product.brand?.[0] || "S").toUpperCase()}
                     </AvatarFallback>

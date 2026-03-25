@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { User } from "../types";
 import { cn } from "./ui/utils";
 
@@ -156,9 +157,17 @@ export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHe
               Cửa hàng
             </Button>
             {user && (
-              <span className="hidden max-w-[8rem] truncate text-xs text-blue-100 lg:inline lg:max-w-[10rem] lg:text-sm lg:text-white">
-                {user.name}
-              </span>
+              <div className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-80" onClick={() => onNavigate("profile")}>
+                <span className="hidden max-w-[8rem] truncate text-xs text-blue-100 lg:inline lg:max-w-[10rem] lg:text-sm lg:text-white font-medium">
+                  {user.name}
+                </span>
+                <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border border-white/20 bg-blue-700 shadow-sm">
+                  {user.avatar ? <AvatarImage src={user.avatar} className="object-cover" /> : null}
+                  <AvatarFallback className="bg-blue-700 text-white font-medium text-xs sm:text-sm">
+                    {user.name?.[0]?.toUpperCase() || "A"}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
             )}
             <Button
               variant="ghost"
