@@ -1,4 +1,5 @@
-import { Heart, ShoppingCart, Trash2, X, ArrowRight } from "lucide-react";
+import { Heart, ShoppingCart, Trash2, X, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -36,6 +37,22 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
     onAddToCart(item.product, 1);
     toast.success(`${item.product.name} đã thêm vào giỏ hàng!`);
   };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.max(1, Math.ceil(wishlistItems.length / itemsPerPage));
+
+  // Reset to page 1 if current page becomes empty after deletion
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(Math.max(1, totalPages));
+    }
+  }, [totalPages, currentPage]);
+
+  const currentItems = wishlistItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -89,7 +106,7 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
           >
             <AnimatePresence mode="popLayout">
-              {wishlistItems.map((item) => (
+              {currentItems.map((item) => (
                 <motion.div
                   key={item.id}
                   layout
@@ -230,6 +247,58 @@ export function WishlistPage({ onNavigate, wishlistItems, onRemoveItem, onAddToC
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </motion.div>
+        )}
+
+        {/* Pagination */}
+        {wishlistItems.length > 0 && totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage <= 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+              className="h-9 w-9 p-0 rounded-xl border-gray-200"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+              .reduce<(number | string)[]>((acc, p, idx, arr) => {
+                if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("…");
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((item, idx) =>
+                item === "…" ? (
+                  <span key={`ellipsis-${idx}`} className="text-gray-400 text-sm px-1">…</span>
+                ) : (
+                  <Button
+                    key={item}
+                    variant={currentPage === item ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(item as number)}
+                    className={`h-9 w-9 p-0 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      currentPage === item
+                        ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm"
+                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {item}
+                  </Button>
+                )
+              )}
+
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage >= totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className="h-9 w-9 p-0 rounded-xl border-gray-200"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         )}
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, Package, Heart, TrendingUp, X, Check, CheckCheck, ArrowRight, Inbox } from "lucide-react";
+import { Bell, Package, Heart, TrendingUp, X, Check, CheckCheck, ArrowRight, Inbox, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -234,6 +234,8 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
   const [detailNotification, setDetailNotification] = useState<UiNotification | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const openDetail = (n: UiNotification) => {
     setDetailNotification(n);
@@ -242,7 +244,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
 
   useEffect(() => {
     fetchNotifications();
-  }, []);
+  }, [currentPage]);
 
   const fetchNotifications = async () => {
     setIsLoading(true);
@@ -254,9 +256,10 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
         limit: number;
         totalPages: number;
         unreadCount: number;
-      }>("/api/v1/notifications?page=1&limit=50");
+      }>(`/api/v1/notifications?page=${currentPage}&limit=10`);
       const mapped = (res.notifications ?? []).map(mapApiNotification);
       setNotifications(mapped);
+      setTotalPages(res.totalPages ?? 1);
       setUnreadCount(res.unreadCount ?? mapped.filter((n) => !n.isRead).length);
     } catch (err: any) {
       toast.error(err.message || "Không thể tải thông báo");
@@ -496,6 +499,58 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
               </TabsContent>
             </div>
           </Tabs>
+        )}
+
+        {/* Pagination */}
+        {!hasNoNotifications && totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage <= 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+              className="h-9 w-9 p-0 rounded-xl border-gray-200"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+              .reduce<(number | string)[]>((acc, p, idx, arr) => {
+                if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("…");
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((item, idx) =>
+                item === "…" ? (
+                  <span key={`ellipsis-${idx}`} className="text-gray-400 text-sm px-1">…</span>
+                ) : (
+                  <Button
+                    key={item}
+                    variant={currentPage === item ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(item as number)}
+                    className={`h-9 w-9 p-0 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      currentPage === item
+                        ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm"
+                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {item}
+                  </Button>
+                )
+              )}
+
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage >= totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className="h-9 w-9 p-0 rounded-xl border-gray-200"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         )}
       </div>
 
