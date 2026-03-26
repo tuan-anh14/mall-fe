@@ -696,6 +696,7 @@ export default function App() {
                       new URLSearchParams(location.search).get("orderId") ??
                       undefined
                     }
+                    onCartRefresh={fetchCart}
                   />
                 )
               }

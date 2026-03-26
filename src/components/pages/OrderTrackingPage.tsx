@@ -6,6 +6,8 @@ import { Separator } from "../ui/separator";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { get } from "../../lib/api";
 import { formatCurrency } from "../../lib/currency";
+import { toast } from "sonner";
+import { walletService } from "../../services/wallet.service";
 
 interface TrackingStep {
   status: string;
@@ -47,6 +49,8 @@ interface Order {
   total: number;
   couponCode?: string;
   couponDiscount?: number | null;
+  paymentMethod?: string;
+  paymentRef?: string;
   items: OrderItem[];
   tracking: OrderTracking;
   shippingAddress?: {
@@ -61,6 +65,7 @@ interface Order {
 interface OrderTrackingPageProps {
   onNavigate: (page: string, data?: any) => void;
   orderId?: string;
+  onCartRefresh?: () => Promise<void>;
 }
 
 const STATUS_LABEL_VI: Record<string, string> = {
@@ -95,7 +100,21 @@ function getTrackingIcon(status: string): React.ElementType {
   return STATUS_ICON_MAP[status] || Package;
 }
 
-export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProps) {
+function getPaymentStatus(order: Order) {
+  if (order.status === "CANCELLED" || order.status === "REFUNDED") {
+    return { label: "Đã hủy", color: "text-red-600" };
+  }
+  if (order.paymentMethod === "cod") {
+    if (order.status === "DELIVERED") return { label: "Đã thanh toán", color: "text-green-600" };
+    return { label: "Thanh toán lúc nhận", color: "text-amber-600" };
+  }
+  if (order.status !== "PENDING") {
+    return { label: "Đã thanh toán", color: "text-green-600" };
+  }
+  return { label: "Chưa thanh toán", color: "text-amber-600" };
+}
+
+export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderTrackingPageProps) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -125,7 +144,37 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
       }
     };
 
-    fetchOrders();
+    const handleVnpayCallback = async () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const txnRef = searchParams.get("vnp_TxnRef");
+      const responseCode = searchParams.get("vnp_ResponseCode");
+
+      if (txnRef && txnRef.startsWith("ORD-") && responseCode) {
+        try {
+          await walletService.verifyVnpayCallback(window.location.search);
+          if (responseCode === "00") {
+            toast.success("Thanh toán đơn hàng thành công!");
+          } else if (responseCode === "24") {
+            toast.error("Bạn đã hủy thanh toán. Đơn hàng đã bị hủy.");
+            if (onCartRefresh) await onCartRefresh();
+            onNavigate("checkout");
+            return;
+          } else {
+            toast.error("Thanh toán đơn hàng thất bại.");
+            if (onCartRefresh) await onCartRefresh();
+            onNavigate("checkout");
+            return;
+          }
+        } catch (error) {
+          console.error("Failed to verify VNPay callback", error);
+        } finally {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+      fetchOrders();
+    };
+
+    handleVnpayCallback();
   }, [orderId]);
 
   if (loading) {
@@ -210,22 +259,42 @@ export function OrderTrackingPage({ onNavigate, orderId }: OrderTrackingPageProp
               </div>
 
               {/* Order Details */}
-              <div className="grid md:grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div className="bg-gray-50 rounded-lg p-4">
                   <p className="text-sm text-gray-500 mb-1">Ngày đặt hàng</p>
-                  <p className="text-gray-900">
+                  <p className="text-gray-900 font-medium">
                     {currentOrder.date
                       ? new Date(currentOrder.date).toLocaleDateString("vi-VN", {
                           year: "numeric",
-                          month: "long",
+                          month: "short",
                           day: "numeric",
                         })
                       : "—"}
                   </p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-sm text-gray-500 mb-1">Dự kiến giao hàng</p>
-                  <p className="text-gray-900">Hôm nay trước 18:00</p>
+                  <p className="text-sm text-gray-500 mb-1">Dự kiến giao</p>
+                  <p className="text-gray-900 font-medium">Hôm nay trước 18:00</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-500 mb-1">Phương thức</p>
+                  <p className="text-gray-900 font-medium capitalize">
+                    {currentOrder.paymentMethod === "vnpay"
+                      ? "VNPAY"
+                      : currentOrder.paymentMethod === "wallet"
+                      ? "Shop Wallet"
+                      : currentOrder.paymentMethod === "cod"
+                      ? "COD"
+                      : currentOrder.paymentMethod === "card"
+                      ? "Thẻ"
+                      : currentOrder.paymentMethod || "—"}
+                  </p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-500 mb-1">Thanh toán</p>
+                  <p className={`font-medium ${getPaymentStatus(currentOrder).color}`}>
+                    {getPaymentStatus(currentOrder).label}
+                  </p>
                 </div>
               </div>
 
