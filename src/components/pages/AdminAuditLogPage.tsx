@@ -1,8 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
-import { History, ChevronLeft, ChevronRight, Shield, Filter } from "lucide-react";
+import { History, ChevronLeft, ChevronRight, Shield, Filter, Eye } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "../ui/dialog";
 import {
   Select,
   SelectContent,
@@ -40,6 +47,7 @@ const ACTION_COLORS: Record<string, string> = {
   APPROVE: "border border-emerald-200 bg-emerald-50 text-emerald-900",
   REJECT: "border border-amber-200 bg-amber-50 text-amber-900",
   BAN: "border border-amber-200 bg-amber-50 text-amber-950",
+  ADJUST_WALLET: "border border-indigo-200 bg-indigo-50 text-indigo-800",
 };
 
 const RESOURCE_LABELS: Record<string, string> = {
@@ -48,6 +56,7 @@ const RESOURCE_LABELS: Record<string, string> = {
   account: "Tài khoản",
   review: "Đánh giá",
   seller_request: "Yêu cầu seller",
+  wallet: "Ví người dùng",
 };
 
 const ACTION_OPTIONS = [
@@ -58,6 +67,7 @@ const ACTION_OPTIONS = [
   { value: "APPROVE", label: "Phê duyệt" },
   { value: "REJECT", label: "Từ chối" },
   { value: "BAN", label: "Khóa tài khoản" },
+  { value: "ADJUST_WALLET", label: "Nạp/trừ ví" },
 ];
 
 const RESOURCE_OPTIONS = [
@@ -67,6 +77,7 @@ const RESOURCE_OPTIONS = [
   { value: "coupon", label: "Mã giảm giá" },
   { value: "review", label: "Đánh giá" },
   { value: "seller_request", label: "Yêu cầu seller" },
+  { value: "wallet", label: "Ví người dùng" },
 ];
 
 export function AdminAuditLogPage() {
@@ -76,7 +87,14 @@ export function AdminAuditLogPage() {
   const [loading, setLoading] = useState(true);
   const [actionFilter, setActionFilter] = useState("ALL");
   const [resourceFilter, setResourceFilter] = useState("ALL");
+  const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
+  const [showModal, setShowModal] = useState(false);
   const limit = 50;
+
+  const openLogDetails = (log: AuditLog) => {
+    setSelectedLog(log);
+    setShowModal(true);
+  };
 
   const fetchLogs = useCallback(async () => {
     setLoading(true);
@@ -218,8 +236,29 @@ export function AdminAuditLogPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-500 text-xs max-w-xs truncate">
-                      {log.details ? JSON.stringify(log.details) : "—"}
+                    <td className="px-6 py-4 text-gray-500 text-xs text-left">
+                      <div className="flex items-center gap-2 justify-between">
+                        <div className="max-w-[200px] truncate" title={log.details ? JSON.stringify(log.details) : ""}>
+                          {log.action === "ADJUST_WALLET" && log.details
+                            ? <span className="font-medium text-gray-800">
+                                {log.details.amount > 0 ? "+" : ""}
+                                {Number(log.details.amount).toLocaleString("vi-VN")}₫
+                                {log.details.targetName ? ` cho ${log.details.targetName}` : log.resourceId ? ` cho User ...${log.resourceId.slice(-6)}` : ""}
+                                {log.details.reason && <span className="font-normal text-gray-500"> ({log.details.reason})</span>}
+                              </span>
+                            : log.details ? JSON.stringify(log.details) : "—"}
+                        </div>
+                        {log.details && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-6 w-6 p-0 shrink-0 rounded-full text-blue-500 hover:text-blue-700 hover:bg-blue-50" 
+                            onClick={() => openLogDetails(log)}
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -245,6 +284,45 @@ export function AdminAuditLogPage() {
           </div>
         </div>
       )}
+
+      {/* Details Modal */}
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="bg-white border-gray-200 max-w-md sm:max-w-2xl">
+          <DialogHeader>
+             <DialogTitle className="text-gray-900">Chi tiết thao tác</DialogTitle>
+             <DialogDescription className="text-gray-500">
+               Được ghi nhận lúc {selectedLog ? new Date(selectedLog.createdAt).toLocaleString("vi-VN") : ""}
+             </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2">
+            {selectedLog && selectedLog.details && (
+              <div className="rounded-xl border border-gray-200 overflow-hidden max-h-[60vh] overflow-y-auto">
+                <table className="w-full text-sm text-left">
+                  <tbody className="divide-y divide-gray-100">
+                    {Object.entries(selectedLog.details).map(([key, value]) => (
+                      <tr key={key} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 font-medium text-gray-700 w-1/3 bg-gray-50/50 border-r border-gray-100 align-top">
+                          {key}
+                        </td>
+                        <td className="px-4 py-3 text-gray-600 break-words align-top font-mono text-xs whitespace-pre-wrap">
+                          {typeof value === 'object' && value !== null 
+                            ? JSON.stringify(value, null, 2) 
+                            : String(value)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <div className="mt-4 flex justify-end">
+              <Button className="rounded-xl border-gray-200" variant="outline" onClick={() => setShowModal(false)}>
+                Đóng
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminPageLayout>
   );
 }
