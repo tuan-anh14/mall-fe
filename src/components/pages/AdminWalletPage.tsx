@@ -8,6 +8,7 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  History,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -48,11 +49,20 @@ export function AdminWalletPage() {
   const [adjustAmount, setAdjustAmount] = useState("");
   const [adjustReason, setAdjustReason] = useState("");
   const [isAdjusting, setIsAdjusting] = useState(false);
+  
+  // History Modal states
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [historyWallet, setHistoryWallet] = useState<any>(null);
+  const [historyLogs, setHistoryLogs] = useState<any[]>([]);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [historyTotalPages, setHistoryTotalPages] = useState(1);
+  const [historyTotal, setHistoryTotal] = useState(0);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const fetchWallets = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await walletService.adminGetWallets(page, 20, search || undefined);
+      const data = await walletService.adminGetWallets(page, 10, search || undefined);
       setWallets(data.wallets);
       setTotal(data.total);
       setTotalPages(data.totalPages);
@@ -82,6 +92,33 @@ export function AdminWalletPage() {
     } catch {
       toast.error("Không thể tải thông tin ví");
     }
+  };
+
+  const fetchHistory = useCallback(async () => {
+    if (!historyWallet) return;
+    setHistoryLoading(true);
+    try {
+      const data = await walletService.adminGetTransactions(historyWallet.user.id, historyPage, 10);
+      setHistoryLogs(data.transactions);
+      setHistoryTotal(data.total);
+      setHistoryTotalPages(data.totalPages);
+    } catch {
+      toast.error("Không thể tải lịch sử giao dịch");
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [historyWallet, historyPage]);
+
+  useEffect(() => {
+    if (showHistoryModal) {
+      fetchHistory();
+    }
+  }, [fetchHistory, showHistoryModal]);
+
+  const openHistory = (wallet: any) => {
+    setHistoryWallet(wallet);
+    setHistoryPage(1);
+    setShowHistoryModal(true);
   };
 
   const handleAdjust = async () => {
@@ -200,15 +237,26 @@ export function AdminWalletPage() {
                     {w.transactionCount}
                   </td>
                   <td className="px-4 py-4 text-right sm:px-6">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => openAdjust(w)}
-                      className="rounded-xl border-blue-200 text-primary hover:bg-blue-50"
-                    >
-                      <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5" />
-                      Điều chỉnh
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => openHistory(w)}
+                        className="rounded-xl border border-gray-100 text-gray-500 hover:text-primary hover:bg-blue-50"
+                        title="Xem lịch sử giao dịch"
+                      >
+                        <History className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openAdjust(w)}
+                        className="rounded-xl border-blue-200 text-primary hover:bg-blue-50"
+                      >
+                        <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5" />
+                        Điều chỉnh
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -311,6 +359,109 @@ export function AdminWalletPage() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Wallet History Modal */}
+      <Dialog open={showHistoryModal} onOpenChange={setShowHistoryModal}>
+        <DialogContent className="bg-white border-gray-200 max-w-2xl sm:max-w-3xl h-[80vh] flex flex-col p-0">
+          <DialogHeader className="p-6 pb-2">
+            <DialogTitle className="flex items-center gap-2 text-gray-900 border-b pb-4">
+              <History className="h-5 w-5 text-primary" />
+              Lịch sử giao dịch ví
+            </DialogTitle>
+            {historyWallet && (
+              <div className="mt-2 space-y-1">
+                <p className="text-gray-900 font-medium">
+                  {historyWallet.user.firstName} {historyWallet.user.lastName}
+                </p>
+                <p className="text-gray-500 text-sm">
+                  {historyWallet.user.email} • Số dư: <span className="font-bold text-primary">{formatCurrency(historyWallet.balance)}</span>
+                </p>
+              </div>
+            )}
+          </DialogHeader>
+
+          <div className="flex-1 overflow-hidden flex flex-col px-6">
+            <div className="flex-1 overflow-y-auto min-h-0 border rounded-xl">
+              {historyLoading ? (
+                <div className="h-full flex items-center justify-center py-20">
+                  <AdminSpinner />
+                </div>
+              ) : historyLogs.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center py-20 text-gray-400">
+                  <History className="h-10 w-10 mb-2 opacity-20" />
+                  <p>Không có lịch sử giao dịch</p>
+                </div>
+              ) : (
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 border-b sticky top-0 z-10">
+                    <tr>
+                      <th className="px-4 py-3 font-semibold text-gray-700">Thời gian</th>
+                      <th className="px-4 py-3 font-semibold text-gray-700">Loại</th>
+                      <th className="px-4 py-3 font-semibold text-right text-gray-700">Số tiền</th>
+                      <th className="px-4 py-3 font-semibold text-gray-700">Trạng thái</th>
+                      <th className="px-4 py-3 font-semibold text-gray-700">Mô tả</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {historyLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap text-xs">
+                          {new Date(log.createdAt).toLocaleString("vi-VN")}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                            log.type === "DEPOSIT" ? "bg-emerald-50 text-emerald-600" :
+                            log.type === "PAYMENT" ? "bg-blue-50 text-blue-600" :
+                            log.type === "REFUND" ? "bg-indigo-50 text-indigo-600" :
+                            "bg-amber-50 text-amber-600"
+                          }`}>
+                            {log.type === "DEPOSIT" ? "Nạp tiền" :
+                             log.type === "PAYMENT" ? "Thanh toán" :
+                             log.type === "REFUND" ? "Hoàn tiền" : "Điều chỉnh"}
+                          </span>
+                        </td>
+                        <td className={`px-4 py-3 text-right font-medium ${
+                          ["DEPOSIT", "REFUND"].includes(log.type) || (log.type === "ADJUSTMENT" && log.amount > 0) 
+                            ? "text-emerald-600" : "text-red-500"
+                        }`}>
+                          {["DEPOSIT", "REFUND"].includes(log.type) || (log.type === "ADJUSTMENT" && log.amount > 0) ? "+" : "-"}
+                          {formatCurrency(Math.abs(log.amount))}
+                        </td>
+                        <td className="px-4 py-3 text-xs">
+                          <span className={
+                            log.status === "COMPLETED" ? "text-emerald-500" :
+                            log.status === "PENDING" ? "text-amber-500" : "text-red-500"
+                          }>
+                            {log.status === "COMPLETED" ? "Thành công" :
+                             log.status === "PENDING" ? "Đang xử lý" : "Thất bại"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-gray-600 max-w-[200px] truncate" title={log.description}>
+                          {log.description || "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            <div className="py-4 mt-auto">
+               <AdminPagination 
+                  currentPage={historyPage}
+                  totalPages={historyTotalPages}
+                  setCurrentPage={setHistoryPage}
+                  totalItems={historyTotal}
+               />
+            </div>
+          </div>
+          <div className="p-4 border-t bg-gray-50/50 flex justify-end">
+            <Button variant="ghost" className="rounded-xl border border-gray-200" onClick={() => setShowHistoryModal(false)}>
+              Đóng
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminPageLayout>

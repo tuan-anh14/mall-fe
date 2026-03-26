@@ -55,6 +55,12 @@ export const walletService = {
   adminGetWallet: (userId: string) =>
     get(`/api/v1/wallet/admin/user/${userId}`),
 
+
   adminAdjust: (userId: string, amount: number, reason: string) =>
     put(`/api/v1/wallet/admin/user/${userId}/adjust`, { amount, reason }),
+
+  adminGetTransactions: (userId: string, page = 1, limit = 20) =>
+    get<{ transactions: WalletTransaction[]; total: number; totalPages: number }>(
+      `/api/v1/wallet/admin/user/${userId}/transactions?page=${page}&limit=${limit}`
+    ),
 };
