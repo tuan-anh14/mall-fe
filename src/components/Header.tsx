@@ -559,7 +559,15 @@ export function Header({
                   <DropdownMenuContent align="end" className="w-80 bg-white border-gray-200 rounded-xl shadow-xl shadow-gray-900/10 p-0 overflow-hidden">
                     {/* Header */}
                     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                      <span className="text-sm font-semibold text-gray-900">Giỏ hàng</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-gray-900">Giỏ hàng</span>
+                        <button 
+                          onClick={() => { setCartOpen(false); onNavigate("cart"); }}
+                          className="text-[11px] text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors"
+                        >
+                          (Xem tất cả)
+                        </button>
+                      </div>
                       {cartCount > 0 && <span className="text-xs text-gray-500">{cartCount} sản phẩm</span>}
                     </div>
                     {/* List */}

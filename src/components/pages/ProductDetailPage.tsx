@@ -95,8 +95,13 @@ export function ProductDetailPage({
 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsPage, setReviewsPage] = useState(1);
+  const [hasMoreReviews, setHasMoreReviews] = useState(false);
+  const [totalReviews, setTotalReviews] = useState(product.reviews ?? 0);
   const [ratingBreakdown, setRatingBreakdown] = useState<RatingBreakdownItem[]>([]);
   const [ratingAverage, setRatingAverage] = useState<number>(product.rating ?? 0);
+
+  const [expandedReplies, setExpandedReplies] = useState<Record<string, boolean>>({});
 
   const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
@@ -130,77 +135,84 @@ export function ProductDetailPage({
   useEffect(() => {
     if (!product.id) return;
 
-    const fetchReviews = async () => {
-      setReviewsLoading(true);
-      try {
-        const data = await get(`/api/v1/reviews/products/${product.id}?page=1&limit=10`);
-        setReviews(data.reviews ?? []);
-        // breakdown is nested under summary from backend
-        const summary = data.summary ?? {};
-        const rawBreakdown = summary.breakdown ?? {};
-        const breakdownArr: RatingBreakdownItem[] = [5, 4, 3, 2, 1].map((star) => {
-          const count = rawBreakdown[star] ?? 0;
-          const total = Object.values(rawBreakdown as Record<string, number>).reduce((a: number, b: number) => a + b, 0);
-          return { rating: star, count, percentage: total > 0 ? Math.round((count / total) * 100) : 0 };
-        });
-        setRatingBreakdown(breakdownArr);
-        if (summary.ratingAverage !== undefined) {
-          setRatingAverage(Number(summary.ratingAverage));
-        }
-      } catch {
-        // silently fall back to empty state
-      } finally {
-        setReviewsLoading(false);
-      }
-    };
-
-    const fetchRelated = async () => {
-      setRelatedLoading(true);
-      try {
-        const data = await get(`/api/v1/products/${product.id}/related`);
-        const items: RelatedProduct[] = Array.isArray(data)
-          ? data
-          : (data.products ?? []);
-        setRelatedProducts(items);
-      } catch {
-        // silently fall back to empty state
-      } finally {
-        setRelatedLoading(false);
-      }
-    };
-
-    const fetchReviewEligibility = async () => {
-      try {
-        const data = await get(`/api/v1/reviews/products/${product.id}/check`);
-        setCanReview(data.canReview ?? false);
-        setUserReview(data.review ?? null);
-      } catch {
-        // not logged in or not purchased
-      }
-    };
-
-    const fetchSimilar = async () => {
-      setSimilarLoading(true);
-      try {
-        const data = await viewHistoryService.getSimilarProducts(product.id, 6);
-        setSimilarProducts(data.products ?? []);
-      } catch {
-        // silently ignore
-      } finally {
-        setSimilarLoading(false);
-      }
-    };
-
     // Track view (fire-and-forget, only for authenticated users)
     if (isAuthenticated) {
       viewHistoryService.trackView(product.id).catch(() => { });
     }
 
-    fetchReviews();
+    fetchReviews(1);
     fetchRelated();
     fetchReviewEligibility();
     fetchSimilar();
   }, [product.id, isAuthenticated]);
+
+  const fetchRelated = async () => {
+    setRelatedLoading(true);
+    try {
+      const data = await get(`/api/v1/products/${product.id}/related`);
+      const items: RelatedProduct[] = Array.isArray(data)
+        ? data
+        : (data.products ?? []);
+      setRelatedProducts(items);
+    } catch {
+      // silently fall back
+    } finally {
+      setRelatedLoading(false);
+    }
+  };
+
+  const fetchReviewEligibility = async () => {
+    try {
+      const data = await get(`/api/v1/reviews/products/${product.id}/check`);
+      setCanReview(data.canReview ?? false);
+      setUserReview(data.review ?? null);
+    } catch {
+      // not logged in
+    }
+  };
+
+  const fetchSimilar = async () => {
+    setSimilarLoading(true);
+    try {
+      const data = await viewHistoryService.getSimilarProducts(product.id, 6);
+      setSimilarProducts(data.products ?? []);
+    } catch {
+      // silently ignore
+    } finally {
+      setSimilarLoading(false);
+    }
+  };
+
+  const fetchReviews = async (page = 1, append = false) => {
+    if (!append) setReviewsLoading(true);
+    try {
+      const data = await get(`/api/v1/reviews/products/${product.id}?page=${page}&limit=10`);
+      const newReviews = data.reviews ?? [];
+      if (append) {
+        setReviews((prev) => [...prev, ...newReviews]);
+      } else {
+        setReviews(newReviews);
+      }
+      setHasMoreReviews(newReviews.length === 10);
+      
+      const summary = data.summary ?? {};
+      setTotalReviews(summary.reviewCount ?? data.total ?? 0);
+      const rawBreakdown = summary.breakdown ?? {};
+      const breakdownArr: RatingBreakdownItem[] = [5, 4, 3, 2, 1].map((star) => {
+        const count = rawBreakdown[star] ?? 0;
+        const total = Object.values(rawBreakdown as Record<string, number>).reduce((a: number, b: number) => a + b, 0);
+        return { rating: star, count, percentage: total > 0 ? Math.round((count / total) * 100) : 0 };
+      });
+      setRatingBreakdown(breakdownArr);
+      if (summary.ratingAverage !== undefined) {
+        setRatingAverage(Number(summary.ratingAverage));
+      }
+    } catch {
+      // silently fall back
+    } finally {
+      if (!append) setReviewsLoading(false);
+    }
+  };
 
   const handleAddToCart = async () => {
     try {
@@ -297,6 +309,7 @@ export function ProductDetailPage({
 
       const data = await post("/api/v1/reviews", body);
       setReviews((prev) => [data.review, ...prev]);
+      setTotalReviews((prev) => prev + 1);
       setUserReview(data.review);
       setCanReview(false);
       setReviewFormOpen(false);
@@ -367,6 +380,30 @@ export function ProductDetailPage({
     } finally {
       setIsUploadingReplyImage(false);
       if (replyImageInputRef.current) replyImageInputRef.current.value = "";
+    }
+  };
+
+  const handleLoadMoreReviews = () => {
+    const nextPage = reviewsPage + 1;
+    setReviewsPage(nextPage);
+    fetchReviews(nextPage, true);
+  };
+
+  const handleHelpfulClick = async (reviewId: string) => {
+    if (!isAuthenticated) {
+      toast.error("Vui lòng đăng nhập để bình chọn");
+      return;
+    }
+    try {
+      await post(`/api/v1/reviews/${reviewId}/helpful`, {});
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId ? { ...r, helpful: (r.helpful || 0) + 1 } : r
+        )
+      );
+      toast.success("Cảm ơn bạn đã phản hồi!");
+    } catch (err: any) {
+      toast.error(err.message || "Bạn đã bình chọn cho đánh giá này rồi");
     }
   };
 
@@ -662,7 +699,7 @@ export function ProductDetailPage({
             <TabsList>
               <TabsTrigger value="description">Mô tả</TabsTrigger>
               <TabsTrigger value="specifications">Thông số kỹ thuật</TabsTrigger>
-              <TabsTrigger value="reviews">Đánh giá ({reviews.length})</TabsTrigger>
+              <TabsTrigger value="reviews">Đánh giá ({totalReviews})</TabsTrigger>
             </TabsList>
 
             <TabsContent value="description" className="p-6 lg:p-8">
@@ -837,7 +874,7 @@ export function ProductDetailPage({
                         />
                       ))}
                     </div>
-                    <p className="text-gray-500 text-sm">Dựa trên {product.reviews} đánh giá</p>
+                    <p className="text-gray-500 text-sm">Dựa trên {totalReviews} đánh giá</p>
                   </div>
                   <div className="space-y-2.5">
                     {[5, 4, 3, 2, 1].map((star) => (
@@ -934,7 +971,12 @@ export function ProductDetailPage({
                         )}
                         
                         <div className="pl-12">
-                          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-600 text-xs h-8 rounded-lg -ml-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-gray-400 hover:text-blue-600 text-xs h-8 rounded-lg -ml-2 transition-colors"
+                            onClick={() => handleHelpfulClick(review.id)}
+                          >
                             👍 Hữu ích ({review.helpful})
                           </Button>
                         </div>
@@ -942,7 +984,7 @@ export function ProductDetailPage({
                         {/* Replies Thread */}
                         {review.replies && review.replies.length > 0 && (
                           <div className="ml-12 mt-4 space-y-4 border-l-2 border-gray-100 pl-4 mb-4">
-                            {review.replies.map((reply) => {
+                            {(expandedReplies[review.id] ? review.replies : review.replies.slice(0, 1)).map((reply) => {
                               const isSeller = reply.user?.id === product.seller?.userId;
                               return (
                                 <div key={reply.id} className="relative group/reply">
@@ -987,6 +1029,24 @@ export function ProductDetailPage({
                                 </div>
                               );
                             })}
+
+                            {review.replies.length > 1 && !expandedReplies[review.id] && (
+                              <button
+                                onClick={() => setExpandedReplies(prev => ({ ...prev, [review.id]: true }))}
+                                className="text-xs text-blue-600 hover:text-blue-700 font-semibold mt-2"
+                              >
+                                Xem thêm {review.replies.length - 1} phản hồi...
+                              </button>
+                            )}
+
+                            {review.replies.length > 1 && expandedReplies[review.id] && (
+                              <button
+                                onClick={() => setExpandedReplies(prev => ({ ...prev, [review.id]: false }))}
+                                className="text-xs text-gray-400 hover:text-gray-500 font-semibold mt-2"
+                              >
+                                Thu gọn
+                              </button>
+                            )}
                           </div>
                         )}
 
@@ -1050,6 +1110,19 @@ export function ProductDetailPage({
                         )}
                       </div>
                     ))
+                  )}
+
+                  {hasMoreReviews && (
+                    <div className="pt-4 flex justify-center">
+                      <Button
+                        variant="outline"
+                        onClick={handleLoadMoreReviews}
+                        disabled={reviewsLoading}
+                        className="rounded-xl px-8 border-gray-200 text-gray-600 hover:bg-gray-50 font-medium"
+                      >
+                        {reviewsLoading ? "Đang tải..." : "Xem thêm nhận xét"}
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>
