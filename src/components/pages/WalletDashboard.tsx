@@ -64,7 +64,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
   const [loading, setLoading] = useState(true);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [depositAmount, setDepositAmount] = useState("");
-  const [depositGateway, setDepositGateway] = useState<"VNPAY" | "MOMO">("VNPAY");
+  const [depositGateway, setDepositGateway] = useState<"VNPAY">("VNPAY");
   const [isDepositing, setIsDepositing] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
 
@@ -129,24 +129,36 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
 
   // Handle Return Parameters
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const vnpResponseCode = params.get("vnp_ResponseCode");
-    const vnpTxnRef = params.get("vnp_TxnRef");
+    const handleReturn = async () => {
+      const search = window.location.search;
+      if (!search.includes("vnp_ResponseCode")) return;
 
-    if (vnpResponseCode) {
-      if (vnpResponseCode === "00") {
-        toast.success("Nạp tiền thành công!");
-      } else {
-        toast.error(`Nạp tiền thất bại (Lỗi: ${vnpResponseCode})`);
+      const params = new URLSearchParams(search);
+      const vnpResponseCode = params.get("vnp_ResponseCode");
+
+      try {
+        // Gửi tham số về backend để verify và update database ngay lập tức
+        await walletService.verifyVnpayCallback(search);
+
+        if (vnpResponseCode === "00") {
+          toast.success("Nạp tiền thành công!");
+        } else if (vnpResponseCode === "24") {
+          toast.info("Đã hủy thanh toán Nạp tiền!");
+        } else {
+          toast.error(`Nạp tiền thất bại (Mã lỗi: ${vnpResponseCode})`);
+        }
+      } catch (err) {
+        toast.error("Quá trình xác thực nạp tiền gặp lỗi.");
+      } finally {
+        // Refresh wallet data
+        fetchWallet();
+        fetchTransactions(1);
+        // Clear URL params without reloading
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
+    };
 
-      // Refresh wallet data
-      fetchWallet();
-      fetchTransactions(1);
-
-      // Clear URL params without reloading
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
+    handleReturn();
   }, [fetchWallet, fetchTransactions]);
 
   if (loading) {
@@ -410,8 +422,8 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
 
               <div>
                 <Label className="text-sm font-medium mb-2.5 block">Phương thức thanh toán</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  {(["VNPAY", "MOMO"] as const).map((gw) => (
+                <div className="grid grid-cols-1 gap-3">
+                  {(["VNPAY"] as const).map((gw) => (
                     <button
                       key={gw}
                       onClick={() => setDepositGateway(gw)}
@@ -420,13 +432,13 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                           : "border-gray-200 bg-white hover:border-gray-300"
                         }`}
                     >
-                      <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-lg ${gw === "VNPAY" ? "bg-red-50" : "bg-pink-50"}`}>
-                        {gw === "VNPAY" ? "🏦" : "📱"}
+                      <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-lg bg-red-50`}>
+                        🏦
                       </div>
                       <div className="text-left">
                         <p className="text-gray-900 text-sm font-semibold">{gw}</p>
                         <p className="text-gray-400 text-xs">
-                          {gw === "VNPAY" ? "Internet Banking" : "Ví MoMo"}
+                          Internet Banking & Ví điện tử
                         </p>
                       </div>
                     </button>

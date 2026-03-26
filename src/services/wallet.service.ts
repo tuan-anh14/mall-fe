@@ -34,8 +34,11 @@ export const walletService = {
       `/api/v1/wallet/transactions?page=${page}&limit=${limit}`
     ),
 
-  createDeposit: (amount: number, gateway: "VNPAY" | "MOMO", returnUrl?: string) =>
+  createDeposit: (amount: number, gateway: "VNPAY", returnUrl?: string) =>
     post<DepositIntent>("/api/v1/wallet/deposit", { amount, gateway, returnUrl }),
+
+  verifyVnpayCallback: (queryString: string) =>
+    get(`/api/v1/payment/vnpay/callback${queryString}`),
 
   simulateDeposit: (txnId: string) =>
     post(`/api/v1/payment/simulate/${txnId}`, {}),
