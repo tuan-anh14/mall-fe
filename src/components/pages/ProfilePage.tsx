@@ -586,7 +586,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
                     <p className="text-gray-900 text-sm font-semibold">{label}</p>
                     <p className="text-xs text-gray-500">{desc}</p>
                   </div>
-                  <span className="text-xs font-medium text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline">
+                  <span className="text-xs font-medium text-blue-600 hidden sm:inline">
                     {action}
                   </span>
                   <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
