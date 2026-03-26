@@ -31,6 +31,7 @@ import {
   adminThClass,
   adminTrClass,
   adminBtnPrimaryClass,
+  AdminPagination,
 } from "../admin/AdminPageLayout";
 
 export function AdminWalletPage() {
@@ -216,33 +217,12 @@ export function AdminWalletPage() {
         </table>
         </div>
 
-        {totalPages > 1 && (
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-4 py-3 sm:px-6">
-            <p className="text-sm text-gray-500">
-              Trang {page} / {totalPages}
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
+        <AdminPagination
+          currentPage={page}
+          totalPages={totalPages}
+          setCurrentPage={setPage}
+          totalItems={total}
+        />
       </div>
 
       {/* Adjust Modal */}

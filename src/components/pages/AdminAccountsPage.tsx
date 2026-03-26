@@ -37,7 +37,7 @@ import {
   adminTheadRowClass,
   adminThClass,
   adminTrClass,
-  adminPaginationBarClass,
+  AdminPagination,
   adminBtnPrimaryClass,
 } from "../admin/AdminPageLayout";
 
@@ -98,7 +98,7 @@ export function AdminAccountsPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [createForm, setCreateForm] = useState<CreateForm>(emptyCreateForm);
   const [creating, setCreating] = useState(false);
-  const limit = 20;
+  const limit = 10;
 
   const fetchAccounts = useCallback(async () => {
     setLoading(true);
@@ -361,35 +361,12 @@ export function AdminAccountsPage() {
       </Card>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className={adminPaginationBarClass}>
-          <p className="text-sm text-gray-500">
-            Trang {page} / {totalPages} ({total.toLocaleString("vi-VN")} tài khoản)
-          </p>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-              const pg = i + 1;
-              return (
-                <Button
-                  key={pg}
-                  variant={pg === page ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setPage(pg)}
-                  className="w-8"
-                >
-                  {pg}
-                </Button>
-              );
-            })}
-            <Button variant="ghost" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <AdminPagination
+        currentPage={page}
+        totalPages={totalPages}
+        setCurrentPage={setPage}
+        totalItems={total}
+      />
 
       {/* Delete Confirm */}
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
@@ -482,11 +459,11 @@ export function AdminAccountsPage() {
                   <p className="text-gray-400 text-xs mb-1">Yêu cầu Seller</p>
                   <Badge className={
                     detailAccount.sellerRequest.status === "PENDING" ? "bg-yellow-500/20 text-yellow-400 border-0" :
-                    detailAccount.sellerRequest.status === "APPROVED" ? "bg-green-500/20 text-green-400 border-0" :
-                    "bg-red-500/20 text-red-400 border-0"
+                      detailAccount.sellerRequest.status === "APPROVED" ? "bg-green-500/20 text-green-400 border-0" :
+                        "bg-red-500/20 text-red-400 border-0"
                   }>
                     {detailAccount.sellerRequest.status === "PENDING" ? "Chờ duyệt" :
-                     detailAccount.sellerRequest.status === "APPROVED" ? "Đã duyệt" : "Từ chối"}
+                      detailAccount.sellerRequest.status === "APPROVED" ? "Đã duyệt" : "Từ chối"}
                   </Badge>
                 </div>
               )}

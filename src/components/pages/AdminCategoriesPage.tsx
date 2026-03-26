@@ -25,6 +25,7 @@ import {
   adminThClass,
   adminTrClass,
   adminBtnPrimaryClass,
+  AdminPagination,
 } from "../admin/AdminPageLayout";
 
 interface Category {
@@ -53,6 +54,8 @@ export function AdminCategoriesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -120,6 +123,9 @@ export function AdminCategoriesPage() {
       toast.error(e.message || "Lỗi");
     }
   };
+
+  const totalPages = Math.ceil(categories.length / limit);
+  const paginatedCategories = categories.slice((page - 1) * limit, page * limit);
 
   return (
     <AdminPageLayout
@@ -212,7 +218,7 @@ export function AdminCategoriesPage() {
               </tr>
             </thead>
             <tbody>
-              {categories.map((cat) => (
+              {paginatedCategories.map((cat) => (
                 <tr key={cat.id} className={adminTrClass}>
                   <td className="px-4 py-3 text-gray-900 font-medium">{cat.name}</td>
                   <td className="px-4 py-3 text-gray-500 text-sm font-mono">{cat.slug}</td>
@@ -250,6 +256,13 @@ export function AdminCategoriesPage() {
           </div>
         )}
       </Card>
+
+      <AdminPagination
+        currentPage={page}
+        totalPages={totalPages}
+        setCurrentPage={setPage}
+        totalItems={categories.length}
+      />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent className="bg-white border-gray-200">

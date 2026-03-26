@@ -32,7 +32,7 @@ import {
   adminTheadRowClass,
   adminThClass,
   adminTrClass,
-  adminPaginationBarClass,
+  AdminPagination,
   adminBtnPrimaryClass,
 } from "../admin/AdminPageLayout";
 
@@ -91,7 +91,7 @@ export function AdminCouponsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Coupon | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
-  const limit = 20;
+  const limit = 10;
 
   const fetchCoupons = async () => {
     setLoading(true);
@@ -357,8 +357,15 @@ export function AdminCouponsPage() {
         )}
       </Card>
 
-      {totalPages > 1 && (
-        <div className={adminPaginationBarClass}>
+      <AdminPagination
+        currentPage={page}
+        totalPages={totalPages}
+        setCurrentPage={setPage}
+        totalItems={total}
+      />
+
+      {false && (
+        <div className="hidden">
           <p className="text-sm text-gray-500">Trang {page} / {totalPages}</p>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}><ChevronLeft className="h-4 w-4" /></Button>

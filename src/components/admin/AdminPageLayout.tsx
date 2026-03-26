@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "../ui/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "../ui/button";
 
 export function AdminPageLayout({
   title,
@@ -92,3 +94,80 @@ export const adminBtnPrimaryClass =
 /** Vùng phân trang */
 export const adminPaginationBarClass =
   "flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200/80 bg-white px-4 py-3 shadow-sm";
+
+export function AdminPagination({
+  currentPage,
+  totalPages,
+  setCurrentPage,
+  totalItems,
+}: {
+  currentPage: number;
+  totalPages: number;
+  setCurrentPage: (page: number | ((p: number) => number)) => void;
+  totalItems?: number;
+}) {
+  if (totalPages <= 1) return null;
+
+  return (
+    <div className={adminPaginationBarClass}>
+      {totalItems !== undefined ? (
+        <p className="text-sm text-gray-500">
+          Trang {currentPage} / {totalPages} ({totalItems.toLocaleString("vi-VN")} bản ghi)
+        </p>
+      ) : (
+        <p className="text-sm text-gray-500">
+          Trang {currentPage} / {totalPages}
+        </p>
+      )}
+
+      <div className="flex items-center gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={currentPage <= 1}
+          onClick={() => setCurrentPage((p) => p - 1)}
+          className="h-8 w-8 p-0 border-gray-200 text-gray-500 hover:text-gray-700"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        {Array.from({ length: totalPages }, (_, i) => i + 1)
+          .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+          .reduce<(number | string)[]>((acc, p, idx, arr) => {
+            if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("…");
+            acc.push(p);
+            return acc;
+          }, [])
+          .map((item, idx) =>
+            item === "…" ? (
+              <span key={`ellipsis-${idx}`} className="text-gray-400 text-sm px-1 flex items-end pb-1">…</span>
+            ) : (
+              <Button
+                key={item}
+                variant={currentPage === item ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCurrentPage(item as number)}
+                className={`h-8 w-8 p-0 text-xs font-medium transition-all duration-200 ${
+                  currentPage === item
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                    : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900"
+                }`}
+              >
+                {item}
+              </Button>
+            )
+          )}
+
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={currentPage >= totalPages}
+          onClick={() => setCurrentPage((p) => p + 1)}
+          className="h-8 w-8 p-0 border-gray-200 text-gray-500 hover:text-gray-700"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}

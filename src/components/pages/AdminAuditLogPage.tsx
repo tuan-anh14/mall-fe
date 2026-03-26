@@ -26,7 +26,7 @@ import {
   adminTheadRowClass,
   adminThClass,
   adminTrClass,
-  adminPaginationBarClass,
+  AdminPagination,
 } from "../admin/AdminPageLayout";
 
 interface AuditLog {
@@ -89,7 +89,7 @@ export function AdminAuditLogPage() {
   const [resourceFilter, setResourceFilter] = useState("ALL");
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const limit = 50;
+  const limit = 10;
 
   const openLogDetails = (log: AuditLog) => {
     setSelectedLog(log);
@@ -269,21 +269,12 @@ export function AdminAuditLogPage() {
       </Card>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className={adminPaginationBarClass}>
-          <p className="text-sm text-gray-500">
-            Trang {page} / {totalPages} ({total.toLocaleString("vi-VN")} bản ghi)
-          </p>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <AdminPagination
+        currentPage={page}
+        totalPages={totalPages}
+        setCurrentPage={setPage}
+        totalItems={total}
+      />
 
       {/* Details Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
