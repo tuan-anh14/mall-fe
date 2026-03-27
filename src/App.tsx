@@ -4,6 +4,7 @@ import {
   Route,
   useNavigate,
   useLocation,
+  useParams,
   Navigate,
 } from "react-router-dom";
 import { Header } from "./components/Header";
@@ -188,6 +189,24 @@ const AdminWalletPage = lazy(() =>
   })),
 );
 
+// Blog pages
+const BlogPage = lazy(() =>
+  import("./components/pages/BlogPage").then((m) => ({ default: m.BlogPage })),
+);
+const BlogPostPage = lazy(() =>
+  import("./components/pages/BlogPostPage").then((m) => ({ default: m.BlogPostPage })),
+);
+const BlogManagementPage = lazy(() =>
+  import("./components/pages/BlogManagementPage").then((m) => ({
+    default: m.BlogManagementPage,
+  })),
+);
+const AdminBlogPage = lazy(() =>
+  import("./components/pages/AdminBlogPage").then((m) => ({
+    default: m.AdminBlogPage,
+  })),
+);
+
 // Static pages — one chunk for the whole module
 const AboutPage = lazy(() =>
   import("./components/pages/StaticPages").then((m) => ({
@@ -244,7 +263,12 @@ function PageLoader() {
   );
 }
 
-// Redirect component that fires toast only once (avoids calling toast in render)
+// Wrapper component that extracts :slug param and passes it to BlogPostPage
+function BlogPostPageWrapper({ onNavigate }: { onNavigate: (page: string, data?: any) => void }) {
+  const { slug } = useParams<{ slug: string }>();
+  return <BlogPostPage slug={slug ?? ''} onNavigate={onNavigate} />;
+}
+
 function RedirectWithToast({ to, message }: { to: string; message: string }) {
   const fired = useRef(false);
   useEffect(() => {
@@ -360,6 +384,8 @@ export default function App() {
         } catch {}
       }
       reactNavigate("/seller/edit-product", { state: data });
+    } else if (page === "blog-post" && data?.slug) {
+      reactNavigate(`/blog/${data.slug}`);
     } else {
       reactNavigate(PAGE_TO_PATH[page] ?? "/");
     }
@@ -954,6 +980,35 @@ export default function App() {
                   adminRedirect("Truy cập bị từ chối. Cần quyền Admin.")
                 ) : (
                   <AdminWalletPage />
+                )
+              }
+            />
+
+            {/* ── Blog Routes ───────────────────────────────── */}
+            <Route path="/blog" element={<BlogPage onNavigate={navigate} />} />
+            <Route
+              path="/blog/:slug"
+              element={
+                <BlogPostPageWrapper onNavigate={navigate} />
+              }
+            />
+            <Route
+              path="/my-blogs"
+              element={
+                !isAuthenticated ? (
+                  authRedirect("Vui lòng đăng nhập để quản lý bài viết")
+                ) : (
+                  <BlogManagementPage onNavigate={navigate} />
+                )
+              }
+            />
+            <Route
+              path="/admin/blogs"
+              element={
+                !isAuthenticated || !isAdmin ? (
+                  adminRedirect("Truy cập bị từ chối. Cần quyền Admin.")
+                ) : (
+                  <AdminBlogPage onNavigate={navigate} />
                 )
               }
             />

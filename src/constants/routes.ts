@@ -45,6 +45,10 @@ export const PAGE_TO_PATH: Record<string, string> = {
   cookies: "/cookies",
   gdpr: "/gdpr",
   "seller-profile": "/seller-profile",
+  // Blog
+  blog: "/blog",
+  "my-blogs": "/my-blogs",
+  "admin-blogs": "/admin/blogs",
 };
 
 export const SELLER_PAGES = [
@@ -67,6 +71,7 @@ export const ADMIN_PAGES = [
   "admin-stats",
   "admin-audit-log",
   "admin-wallets",
+  "admin-blogs",
 ];
 
 // Derive the Page name from a pathname (for header/footer logic)

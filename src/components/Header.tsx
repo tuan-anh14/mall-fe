@@ -18,6 +18,8 @@ import {
   Trash2,
   CheckCheck,
   TrendingUp,
+  BookOpen,
+  PenTool,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -257,6 +259,7 @@ export function Header({
   const navItems = [
     { key: "home", label: "Trang chủ" },
     { key: "shop", label: "Cửa hàng" },
+    { key: "blog", label: "Blog" },
     { key: "about", label: "Giới thiệu" },
     { key: "contact", label: "Liên hệ" },
   ];
@@ -303,11 +306,10 @@ export function Header({
                       <Button
                         key={item.key}
                         variant="ghost"
-                        className={`justify-between h-11 rounded-xl transition-all ${
-                          currentPage === item.key
+                        className={`justify-between h-11 rounded-xl transition-all ${currentPage === item.key
                             ? "bg-blue-50 text-blue-700 font-semibold"
                             : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                        }`}
+                          }`}
                         onClick={() => onNavigate(item.key)}
                       >
                         {item.label}
@@ -371,11 +373,10 @@ export function Header({
                     key={item.key}
                     variant="ghost"
                     onClick={() => onNavigate(item.key)}
-                    className={`relative rounded-lg px-4 h-9 text-sm transition-all duration-200 ${
-                      currentPage === item.key
+                    className={`relative rounded-lg px-4 h-9 text-sm transition-all duration-200 ${currentPage === item.key
                         ? "bg-white/20 text-white font-medium"
                         : "text-white/70 hover:text-white hover:bg-white/10"
-                    }`}
+                      }`}
                   >
                     {item.label}
                   </Button>
@@ -561,7 +562,7 @@ export function Header({
                     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-gray-900">Giỏ hàng</span>
-                        <button 
+                        <button
                           onClick={() => { setCartOpen(false); onNavigate("cart"); }}
                           className="text-[11px] text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors"
                         >
@@ -654,9 +655,8 @@ export function Header({
                       <div className="px-3 py-3 mb-1">
                         <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
                         <p className="text-xs text-gray-500 mt-0.5">{user?.email}</p>
-                        <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md mt-2 inline-block ${
-                          isAdmin ? "bg-red-50 text-red-600" : isSeller ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
-                        }`}>
+                        <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md mt-2 inline-block ${isAdmin ? "bg-red-50 text-red-600" : isSeller ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
+                          }`}>
                           {isAdmin ? "Admin" : isSeller ? "Người bán" : "Người mua"}
                         </span>
                       </div>
@@ -710,6 +710,15 @@ export function Header({
                             </DropdownMenuItem>
                           )}
                         </>
+                      )}
+                      {(isBuyer || isSeller) && (
+                        <DropdownMenuItem
+                          onClick={() => onNavigate("my-blogs")}
+                          className="text-gray-700 hover:text-gray-900 cursor-pointer rounded-lg h-9"
+                        >
+                          <PenTool className="h-4 w-4 mr-2.5 text-gray-400" />
+                          Bài viết của tôi
+                        </DropdownMenuItem>
                       )}
                       <DropdownMenuSeparator className="bg-gray-100" />
                       <DropdownMenuItem onClick={onLogout} className="text-red-600 hover:text-red-700 cursor-pointer rounded-lg h-9">

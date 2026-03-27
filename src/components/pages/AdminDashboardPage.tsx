@@ -16,6 +16,7 @@ import {
   Wallet,
   BarChart3,
   History,
+  BookOpen,
 } from "lucide-react";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
@@ -93,62 +94,63 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
 
   const statCards = stats
     ? [
-        {
-          label: "Tổng người dùng",
-          value: stats.totalUsers.toLocaleString("vi-VN"),
-          icon: Users,
-          bar: "bg-blue-500",
-          iconBox: "bg-blue-50 text-blue-600 border-blue-100",
-          sub: `+${stats.newUsersThisMonth} tháng này`,
-        },
-        {
-          label: "Người bán",
-          value: stats.totalSellers.toLocaleString("vi-VN"),
-          icon: ShoppingBag,
-          bar: "bg-indigo-500",
-          iconBox: "bg-indigo-50 text-indigo-600 border-indigo-100",
-          sub: `${stats.totalBuyers.toLocaleString("vi-VN")} người mua`,
-        },
-        {
-          label: "Sản phẩm",
-          value: stats.totalProducts.toLocaleString("vi-VN"),
-          icon: Package,
-          bar: "bg-emerald-500",
-          iconBox: "bg-emerald-50 text-emerald-600 border-emerald-100",
-          sub: `${stats.totalCategories} danh mục`,
-        },
-        {
-          label: "Tổng doanh thu",
-          value: formatCurrencyCompact(stats.totalRevenue),
-          icon: DollarSign,
-          bar: "bg-amber-500",
-          iconBox: "bg-amber-50 text-amber-600 border-amber-100",
-          sub: `${stats.totalOrders.toLocaleString("vi-VN")} đơn`,
-        },
-        {
-          label: "Mã giảm giá",
-          value: stats.totalCoupons.toLocaleString("vi-VN"),
-          icon: Ticket,
-          bar: "bg-violet-500",
-          iconBox: "bg-violet-50 text-violet-600 border-violet-100",
-          sub: "Đang hoạt động",
-        },
-        {
-          label: "Chờ duyệt Seller",
-          value: stats.pendingSellerRequests.toLocaleString("vi-VN"),
-          icon: UserCheck,
-          bar: "bg-orange-500",
-          iconBox: "bg-orange-50 text-orange-600 border-orange-100",
-          sub: "Yêu cầu mới",
-          alert: stats.pendingSellerRequests > 0,
-        },
-      ]
+      {
+        label: "Tổng người dùng",
+        value: stats.totalUsers.toLocaleString("vi-VN"),
+        icon: Users,
+        bar: "bg-blue-500",
+        iconBox: "bg-blue-50 text-blue-600 border-blue-100",
+        sub: `+${stats.newUsersThisMonth} tháng này`,
+      },
+      {
+        label: "Người bán",
+        value: stats.totalSellers.toLocaleString("vi-VN"),
+        icon: ShoppingBag,
+        bar: "bg-indigo-500",
+        iconBox: "bg-indigo-50 text-indigo-600 border-indigo-100",
+        sub: `${stats.totalBuyers.toLocaleString("vi-VN")} người mua`,
+      },
+      {
+        label: "Sản phẩm",
+        value: stats.totalProducts.toLocaleString("vi-VN"),
+        icon: Package,
+        bar: "bg-emerald-500",
+        iconBox: "bg-emerald-50 text-emerald-600 border-emerald-100",
+        sub: `${stats.totalCategories} danh mục`,
+      },
+      {
+        label: "Tổng doanh thu",
+        value: formatCurrencyCompact(stats.totalRevenue),
+        icon: DollarSign,
+        bar: "bg-amber-500",
+        iconBox: "bg-amber-50 text-amber-600 border-amber-100",
+        sub: `${stats.totalOrders.toLocaleString("vi-VN")} đơn`,
+      },
+      {
+        label: "Mã giảm giá",
+        value: stats.totalCoupons.toLocaleString("vi-VN"),
+        icon: Ticket,
+        bar: "bg-violet-500",
+        iconBox: "bg-violet-50 text-violet-600 border-violet-100",
+        sub: "Đang hoạt động",
+      },
+      {
+        label: "Chờ duyệt Seller",
+        value: stats.pendingSellerRequests.toLocaleString("vi-VN"),
+        icon: UserCheck,
+        bar: "bg-orange-500",
+        iconBox: "bg-orange-50 text-orange-600 border-orange-100",
+        sub: "Yêu cầu mới",
+        alert: stats.pendingSellerRequests > 0,
+      },
+    ]
     : [];
 
   const quickLinks = [
     { label: "Quản lý tài khoản", page: "admin-accounts" as const, icon: Users, desc: "Xem, khóa, xóa tài khoản", accent: "bg-blue-50 text-blue-600 border-blue-100" },
     { label: "Danh mục sản phẩm", page: "admin-categories" as const, icon: Tag, desc: "Thêm, sửa, xóa danh mục", accent: "bg-emerald-50 text-emerald-600 border-emerald-100" },
     { label: "Mã giảm giá", page: "admin-coupons" as const, icon: Ticket, desc: "Tạo và quản lý coupon", accent: "bg-violet-50 text-violet-600 border-violet-100" },
+    { label: "Quản lý Blog", page: "admin-blogs" as const, icon: BookOpen, desc: "Duyệt và xóa bài viết", accent: "bg-amber-50 text-amber-600 border-amber-100" },
     { label: "Duyệt Seller", page: "admin-seller-requests" as const, icon: UserCheck, desc: "Phê duyệt người bán", badge: stats?.pendingSellerRequests, accent: "bg-orange-50 text-orange-600 border-orange-100" },
     { label: "Đánh giá", page: "admin-reviews" as const, icon: Star, desc: "Kiểm duyệt reviews", accent: "bg-amber-50 text-amber-600 border-amber-100" },
     { label: "Thống kê", page: "admin-stats" as const, icon: TrendingUp, desc: "Báo cáo chi tiết", accent: "bg-violet-50 text-violet-600 border-violet-100" },
