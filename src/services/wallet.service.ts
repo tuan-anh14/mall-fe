@@ -8,7 +8,7 @@ export interface WalletInfo {
 
 export interface WalletTransaction {
   id: string;
-  type: "DEPOSIT" | "PAYMENT" | "REFUND" | "ADJUSTMENT";
+  type: "DEPOSIT" | "PAYMENT" | "REFUND" | "ADJUSTMENT" | "WITHDRAW" | "SELLER_INCOME" | "SELLER_FEE_DEDUCTED";
   status: "PENDING" | "COMPLETED" | "FAILED" | "CANCELLED";
   amount: number;
   balanceBefore: number;
@@ -17,6 +17,16 @@ export interface WalletTransaction {
   description?: string;
   gatewayTxnId?: string;
   createdAt: string;
+}
+
+export interface WalletStats {
+  balance: number;
+  totalIncome: number;
+  netIncome: number;
+  totalFees: number;
+  totalSpent: number;
+  totalWithdrawn: number;
+  totalRefunded: number;
 }
 
 export interface DepositIntent {
@@ -63,4 +73,14 @@ export const walletService = {
     get<{ transactions: WalletTransaction[]; total: number; totalPages: number }>(
       `/api/v1/wallet/admin/user/${userId}/transactions?page=${page}&limit=${limit}`
     ),
+
+  getStats: () => get<WalletStats>("/api/v1/wallet/stats"),
+
+  withdraw: (data: {
+    amount: number;
+    paymentMethodId?: string;
+    bankName?: string;
+    bankAccount?: string;
+    accountHolder?: string;
+  }) => post("/api/v1/wallet/withdraw", data),
 };

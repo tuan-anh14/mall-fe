@@ -43,7 +43,8 @@ interface Stats {
   totalBuyers: number;
   totalProducts: number;
   totalOrders: number;
-  totalRevenue: number;
+  totalGMV: number;
+  totalPlatformEarnings: number;
   newUsersThisMonth: number;
   pendingSellerRequests: number;
   totalCategories: number;
@@ -120,20 +121,20 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
         sub: `${stats.totalCategories} danh mục`,
       },
       {
-        label: "Tổng doanh thu",
-        value: formatCurrencyCompact(stats.totalRevenue),
+        label: "Tổng GMV",
+        value: formatCurrencyCompact(stats.totalGMV),
         icon: DollarSign,
         bar: "bg-amber-500",
         iconBox: "bg-amber-50 text-amber-600 border-amber-100",
-        sub: `${stats.totalOrders.toLocaleString("vi-VN")} đơn`,
+        sub: `${stats.totalOrders.toLocaleString("vi-VN")} đơn hàng`,
       },
       {
-        label: "Mã giảm giá",
-        value: stats.totalCoupons.toLocaleString("vi-VN"),
-        icon: Ticket,
-        bar: "bg-violet-500",
-        iconBox: "bg-violet-50 text-violet-600 border-violet-100",
-        sub: "Đang hoạt động",
+        label: "Lợi nhuận sàn",
+        value: formatCurrencyCompact(stats.totalPlatformEarnings),
+        icon: Wallet,
+        bar: "bg-emerald-500",
+        iconBox: "bg-emerald-50 text-emerald-600 border-emerald-100",
+        sub: "Phí 5% từ Seller",
       },
       {
         label: "Chờ duyệt Seller",

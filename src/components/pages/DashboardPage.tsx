@@ -11,6 +11,8 @@ import { formatCurrency, formatCurrencyCompact } from "../../lib/currency";
 
 interface DashboardStats {
   totalRevenue: number;
+  walletBalance: number;
+  totalFees: number;
   totalOrders: number;
   totalProducts: number;
   totalCustomers: number;
@@ -100,30 +102,30 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
   const statCards = [
     {
-      label: "Tổng doanh thu",
-      value: formatCurrencyCompact(stats?.totalRevenue ?? 0),
+      label: "Ví của tôi",
+      value: formatCurrency(stats?.walletBalance ?? 0),
       change: stats?.revenueChange ?? 0,
       icon: TrendingUp,
+      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
+    },
+    {
+      label: "Doanh thu (Net)",
+      value: formatCurrencyCompact(stats?.totalRevenue ?? 0),
+      change: stats?.revenueChange ?? 0,
+      icon: ShoppingBag,
       iconBg: "bg-blue-50 text-blue-600 border-blue-100",
     },
     {
-      label: "Tổng đơn hàng",
-      value: (stats?.totalOrders ?? 0).toLocaleString("vi-VN"),
-      change: stats?.ordersChange ?? 0,
-      icon: ShoppingBag,
+      label: "Phí sàn (5%)",
+      value: formatCurrencyCompact(stats?.totalFees ?? 0),
+      change: 0,
+      icon: Package,
       iconBg: "bg-indigo-50 text-indigo-600 border-indigo-100",
     },
     {
-      label: "Sản phẩm",
-      value: String(stats?.totalProducts ?? 0),
-      change: stats?.productsChange ?? 0,
-      icon: Package,
-      iconBg: "bg-violet-50 text-violet-600 border-violet-100",
-    },
-    {
-      label: "Khách hàng",
-      value: (stats?.totalCustomers ?? 0).toLocaleString("vi-VN"),
-      change: stats?.customersChange ?? 0,
+      label: "Số đơn hàng",
+      value: (stats?.totalOrders ?? 0).toLocaleString("vi-VN"),
+      change: stats?.ordersChange ?? 0,
       icon: Users,
       iconBg: "bg-orange-50 text-orange-600 border-orange-100",
     },

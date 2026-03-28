@@ -32,7 +32,8 @@ interface Stats {
   totalBuyers: number;
   totalProducts: number;
   totalOrders: number;
-  totalRevenue: number;
+  totalGMV: number;
+  totalPlatformEarnings: number;
   newUsersThisMonth: number;
   pendingSellerRequests: number;
   totalCategories: number;
@@ -87,7 +88,7 @@ export function AdminStatsPage() {
       description={`Số liệu tổng hợp năm ${new Date().getFullYear()}`}
     >
       {stats && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6 lg:gap-4 mb-8">
           {[
             {
               label: "Tổng người dùng",
@@ -99,11 +100,19 @@ export function AdminStatsPage() {
             },
             {
               label: "Tổng doanh thu",
-              value: formatCurrencyCompact(stats.totalRevenue),
+              value: formatCurrencyCompact(stats.totalGMV),
               sub: `${stats.totalOrders.toLocaleString("vi-VN")} đơn`,
               icon: DollarSign,
               bar: "bg-amber-500",
               box: "border-amber-100 bg-amber-50 text-amber-700",
+            },
+            {
+              label: "Lợi nhuận sàn",
+              value: formatCurrencyCompact(stats.totalPlatformEarnings),
+              sub: "Phí 5% từ Seller",
+              icon: TrendingUp,
+              bar: "bg-emerald-600",
+              box: "border-emerald-100 bg-emerald-50 text-emerald-700",
             },
             {
               label: "Người bán",
@@ -120,6 +129,14 @@ export function AdminStatsPage() {
               icon: Package,
               bar: "bg-emerald-500",
               box: "border-emerald-100 bg-emerald-50 text-emerald-700",
+            },
+            {
+              label: "Đơn hàng",
+              value: stats.totalOrders.toLocaleString("vi-VN"),
+              sub: "Tổng toàn hệ thống",
+              icon: ShoppingBag,
+              bar: "bg-rose-500",
+              box: "border-rose-100 bg-rose-50 text-rose-700",
             },
           ].map((c) => {
             const Icon = c.icon;

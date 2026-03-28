@@ -370,6 +370,9 @@ export function AdminWalletPage() {
               <History className="h-5 w-5 text-primary" />
               Lịch sử giao dịch ví
             </DialogTitle>
+            <DialogDescription className="text-gray-500 text-xs">
+              Xem lịch sử nạp tiền, thanh toán và hoàn tiền của người dùng này.
+            </DialogDescription>
             {historyWallet && (
               <div className="mt-2 space-y-1">
                 <p className="text-gray-900 font-medium">
