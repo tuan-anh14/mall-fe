@@ -13,6 +13,7 @@ import {
   Wallet,
   Shield,
   BookOpen,
+  Mail,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
@@ -38,6 +39,7 @@ const navItems = [
   { page: "admin-stats", label: "Thống kê", icon: BarChart3 },
   { page: "admin-audit-log", label: "Audit Log", icon: History },
   { page: "admin-wallets", label: "Ví người dùng", icon: Wallet },
+  { page: "admin-contacts", label: "Liên hệ", icon: Mail },
 ];
 
 export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHeaderProps) {

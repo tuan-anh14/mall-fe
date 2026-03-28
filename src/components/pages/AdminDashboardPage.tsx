@@ -17,6 +17,7 @@ import {
   BarChart3,
   History,
   BookOpen,
+  Mail,
 } from "lucide-react";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
@@ -156,6 +157,7 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
     { label: "Thống kê", page: "admin-stats" as const, icon: TrendingUp, desc: "Báo cáo chi tiết", accent: "bg-violet-50 text-violet-600 border-violet-100" },
     { label: "Ví người dùng", page: "admin-wallets" as const, icon: Wallet, desc: "Số dư & giao dịch", accent: "bg-cyan-50 text-cyan-600 border-cyan-100" },
     { label: "Audit log", page: "admin-audit-log" as const, icon: History, desc: "Nhật ký thao tác", accent: "bg-slate-100 text-slate-600 border-slate-200" },
+    { label: "Hỗ trợ khách hàng", page: "admin-contacts" as const, icon: Mail, desc: "Phản hồi yêu cầu liên hệ", accent: "bg-amber-50 text-amber-600 border-amber-100" },
   ];
 
   return (

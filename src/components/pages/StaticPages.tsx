@@ -1,10 +1,12 @@
-import React from "react";
-import { Mail, Phone, MapPin, Clock, Star, Truck, Shield, Users, Heart, Globe, ArrowRight } from "lucide-react";
+import React, { useState } from "react";
+import { Mail, Phone, MapPin, Clock, Star, Truck, Shield, Users, Heart, Globe, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { motion } from "motion/react";
+import { toast } from "sonner";
+import { post } from "../../lib/api";
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
@@ -201,6 +203,39 @@ export function AboutPage() {
 }
 
 export function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      toast.error("Vui lòng điền đầy đủ thông tin");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await post("/api/v1/contacts", formData);
+      toast.success("Cảm ơn bạn! Tin nhắn đã được gửi thành công.");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi gửi tin nhắn");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const contactInfo = [
     { icon: Mail, title: "Email", lines: ["support@shopmall.com", "sales@shopmall.com"], color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
     { icon: Phone, title: "Điện thoại", lines: ["+1 (555) 123-4567", "+1 (555) 987-6543"], color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
@@ -282,38 +317,67 @@ export function ContactPage() {
                   <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-2">Tin nhắn</p>
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Gửi tin nhắn cho chúng tôi</h2>
                 </div>
-                <div className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
                       <Label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1.5 block">Họ và tên</Label>
-                      <Input id="name" placeholder="Nguyễn Văn A" className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors" />
+                      <Input 
+                        id="name" 
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        placeholder="Nguyễn Văn A" 
+                        className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors" 
+                      />
                     </div>
                     <div>
                       <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1.5 block">Email</Label>
-                      <Input id="email" type="email" placeholder="email@example.com" className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors" />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="email@example.com" 
+                        className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors" 
+                      />
                     </div>
                   </div>
                   <div>
                     <Label htmlFor="subject" className="text-sm font-medium text-gray-700 mb-1.5 block">Chủ đề</Label>
-                    <Input id="subject" placeholder="Bạn cần hỗ trợ gì?" className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors" />
+                    <Input 
+                      id="subject" 
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      placeholder="Bạn cần hỗ trợ gì?" 
+                      className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors" 
+                    />
                   </div>
                   <div>
                     <Label htmlFor="message" className="text-sm font-medium text-gray-700 mb-1.5 block">Nội dung</Label>
                     <Textarea
                       id="message"
                       rows={5}
+                      value={formData.message}
+                      onChange={handleInputChange}
                       placeholder="Mô tả chi tiết yêu cầu của bạn..."
                       className="border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white transition-colors resize-none"
                     />
                   </div>
                   <Button
+                    type="submit"
                     size="lg"
+                    disabled={isSubmitting}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 rounded-xl h-12"
                   >
-                    Gửi tin nhắn
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    {isSubmitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        Gửi tin nhắn
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
                   </Button>
-                </div>
+                </form>
               </div>
             </motion.div>
 

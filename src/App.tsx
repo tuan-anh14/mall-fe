@@ -178,6 +178,11 @@ const AdminStatsPage = lazy(() =>
     default: m.AdminStatsPage,
   })),
 );
+const AdminContactsPage = lazy(() =>
+  import("./components/pages/AdminContactsPage").then((m) => ({
+    default: m.AdminContactsPage,
+  })),
+);
 const AdminAuditLogPage = lazy(() =>
   import("./components/pages/AdminAuditLogPage").then((m) => ({
     default: m.AdminAuditLogPage,
@@ -992,6 +997,16 @@ export default function App() {
                   adminRedirect("Truy cập bị từ chối. Cần quyền Admin.")
                 ) : (
                   <AdminAuditLogPage />
+                )
+              }
+            />
+            <Route
+              path="/admin/contacts"
+              element={
+                !isAuthenticated || !isAdmin ? (
+                  adminRedirect("Truy cập bị từ chối. Cần quyền Admin.")
+                ) : (
+                  <AdminContactsPage />
                 )
               }
             />
