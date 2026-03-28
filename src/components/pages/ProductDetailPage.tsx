@@ -12,6 +12,8 @@ import { get, post } from "../../lib/api";
 import { API_URL } from "../../lib/api";
 import { viewHistoryService } from "../../services/viewHistory.service";
 import { formatCurrency } from "../../lib/currency";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import EmojiPicker, { Theme } from "emoji-picker-react";
 
 interface ReviewReply {
   id: string;
@@ -119,7 +121,6 @@ export function ProductDetailPage({
   const [reviewImages, setReviewImages] = useState<string[]>([]);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [isUploadingReviewImage, setIsUploadingReviewImage] = useState(false);
-  const [showReviewEmojiPicker, setShowReviewEmojiPicker] = useState(false);
   const reviewImageInputRef = useRef<HTMLInputElement>(null);
 
   // Threaded reply state
@@ -130,7 +131,9 @@ export function ProductDetailPage({
   const [isUploadingReplyImage, setIsUploadingReplyImage] = useState(false);
   const replyImageInputRef = useRef<HTMLInputElement>(null);
 
-  const REVIEW_EMOJIS = ["😊", "😁", "😍", "🤩", "👍", "🔥", "💯", "⭐", "🎉", "😢", "😞", "👎"];
+  const onReviewEmojiClick = (emojiData: any) => {
+    setReviewEmoji(emojiData.emoji);
+  };
 
   useEffect(() => {
     if (!product.id) return;
@@ -754,7 +757,12 @@ export function ProductDetailPage({
                         <label className="text-gray-700 text-sm font-medium mb-2 block">Đánh giá *</label>
                         <div className="flex gap-1">
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <button key={star} onClick={() => setReviewRating(star)} className="hover:scale-110 transition-transform">
+                            <button 
+                              key={star} 
+                              type="button"
+                              onClick={() => setReviewRating(star)} 
+                              className="hover:scale-110 transition-transform"
+                            >
                               <Star className={`h-7 w-7 transition-colors ${star <= reviewRating ? "fill-amber-400 text-amber-400" : "text-gray-200 hover:text-gray-300"}`} />
                             </button>
                           ))}
@@ -766,25 +774,45 @@ export function ProductDetailPage({
                       <div>
                         <label className="text-gray-600 text-sm mb-2 block">Biểu tượng cảm xúc (tùy chọn)</label>
                         <div className="flex items-center gap-2">
-                          {reviewEmoji && <span className="text-3xl">{reviewEmoji}</span>}
-                          <Button variant="ghost" size="sm" className="text-gray-500 border border-gray-200" onClick={() => setShowReviewEmojiPicker((v) => !v)}>
-                            <Smile className="h-4 w-4 mr-1" /> Chọn biểu tượng
-                          </Button>
+                          {reviewEmoji && <span className="text-3xl animate-in zoom-in-50 duration-300">{reviewEmoji}</span>}
+                          
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-gray-500 border border-gray-200 hover:bg-gray-50 transition-all rounded-xl"
+                              >
+                                <Smile className="h-4 w-4 mr-2 text-blue-500" /> 
+                                {reviewEmoji ? "Đổi biểu tượng" : "Chọn biểu tượng"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent 
+                              side="top" 
+                              align="start" 
+                              className="p-0 border-none shadow-2xl z-[300] bg-transparent"
+                            >
+                              <EmojiPicker
+                                onEmojiClick={onReviewEmojiClick}
+                                theme={Theme.LIGHT}
+                                width={320}
+                                height={400}
+                                searchPlaceholder="Tìm emoji..."
+                              />
+                            </PopoverContent>
+                          </Popover>
+
                           {reviewEmoji && (
-                            <Button variant="ghost" size="sm" className="text-gray-400" onClick={() => setReviewEmoji("")}>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors rounded-xl" 
+                              onClick={() => setReviewEmoji("")}
+                            >
                               <X className="h-4 w-4" />
                             </Button>
                           )}
                         </div>
-                        {showReviewEmojiPicker && (
-                          <div className="mt-2 p-3 bg-white border border-gray-200 rounded-xl flex flex-wrap gap-2 w-fit">
-                            {REVIEW_EMOJIS.map((e) => (
-                              <button key={e} className="text-2xl hover:scale-125 transition-transform" onClick={() => { setReviewEmoji(e); setShowReviewEmojiPicker(false); }}>
-                                {e}
-                              </button>
-                            ))}
-                          </div>
-                        )}
                       </div>
 
                       {/* Review Comment */}

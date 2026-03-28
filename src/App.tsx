@@ -1060,7 +1060,7 @@ export default function App() {
       {showBuyerHeader && (
         <>
           <Footer onNavigate={navigate} />
-          {isAuthenticated && !isSeller && !isAdmin && <ChatWidget />}
+          {isAuthenticated && <ChatWidget />}
         </>
       )}
 

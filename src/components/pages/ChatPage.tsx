@@ -30,6 +30,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import EmojiPicker, { Theme } from "emoji-picker-react";
 import {
   Dialog,
   DialogContent,
@@ -123,7 +125,6 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
   const [showVideoDialog, setShowVideoDialog] = useState(false);
   const [showClearChatDialog, setShowClearChatDialog] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -462,11 +463,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
     }
   };
 
-  const EMOJIS = ["😊", "😂", "❤️", "👍", "🔥", "😍", "🎉", "👏", "😢", "😮", "🙏", "💯", "✨", "🥰", "😎", "🤔", "💪", "🎁", "⭐", "🛒"];
-
-  const handleEmojiSelect = (emoji: string) => {
-    setNewMessage((prev) => prev + emoji);
-    setShowEmojiPicker(false);
+  const onEmojiClick = (emojiData: any) => {
+    setNewMessage((prev) => prev + emojiData.emoji);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -840,22 +838,6 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
 
                 {/* Message Input */}
                 <div className="p-4 border-t border-gray-200 bg-white">
-                  {/* Emoji Picker */}
-                  {showEmojiPicker && (
-                    <div className="mb-3 p-3 bg-gray-50 border border-gray-200 rounded-xl">
-                      <div className="flex flex-wrap gap-2">
-                        {EMOJIS.map((emoji) => (
-                          <button
-                            key={emoji}
-                            onClick={() => handleEmojiSelect(emoji)}
-                            className="text-xl hover:scale-125 transition-transform"
-                          >
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                   <div className="flex gap-2">
                     {/* Hidden file input */}
                     <input
@@ -882,14 +864,33 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                       className="flex-1 bg-gray-50 border-gray-200 text-gray-900"
                       disabled={isSending || isUploadingImage}
                     />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`text-gray-600 hover:bg-gray-100 flex-shrink-0 ${showEmojiPicker ? "bg-gray-100" : ""}`}
-                      onClick={() => setShowEmojiPicker((v) => !v)}
-                    >
-                      <Smile className="h-5 w-5" />
-                    </Button>
+                    
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={isSending || isUploadingImage}
+                          className="text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors flex-shrink-0"
+                        >
+                          <Smile className="h-5 w-5" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent 
+                        side="top" 
+                        align="end" 
+                        className="p-0 border-none shadow-2xl z-[300] bg-transparent"
+                      >
+                        <EmojiPicker
+                          onEmojiClick={onEmojiClick}
+                          theme={Theme.LIGHT}
+                          width={320}
+                          height={400}
+                          searchPlaceholder="Tìm emoji..."
+                        />
+                      </PopoverContent>
+                    </Popover>
+
                     <Button
                       size="icon"
                       onClick={handleSendMessage}
