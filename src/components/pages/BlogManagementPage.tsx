@@ -389,8 +389,8 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
             <div className="space-y-3">
               {blogs.map(blog => {
                 const cfg = STATUS_CONFIG[blog.status];
-                const canEdit = blog.status === 'DRAFT' || blog.status === 'REJECTED';
-                const canDelete = blog.status === 'DRAFT' || blog.status === 'REJECTED';
+                const canEdit = blog.status === 'DRAFT' || blog.status === 'REJECTED' || blog.status === 'PUBLISHED';
+                const canDelete = blog.status === 'DRAFT' || blog.status === 'REJECTED' || blog.status === 'PUBLISHED';
                 return (
                   <div key={blog.id} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                     <div className="flex items-start gap-4">

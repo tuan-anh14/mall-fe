@@ -307,8 +307,8 @@ export function Header({
                         key={item.key}
                         variant="ghost"
                         className={`justify-between h-11 rounded-xl transition-all ${currentPage === item.key
-                            ? "bg-blue-50 text-blue-700 font-semibold"
-                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                          ? "bg-blue-50 text-blue-700 font-semibold"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                           }`}
                         onClick={() => onNavigate(item.key)}
                       >
@@ -348,6 +348,15 @@ export function Header({
                         Admin Dashboard
                       </Button>
                     )}
+                    <div className="h-px bg-gray-100 my-3" />
+                    <Button
+                      variant="ghost"
+                      className={`justify-start h-11 rounded-xl transition-all ${currentPage === "my-blogs" ? "bg-blue-50 text-blue-700 font-semibold" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}
+                      onClick={() => onNavigate("my-blogs")}
+                    >
+                      <PenTool className="h-4 w-4 mr-2.5" />
+                      Bài viết của tôi
+                    </Button>
                   </nav>
                 </SheetContent>
               </Sheet>
@@ -374,8 +383,8 @@ export function Header({
                     variant="ghost"
                     onClick={() => onNavigate(item.key)}
                     className={`relative rounded-lg px-4 h-9 text-sm transition-all duration-200 ${currentPage === item.key
-                        ? "bg-white/20 text-white font-medium"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
+                      ? "bg-white/20 text-white font-medium"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
                       }`}
                   >
                     {item.label}
@@ -711,15 +720,13 @@ export function Header({
                           )}
                         </>
                       )}
-                      {(isBuyer || isSeller) && (
-                        <DropdownMenuItem
-                          onClick={() => onNavigate("my-blogs")}
-                          className="text-gray-700 hover:text-gray-900 cursor-pointer rounded-lg h-9"
-                        >
-                          <PenTool className="h-4 w-4 mr-2.5 text-gray-400" />
-                          Bài viết của tôi
-                        </DropdownMenuItem>
-                      )}
+                      <DropdownMenuItem
+                        onClick={() => onNavigate("my-blogs")}
+                        className="text-gray-700 hover:text-gray-900 cursor-pointer rounded-lg h-9"
+                      >
+                        <PenTool className="h-4 w-4 mr-2.5 text-gray-400" />
+                        Bài viết của tôi
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator className="bg-gray-100" />
                       <DropdownMenuItem onClick={onLogout} className="text-red-600 hover:text-red-700 cursor-pointer rounded-lg h-9">
                         <LogOut className="h-4 w-4 mr-2.5" />
