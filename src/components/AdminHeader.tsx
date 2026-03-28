@@ -12,6 +12,7 @@ import {
   History,
   Wallet,
   Shield,
+  BookOpen,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
@@ -30,6 +31,7 @@ const navItems = [
   { page: "admin-dashboard", label: "Tổng quan", icon: LayoutDashboard },
   { page: "admin-accounts", label: "Tài khoản", icon: Users },
   { page: "admin-categories", label: "Danh mục", icon: Tag },
+  { page: "admin-blogs", label: "Bài viết", icon: BookOpen },
   { page: "admin-coupons", label: "Mã giảm giá", icon: Ticket },
   { page: "admin-reviews", label: "Đánh giá", icon: Star },
   { page: "admin-seller-requests", label: "Duyệt Seller", icon: UserCheck },

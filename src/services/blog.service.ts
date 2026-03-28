@@ -86,4 +86,10 @@ export const blogService = {
   deleteCategory(id: string): Promise<{ message: string }> {
     return del<{ message: string }>(`${BASE}/blog-categories/${id}`);
   },
+
+  async uploadImage(file: File): Promise<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return post<{ url: string }>(`${BASE}/upload/blog`, formData);
+  },
 };

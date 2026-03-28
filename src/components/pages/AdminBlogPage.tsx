@@ -19,6 +19,16 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../ui/alert-dialog";
 
 interface AdminBlogPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -54,6 +64,8 @@ export function AdminBlogPage({ onNavigate }: AdminBlogPageProps) {
   const [categories, setCategories] = useState<import('../../types/blog').BlogCategory[]>([]);
   const [newCatName, setNewCatName] = useState('');
   const [catLoading, setCatLoading] = useState(false);
+  const [deleteBlogDialog, setDeleteBlogDialog] = useState<{ open: boolean; blog: Blog | null }>({ open: false, blog: null });
+  const [deleteCatDialog, setDeleteCatDialog] = useState<{ open: boolean; cat: import('../../types/blog').BlogCategory | null }>({ open: false, cat: null });
 
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
@@ -110,13 +122,20 @@ export function AdminBlogPage({ onNavigate }: AdminBlogPageProps) {
   };
 
   const handleDelete = async (blog: Blog) => {
-    if (!confirm(`Xóa vĩnh viễn bài "${blog.title}"?`)) return;
+    setDeleteBlogDialog({ open: true, blog });
+  };
+
+  const confirmDeleteBlog = async () => {
+    const blog = deleteBlogDialog.blog;
+    if (!blog) return;
     try {
       await blogService.adminDelete(blog.id);
       toast.success('Đã xóa bài viết');
       fetchBlogs();
     } catch (err: any) {
       toast.error(err.message || 'Không thể xóa');
+    } finally {
+      setDeleteBlogDialog({ open: false, blog: null });
     }
   };
 
@@ -146,13 +165,20 @@ export function AdminBlogPage({ onNavigate }: AdminBlogPageProps) {
   };
 
   const handleDeleteCategory = async (cat: import('../../types/blog').BlogCategory) => {
-    if (!confirm(`Xóa danh mục "${cat.name}"?`)) return;
+    setDeleteCatDialog({ open: true, cat });
+  };
+
+  const confirmDeleteCat = async () => {
+    const cat = deleteCatDialog.cat;
+    if (!cat) return;
     try {
       await blogService.deleteCategory(cat.id);
       toast.success('Đã xóa danh mục');
       fetchCategories();
     } catch (err: any) {
       toast.error(err.message || 'Không thể xóa danh mục');
+    } finally {
+      setDeleteCatDialog({ open: false, cat: null });
     }
   };
 
@@ -440,6 +466,60 @@ export function AdminBlogPage({ onNavigate }: AdminBlogPageProps) {
           </div>
         </div>
       )}
+
+      {/* Delete Blog Confirmation */}
+      <AlertDialog 
+        open={deleteBlogDialog.open} 
+        onOpenChange={(open) => !open && setDeleteBlogDialog({ open: false, blog: null })}
+      >
+        <AlertDialogContent className="bg-white border-gray-200/80 rounded-2xl shadow-xl max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900 text-lg font-bold">Xóa vĩnh viễn bài bài viết</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500 text-sm leading-relaxed">
+              Bạn có chắc chắn muốn xóa bài viết <strong className="text-gray-700">"{deleteBlogDialog.blog?.title}"</strong>? 
+              Dữ liệu sẽ bị xóa vĩnh viễn khỏi hệ thống.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="rounded-xl border-gray-200 font-medium cursor-pointer">
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteBlog}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold cursor-pointer"
+            >
+              Xóa vĩnh viễn
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Category Confirmation */}
+      <AlertDialog 
+        open={deleteCatDialog.open} 
+        onOpenChange={(open) => !open && setDeleteCatDialog({ open: false, cat: null })}
+      >
+        <AlertDialogContent className="bg-white border-gray-200/80 rounded-2xl shadow-xl max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900 text-lg font-bold">Xóa danh mục</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500 text-sm leading-relaxed">
+              Bạn có chắc chắn muốn xóa danh mục <strong className="text-gray-700">"{deleteCatDialog.cat?.name}"</strong>? 
+              Các bài viết thuộc danh mục này sẽ cần được cập nhật lại.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="rounded-xl border-gray-200 font-medium cursor-pointer">
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteCat}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold cursor-pointer"
+            >
+              Xóa danh mục
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

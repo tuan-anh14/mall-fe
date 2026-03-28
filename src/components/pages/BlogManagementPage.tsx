@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { blogService } from '../../services/blog.service';
 import { RichTextEditor } from '../blog/RichTextEditor';
+import { ImageWithFallback } from '../figma/ImageWithFallback';
 import type { Blog, BlogCategory, BlogStatus } from '../../types/blog';
 import {
   PenTool,
@@ -18,8 +19,19 @@ import {
   Save,
   X,
   Upload,
+  ArrowLeft,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../ui/alert-dialog";
 
 interface BlogManagementPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -51,6 +63,9 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
   const [summary, setSummary] = useState('');
   const [thumbnail, setThumbnail] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; blog: Blog | null }>({ open: false, blog: null });
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
@@ -124,14 +139,45 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
     }
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Ảnh quá lớn. Vui lòng chọn ảnh dưới 10MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const res = await blogService.uploadImage(file);
+      setThumbnail(res.url);
+      toast.success('Đã tải ảnh lên thành công');
+    } catch (err: any) {
+      toast.error(err.message || 'Không thể tải ảnh lên');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const handleDelete = async (blog: Blog) => {
-    if (!confirm(`Xóa bài viết "${blog.title}"?`)) return;
+    setDeleteDialog({ open: true, blog });
+  };
+
+  const confirmDelete = async () => {
+    const blog = deleteDialog.blog;
+    if (!blog) return;
+
     try {
       await blogService.delete(blog.id);
       toast.success('Đã xóa bài viết');
       fetchBlogs();
     } catch (err: any) {
-      toast.error(err.message || 'Không thể xóa bài viết này');
+      toast.error(err.message || 'Không thể xóa');
+    } finally {
+      setDeleteDialog({ open: false, blog: null });
     }
   };
 
@@ -208,17 +254,32 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
-                Ảnh bìa (URL)
+                Ảnh bìa bài viết *
               </label>
-              <div className="relative">
-                <Upload size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  value={thumbnail}
-                  onChange={e => setThumbnail(e.target.value)}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition-all"
-                />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <div 
+                onClick={() => !uploading && fileInputRef.current?.click()}
+                className={`flex items-center gap-3 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white cursor-pointer transition-all hover:bg-gray-50 hover:border-indigo-300 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {uploading ? (
+                  <div className="flex items-center gap-2 text-indigo-600">
+                    <div className="w-4 h-4 border-2 border-indigo-600/30 border-t-indigo-600 rounded-full animate-spin" />
+                    <span>Đang tải lên...</span>
+                  </div>
+                ) : (
+                  <>
+                    <Upload size={16} className="text-gray-400" />
+                    <span className={thumbnail ? 'text-gray-900 truncate' : 'text-gray-400'}>
+                      {thumbnail ? 'Thay đổi ảnh bìa' : 'Chọn ảnh bìa từ máy tính'}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -251,14 +312,26 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
 
           {/* Thumbnail preview */}
           {thumbnail && (
-            <div className="mt-4">
-              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Xem trước ảnh bìa</p>
-              <img
-                src={thumbnail}
-                alt="Thumbnail preview"
-                className="h-40 w-full object-cover rounded-xl border border-gray-100 shadow-sm"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-              />
+            <div className="mt-8">
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                  Xem trước ảnh bìa
+                </label>
+                <button 
+                  onClick={() => setThumbnail('')}
+                  className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1"
+                >
+                  <Trash2 size={12} /> Xóa ảnh
+                </button>
+              </div>
+              <div className="relative group overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 aspect-[21/9]">
+                <ImageWithFallback
+                  src={thumbnail}
+                  alt="Thumbnail preview"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  previewable={true}
+                />
+              </div>
             </div>
           )}
         </div>
@@ -324,7 +397,12 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
                       {/* Thumbnail */}
                       {blog.thumbnail && (
                         <div className="w-20 h-14 rounded-lg overflow-hidden flex-shrink-0">
-                          <img src={blog.thumbnail} alt={blog.title} className="w-full h-full object-cover" />
+                          <ImageWithFallback 
+                            src={blog.thumbnail} 
+                            alt={blog.title} 
+                            className="w-full h-full object-cover" 
+                            previewable={true}
+                          />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
@@ -387,6 +465,31 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
             )}
           </>
         )}
+        <AlertDialog 
+          open={deleteDialog.open} 
+          onOpenChange={(open) => !open && setDeleteDialog({ open: false, blog: null })}
+        >
+          <AlertDialogContent className="bg-white border-gray-200/80 rounded-2xl shadow-xl max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-gray-900 text-lg font-bold">Xóa bài viết</AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-500 text-sm leading-relaxed">
+                Bạn có chắc chắn muốn xóa bài viết <strong className="text-gray-700">"{deleteDialog.blog?.title}"</strong>? 
+                Hành động này không thể hoàn tác.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2 sm:gap-0">
+              <AlertDialogCancel className="rounded-xl border-gray-200 font-medium cursor-pointer">
+                Hủy
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDelete}
+                className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold cursor-pointer"
+              >
+                Xóa bài viết
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
