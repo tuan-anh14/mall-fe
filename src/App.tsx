@@ -105,6 +105,11 @@ const ResetPasswordPage = lazy(() =>
     default: m.ResetPasswordPage,
   })),
 );
+const VerifyEmailPage = lazy(() =>
+  import("./components/pages/VerifyEmailPage").then((m) => ({
+    default: m.VerifyEmailPage,
+  })),
+);
 const NotificationsPage = lazy(() =>
   import("./components/pages/NotificationsPage").then((m) => ({
     default: m.NotificationsPage,
@@ -291,6 +296,7 @@ export default function App() {
     checkAuth,
     login,
     register,
+    verifyEmail,
     logout,
     becomeSellerRequest,
   } = useAuth();
@@ -409,8 +415,13 @@ export default function App() {
     password: string,
   ) => {
     await register(name, email, password);
-    await fetchCartAndWishlist();
-    navigate("home");
+    toast.info("Vui lòng kiểm tra email để lấy mã xác thực!");
+    reactNavigate("/verify-email", { state: { email } });
+  };
+
+  const handleVerifyEmail = async (email: string, code: string) => {
+    await verifyEmail(email, code);
+    navigate("login");
   };
 
   const handleLogout = async () => {
@@ -493,6 +504,7 @@ export default function App() {
     currentPage !== "login" &&
     currentPage !== "forgot-password" &&
     currentPage !== "reset-password" &&
+    currentPage !== "verify-email" &&
     !showSellerHeader &&
     !showAdminHeader;
 
@@ -675,6 +687,16 @@ export default function App() {
                     (location.state as any)?.token ??
                     new URLSearchParams(location.search).get("token")
                   }
+                />
+              }
+            />
+            <Route
+              path="/verify-email"
+              element={
+                <VerifyEmailPage
+                  onNavigate={navigate}
+                  onVerify={handleVerifyEmail}
+                  email={(location.state as any)?.email}
                 />
               }
             />

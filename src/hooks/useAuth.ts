@@ -35,10 +35,13 @@ export function useAuth() {
     password: string,
   ): Promise<User> => {
     const { user: me } = await authService.register(name, email, password);
-    setUser(me);
-    setIsAuthenticated(true);
-    toast.success(`Chào mừng, ${me.name}!`);
+    // Don't set user yet, wait for email verification
     return me;
+  };
+
+  const verifyEmail = async (email: string, code: string): Promise<void> => {
+    await authService.verifyEmail(email, code);
+    toast.success("Xác thực email thành công! Bây giờ bạn có thể đăng nhập.");
   };
 
   const logout = async (): Promise<void> => {
@@ -66,6 +69,7 @@ export function useAuth() {
     checkAuth,
     login,
     register,
+    verifyEmail,
     logout,
     becomeSellerRequest,
   };

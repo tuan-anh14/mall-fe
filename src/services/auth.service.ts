@@ -22,6 +22,10 @@ export const authService = {
     });
   },
 
+  verifyEmail(email: string, code: string): Promise<{ message: string }> {
+    return post("/api/v1/auth/verify-email", { email, code });
+  },
+
   logout(): Promise<void> {
     return post("/api/v1/auth/logout");
   },
