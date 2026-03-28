@@ -15,6 +15,7 @@ import {
   Plus,
   Edit,
   Trash2,
+  Store,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
@@ -51,7 +52,7 @@ import {
 } from "../ui/alert-dialog";
 import { motion } from "motion/react";
 import { toast } from "sonner";
-import { get, put, post, del } from "../../lib/api";
+import { get, put, post, del, patch } from "../../lib/api";
 
 interface SettingsPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -109,6 +110,9 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>();
+  const [userType, setUserType] = useState<string>("BUYER");
+  const [isSuspended, setIsSuspended] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
@@ -117,6 +121,11 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  // Store management state
+  const [suspendDialogOpen, setSuspendDialogOpen] = useState(false);
+  const [closeStoreDialogOpen, setCloseStoreDialogOpen] = useState(false);
+  const [isUpdatingStore, setIsUpdatingStore] = useState(false);
 
   // Delete account state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -162,6 +171,9 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
           email: string;
           phone?: string;
           avatar?: string;
+          userType: string;
+          isSuspended: boolean;
+          isClosed: boolean;
         };
       }>("/api/v1/users/me");
       setFirstName(res.user.firstName ?? "");
@@ -169,6 +181,9 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
       setEmail(res.user.email ?? "");
       setPhone(res.user.phone ?? "");
       setAvatarUrl(res.user.avatar ?? undefined);
+      setUserType(res.user.userType ?? "BUYER");
+      setIsSuspended(res.user.isSuspended ?? false);
+      setIsClosed(res.user.isClosed ?? false);
     } catch (err: any) {
       toast.error(err.message || "Không thể tải hồ sơ");
     }
@@ -398,6 +413,39 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
     }
   };
 
+  const handleToggleSuspension = async () => {
+    setIsUpdatingStore(true);
+    try {
+      const res = await patch<{ message: string; isSuspended: boolean }>("/api/v1/seller/profile/toggle-suspension");
+      setIsSuspended(res.isSuspended);
+      toast.success(res.message);
+      setSuspendDialogOpen(false);
+      // Optional: Refresh profile to ensure all states are synced
+      loadProfile();
+    } catch (err: any) {
+      toast.error(err.message || "Không thể cập nhật trạng thái cửa hàng");
+    } finally {
+      setIsUpdatingStore(false);
+    }
+  };
+
+  const handleCloseStore = async () => {
+    setIsUpdatingStore(true);
+    try {
+      const res = await del<{ message: string; isClosed: boolean }>("/api/v1/seller/profile/close");
+      setIsClosed(res.isClosed);
+      setUserType("BUYER");
+      toast.success(res.message);
+      setCloseStoreDialogOpen(false);
+      // Re-trigger navigation to Home or Profile as they are no longer a seller
+      onNavigate("profile");
+    } catch (err: any) {
+      toast.error(err.message || "Không thể đóng cửa hàng");
+    } finally {
+      setIsUpdatingStore(false);
+    }
+  };
+
   const inputClass =
     "bg-gray-50/50 border-gray-200 text-gray-900 rounded-xl h-11 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all";
   const cardClass = "bg-white border-gray-200/80 rounded-2xl shadow-sm overflow-hidden";
@@ -445,6 +493,12 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               <Globe className="h-4 w-4" />
               Tùy chọn
             </TabsTrigger>
+            {(userType === "SELLER" || userType === "ADMIN") && (
+              <TabsTrigger value="store">
+                <Store className="h-4 w-4" />
+                Cửa hàng
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* Account Settings */}
@@ -962,6 +1016,89 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               </Card>
             </motion.div>
           </TabsContent>
+
+          {/* Store Settings */}
+          {(userType === "SELLER" || userType === "ADMIN") && (
+            <TabsContent value="store" className="p-5 lg:p-6 focus-visible:outline-none">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="space-y-5"
+              >
+                <Card className={cardClass}>
+                  <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
+                    <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
+                      <span className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <Store className="h-[18px] w-[18px] text-blue-600" />
+                      </span>
+                      Trạng thái cửa hàng
+                    </CardTitle>
+                    <CardDescription className="text-gray-500 text-sm">
+                      Quản lý hoạt động kinh doanh của bạn
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6 pt-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-gray-50/80 border border-gray-100">
+                      <div className="space-y-1">
+                        <p className="text-gray-900 font-semibold text-sm">
+                          {isSuspended ? "Cửa hàng đang tạm ngưng" : "Cửa hàng đang hoạt động"}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {isSuspended 
+                            ? "Sản phẩm của bạn hiện đang bị ẩn và khách hàng không thể đặt hàng mới." 
+                            : "Sản phẩm của bạn đang hiển thị bình thường với khách hàng."}
+                        </p>
+                      </div>
+                      <Button
+                        variant={isSuspended ? "default" : "outline"}
+                        className={isSuspended 
+                          ? "bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold px-6 h-10 shadow-lg shadow-blue-600/20"
+                          : "border-gray-200 text-gray-900 hover:bg-white rounded-xl font-semibold px-6 h-10"}
+                        onClick={() => setSuspendDialogOpen(true)}
+                        disabled={isUpdatingStore}
+                      >
+                        {isSuspended ? "Mở lại cửa hàng" : "Tạm ngưng bán"}
+                      </Button>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-amber-50 border border-amber-100">
+                      <div className="flex gap-3">
+                        <Shield className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <p className="text-amber-900 font-semibold text-sm">Lưu ý quan trọng</p>
+                          <ul className="text-sm text-amber-800/80 space-y-1 list-disc list-inside">
+                            <li>Bạn chỉ có thể tạm ngưng hoặc đóng cửa hàng khi KHÔNG có đơn hàng đang xử lý.</li>
+                            <li>Khi tạm ngưng, tất cả sản phẩm đang hiển thị sẽ chuyển sang trạng thái "Ẩn".</li>
+                            <li>Khi đóng cửa hàng, tài khoản của bạn sẽ trở về vai trò "Người mua" bình thường.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator className="bg-gray-100" />
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-red-100 bg-red-50/30">
+                      <div className="space-y-1">
+                        <p className="text-red-900 font-semibold text-sm">Đóng cửa hàng vĩnh viễn</p>
+                        <p className="text-sm text-red-700/70">
+                          Hành động này sẽ hủy tư cách Người bán của bạn. Bạn phải tạo yêu cầu mới nếu muốn bán lại.
+                        </p>
+                      </div>
+                      <Button
+                        variant="destructive"
+                        className="rounded-xl font-semibold px-6 h-10"
+                        onClick={() => setCloseStoreDialogOpen(true)}
+                        disabled={isUpdatingStore}
+                      >
+                        Đóng cửa hàng
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </TabsContent>
+          )}
         </Tabs>
         </div>
 
@@ -1019,6 +1156,66 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold"
             >
               {isDeleting ? "Đang xóa..." : "Xóa tài khoản"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Store Suspension Confirmation Dialog */}
+      <AlertDialog open={suspendDialogOpen} onOpenChange={setSuspendDialogOpen}>
+        <AlertDialogContent className="bg-white border-gray-200/80 rounded-2xl shadow-xl max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900 text-lg font-bold">
+              {isSuspended ? "Mở lại cửa hàng" : "Tạm ngưng bán"}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500 text-sm leading-relaxed">
+              {isSuspended 
+                ? "Bạn có muốn mở lại cửa hàng? Các sản phẩm sẽ không tự động hiển thị lại, bạn cần kích hoạt thủ công." 
+                : "Tất cả sản phẩm đang bán sẽ bị chuyển sang trạng thái Ẩn. Bạn chỉ có thể thực hiện khi không có đơn hàng đang chờ xử lý."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="rounded-xl border-gray-200 font-medium">
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleToggleSuspension}
+              disabled={isUpdatingStore}
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold"
+            >
+              {isUpdatingStore ? "Đang xử lý..." : (isSuspended ? "Xác nhận mở lại" : "Xác nhận tạm ngưng")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Close Store Confirmation Dialog */}
+      <AlertDialog open={closeStoreDialogOpen} onOpenChange={setCloseStoreDialogOpen}>
+        <AlertDialogContent className="bg-white border-gray-200/80 rounded-2xl shadow-xl max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-700 text-lg font-bold flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              Đóng cửa hàng vĩnh viễn
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 text-sm leading-relaxed">
+              Hành động này sẽ **xóa vĩnh viễn** tư cách Người bán của bạn.
+              <br /><br />
+              - Bạn sẽ trở về vai trò Người mua.<br />
+              - Tất cả sản phẩm sẽ bị ẩn vĩnh viễn.<br />
+              - Bạn sẽ cần tạo yêu cầu mới nếu muốn bán hàng lại.<br /><br />
+              Bạn có chắc chắn muốn tiếp tục?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="rounded-xl border-gray-200 font-medium">
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCloseStore}
+              disabled={isUpdatingStore}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold"
+            >
+              {isUpdatingStore ? "Đang xử lý..." : "Xác nhận đóng vĩnh viễn"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
