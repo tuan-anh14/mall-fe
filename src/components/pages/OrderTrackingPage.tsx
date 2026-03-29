@@ -69,12 +69,13 @@ interface OrderTrackingPageProps {
 }
 
 const STATUS_LABEL_VI: Record<string, string> = {
+  ORDERED: "Đã đặt hàng",
   PENDING: "Chờ xác nhận",
   CONFIRMED: "Đã xác nhận",
   PROCESSING: "Đang xử lý",
-  SHIPPED: "Đang giao hàng",
-  OUT_FOR_DELIVERY: "Đang giao tới bạn",
-  DELIVERED: "Đã giao thành công",
+  SHIPPED: "Đang vận chuyển",
+  OUT_FOR_DELIVERY: "Đang giao hàng",
+  DELIVERED: "Đã giao hàng thành công",
   CANCELLED: "Đã hủy",
   REFUNDED: "Đã hoàn tiền",
 };
@@ -341,7 +342,7 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
                               isCompleted || isCurrent ? "text-gray-900" : "text-gray-400"
                             }`}
                           >
-                            {step.label}
+                            {STATUS_LABEL_VI[step.status.toUpperCase()] || step.label}
                           </h3>
                           <p className="text-sm text-gray-500">
                             {step.date
