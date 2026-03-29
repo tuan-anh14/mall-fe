@@ -8,7 +8,7 @@ import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { CartItem } from "../../types";
 import { post } from "../../lib/api";
 import { toast } from "sonner";
-import { formatCurrency } from "../../lib/currency";
+import { formatCurrency, FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_COST, VAT_RATE } from "../../lib/currency";
 import { motion, AnimatePresence } from "motion/react";
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
@@ -64,10 +64,10 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
-  const shipping = subtotal > 50 ? 0 : 9.99;
-  const tax = subtotal * 0.1;
-  const total = Math.max(0, subtotal - couponDiscount) + shipping + tax;
-  const freeShippingProgress = Math.min(100, (subtotal / 50) * 100);
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : DEFAULT_SHIPPING_COST;
+  const tax = Math.round(subtotal * VAT_RATE);
+  const total = Math.round(Math.max(0, subtotal - couponDiscount) + shipping + tax);
+  const freeShippingProgress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -284,7 +284,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                     <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-sm font-medium text-blue-700">Miễn phí vận chuyển</p>
-                        <p className="text-xs text-blue-600">Còn {formatCurrency(50 - subtotal)}</p>
+                        <p className="text-xs text-blue-600">Còn {formatCurrency(FREE_SHIPPING_THRESHOLD - subtotal)}</p>
                       </div>
                       <div className="h-1.5 bg-blue-100 rounded-full overflow-hidden">
                         <motion.div

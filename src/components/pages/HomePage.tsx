@@ -7,7 +7,7 @@ import { RecommendedSection } from "../RecommendedSection";
 import { RecentlyViewedSection } from "../RecentlyViewedSection";
 import { motion, AnimatePresence } from "motion/react";
 import { get } from "../../lib/api";
-import { formatCurrency } from "../../lib/currency";
+import { formatCurrency, formatCurrencyCompact, FREE_SHIPPING_THRESHOLD } from "../../lib/currency";
 
 interface HomePageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -253,11 +253,10 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                             <button
                               key={index}
                               onClick={() => setCurrentFeaturedIndex(index)}
-                              className={`rounded-full transition-all duration-500 ${
-                                index === currentFeaturedIndex
+                              className={`rounded-full transition-all duration-500 ${index === currentFeaturedIndex
                                   ? "w-8 h-2 bg-blue-600"
                                   : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
-                              }`}
+                                }`}
                               aria-label={`Go to product ${index + 1}`}
                             />
                           ))}
@@ -304,7 +303,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
             className="grid grid-cols-2 md:grid-cols-4 gap-6"
           >
             {[
-              { icon: Truck, title: "Miễn phí vận chuyển", desc: "Đơn hàng trên 50", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
+              { icon: Truck, title: "Miễn phí vận chuyển", desc: `Đơn hàng từ ${formatCurrencyCompact(FREE_SHIPPING_THRESHOLD)}`, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
               { icon: Shield, title: "Thanh toán an toàn", desc: "Bảo mật 100%", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
               { icon: Zap, title: "Giao hàng nhanh", desc: "2-3 ngày làm việc", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100" },
               { icon: Headphones, title: "Hỗ trợ 24/7", desc: "Luôn sẵn sàng hỗ trợ", color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-100" },

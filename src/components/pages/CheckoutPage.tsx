@@ -11,7 +11,7 @@ import { CartItem } from "../../types";
 import { toast } from "sonner";
 import { get, post } from "../../lib/api";
 import { walletService, WalletInfo } from "../../services/wallet.service";
-import { formatCurrency } from "../../lib/currency";
+import { formatCurrency, formatCurrencyCompact, FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_COST, VAT_RATE } from "../../lib/currency";
 
 interface CheckoutPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -136,9 +136,9 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
-  const shipping = subtotal > 50 ? 0 : 9.99;
-  const tax = subtotal * 0.1;
-  const total = Math.max(0, subtotal - couponDiscount) + shipping + tax;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : DEFAULT_SHIPPING_COST;
+  const tax = Math.round(subtotal * VAT_RATE);
+  const total = Math.round(Math.max(0, subtotal - couponDiscount) + shipping + tax);
 
   const handlePlaceOrder = async () => {
     setIsPlacingOrder(true);
@@ -783,7 +783,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                 <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center gap-2">
                   <Truck className="h-4 w-4 text-emerald-600 flex-shrink-0" />
                   <p className="text-sm text-emerald-700 font-medium">
-                    Miễn phí vận chuyển cho đơn hàng trên 500K!
+                    Miễn phí vận chuyển cho đơn hàng từ {formatCurrencyCompact(FREE_SHIPPING_THRESHOLD)}!
                   </p>
                 </div>
               )}

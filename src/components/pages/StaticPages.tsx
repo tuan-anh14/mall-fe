@@ -8,6 +8,8 @@ import { motion } from "motion/react";
 import { toast } from "sonner";
 import { post } from "../../lib/api";
 
+import { formatCurrency, FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_COST } from "../../lib/currency";
+
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 const sectionReveal = {
@@ -141,7 +143,7 @@ export function AboutPage() {
               {
                 icon: Truck,
                 title: "Giao hàng nhanh",
-                desc: "Nhận đơn hàng trong 2-3 ngày làm việc. Miễn phí vận chuyển cho đơn hàng trên 50.",
+                desc: `Nhận đơn hàng trong 2-3 ngày làm việc. Miễn phí vận chuyển cho đơn hàng từ ${formatCurrency(FREE_SHIPPING_THRESHOLD)}.`,
                 color: "text-emerald-600",
                 bg: "bg-gradient-to-br from-emerald-50 to-green-50",
                 border: "border-emerald-100",
@@ -218,7 +220,7 @@ export function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       toast.error("Vui lòng điền đầy đủ thông tin");
       return;
@@ -321,34 +323,34 @@ export function ContactPage() {
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
                       <Label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1.5 block">Họ và tên</Label>
-                      <Input 
-                        id="name" 
+                      <Input
+                        id="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        placeholder="Nguyễn Văn A" 
-                        className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors" 
+                        placeholder="Nguyễn Văn A"
+                        className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors"
                       />
                     </div>
                     <div>
                       <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1.5 block">Email</Label>
-                      <Input 
-                        id="email" 
-                        type="email" 
+                      <Input
+                        id="email"
+                        type="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        placeholder="email@example.com" 
-                        className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors" 
+                        placeholder="email@example.com"
+                        className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors"
                       />
                     </div>
                   </div>
                   <div>
                     <Label htmlFor="subject" className="text-sm font-medium text-gray-700 mb-1.5 block">Chủ đề</Label>
-                    <Input 
-                      id="subject" 
+                    <Input
+                      id="subject"
                       value={formData.subject}
                       onChange={handleInputChange}
-                      placeholder="Bạn cần hỗ trợ gì?" 
-                      className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors" 
+                      placeholder="Bạn cần hỗ trợ gì?"
+                      className="border-gray-200 rounded-xl h-11 bg-gray-50/50 focus:bg-white transition-colors"
                     />
                   </div>
                   <div>
@@ -658,17 +660,17 @@ export function ShippingPage() {
               </div>
               <div className="border border-gray-200 rounded-xl p-6">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-xl text-gray-900">Vận chuyển nhanh</h3>
-                  <span className="text-blue-600">$9.99</span>
+                  <h3 className="text-xl text-gray-900">Vận chuyển nhanh (Mặc định)</h3>
+                  <span className="text-blue-600">{formatCurrency(DEFAULT_SHIPPING_COST)}</span>
                 </div>
                 <p className="text-gray-500">Giao hàng trong 2-3 ngày làm việc</p>
               </div>
               <div className="border border-gray-200 rounded-xl p-6">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-xl text-gray-900">Giao hàng ngày hôm sau</h3>
-                  <span className="text-blue-600">$19.99</span>
+                  <h3 className="text-xl text-gray-900">Giao hàng hỏa tốc</h3>
+                  <span className="text-blue-600">{formatCurrency(DEFAULT_SHIPPING_COST * 2)}</span>
                 </div>
-                <p className="text-gray-500">Đặt trước 14h để nhận hàng ngày hôm sau</p>
+                <p className="text-gray-500">Đặt trước 14h để nhận hàng trong ngày hoặc sáng mai</p>
               </div>
             </div>
           </div>
@@ -676,7 +678,7 @@ export function ShippingPage() {
           <div className="bg-white border border-gray-200 rounded-2xl p-8">
             <h2 className="text-2xl text-gray-900 mb-4">Miễn phí vận chuyển</h2>
             <p className="text-gray-600 mb-4">
-              Miễn phí vận chuyển tiêu chuẩn cho đơn hàng trên $50! Không cần mã giảm giá, tự động áp dụng khi thanh toán.
+              Miễn phí vận chuyển tiêu chuẩn cho đơn hàng từ {formatCurrency(FREE_SHIPPING_THRESHOLD)}! Không cần mã giảm giá, tự động áp dụng khi thanh toán.
             </p>
           </div>
 
