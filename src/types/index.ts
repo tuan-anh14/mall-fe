@@ -62,7 +62,7 @@ export interface User {
   id?: string;
   email: string;
   name: string;
-  avatar?: string;
+  avatar?: string | null;
   userType: "buyer" | "seller" | "admin";
   sellerRequestStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
 }

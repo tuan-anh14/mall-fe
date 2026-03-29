@@ -11,6 +11,15 @@ interface SellerHeaderProps {
 }
 
 export function SellerHeader({ currentPage, onNavigate, onLogout, user }: SellerHeaderProps) {
+  const getInitials = (name: string) => {
+    if (!name) return "S";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
   const navItems = [
     { id: "dashboard", label: "Tổng quan", icon: BarChart3 },
     { id: "seller-products", label: "Sản phẩm", icon: Package },
@@ -85,14 +94,14 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
               <p className="text-xs text-blue-100">Tài khoản Người bán</p>
             </div>
             <Avatar 
-              className="h-10 w-10 cursor-pointer border-2 border-white/30 bg-blue-700"
+              className="h-10 w-10 cursor-pointer border-2 border-white/30 bg-blue-700 overflow-hidden shadow-sm"
               onClick={() => onNavigate("profile")}
             >
               {user?.avatar ? (
                 <AvatarImage src={user.avatar} className="object-cover" />
               ) : null}
-              <AvatarFallback className="bg-blue-700 text-white">
-                {user?.name?.[0]?.toUpperCase() || "S"}
+              <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-medium">
+                {getInitials(user?.name)}
               </AvatarFallback>
             </Avatar>
             <Button

@@ -43,6 +43,15 @@ const navItems = [
 ];
 
 export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHeaderProps) {
+  const getInitials = (name: string) => {
+    if (!name) return "A";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-blue-800 bg-primary shadow-md">
       {/* Cùng họ màu với Kênh người bán (primary #1A56DB) */}
@@ -165,10 +174,10 @@ export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHe
                 <span className="hidden max-w-[8rem] truncate text-xs text-blue-100 lg:inline lg:max-w-[10rem] lg:text-sm lg:text-white font-medium">
                   {user.name}
                 </span>
-                <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border border-white/20 bg-blue-700 shadow-sm">
+                <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border border-white/20 shadow-sm overflow-hidden bg-blue-700">
                   {user.avatar ? <AvatarImage src={user.avatar} className="object-cover" /> : null}
-                  <AvatarFallback className="bg-blue-700 text-white font-medium text-xs sm:text-sm">
-                    {user.name?.[0]?.toUpperCase() || "A"}
+                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-medium text-xs sm:text-sm">
+                    {getInitials(user.name)}
                   </AvatarFallback>
                 </Avatar>
               </div>
