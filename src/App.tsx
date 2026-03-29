@@ -12,6 +12,7 @@ import { SellerHeader } from "./components/SellerHeader";
 import { AdminHeader } from "./components/AdminHeader";
 import { Footer } from "./components/Footer";
 import { ChatWidget } from "./components/ChatWidget";
+import { GTranslate } from "./components/GTranslate";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
 import { useAuth } from "./hooks/useAuth";
@@ -1080,6 +1081,7 @@ export default function App() {
       )}
 
       <Toaster />
+      <GTranslate />
       </div>
     </ImagePreviewProvider>
   );
