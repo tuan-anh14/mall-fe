@@ -1,8 +1,8 @@
 /* Enhanced styling for GTranslate widget */
 .gtranslate_wrapper {
   position: fixed !important;
-  top: 20px !important;
-  right: 20px !important;
+  bottom: 20px !important;
+  left: 20px !important;
   z-index: 10000 !important;
   font-family: Arial, sans-serif !important;
 }
@@ -15,7 +15,7 @@
   border-radius: 8px !important;
   background: white !important;
   color: #000 !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15) !important;
   border: 1px solid #e0e0e0 !important;
   cursor: pointer !important;
   transition: all 0.3s ease !important;
@@ -28,7 +28,7 @@
 .gtranslate_wrapper .gt_selector:hover,
 .gt_float_switcher .gt-selected:hover {
   background: #f8f9fa !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -37,20 +37,18 @@
   box-shadow: 0 0 0 2px rgba(18, 97, 166, 0.25) !important;
 }
 
-/* Style cho dropdown menu */
 .gt_float_switcher .gt-menu {
-  bottom: 50px !important; /* Đẩy lên trên nút */
-  right: 0 !important;
+  bottom: 50px !important;
+  left: 0 !important;
   background: white !important;
   border-radius: 12px !important;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
   border: 1px solid #f0f0f0 !important;
   padding: 8px 0 !important;
   min-width: 180px !important;
   overflow: hidden !important;
 }
 
-/* Từng dòng trong menu */
 .gt_float_switcher .gt-menu .gt-link {
   display: flex !important;
   align-items: center !important;
@@ -63,17 +61,15 @@
   background: #f5f5f5 !important;
 }
 
-/* Đồng bộ kích thước FLAG trong menu */
 .gt_float_switcher .gt-menu .gt-link img {
   width: 24px !important;
   height: 18px !important;
   object-fit: cover !important;
   border-radius: 2px !important;
   margin-right: 12px !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Style cho Text ngôn ngữ trong menu */
 .gt_float_switcher .gt-menu .gt-link span {
   font-size: 14px !important;
   color: #333 !important;
@@ -81,14 +77,13 @@
   font-weight: 500 !important;
 }
 
-/* Nút chọn hiện tại (VI) */
 .gt_float_switcher .gt-selected {
   display: flex !important;
   align-items: center !important;
   background: white !important;
   padding: 8px 16px !important;
   border-radius: 10px !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
   border: 1px solid #eee !important;
 }
 
@@ -99,8 +94,7 @@
   border-radius: 2px !important;
 }
 
-/* Fix cho tất cả elements trong GTranslate */
-.gtranslate_wrapper *, 
+.gtranslate_wrapper *,
 .gt_float_switcher * {
   color: #000 !important;
   font-family: Arial, sans-serif !important;
@@ -115,11 +109,11 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .gtranslate_wrapper {
-    top: 15px !important;
-    right: 15px !important;
+    bottom: 15px !important;
+    left: 15px !important;
     z-index: 10000 !important;
   }
-  
+
   .gtranslate_wrapper .gt_selector {
     padding: 6px 10px !important;
     font-size: 13px !important;
@@ -130,10 +124,10 @@
 
 @media (max-width: 480px) {
   .gtranslate_wrapper {
-    top: 10px !important;
-    right: 10px !important;
+    bottom: 10px !important;
+    left: 10px !important;
   }
-  
+
   .gtranslate_wrapper .gt_selector {
     padding: 5px 8px !important;
     font-size: 12px !important;
@@ -141,7 +135,6 @@
   }
 }
 
-/* Fix cho dropdown menu trên mobile */
 @media (max-width: 768px) {
   .gtranslate_wrapper .gt_selector option {
     font-size: 13px !important;
@@ -156,25 +149,26 @@
   }
 }
 
-/* Đảm bảo không bị translate */
-.notranslate { 
-  unicode-bidi: plaintext; 
+.notranslate {
+  unicode-bidi: plaintext;
 }
 
 /* Mark brand as not translated */
-.footer-logo, .logo { 
-  translate: none; 
+.footer-logo,
+.logo {
+  translate: none;
 }
 
 /* Animation cho smooth transition */
-.gtranslate_wrapper *, .gt_float_switcher * {
+.gtranslate_wrapper *,
+.gt_float_switcher * {
   transition: all 0.3s ease !important;
 }
 
 /* HIDE DEFAULT GOOGLE ELEMENTS */
 .goog-te-banner-frame.skiptranslate,
 .goog-te-banner-frame,
-#goog-gt-tt, 
+#goog-gt-tt,
 .goog-te-balloon-frame,
 .goog-te-gadget-icon {
   display: none !important;
@@ -189,7 +183,7 @@ body {
   box-shadow: none !important;
 }
 
-.skiptranslate > iframe,
+.skiptranslate>iframe,
 #google_translate_element:not(.gtranslate_wrapper #google_translate_element),
 .goog-te-gadget:not(.gtranslate_wrapper .goog-te-gadget) {
   display: none !important;
