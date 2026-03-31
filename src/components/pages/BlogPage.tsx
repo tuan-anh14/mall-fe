@@ -29,7 +29,7 @@ function BlogCard({ blog, onClick }: { blog: Blog; onClick: () => void }) {
       aria-label={`Read blog: ${blog.title}`}
     >
       {/* Thumbnail */}
-      <div className="relative h-52 overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="relative h-52 overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100">
         {blog.thumbnail ? (
           <img
             src={blog.thumbnail}
@@ -38,18 +38,18 @@ function BlogCard({ blog, onClick }: { blog: Blog; onClick: () => void }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <BookOpen size={48} className="text-indigo-300" />
+            <BookOpen size={48} className="text-blue-300" />
           </div>
         )}
         {/* Category chip */}
-        <span className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full">
+        <span className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
           {blog.category.name}
         </span>
       </div>
 
       {/* Content */}
       <div className="p-5">
-        <h3 className="text-gray-900 font-semibold text-base leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors mb-2">
+        <h3 className="text-gray-900 font-semibold text-base leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors mb-2">
           {blog.title}
         </h3>
         {blog.summary && (
@@ -61,11 +61,11 @@ function BlogCard({ blog, onClick }: { blog: Blog; onClick: () => void }) {
         {/* Meta */}
         <div className="flex items-center justify-between text-xs text-gray-400">
           <div className="flex items-center gap-1.5">
-            <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center overflow-hidden">
+            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
               {blog.author?.avatar ? (
                 <img src={blog.author.avatar} alt={blog.author.name} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-indigo-600 font-semibold text-xs">
+                <span className="text-blue-600 font-semibold text-xs">
                   {blog.author?.name?.charAt(0) ?? 'A'}
                 </span>
               )}
@@ -140,7 +140,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 py-20 px-4">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 py-20 px-4">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, white 1px, transparent 1px), radial-gradient(circle at 70% 50%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         <div className="relative max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white text-sm font-medium px-4 py-2 rounded-full mb-6">
@@ -150,7 +150,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
           <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">
             Khám phá Kiến thức &<br />Tin tức Mua sắm
           </h1>
-          <p className="text-indigo-200 text-lg mb-8">
+          <p className="text-blue-100/80 text-lg mb-8">
             Bài viết từ các Seller uy tín và đội ngũ ShopHub
           </p>
 
@@ -166,7 +166,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
               />
               <button
                 type="submit"
-                className="px-5 bg-white rounded-r-xl text-indigo-600 font-semibold hover:bg-indigo-50 transition-colors"
+                className="px-5 bg-white rounded-r-xl text-blue-600 font-semibold hover:bg-blue-50 transition-colors"
               >
                 <Search size={20} />
               </button>
@@ -184,7 +184,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
               onClick={() => handleCategoryChange('')}
               className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 !activeCategory
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -197,7 +197,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
                 onClick={() => handleCategoryChange(cat.slug)}
                 className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   activeCategory === cat.slug
-                    ? 'bg-indigo-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -228,8 +228,8 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
           </div>
         ) : blogs.length === 0 ? (
           <div className="text-center py-24">
-            <div className="w-20 h-20 mx-auto bg-indigo-50 rounded-full flex items-center justify-center mb-4">
-              <BookOpen size={32} className="text-indigo-400" />
+            <div className="w-20 h-20 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-4">
+              <BookOpen size={32} className="text-blue-400" />
             </div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Chưa có bài viết</h2>
             <p className="text-gray-500">Hãy thử tìm kiếm với từ khóa khác hoặc xem các danh mục khác.</p>
@@ -263,7 +263,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
                   key={p}
                   onClick={() => setPage(p)}
                   className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
-                    page === p ? 'bg-indigo-600 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                    page === p ? 'bg-blue-600 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
                   }`}
                 >
                   {p}
