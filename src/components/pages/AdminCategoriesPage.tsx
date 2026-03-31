@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, X, Check } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, Image as ImageIcon, Upload } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Card } from "../ui/card";
@@ -33,6 +33,7 @@ interface Category {
   name: string;
   slug: string;
   icon?: string | null;
+  image?: string | null;
   sortOrder: number;
   _count: { products: number };
 }
@@ -41,10 +42,11 @@ interface FormState {
   name: string;
   slug: string;
   icon: string;
+  image: string;
   sortOrder: string;
 }
 
-const emptyForm: FormState = { name: "", slug: "", icon: "", sortOrder: "0" };
+const emptyForm: FormState = { name: "", slug: "", icon: "", image: "", sortOrder: "0" };
 
 export function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -54,6 +56,7 @@ export function AdminCategoriesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [page, setPage] = useState(1);
   const limit = 10;
 
@@ -79,12 +82,39 @@ export function AdminCategoriesPage() {
 
   const openEdit = (cat: Category) => {
     setEditTarget(cat);
-    setForm({ name: cat.name, slug: cat.slug, icon: cat.icon ?? "", sortOrder: String(cat.sortOrder) });
+    setForm({
+      name: cat.name,
+      slug: cat.slug,
+      icon: cat.icon ?? "",
+      image: cat.image ?? "",
+      sortOrder: String(cat.sortOrder)
+    });
     setShowForm(true);
   };
 
   const autoSlug = (name: string) =>
     name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/, "");
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) return toast.error("File quá lớn (tối đa 5MB)");
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const data = await post<{ url: string }>("/api/v1/upload/category", formData);
+      setForm(f => ({ ...f, image: data.url }));
+      toast.success("Đã tải ảnh lên");
+    } catch (e: any) {
+      toast.error(e.message || "Không thể tải ảnh lên");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!form.name || !form.slug) return toast.error("Tên và slug không được để trống");
@@ -94,6 +124,7 @@ export function AdminCategoriesPage() {
         name: form.name,
         slug: form.slug,
         icon: form.icon || undefined,
+        image: form.image || undefined,
         sortOrder: parseInt(form.sortOrder) || 0,
       };
       if (editTarget) {
@@ -143,42 +174,77 @@ export function AdminCategoriesPage() {
           <h3 className="mb-4 font-semibold text-gray-900">
             {editTarget ? "Sửa danh mục" : "Thêm danh mục mới"}
           </h3>
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div>
-              <label className="text-gray-500 text-xs mb-1 block">Tên danh mục *</label>
-              <Input
-                value={form.name}
-                onChange={(e) => setForm(f => ({ ...f, name: e.target.value, slug: autoSlug(e.target.value) }))}
-                placeholder="Electronics"
-                className="bg-gray-50 border-gray-200 text-gray-900"
-              />
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <div>
+                <label className="text-gray-500 text-xs mb-1 block uppercase font-bold">Tên danh mục *</label>
+                <Input
+                  value={form.name}
+                  onChange={(e) => setForm(f => ({ ...f, name: e.target.value, slug: autoSlug(e.target.value) }))}
+                  placeholder="Electronics"
+                  className="bg-gray-50 border-gray-200 text-gray-900"
+                />
+              </div>
+              <div>
+                <label className="text-gray-500 text-xs mb-1 block uppercase font-bold">Slug *</label>
+                <Input
+                  value={form.slug}
+                  onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))}
+                  placeholder="electronics"
+                  className="bg-gray-50 border-gray-200 text-gray-900 font-mono text-sm"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-gray-500 text-xs mb-1 block uppercase font-bold">Icon (Lucide name)</label>
+                  <Input
+                    value={form.icon}
+                    onChange={(e) => setForm(f => ({ ...f, icon: e.target.value }))}
+                    placeholder="Laptop"
+                    className="bg-gray-50 border-gray-200 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <label className="text-gray-500 text-xs mb-1 block uppercase font-bold">Thứ tự</label>
+                  <Input
+                    type="number"
+                    value={form.sortOrder}
+                    onChange={(e) => setForm(f => ({ ...f, sortOrder: e.target.value }))}
+                    className="bg-gray-50 border-gray-200 text-gray-900"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="text-gray-500 text-xs mb-1 block">Slug *</label>
-              <Input
-                value={form.slug}
-                onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))}
-                placeholder="electronics"
-                className="bg-gray-50 border-gray-200 text-gray-900 font-mono text-sm"
-              />
-            </div>
-            <div>
-              <label className="text-gray-500 text-xs mb-1 block">Icon (Lucide name)</label>
-              <Input
-                value={form.icon}
-                onChange={(e) => setForm(f => ({ ...f, icon: e.target.value }))}
-                placeholder="Laptop"
-                className="bg-gray-50 border-gray-200 text-gray-900"
-              />
-            </div>
-            <div>
-              <label className="text-gray-500 text-xs mb-1 block">Thứ tự</label>
-              <Input
-                type="number"
-                value={form.sortOrder}
-                onChange={(e) => setForm(f => ({ ...f, sortOrder: e.target.value }))}
-                className="bg-gray-50 border-gray-200 text-gray-900"
-              />
+
+            <div className="space-y-3">
+              <label className="text-gray-500 text-xs mb-1 block uppercase font-bold">Ảnh đại diện</label>
+              <div className="relative aspect-video rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 overflow-hidden flex items-center justify-center group transition-all hover:border-primary/50">
+                {form.image ? (
+                  <>
+                    <img src={form.image} alt="Preview" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <Button variant="ghost" size="icon" onClick={() => setForm(f => ({ ...f, image: "" }))} className="text-white hover:bg-white/20">
+                        <Trash2 className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center gap-2 text-gray-400">
+                    <ImageIcon className="h-10 w-10 opacity-20" />
+                    <label className="cursor-pointer text-xs font-semibold text-primary hover:underline">
+                      <Upload className="h-4 w-4 inline mr-1" />
+                      Tải ảnh lên
+                      <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+                    </label>
+                    <p className="text-[10px]">Tối đa 5MB, tỉ lệ 16:9</p>
+                  </div>
+                )}
+                {uploading && (
+                  <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                    <AdminSpinner />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex gap-2 mt-4">
@@ -208,21 +274,29 @@ export function AdminCategoriesPage() {
           <div className="overflow-x-auto">
           <table className="w-full min-w-[640px]">
             <thead>
-              <tr className={adminTheadRowClass}>
-                <th className={adminThClass}>Tên</th>
-                <th className={adminThClass}>Slug</th>
-                <th className={adminThClass}>Icon</th>
-                <th className={adminThClass}>Sản phẩm</th>
-                <th className={adminThClass}>Thứ tự</th>
-                <th className={`${adminThClass} text-right`}>Hành động</th>
-              </tr>
+                <tr className={adminTheadRowClass}>
+                  <th className={adminThClass}>Tên</th>
+                  <th className={adminThClass}>Ảnh / Icon</th>
+                  <th className={adminThClass}>Slug</th>
+                  <th className={adminThClass}>Sản phẩm</th>
+                  <th className={adminThClass}>Thứ tự</th>
+                  <th className={`${adminThClass} text-right`}>Hành động</th>
+                </tr>
             </thead>
             <tbody>
               {paginatedCategories.map((cat) => (
                 <tr key={cat.id} className={adminTrClass}>
                   <td className="px-4 py-3 text-gray-900 font-medium">{cat.name}</td>
+                  <td className="px-4 py-3">
+                    <div className="h-10 w-16 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
+                      {cat.image ? (
+                        <img src={cat.image} alt={cat.name} className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-gray-400 text-xs font-mono">{cat.icon || "—"}</span>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-gray-500 text-sm font-mono">{cat.slug}</td>
-                  <td className="px-4 py-3 text-gray-500 text-sm">{cat.icon || "—"}</td>
                   <td className="px-4 py-3 sm:px-6">
                     <Badge className="border-0 bg-blue-50 font-medium text-blue-800">
                       {cat._count.products}

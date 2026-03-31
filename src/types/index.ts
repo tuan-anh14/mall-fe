@@ -31,10 +31,15 @@ export interface Product {
 }
 
 export interface Category {
+  id?: string;
   name: string;
   icon?: string;
+  image?: string;
   productCount?: number;
   count?: number;
+  _count?: {
+    products: number;
+  };
 }
 
 // ─── Cart ─────────────────────────────────────────────────────────────────────

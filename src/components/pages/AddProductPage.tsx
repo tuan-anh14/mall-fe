@@ -15,6 +15,7 @@ interface Category {
   name: string;
   slug: string;
   icon: string | null;
+  image?: string | null;
 }
 
 interface SellerProduct {

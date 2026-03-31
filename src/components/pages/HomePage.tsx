@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ArrowRight, Zap, Shield, Truck, Headphones, Tag, X, Sparkles } from "lucide-react";
+import { ArrowRight, Zap, Shield, Truck, Headphones, Tag, X, Sparkles, Laptop, Shirt, Home, Trophy, ShoppingBag, Camera, Book, Layers } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { ProductCard } from "../ProductCard";
@@ -55,6 +55,18 @@ const staggerItem = {
     y: 0,
     transition: { duration: 0.5, ease },
   },
+};
+
+const CATEGORY_ICON_MAP: Record<string, any> = {
+  Laptop,
+  Shirt,
+  Home,
+  Trophy,
+  ShoppingBag,
+  Camera,
+  Book,
+  Sparkles,
+  Layers,
 };
 
 export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlist, isAuthenticated = false }: HomePageProps) {
@@ -348,33 +360,53 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6"
         >
           {categories.map((cat, i) => {
-            const categoryStyles: Record<string, { emoji: string; gradient: string }> = {
-              "Điện tử": { emoji: "💻", gradient: "from-blue-50 to-indigo-50" },
-              "Thời trang": { emoji: "👕", gradient: "from-pink-50 to-rose-50" },
-              "Nhà cửa": { emoji: "🏠", gradient: "from-amber-50 to-orange-50" },
-              "Thể thao": { emoji: "⚽", gradient: "from-emerald-50 to-green-50" },
-              "Làm đẹp": { emoji: "💄", gradient: "from-violet-50 to-purple-50" },
-              "Sách": { emoji: "📚", gradient: "from-cyan-50 to-sky-50" },
-            };
-            const style = categoryStyles[cat.name] || { emoji: "📦", gradient: "from-gray-50 to-slate-50" };
-
+            const IconComponent = CATEGORY_ICON_MAP[cat.icon || ""] || ShoppingBag;
+            
             return (
               <motion.button
                 key={i}
                 variants={staggerItem}
-                whileHover={{ y: -4 }}
-                whileTap={{ scale: 0.97 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => onNavigate("shop", { category: cat.name })}
-                className={`group relative bg-gradient-to-br ${style.gradient} border border-gray-200/80 rounded-2xl p-6 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300`}
+                className="group relative aspect-[4/5] overflow-hidden rounded-3xl bg-gray-100 shadow-sm transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10"
               >
-                <div className="text-4xl mb-3">{style.emoji}</div>
-                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-                  {cat.name}
-                </h3>
-                <p className="text-xs text-gray-400 mt-1">{cat.productCount} sản phẩm</p>
+                {/* Background (Image or Gradient) */}
+                {cat.image ? (
+                  <div className="absolute inset-0 z-0 transition-transform duration-700 group-hover:scale-110">
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  </div>
+                ) : (
+                  <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-600 to-indigo-700 group-hover:from-blue-500 group-hover:to-indigo-600 transition-colors duration-500">
+                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyIiBjeT0iMiIgcj0iMSIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC4xIi8+PC9zdmc+')] opacity-20" />
+                  </div>
+                )}
+
+                {/* Content */}
+                <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 text-center">
+                  {!cat.image && (
+                    <div className="mb-4 rounded-2xl bg-white/10 p-4 shadow-xl backdrop-blur-md border border-white/20 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
+                      <IconComponent className="h-8 w-8 text-white" />
+                    </div>
+                  )}
+                  
+                  <div className="mt-auto w-full">
+                    <h3 className={`text-lg font-bold tracking-tight transition-colors duration-300 ${cat.image ? 'text-white' : 'text-white'}`}>
+                      {cat.name}
+                    </h3>
+                    <div className="mt-2 inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-sm border border-white/10 group-hover:bg-white group-hover:text-blue-600 transition-all duration-300">
+                      {cat.productCount ?? cat._count?.products ?? 0} Sản phẩm
+                    </div>
+                  </div>
+                </div>
               </motion.button>
             );
           })}
