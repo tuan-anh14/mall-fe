@@ -21,9 +21,6 @@ export function GTranslate() {
       };
     }
 
-    const existingScript = document.querySelector('script[src*="float.js"]');
-    if (existingScript) return;
-
     window.gtranslateSettings = {
       default_language: "vi",
       languages: ["vi", "en", "zh-CN", "ja"],
@@ -36,10 +33,66 @@ export function GTranslate() {
       show_widget_source: false,
     };
 
+    const existingScript = document.querySelector('script[src*="float.js"]');
+    if (existingScript) {
+      // Re-initialize if script exists (GTranslate specific)
+      // @ts-ignore
+      if (window.GTranslate && typeof window.GTranslate.init === 'function') {
+        // @ts-ignore
+        window.GTranslate.init();
+      }
+      return;
+    }
+
+    // MutationObserver to detect dynamic content (modals/popups)
+    const observer = new MutationObserver((mutations) => {
+      let shouldRefresh = false;
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length > 0) {
+          mutation.addedNodes.forEach((node) => {
+            if (node instanceof HTMLElement) {
+              // Mark new nodes to be translated
+              if (
+                node.getAttribute("role") === "dialog" ||
+                node.className.includes("modal") ||
+                node.className.includes("portal") ||
+                node.id?.includes("radix") // Common for shadcn/ui/radix
+              ) {
+                shouldRefresh = true;
+              }
+            }
+          });
+        }
+      });
+
+      if (shouldRefresh) {
+        // Wait a bit for React to finish rendering the content inside the popup
+        setTimeout(() => {
+          // 1. Re-init GTranslate
+          // @ts-ignore
+          if (window.GTranslate && typeof window.GTranslate.init === "function") {
+            // @ts-ignore
+            window.GTranslate.init();
+          }
+
+          // 2. DOM POKE: Force Google Translate to wake up
+          // Changing a data attribute on body triggers Google's mutation observer
+          document.body.setAttribute("data-gt-refresh", Date.now().toString());
+        }, 600); 
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Load GTranslate script
     const script = document.createElement("script");
     script.src = "https://cdn.gtranslate.net/widgets/latest/float.js";
     script.defer = true;
     document.body.appendChild(script);
+
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   return (
