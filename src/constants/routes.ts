@@ -24,6 +24,7 @@ export const PAGE_TO_PATH: Record<string, string> = {
   "admin-stats": "/admin/stats",
   "admin-audit-log": "/admin/audit-log",
   "admin-contacts": "/admin/contacts",
+  "admin-products": "/admin/products",
   // Auth
   login: "/login",
   "forgot-password": "/forgot-password",
@@ -74,6 +75,7 @@ export const ADMIN_PAGES = [
   "admin-wallets",
   "admin-blogs",
   "admin-contacts",
+  "admin-products",
 ];
 
 // Derive the Page name from a pathname (for header/footer logic)
