@@ -569,7 +569,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
         {/* Withdraw Modal */}
         <Dialog open={showWithdrawModal} onOpenChange={setShowWithdrawModal}>
           <DialogContent className="bg-white border-gray-200/80 max-w-md rounded-2xl p-0 overflow-hidden">
-            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 px-6 pt-6 pb-5">
+            <div className="bg-gradient-to-br from-blue-600 to-blue-700 px-6 pt-6 pb-5">
               <DialogHeader>
                 <DialogTitle className="text-white flex items-center gap-2.5 text-lg">
                   <div className="h-9 w-9 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/10">
@@ -597,7 +597,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                     type="number"
                     min="50000"
                     placeholder="Tối thiểu 50.000 ₫..."
-                    className="bg-gray-50/50 border-gray-200 rounded-xl h-11 pl-10 focus:ring-2 focus:ring-indigo-500/20"
+                    className="bg-gray-50/50 border-gray-200 rounded-xl h-11 pl-10 focus:ring-2 focus:ring-blue-500/20"
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                   />
@@ -607,7 +607,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                   <p className="text-[10px] text-gray-400">Số dư hiện tại: {formatCurrency(balance)}</p>
                   <button 
                     onClick={() => setWithdrawAmount(String(balance))}
-                    className="text-[10px] text-indigo-600 font-bold hover:underline"
+                    className="text-[10px] text-blue-600 font-bold hover:underline"
                   >
                     Rút tất cả
                   </button>
@@ -650,7 +650,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                   Hủy
                 </Button>
                 <Button
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-11 font-semibold shadow-lg shadow-indigo-600/20"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 font-semibold shadow-lg shadow-blue-600/20"
                   onClick={handleWithdraw}
                   disabled={isWithdrawing || !withdrawAmount || parseFloat(withdrawAmount) < 50000}
                 >
