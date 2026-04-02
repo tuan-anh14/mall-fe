@@ -266,8 +266,8 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                               key={index}
                               onClick={() => setCurrentFeaturedIndex(index)}
                               className={`rounded-full transition-all duration-500 ${index === currentFeaturedIndex
-                                  ? "w-8 h-2 bg-blue-600"
-                                  : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
+                                ? "w-8 h-2 bg-blue-600"
+                                : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
                                 }`}
                               aria-label={`Go to product ${index + 1}`}
                             />
@@ -305,31 +305,81 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
       </section>
 
       {/* ── Features ── */}
-      <section className="py-16 border-b border-gray-100 bg-white">
-        <div className="container mx-auto px-4">
+      <section className="py-24 relative overflow-hidden bg-white">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-500/[0.03] blur-[120px] rounded-full" />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-indigo-500/[0.03] blur-[100px] rounded-full" />
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
           >
             {[
-              { icon: Truck, title: "Miễn phí vận chuyển", desc: `Đơn hàng từ ${formatCurrencyCompact(FREE_SHIPPING_THRESHOLD)}`, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
-              { icon: Shield, title: "Thanh toán an toàn", desc: "Bảo mật 100%", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
-              { icon: Zap, title: "Giao hàng nhanh", desc: "2-3 ngày làm việc", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100" },
-              { icon: Headphones, title: "Hỗ trợ 24/7", desc: "Luôn sẵn sàng hỗ trợ", color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-100" },
+              {
+                icon: Truck,
+                title: "Miễn phí vận chuyển",
+                desc: `Đơn hàng từ ${formatCurrencyCompact(FREE_SHIPPING_THRESHOLD)}`,
+                color: "text-emerald-600",
+                glow: "group-hover:shadow-emerald-500/20",
+                bloom: "bg-emerald-400/30",
+                iconBg: "bg-emerald-50/50"
+              },
+              {
+                icon: Shield,
+                title: "Thanh toán an toàn",
+                desc: "Bảo mật thông tin 100%",
+                color: "text-blue-600",
+                glow: "group-hover:shadow-blue-500/20",
+                bloom: "bg-blue-400/30",
+                iconBg: "bg-blue-50/50"
+              },
+              {
+                icon: Zap,
+                title: "Giao hàng siêu tốc",
+                desc: "Nhận hàng trong 2-3 ngày",
+                color: "text-amber-600",
+                glow: "group-hover:shadow-amber-500/20",
+                bloom: "bg-amber-400/30",
+                iconBg: "bg-amber-50/50"
+              },
+              {
+                icon: Headphones,
+                title: "Hỗ trợ chuyên nghiệp",
+                desc: "Đội ngũ phục vụ 24/7",
+                color: "text-violet-600",
+                glow: "group-hover:shadow-violet-500/20",
+                bloom: "bg-violet-400/30",
+                iconBg: "bg-violet-50/50"
+              },
             ].map((feature, i) => (
               <motion.div
                 key={i}
                 variants={staggerItem}
-                className="group text-center p-6 rounded-2xl hover:bg-gray-50/80 transition-colors duration-300"
+                className={`group relative p-8 rounded-[38px] bg-white/70 backdrop-blur-xl border border-white/80 shadow-sm hover:shadow-2xl ${feature.glow} transition-all duration-500 hover:-translate-y-2`}
               >
-                <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl ${feature.bg} border ${feature.border} mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                  <feature.icon className={`h-6 w-6 ${feature.color}`} />
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-8 flex items-center justify-center">
+                    {/* The "Loang Loang" Glow (Bloom Effect) */}
+                    <div className={`absolute w-24 h-24 rounded-full ${feature.bloom} blur-2xl opacity-40 group-hover:opacity-70 group-hover:scale-125 transition-all duration-700`} />
+
+                    {/* Icon Glass Circle */}
+                    <div className={`relative w-20 h-20 rounded-full flex items-center justify-center bg-white/40 backdrop-blur-md border border-white/60 shadow-inner group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                      <feature.icon className={`h-8 w-8 ${feature.color} drop-shadow-sm`} />
+                    </div>
+                  </div>
+
+                  <h3 className="text-[17px] font-bold text-slate-900 mb-2 tracking-tight">{feature.title}</h3>
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-[180px]">{feature.desc}</p>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">{feature.title}</h3>
-                <p className="text-sm text-gray-500">{feature.desc}</p>
+
+                {/* Bottom Accent Decoration */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full bg-slate-100 group-hover:w-20 group-hover:bg-blue-500/20 transition-all duration-500" />
               </motion.div>
             ))}
           </motion.div>
@@ -364,7 +414,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
         >
           {categories.map((cat, i) => {
             const IconComponent = CATEGORY_ICON_MAP[cat.icon || ""] || ShoppingBag;
-            
+
             return (
               <motion.button
                 key={i}
@@ -397,7 +447,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                       <IconComponent className="h-8 w-8 text-white" />
                     </div>
                   )}
-                  
+
                   <div className="mt-auto w-full">
                     <h3 className={`text-lg font-bold tracking-tight transition-colors duration-300 ${cat.image ? 'text-white' : 'text-white'}`}>
                       {cat.name}
@@ -457,15 +507,16 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
 
       {/* ── Promotional Banner ── */}
       {promotions.length > 0 && (
-        <section className="py-20 container mx-auto px-4">
-          <div className="space-y-6">
+        <section className="py-16 container mx-auto px-4">
+          <div className="space-y-10">
             {promotions.map((promo) => {
               const discountLabel = promo.type === "PERCENTAGE"
                 ? `${promo.value}%`
                 : `${formatCurrency(Number(promo.value))}`;
               const title = promo.name || `Giảm ${discountLabel}`;
-              const desc = promo.description || `Sử dụng mã ${promo.code} để được giảm ${discountLabel}. Đừng bỏ lỡ ưu đãi hấp dẫn này!`;
+              const desc = promo.description || `Sử dụng mã ${promo.code} để được giảm ngay ${discountLabel}. Khám phá những ưu đãi giới hạn chỉ dành riêng cho bạn.`;
               const hasExpiry = !!promo.validUntil;
+
               return (
                 <motion.div
                   key={promo.id}
@@ -473,37 +524,141 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, margin: "-80px" }}
-                  className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 p-12 md:p-16"
+                  className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0a0f1d] via-[#111827] to-[#1e1b4b] border border-white/5 shadow-2xl"
                 >
-                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white/10 blur-2xl" />
-                    <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-blue-400/15 blur-2xl" />
-                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4zIj48cGF0aCBkPSJNMzYgMTZjMC0yLjIxIDEuNzktNCA0LTRzNCAxLjc5IDQgNC0xLjc5IDQtNCA0LTQtMS43OS00LTR6bTAgMjRjMC0yLjIxIDEuNzktNCA0LTRzNCAxLjc5IDQgNC0xLjc5IDQtNCA0LTQtMS43OS00LTR6TTEyIDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-10" />
+                  {/* Decorative Background Glows */}
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/4" />
+                    <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-600/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/4" />
                   </div>
 
-                  <div className="relative z-10 max-w-2xl">
-                    <Badge className="mb-4 bg-white/15 text-white border-white/20 backdrop-blur-sm">
-                      {hasExpiry ? `Hết hạn ${new Date(promo.validUntil!).toLocaleDateString("vi-VN")}` : "Ưu đãi đặc biệt"}
-                    </Badge>
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">{title}</h2>
-                    <p className="text-lg text-white/80 mb-4 leading-relaxed">{desc}</p>
-                    <div className="flex items-center gap-3 mb-8">
-                      <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-xl px-5 py-2.5 border border-white/20">
-                        <Tag className="h-4 w-4 text-white" />
-                        <span className="text-white font-mono font-bold tracking-widest">{promo.code}</span>
-                      </div>
-                      {promo.minOrderAmount && (
-                        <span className="text-white/60 text-sm">Đơn tối thiểu {formatCurrency(Number(promo.minOrderAmount))}</span>
-                      )}
+                  <div className="relative z-10 grid lg:grid-cols-2 gap-8 items-center p-8 md:p-14">
+                    {/* Left Column: Promotion Details */}
+                    <div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Badge className="mb-5 bg-white/5 text-blue-400 border-white/10 backdrop-blur-md px-3.5 py-1 text-xs font-semibold tracking-wider uppercase">
+                          {hasExpiry ? (
+                            <span className="flex items-center gap-1.5">
+                              <Sparkles className="h-3 w-3" />
+                              Hết hạn {new Date(promo.validUntil!).toLocaleDateString("vi-VN")}
+                            </span>
+                          ) : "Ưu đãi đặc quyền"}
+                        </Badge>
+                      </motion.div>
+
+                      <motion.h2
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight tracking-tight"
+                      >
+                        {promo.name ? (
+                          <>
+                            {promo.name.split(discountLabel)[0]}
+                            <span className="text-amber-400">{discountLabel}</span>
+                            {promo.name.split(discountLabel)[1]}
+                          </>
+                        ) : (
+                          <>Giảm ngay <span className="text-amber-400">{discountLabel}</span></>
+                        )}
+                      </motion.h2>
+
+                      <motion.p
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="text-base text-slate-400 mb-6 leading-relaxed max-w-lg"
+                      >
+                        {desc}
+                      </motion.p>
+
+                      <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className="flex flex-wrap items-center gap-5 mb-8"
+                      >
+                        <div className="group relative">
+                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur opacity-10 group-hover:opacity-30 transition duration-500" />
+                          <div className="relative flex items-center gap-2.5 bg-[#111827] border border-white/10 rounded-xl px-4 py-2.5">
+                            <Tag className="h-4 w-4 text-blue-500" />
+                            <span className="text-lg font-mono font-bold text-white tracking-widest">{promo.code}</span>
+                          </div>
+                        </div>
+
+                        {promo.minOrderAmount && (
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Yêu cầu</span>
+                            <span className="text-xs font-semibold text-white">Đơn từ {formatCurrency(Number(promo.minOrderAmount))}</span>
+                          </div>
+                        )}
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
+                      >
+                        <Button
+                          size="lg"
+                          onClick={() => onNavigate("shop")}
+                          className="bg-amber-500 hover:bg-amber-400 text-white shadow-xl shadow-amber-500/10 px-8 h-12 rounded-xl text-base font-bold group"
+                        >
+                          Sử dụng ngay
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </motion.div>
                     </div>
-                    <Button
-                      size="lg"
-                      onClick={() => onNavigate("shop")}
-                      className="bg-amber-500 hover:bg-amber-400 text-white shadow-lg shadow-amber-500/25 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
+
+                    {/* Right Column: 3D Asset Animation */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                      className="relative flex justify-center lg:justify-end"
                     >
-                      Mua ngay
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
+                      <motion.div
+                        animate={{
+                          y: [0, -12, 0],
+                          rotate: [0, 1.5, 0]
+                        }}
+                        transition={{
+                          duration: 5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                        className="relative z-10 w-full max-w-[340px]"
+                      >
+                        <div className="absolute inset-0 bg-blue-500/15 blur-[80px] rounded-full scale-75" />
+                        <img
+                          src="https://res.cloudinary.com/dmxrgoj0g/image/upload/v1775142169/shopmall/products/rxfyufkohyxgzosgldet.jpg"
+                          alt="Ưu đãi giới hạn"
+                          className="relative z-10 w-full drop-shadow-[0_15px_40px_rgba(0,0,0,0.4)]"
+                        />
+                      </motion.div>
+                      
+                      {/* Floating Decorative Elements */}
+                      <motion.div 
+                        animate={{ y: [0, 20, 0] }}
+                        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute top-5 right-5 w-3 h-3 bg-amber-400/20 rounded-full blur-md"
+                      />
+                      <motion.div 
+                        animate={{ y: [15, -8, 15] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute bottom-10 left-5 w-4 h-4 bg-blue-400/15 rounded-full blur-lg"
+                      />
+                    </motion.div>
                   </div>
                 </motion.div>
               );

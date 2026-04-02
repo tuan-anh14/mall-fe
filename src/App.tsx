@@ -1076,7 +1076,7 @@ export default function App() {
       {showBuyerHeader && (
         <>
           <Footer onNavigate={navigate} />
-          {isAuthenticated && <ChatWidget />}
+          <ChatWidget />
         </>
       )}
 

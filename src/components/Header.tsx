@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { motion } from "motion/react";
 import {
   Search,
   ShoppingCart,
@@ -257,11 +258,11 @@ export function Header({
   const topBannerText = topPromotion ? getPromotionBannerText(topPromotion) : null;
 
   const navItems = [
-    { key: "home", label: "Trang chủ" },
-    { key: "shop", label: "Cửa hàng" },
-    { key: "blog", label: "Blog" },
-    { key: "about", label: "Giới thiệu" },
-    { key: "contact", label: "Liên hệ" },
+    { key: "home", label: "Trang chủ", icon: <TrendingUp className="h-4.5 w-4.5" /> },
+    { key: "shop", label: "Cửa hàng", icon: <Package className="h-4.5 w-4.5" /> },
+    { key: "blog", label: "Blog", icon: <BookOpen className="h-4.5 w-4.5" /> },
+    { key: "about", label: "Giới thiệu", icon: <User className="h-4.5 w-4.5" /> },
+    { key: "contact", label: "Liên hệ", icon: <ArrowRight className="h-4.5 w-4.5" /> },
   ];
 
   return (
@@ -294,70 +295,145 @@ export function Header({
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[300px] bg-white border-gray-200">
-                  <div className="flex items-center gap-2 mb-8 mt-2">
-                    <div className="h-9 w-9 rounded-xl bg-blue-600 flex items-center justify-center">
-                      <ShoppingCart className="h-5 w-5 text-white" />
+                <SheetContent side="left" className="w-[320px] p-0 bg-white/95 backdrop-blur-xl border-r border-white/20 flex flex-col shadow-[20px_0_50px_rgba(0,0,0,0.1)]">
+                  {/* Premium Mobile Header */}
+                  <div className="relative p-6 pt-10 overflow-hidden">
+                    {/* Decorative Background Pattern */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 opacity-95" />
+                    <div className="absolute inset-0 opacity-10 pointer-events-none">
+                      <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <circle cx="10" cy="10" r="15" fill="white" />
+                        <circle cx="90" cy="30" r="20" fill="white" />
+                        <circle cx="50" cy="80" r="10" fill="white" />
+                      </svg>
                     </div>
-                    <span className="text-xl tracking-tight text-gray-900"><span className="font-light">Shop</span> <span className="font-bold">MALL</span></span>
-                  </div>
-                  <nav className="flex flex-col gap-1">
-                    {navItems.map((item) => (
-                      <Button
-                        key={item.key}
-                        variant="ghost"
-                        className={`justify-between h-11 rounded-xl transition-all ${currentPage === item.key
-                          ? "bg-blue-50 text-blue-700 font-semibold"
-                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                          }`}
-                        onClick={() => onNavigate(item.key)}
-                      >
-                        {item.label}
-                        <ChevronRight className={`h-4 w-4 transition-opacity ${currentPage === item.key ? "opacity-100" : "opacity-0"}`} />
-                      </Button>
-                    ))}
-                    <div className="h-px bg-gray-100 my-3" />
-                    {isBuyer && (
-                      hasPendingRequest ? (
-                        <Button
-                          variant="ghost"
-                          disabled
-                          className="justify-start h-11 rounded-xl text-amber-600/60 opacity-70 cursor-not-allowed"
-                        >
-                          <Store className="h-4 w-4 mr-2" />
-                          Đã gửi yêu cầu
-                        </Button>
+
+                    <div className="relative z-10 flex flex-col gap-4">
+                      <div className="flex items-center justify-between">
+                        <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-inner group cursor-pointer" onClick={() => onNavigate("home")}>
+                          <ShoppingCart className="h-5.5 w-5.5 text-white" />
+                        </div>
+                        {isAuthenticated && (
+                          <div className="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-[10px] font-bold text-white uppercase tracking-wider">
+                            {isAdmin ? "Admin" : isSeller ? "Seller" : "Buyer"}
+                          </div>
+                        )}
+                      </div>
+
+                      {isAuthenticated ? (
+                        <div className="flex items-center gap-3 mt-2">
+                          <div className="relative">
+                            <div className="h-14 w-14 rounded-2xl border-2 border-white/40 shadow-lg overflow-hidden bg-white/10">
+                              {user?.avatar ? (
+                                <img src={user.avatar} alt="Avatar" className="h-full w-full object-cover" />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center bg-blue-500/20">
+                                  <User className="h-7 w-7 text-white/80" />
+                                </div>
+                              )}
+                            </div>
+                            <span className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-400 border-2 border-blue-700 rounded-full shadow-sm"></span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-white font-bold text-lg leading-tight truncate">{user?.name}</h3>
+                            <p className="text-blue-100/70 text-xs truncate mt-0.5">{user?.email}</p>
+                          </div>
+                        </div>
                       ) : (
+                        <div className="mt-2">
+                          <h3 className="text-white font-bold text-lg">Chào mừng bạn!</h3>
+                          <p className="text-blue-100/70 text-xs mt-0.5">Khám phá hàng ngàn ưu đãi tại ShopHub</p>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="mt-4 bg-white text-blue-700 hover:bg-blue-50 font-bold px-5 rounded-lg shadow-lg"
+                            onClick={() => onNavigate("login")}
+                          >
+                            Đăng nhập ngay
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Navigation Content */}
+                  <div className="flex-1 overflow-y-auto overflow-x-hidden py-6 px-4 space-y-8 scrollbar-hide">
+                    {/* Main Nav Section */}
+                    <div className="space-y-1.5">
+                      {navItems.map((item) => (
                         <Button
+                          key={item.key}
                           variant="ghost"
-                          className="justify-start h-11 rounded-xl text-blue-600 hover:bg-blue-50"
-                          onClick={() => setShowSellerDialog(true)}
+                          className={`w-full justify-start h-12 gap-3 px-4 rounded-[14px] transition-all duration-300 relative group ${currentPage === item.key
+                            ? "bg-blue-50 text-blue-700 shadow-sm"
+                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            }`}
+                          onClick={() => onNavigate(item.key)}
                         >
-                          <Store className="h-4 w-4 mr-2" />
-                          {hasRejectedRequest ? "Gửi lại yêu cầu" : "Trở thành Người bán"}
+                          <div className={`p-2 rounded-lg transition-colors ${currentPage === item.key ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-500 group-hover:bg-blue-100 group-hover:text-blue-600"
+                            }`}>
+                            {item.icon}
+                          </div>
+                          <span className="text-sm font-medium">{item.label}</span>
+                          {currentPage === item.key && (
+                            <motion.div
+                              layoutId="active-mobile-pill"
+                              className="absolute right-3 w-1.5 h-1.5 rounded-full bg-blue-600"
+                            />
+                          )}
                         </Button>
-                      )
+                      ))}
+
+                      {/* Quick Logout for Mobile (Avoiding GTranslate overlap) */}
+                      {isAuthenticated && (
+                        <>
+                          <div className="h-px bg-gray-100/60 my-2 mx-4" />
+                          <Button
+                            variant="ghost"
+                            onClick={onLogout}
+                            className="w-full justify-start h-12 gap-3 px-4 rounded-[14px] text-red-500 hover:text-red-600 hover:bg-red-50 transition-all group"
+                          >
+                            <div className="p-2 rounded-lg bg-red-50 text-red-500 group-hover:bg-red-100 transition-colors">
+                              <LogOut className="h-4.5 w-4.5" />
+                            </div>
+                            <span className="text-sm font-bold uppercase tracking-wider">Đăng xuất</span>
+                          </Button>
+                        </>
+                      )}
+                    </div>
+
+
+                    {/* Role-specific Quick Links */}
+                    {isAuthenticated && (isAdmin || isBuyer) && (
+                      <div className="space-y-1.5">
+                        <p className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em] mb-3">Dành cho bạn</p>
+                        {isAdmin && (
+                          <Button variant="ghost" className="w-full justify-start h-12 gap-3 px-4 rounded-[14px] text-red-600 hover:bg-red-50 bg-red-50/30 mb-1" onClick={() => onNavigate("admin-dashboard")}>
+                            <div className="p-2 rounded-lg bg-red-100 text-red-600"><Shield className="h-4.5 w-4.5" /></div>
+                            <span className="text-sm font-semibold">Admin Dashboard</span>
+                          </Button>
+                        )}
+                        {isBuyer && !isSeller && (
+                          hasPendingRequest ? (
+                            <div className="flex items-center gap-3 px-4 h-12 rounded-[14px] bg-amber-50/50 border border-amber-100 opacity-80 mb-1 ml-0 px-4">
+                              <div className="p-2 rounded-lg bg-amber-100/50 text-amber-600"><Store className="h-4.5 w-4.5" /></div>
+                              <span className="text-sm font-medium text-amber-700">Đã gửi yêu cầu bán hàng</span>
+                            </div>
+                          ) : (
+                            <Button variant="ghost" className="w-full justify-start h-12 gap-3 px-4 rounded-[14px] text-blue-600 hover:bg-blue-50 border border-blue-100 mb-1" onClick={() => setShowSellerDialog(true)}>
+                              <div className="p-2 rounded-lg bg-blue-100 text-blue-600"><Store className="h-4.5 w-4.5" /></div>
+                              <span className="text-sm font-semibold">{hasRejectedRequest ? "Gửi lại yêu cầu" : "Trở thành Người bán"}</span>
+                            </Button>
+                          )
+                        )}
+                      </div>
                     )}
-                    {isAdmin && (
-                      <Button
-                        variant="ghost"
-                        className="justify-start h-11 rounded-xl text-red-600 hover:bg-red-50"
-                        onClick={() => onNavigate("admin-dashboard")}
-                      >
-                        <Shield className="h-4 w-4 mr-2" />
-                        Admin Dashboard
-                      </Button>
-                    )}
-                    <div className="h-px bg-gray-100 my-3" />
-                    <Button
-                      variant="ghost"
-                      className={`justify-start h-11 rounded-xl transition-all ${currentPage === "my-blogs" ? "bg-blue-50 text-blue-700 font-semibold" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}
-                      onClick={() => onNavigate("my-blogs")}
-                    >
-                      <PenTool className="h-4 w-4 mr-2.5" />
-                      Bài viết của tôi
-                    </Button>
-                  </nav>
+                  </div>
+
+                  {/* Foot Actions */}
+                  <div className="p-4 bg-gray-50/50 border-t border-gray-100 flex flex-col items-center justify-center">
+                    <p className="text-[10px] text-gray-400 font-medium">© 2024 ShopMall. All rights reserved.</p>
+                  </div>
                 </SheetContent>
               </Sheet>
 

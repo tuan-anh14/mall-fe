@@ -56,6 +56,7 @@ interface FiltersContentProps {
   selectedRating: number | null;
   setSelectedRating: React.Dispatch<React.SetStateAction<number | null>>;
   clearFilters: () => void;
+  maxPriceLimit: number;
 }
 
 const FiltersContent = memo(function FiltersContent({
@@ -70,6 +71,7 @@ const FiltersContent = memo(function FiltersContent({
   selectedRating,
   setSelectedRating,
   clearFilters,
+  maxPriceLimit,
 }: FiltersContentProps) {
   return (
     <div className="space-y-7">
@@ -101,8 +103,8 @@ const FiltersContent = memo(function FiltersContent({
         <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Khoảng giá</h3>
         <Slider
           min={0}
-          max={3000}
-          step={50}
+          max={maxPriceLimit}
+          step={Math.ceil(maxPriceLimit / 100)}
           value={priceRange}
           onValueChange={handlePriceRangeChange}
           className="mb-4"
@@ -195,6 +197,7 @@ export function ShopPage({
   isInWishlist,
 }: ShopPageProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [maxPriceLimit, setMaxPriceLimit] = useState(3000);
   const [priceRange, setPriceRange] = useState([0, 3000]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     initialCategory ? [initialCategory] : [],
@@ -234,6 +237,14 @@ export function ShopPage({
       setDebouncedPriceRange(value);
     }, 500);
   };
+
+  // Sync price range when maxPriceLimit changes for the first time or if it's at max
+  useEffect(() => {
+    if (priceRange[1] === 3000 && maxPriceLimit !== 3000) {
+      setPriceRange([priceRange[0], maxPriceLimit]);
+      setDebouncedPriceRange([priceRange[0], maxPriceLimit]);
+    }
+  }, [maxPriceLimit]);
 
   // Fetch categories once on mount
   useEffect(() => {
@@ -275,7 +286,7 @@ export function ShopPage({
         if (debouncedPriceRange[0] > 0) {
           params.set("minPrice", String(debouncedPriceRange[0]));
         }
-        if (debouncedPriceRange[1] < 3000) {
+        if (debouncedPriceRange[1] < maxPriceLimit) {
           params.set("maxPrice", String(debouncedPriceRange[1]));
         }
         if (selectedRating !== null) {
@@ -289,12 +300,16 @@ export function ShopPage({
           page: number;
           limit: number;
           totalPages: number;
+          maxPrice?: number;
         }>(`/api/v1/products?${params.toString()}`);
 
         const fetched = res.products ?? [];
         setProducts(fetched);
         setTotal(res.total ?? 0);
         setTotalPages(res.totalPages ?? 1);
+        if (res.maxPrice && res.maxPrice !== maxPriceLimit) {
+          setMaxPriceLimit(res.maxPrice);
+        }
 
         // Derive brands from fetched products
         const uniqueBrands = Array.from(
@@ -340,8 +355,8 @@ export function ShopPage({
     setSelectedCategories([]);
     setSelectedBrands([]);
     setSelectedRating(null);
-    setPriceRange([0, 3000]);
-    setDebouncedPriceRange([0, 3000]);
+    setPriceRange([0, maxPriceLimit]);
+    setDebouncedPriceRange([0, maxPriceLimit]);
     setSearchQuery("");
     setCurrentPage(1);
   }, []);
@@ -447,6 +462,7 @@ export function ShopPage({
                       selectedRating={selectedRating}
                       setSelectedRating={setSelectedRating}
                       clearFilters={clearFilters}
+                      maxPriceLimit={maxPriceLimit}
                     />
                   </div>
                 </SheetContent>
@@ -552,6 +568,7 @@ export function ShopPage({
                   selectedRating={selectedRating}
                   setSelectedRating={setSelectedRating}
                   clearFilters={clearFilters}
+                  maxPriceLimit={maxPriceLimit}
                 />
               </div>
             </motion.div>

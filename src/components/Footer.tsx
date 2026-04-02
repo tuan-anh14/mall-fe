@@ -1,149 +1,145 @@
-import { Facebook, Twitter, Instagram, Youtube, Mail } from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube, Mail, Apple, Smartphone } from "lucide-react";
+import { motion } from "motion/react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Separator } from "./ui/separator";
 
 interface FooterProps {
   onNavigate: (page: string) => void;
 }
 
 export function Footer({ onNavigate }: FooterProps) {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-gray-800 bg-gray-900 mt-auto">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Brand */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center" />
-              <span className="text-xl tracking-tight text-white"><span className="font-light">Shop</span> <span className="font-bold">MALL</span></span>
+    <footer className="bg-[#090e1a] text-gray-400 pt-20 pb-10 relative overflow-hidden mt-auto">
+      {/* Background Subtle Glows */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-indigo-500/5 blur-[100px] rounded-full pointer-events-none" />
+
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-16">
+          {/* Brand & Description */}
+          <div className="lg:col-span-4 space-y-8">
+            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onNavigate("home")}>
+              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-lg shadow-blue-900/20 group-hover:scale-105 transition-transform">
+                <div className="h-6 w-6 border-4 border-white/30 border-t-white rounded-full animate-spin-slow" />
+              </div>
+              <span className="text-2xl tracking-tighter text-white">
+                <span className="font-light italic">Shop</span> <span className="font-black text-blue-500">MALL</span>
+              </span>
             </div>
-            <p className="text-sm text-gray-400 mb-4 max-w-sm">
-              Điểm đến cao cấp cho các sản phẩm chất lượng. Chúng tôi mang đến cho bạn bộ sưu tập tốt nhất về điện tử, thời trang và đồ gia dụng.
+
+            <p className="text-base text-gray-400 leading-relaxed max-w-sm">
+              Định nghĩa lại trải nghiệm mua sắm trực tuyến với sự kết hợp hoàn hảo giữa công nghệ hiện đại và dịch vụ tận tâm.
             </p>
-            <div className="flex gap-2">
-              <Button size="icon" variant="ghost" className="text-gray-400 hover:text-white hover:bg-white/10">
-                <Facebook className="h-4 w-4" />
-              </Button>
-              <Button size="icon" variant="ghost" className="text-gray-400 hover:text-white hover:bg-white/10">
-                <Twitter className="h-4 w-4" />
-              </Button>
-              <Button size="icon" variant="ghost" className="text-gray-400 hover:text-white hover:bg-white/10">
-                <Instagram className="h-4 w-4" />
-              </Button>
-              <Button size="icon" variant="ghost" className="text-gray-400 hover:text-white hover:bg-white/10">
-                <Youtube className="h-4 w-4" />
-              </Button>
+
+            <div className="flex gap-4">
+              {[
+                { icon: <Facebook className="h-5 w-5" />, label: "Facebook" },
+                { icon: <Twitter className="h-5 w-5" />, label: "Twitter" },
+                { icon: <Instagram className="h-5 w-5" />, label: "Instagram" },
+                { icon: <Youtube className="h-5 w-5" />, label: "Youtube" }
+              ].map((social, idx) => (
+                <motion.button
+                  key={idx}
+                  whileHover={{ y: -4, color: "#3b82f6" }}
+                  className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-blue-500/50 transition-all text-gray-400"
+                >
+                  {social.icon}
+                </motion.button>
+              ))}
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="mb-4 text-white">Liên kết nhanh</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <button onClick={() => onNavigate("about")} className="text-gray-400 hover:text-white transition-colors">
-                  Giới thiệu
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate("shop")} className="text-gray-400 hover:text-white transition-colors">
-                  Cửa hàng
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate("contact")} className="text-gray-400 hover:text-white transition-colors">
-                  Liên hệ
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate("careers")} className="text-gray-400 hover:text-white transition-colors">
-                  Tuyển dụng
-                </button>
-              </li>
+          {/* Navigation Links */}
+          <div className="lg:col-span-2">
+            <h3 className="text-white font-black uppercase tracking-widest text-xs mb-8">Khám phá</h3>
+            <ul className="space-y-4">
+              {["Giới thiệu", "Cửa hàng", "Liên hệ", "Tuyển dụng"].map((item, idx) => (
+                <li key={idx}>
+                  <button
+                    onClick={() => onNavigate(item === "Cửa hàng" ? "shop" : item.toLowerCase())}
+                    className="group flex items-center text-sm font-medium hover:text-white transition-colors"
+                  >
+                    <span className="h-px w-0 bg-blue-500 mr-0 group-hover:w-3 group-hover:mr-2 transition-all duration-300" />
+                    {item}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Customer Service */}
-          <div>
-            <h3 className="mb-4 text-white">Dịch vụ khách hàng</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <button onClick={() => onNavigate("help")} className="text-gray-400 hover:text-white transition-colors">
-                  Trung tâm hỗ trợ
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate("orders")} className="text-gray-400 hover:text-white transition-colors">
-                  Theo dõi đơn hàng
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate("returns")} className="text-gray-400 hover:text-white transition-colors">
-                  Đổi trả
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate("shipping")} className="text-gray-400 hover:text-white transition-colors">
-                  Thông tin vận chuyển
-                </button>
-              </li>
+          <div className="lg:col-span-2">
+            <h3 className="text-white font-black uppercase tracking-widest text-xs mb-8">Hỗ trợ</h3>
+            <ul className="space-y-4">
+              {["Trung tâm trợ giúp", "Theo dõi đơn", "Chính sách đổi trả", "Vận chuyển"].map((item, idx) => (
+                <li key={idx}>
+                  <button
+                    onClick={() => onNavigate("help")}
+                    className="group flex items-center text-sm font-medium hover:text-white transition-colors"
+                  >
+                    <span className="h-px w-0 bg-blue-500 mr-0 group-hover:w-3 group-hover:mr-2 transition-all duration-300" />
+                    {item}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Legal */}
-          <div>
-            <h3 className="mb-4 text-white">Pháp lý</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <button onClick={() => onNavigate("privacy")} className="text-gray-400 hover:text-white transition-colors">
-                  Chính sách bảo mật
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate("terms")} className="text-gray-400 hover:text-white transition-colors">
-                  Điều khoản dịch vụ
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate("cookies")} className="text-gray-400 hover:text-white transition-colors">
-                  Chính sách Cookie
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate("gdpr")} className="text-gray-400 hover:text-white transition-colors">
-                  GDPR
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Newsletter */}
-        <div className="mt-12 pt-8 border-t border-gray-700">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-              <h3 className="text-white mb-1">Đăng ký nhận bản tin</h3>
-              <p className="text-sm text-gray-400">Nhận thông tin cập nhật mới nhất về sản phẩm mới và khuyến mãi sắp tới</p>
+          {/* Newsletter & App Download */}
+          <div className="lg:col-span-4 space-y-10">
+            <div className="space-y-4">
+              <h3 className="text-white font-black uppercase tracking-widest text-xs">Tham gia bản tin</h3>
+              <p className="text-sm text-gray-500">Nhận ưu đãi độc quyền và cập nhật mới nhất.</p>
+              <div className="flex gap-2 p-1 bg-white/5 backdrop-blur-md rounded-2xl border border-white/5 focus-within:border-blue-500/50 transition-all">
+                <Input
+                  type="email"
+                  placeholder="Email của bạn..."
+                  className="bg-transparent border-none text-white placeholder:text-gray-600 focus-visible:ring-0 h-10"
+                />
+                <Button className="bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl px-6 h-10 transition-transform active:scale-95 shadow-lg shadow-amber-500/20">
+                  Gửi
+                </Button>
+              </div>
             </div>
-            <div className="flex w-full md:w-auto gap-2">
-              <Input
-                type="email"
-                placeholder="Nhập email của bạn"
-                className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 md:w-64"
-              />
-              <Button className="bg-amber-500 hover:bg-amber-600 text-white">
-                <Mail className="h-4 w-4 mr-2" />
-                Đăng ký
-              </Button>
+
+            <div className="space-y-4">
+              <h3 className="text-white font-black uppercase tracking-widest text-xs">Tải ứng dụng</h3>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="outline" className="h-12 px-5 bg-white/5 border-white/10 hover:bg-white hover:text-black rounded-xl flex items-center gap-3 group transition-all">
+                  <Apple className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                  <div className="text-left leading-none">
+                    <p className="text-[10px] opacity-70">Download on</p>
+                    <p className="text-sm font-bold">App Store</p>
+                  </div>
+                </Button>
+                <Button variant="outline" className="h-12 px-5 bg-white/5 border-white/10 hover:bg-white hover:text-black rounded-xl flex items-center gap-3 group transition-all">
+                  <Smartphone className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                  <div className="text-left leading-none">
+                    <p className="text-[10px] opacity-70">Get it on</p>
+                    <p className="text-sm font-bold">CH Play</p>
+                  </div>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-gray-700 text-center text-sm text-gray-400">
-          <p>&copy; 2025 Shop MALL. Tất cả quyền được bảo lưu.</p>
+        <Separator className="bg-white/5 mb-8" />
+
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs font-bold uppercase tracking-widest">
+          <div className="flex gap-8">
+            <button onClick={() => onNavigate("privacy")} className="hover:text-blue-500 transition-colors">Privacy Policy</button>
+            <button onClick={() => onNavigate("terms")} className="hover:text-blue-500 transition-colors">Terms of Service</button>
+            <button onClick={() => onNavigate("cookies")} className="hover:text-blue-500 transition-colors">Cookies</button>
+          </div>
+          <p className="text-gray-600">&copy; {currentYear} SHOP MALL</p>
         </div>
       </div>
+
+      {/* Bottom Corner Accent */}
+      <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-blue-600/10 to-transparent pointer-events-none" />
     </footer>
   );
 }
