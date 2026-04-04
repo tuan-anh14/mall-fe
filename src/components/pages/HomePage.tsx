@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ArrowRight, Zap, Shield, Truck, Headphones, Tag, X, Sparkles, Laptop, Shirt, Home, Trophy, ShoppingBag, Camera, Book, Layers } from "lucide-react";
+import { ArrowRight, Zap, Shield, Truck, Headphones, Tag, X, Sparkles, Laptop, Shirt, Home, Trophy, ShoppingBag, Camera, Book, Layers, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { ProductCard } from "../ProductCard";
@@ -79,6 +79,7 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
 
   // Auto-rotate featured product every 5 seconds
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
+  const [currentPromoIndex, setCurrentPromoIndex] = useState(0);
   const featuredProductsForHero = featuredProducts.length > 0 ? featuredProducts : [];
 
   useEffect(() => {
@@ -139,6 +140,25 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
   const handleViewTrending = useCallback((id: string | number) => {
     onNavigate("product", trendingProducts.find((p) => p.id === id));
   }, [trendingProducts, onNavigate]);
+
+  // Handle Promo Navigation
+  useEffect(() => {
+    if (promotions.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentPromoIndex((prev) => (prev + 1) % promotions.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [promotions.length]);
+
+  const handleNextPromo = useCallback(() => {
+    if (promotions.length === 0) return;
+    setCurrentPromoIndex((prev) => (prev + 1) % promotions.length);
+  }, [promotions.length]);
+
+  const handlePrevPromo = useCallback(() => {
+    if (promotions.length === 0) return;
+    setCurrentPromoIndex((prev) => (prev - 1 + promotions.length) % promotions.length);
+  }, [promotions.length]);
 
   const handleAddToCart = useCallback((prod: any) => {
     onAddToCart?.(prod);
@@ -508,38 +528,41 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
       {/* ── Promotional Banner ── */}
       {promotions.length > 0 && (
         <section className="py-16 container mx-auto px-4">
-          <div className="space-y-10">
-            {promotions.map((promo) => {
-              const discountLabel = promo.type === "PERCENTAGE"
-                ? `${promo.value}%`
-                : `${formatCurrency(Number(promo.value))}`;
-              const title = promo.name || `Giảm ${discountLabel}`;
-              const desc = promo.description || `Sử dụng mã ${promo.code} để được giảm ngay ${discountLabel}. Khám phá những ưu đãi giới hạn chỉ dành riêng cho bạn.`;
-              const hasExpiry = !!promo.validUntil;
+          <motion.div
+            variants={sectionReveal}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            className="group relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0a0f1d] via-[#111827] to-[#1e1b4b] border border-white/5 shadow-2xl"
+          >
+            {/* Decorative Background Glows */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/4" />
+              <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-600/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/4" />
+            </div>
 
-              return (
-                <motion.div
-                  key={promo.id}
-                  variants={sectionReveal}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-80px" }}
-                  className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0a0f1d] via-[#111827] to-[#1e1b4b] border border-white/5 shadow-2xl"
-                >
-                  {/* Decorative Background Glows */}
-                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/4" />
-                    <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-600/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/4" />
-                  </div>
+            <div className="relative z-10 grid lg:grid-cols-2 gap-8 items-center p-8 md:p-14">
+              {/* Left Column: Promotion Details (Animated) */}
+              <div className="relative min-h-[380px] flex flex-col justify-center">
+                <AnimatePresence mode="wait">
+                  {promotions.map((promo, idx) => {
+                    if (idx !== currentPromoIndex) return null;
 
-                  <div className="relative z-10 grid lg:grid-cols-2 gap-8 items-center p-8 md:p-14">
-                    {/* Left Column: Promotion Details */}
-                    <div>
+                    const discountLabel = promo.type === "PERCENTAGE"
+                      ? `${promo.value}%`
+                      : `${formatCurrency(Number(promo.value))}`;
+                    const title = promo.name || `Giảm ${discountLabel}`;
+                    const desc = promo.description || `Sử dụng mã ${promo.code} để được giảm ngay ${discountLabel}. Khám phá những ưu đãi giới hạn chỉ dành riêng cho bạn.`;
+                    const hasExpiry = !!promo.validUntil;
+
+                    return (
                       <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
+                        key={promo.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        className="w-full"
                       >
                         <Badge className="mb-5 bg-white/5 text-blue-400 border-white/10 backdrop-blur-md px-3.5 py-1 text-xs font-semibold tracking-wider uppercase">
                           {hasExpiry ? (
@@ -549,121 +572,121 @@ export function HomePage({ onNavigate, onAddToCart, onAddToWishlist, isInWishlis
                             </span>
                           ) : "Ưu đãi đặc quyền"}
                         </Badge>
-                      </motion.div>
 
-                      <motion.h2
-                        initial={{ opacity: 0, y: 15 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
-                        className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight tracking-tight"
-                      >
-                        {promo.name ? (
-                          <>
-                            {promo.name.split(discountLabel)[0]}
-                            <span className="text-amber-400">{discountLabel}</span>
-                            {promo.name.split(discountLabel)[1]}
-                          </>
-                        ) : (
-                          <>Giảm ngay <span className="text-amber-400">{discountLabel}</span></>
-                        )}
-                      </motion.h2>
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight tracking-tight">
+                          {promo.name ? (
+                            <>
+                              {promo.name.split(discountLabel)[0]}
+                              <span className="text-amber-400">{discountLabel}</span>
+                              {promo.name.split(discountLabel)[1]}
+                            </>
+                          ) : (
+                            <>Giảm ngay <span className="text-amber-400">{discountLabel}</span></>
+                          )}
+                        </h2>
 
-                      <motion.p
-                        initial={{ opacity: 0, y: 15 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                        className="text-base text-slate-400 mb-6 leading-relaxed max-w-lg"
-                      >
-                        {desc}
-                      </motion.p>
+                        <p className="text-base text-slate-400 mb-6 leading-relaxed max-w-lg">
+                          {desc}
+                        </p>
 
-                      <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
-                        className="flex flex-wrap items-center gap-5 mb-8"
-                      >
-                        <div className="group relative">
-                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur opacity-10 group-hover:opacity-30 transition duration-500" />
-                          <div className="relative flex items-center gap-2.5 bg-[#111827] border border-white/10 rounded-xl px-4 py-2.5">
-                            <Tag className="h-4 w-4 text-blue-500" />
-                            <span className="text-lg font-mono font-bold text-white tracking-widest">{promo.code}</span>
+                        <div className="flex flex-wrap items-center gap-5 mb-8">
+                          <div className="group/code relative">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur opacity-10 group-hover/code:opacity-30 transition duration-500" />
+                            <div className="relative flex items-center gap-2.5 bg-[#111827] border border-white/10 rounded-xl px-4 py-2.5">
+                              <Tag className="h-4 w-4 text-blue-500" />
+                              <span className="text-lg font-mono font-bold text-white tracking-widest">{promo.code}</span>
+                            </div>
                           </div>
+
+                          {promo.minOrderAmount && (
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Yêu cầu</span>
+                              <span className="text-xs font-semibold text-white">Đơn từ {formatCurrency(Number(promo.minOrderAmount))}</span>
+                            </div>
+                          )}
                         </div>
 
-                        {promo.minOrderAmount && (
-                          <div className="flex flex-col">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Yêu cầu</span>
-                            <span className="text-xs font-semibold text-white">Đơn từ {formatCurrency(Number(promo.minOrderAmount))}</span>
-                          </div>
-                        )}
-                      </motion.div>
-
-                      <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.4 }}
-                      >
                         <Button
                           size="lg"
                           onClick={() => onNavigate("shop")}
-                          className="bg-amber-500 hover:bg-amber-400 text-white shadow-xl shadow-amber-500/10 px-8 h-12 rounded-xl text-base font-bold group"
+                          className="bg-amber-500 hover:bg-amber-400 text-white shadow-xl shadow-amber-500/10 px-8 h-12 rounded-xl text-base font-bold group/btn"
                         >
                           Sử dụng ngay
-                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                         </Button>
                       </motion.div>
-                    </div>
+                    );
+                  })}
+                </AnimatePresence>
+              </div>
 
-                    {/* Right Column: 3D Asset Animation */}
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                      className="relative flex justify-center lg:justify-end"
-                    >
-                      <motion.div
-                        animate={{
-                          y: [0, -12, 0],
-                          rotate: [0, 1.5, 0]
-                        }}
-                        transition={{
-                          duration: 5,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                        className="relative z-10 w-full max-w-[340px]"
-                      >
-                        <div className="absolute inset-0 bg-blue-500/15 blur-[80px] rounded-full scale-75" />
-                        <img
-                          src="https://res.cloudinary.com/dmxrgoj0g/image/upload/v1775142169/shopmall/products/rxfyufkohyxgzosgldet.jpg"
-                          alt="Ưu đãi giới hạn"
-                          className="relative z-10 w-full drop-shadow-[0_15px_40px_rgba(0,0,0,0.4)]"
-                        />
-                      </motion.div>
-                      
-                      {/* Floating Decorative Elements */}
-                      <motion.div 
-                        animate={{ y: [0, 20, 0] }}
-                        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute top-5 right-5 w-3 h-3 bg-amber-400/20 rounded-full blur-md"
-                      />
-                      <motion.div 
-                        animate={{ y: [15, -8, 15] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute bottom-10 left-5 w-4 h-4 bg-blue-400/15 rounded-full blur-lg"
-                      />
-                    </motion.div>
-                  </div>
+              {/* Right Column: 3D Asset Animation (Static) */}
+              <div className="relative flex justify-center lg:justify-end">
+                <motion.div
+                  animate={{
+                    y: [0, -12, 0],
+                    rotate: [0, 1.5, 0]
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="relative z-10 w-full max-w-[340px]"
+                >
+                  <div className="absolute inset-0 bg-blue-500/15 blur-[80px] rounded-full scale-75" />
+                  <img
+                    src="https://res.cloudinary.com/dmxrgoj0g/image/upload/v1775142169/shopmall/products/rxfyufkohyxgzosgldet.jpg"
+                    alt="Ưu đãi giới hạn"
+                    className="relative z-10 w-full drop-shadow-[0_15px_40px_rgba(0,0,0,0.4)]"
+                  />
                 </motion.div>
-              );
-            })}
-          </div>
+                
+                {/* Floating Decorative Elements */}
+                <motion.div 
+                  animate={{ y: [0, 20, 0] }}
+                  transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute top-5 right-5 w-3 h-3 bg-amber-400/20 rounded-full blur-md"
+                />
+                <motion.div 
+                  animate={{ y: [15, -8, 15] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute bottom-10 left-5 w-4 h-4 bg-blue-400/15 rounded-full blur-lg"
+                />
+              </div>
+            </div>
+
+            {/* Navigation Controls */}
+            {promotions.length > 1 && (
+              <>
+                <button
+                  onClick={handlePrevPromo}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/10 hover:scale-110"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+                <button
+                  onClick={handleNextPromo}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/10 hover:scale-110"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+
+                {/* Pagination Dots */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                  {promotions.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentPromoIndex(idx)}
+                      className={`h-1.5 rounded-full transition-all duration-500 ${
+                        idx === currentPromoIndex ? "w-8 bg-amber-400" : "w-1.5 bg-white/20 hover:bg-white/40"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </motion.div>
         </section>
       )}
 
