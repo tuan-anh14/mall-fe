@@ -7,6 +7,7 @@ import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { get } from "../../lib/api";
 import { toast } from "sonner";
 import { formatCurrency } from "../../lib/currency";
+import { SellerVouchers } from "../SellerVouchers";
 
 interface SellerProfilePageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -16,6 +17,7 @@ interface SellerProfilePageProps {
 export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePageProps) {
   const [seller, setSeller] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
+  const [coupons, setCoupons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,11 +30,12 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
     const fetchSellerProfile = async () => {
       setLoading(true);
       try {
-        const res = await get<{ seller: any; products: any[] }>(
+        const res = await get<{ seller: any; products: any[]; coupons: any[] }>(
           `/api/v1/products/sellers/${sellerUserId}`
         );
         setSeller(res.seller);
         setProducts(res.products ?? []);
+        setCoupons(res.coupons ?? []);
       } catch (err: any) {
         toast.error(err.message || "Không thể tải hồ sơ người bán");
         onNavigate("shop");
@@ -145,6 +148,9 @@ export function SellerProfilePage({ onNavigate, sellerUserId }: SellerProfilePag
           </div>
         </div>
       </div>
+
+      {/* Seller Vouchers */}
+      <SellerVouchers coupons={coupons} />
 
       {/* Products Grid */}
       <div>

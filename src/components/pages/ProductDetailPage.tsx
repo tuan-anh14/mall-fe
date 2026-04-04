@@ -14,6 +14,7 @@ import { viewHistoryService } from "../../services/viewHistory.service";
 import { formatCurrency } from "../../lib/currency";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import EmojiPicker, { Theme } from "emoji-picker-react";
+import { SellerVouchers } from "../SellerVouchers";
 
 interface ReviewReply {
   id: string;
@@ -131,6 +132,9 @@ export function ProductDetailPage({
   const [isUploadingReplyImage, setIsUploadingReplyImage] = useState(false);
   const replyImageInputRef = useRef<HTMLInputElement>(null);
 
+  const [coupons, setCoupons] = useState<any[]>([]);
+  const [couponsLoading, setCouponsLoading] = useState(false);
+
   const onReviewEmojiClick = (emojiData: any) => {
     setReviewEmoji(emojiData.emoji);
   };
@@ -147,7 +151,20 @@ export function ProductDetailPage({
     fetchRelated();
     fetchReviewEligibility();
     fetchSimilar();
+    fetchCoupons();
   }, [product.id, isAuthenticated]);
+
+  const fetchCoupons = async () => {
+    setCouponsLoading(true);
+    try {
+      const data = await get(`/api/v1/products/${product.id}`);
+      setCoupons(data.coupons ?? []);
+    } catch {
+      // ignore
+    } finally {
+      setCouponsLoading(false);
+    }
+  };
 
   const fetchRelated = async () => {
     setRelatedLoading(true);
@@ -711,6 +728,9 @@ export function ProductDetailPage({
             </div>
           </div>
         </div>
+
+        {/* Seller Vouchers */}
+        <SellerVouchers coupons={coupons} />
 
         {/* Tabs Section */}
         <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
