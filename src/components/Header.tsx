@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Search,
   ShoppingCart,
@@ -157,6 +157,16 @@ export function Header({
   const [cartLoading, setCartLoading] = useState(false);
   const [cartTotal, setCartTotal] = useState(0);
   const [promotions, setPromotions] = useState<PlatformPromotion[]>([]);
+  const [currentPromoIndex, setCurrentPromoIndex] = useState(0);
+
+  // Auto-cycle promotions
+  useEffect(() => {
+    if (promotions.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentPromoIndex((prev) => (prev + 1) % promotions.length);
+    }, 3000); // Cycle every 6 seconds
+    return () => clearInterval(interval);
+  }, [promotions.length]);
 
   // Keep localUnread in sync with prop
   useEffect(() => {
@@ -254,8 +264,8 @@ export function Header({
   const isSeller = user?.userType === "seller";
   const hasPendingRequest = user?.sellerRequestStatus === "PENDING";
   const hasRejectedRequest = user?.sellerRequestStatus === "REJECTED";
-  const topPromotion = promotions[0];
-  const topBannerText = topPromotion ? getPromotionBannerText(topPromotion) : null;
+  const currentPromotion = promotions[currentPromoIndex];
+  const currentBannerText = currentPromotion ? getPromotionBannerText(currentPromotion) : null;
 
   const navItems = [
     { key: "home", label: "Trang chủ", icon: <TrendingUp className="h-4.5 w-4.5" /> },
@@ -269,13 +279,22 @@ export function Header({
     <>
       <header className="sticky top-0 z-50 w-full">
         {/* Top Banner */}
-        {topPromotion && (
-          <div className="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950 py-1.5">
-            <p className="text-xs text-blue-100/80 tracking-wide text-center w-full">
-              <span className="font-mono font-semibold text-amber-300">{topPromotion.code}</span>
-              <span className="mx-2 text-blue-200/50">|</span>
-              {topBannerText}
-            </p>
+        {currentPromotion && (
+          <div className="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950 py-1.5 overflow-hidden h-7 flex items-center">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={currentPromotion.id}
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -10, opacity: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="text-[11px] text-blue-100/80 tracking-wide text-center w-full"
+              >
+                <span className="font-mono font-semibold text-amber-300">{currentPromotion.code}</span>
+                <span className="mx-2 text-blue-200/50">|</span>
+                {currentBannerText}
+              </motion.p>
+            </AnimatePresence>
           </div>
         )}
         <div className="hidden bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950 py-1.5">
