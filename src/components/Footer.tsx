@@ -107,14 +107,14 @@ export function Footer({ onNavigate }: FooterProps) {
             <div className="space-y-4">
               <h3 className="text-white font-black uppercase tracking-widest text-xs">Tải ứng dụng</h3>
               <div className="flex flex-wrap gap-3">
-                <Button variant="outline" className="h-12 px-5 bg-white/5 border-white/10 hover:bg-white hover:text-black rounded-xl flex items-center gap-3 group transition-all">
+                <Button variant="outline" className="h-12 px-5 bg-white text-black border-white hover:bg-gray-100 rounded-xl flex items-center gap-3 group transition-all">
                   <Apple className="h-6 w-6 group-hover:scale-110 transition-transform" />
                   <div className="text-left leading-none">
                     <p className="text-[10px] opacity-70">Download on</p>
                     <p className="text-sm font-bold">App Store</p>
                   </div>
                 </Button>
-                <Button variant="outline" className="h-12 px-5 bg-white/5 border-white/10 hover:bg-white hover:text-black rounded-xl flex items-center gap-3 group transition-all">
+                <Button variant="outline" className="h-12 px-5 bg-white text-black border-white hover:bg-gray-100 rounded-xl flex items-center gap-3 group transition-all">
                   <Smartphone className="h-6 w-6 group-hover:scale-110 transition-transform" />
                   <div className="text-left leading-none">
                     <p className="text-[10px] opacity-70">Get it on</p>
