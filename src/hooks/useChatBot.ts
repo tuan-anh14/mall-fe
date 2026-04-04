@@ -35,7 +35,7 @@ export function useChatBot() {
 
     try {
       // Call AI Chat API
-      const response = await post<{ message: string }>('/ai-chat', { message: content });
+      const response = await post<{ message: string }>('/api/v1/ai-chat', { message: content });
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
