@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Plus, Search, Edit, Trash2, Eye, Package } from "lucide-react";
+import { formatCurrency } from "../../lib/currency";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
@@ -203,7 +204,7 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                         </div>
                       </TableCell>
                       <TableCell className="text-gray-600">{product.category?.name ?? "-"}</TableCell>
-                      <TableCell className="text-gray-900">${product.price}</TableCell>
+                      <TableCell className="text-gray-900">{formatCurrency(product.price)}</TableCell>
                       <TableCell>
                         <Badge
                           className={

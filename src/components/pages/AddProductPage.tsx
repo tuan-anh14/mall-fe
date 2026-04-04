@@ -168,6 +168,11 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
       return;
     }
 
+    if (formData.originalPrice && Number(formData.price) > Number(formData.originalPrice)) {
+      toast.error("Giá bán sau khi giảm không thể lớn hơn giá gốc");
+      return;
+    }
+
     const payload = {
       name: formData.name,
       description: formData.description || undefined,
@@ -336,7 +341,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
               </div>
             </div>
 
-            {/* Stock and SKU */}
+            {/* Stock */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="stock" className="text-gray-900 mb-2 block">
@@ -352,20 +357,6 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   placeholder="0"
                   className="bg-gray-50 border-gray-200 text-gray-900"
                   required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="sku" className="text-gray-900 mb-2 block">
-                  SKU
-                </Label>
-                <Input
-                  id="sku"
-                  name="sku"
-                  value={formData.sku}
-                  onChange={handleInputChange}
-                  placeholder="SKU-001"
-                  className="bg-gray-50 border-gray-200 text-gray-900"
                 />
               </div>
             </div>
