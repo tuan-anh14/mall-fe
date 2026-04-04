@@ -335,7 +335,7 @@ export function SellerCouponsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="PERCENTAGE">Phần trăm (%)</SelectItem>
-                    <SelectItem value="FIXED_AMOUNT">Số tiền cố định ($)</SelectItem>
+                    <SelectItem value="FIXED_AMOUNT">Số tiền cố định (₫)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -348,7 +348,7 @@ export function SellerCouponsPage() {
                   type="number"
                   value={form.value}
                   onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
-                  placeholder={form.type === "PERCENTAGE" ? "VD: 20" : "VD: 50"}
+                  placeholder={form.type === "PERCENTAGE" ? "VD: 20" : "VD: 50.000"}
                   className="bg-gray-50 border-gray-200"
                 />
               </div>
@@ -368,7 +368,7 @@ export function SellerCouponsPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Giảm tối đa ($)</Label>
+                <Label>Giảm tối đa (₫)</Label>
                 <Input
                   type="number"
                   value={form.maxDiscount}

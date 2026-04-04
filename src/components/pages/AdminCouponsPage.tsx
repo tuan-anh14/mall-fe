@@ -228,22 +228,22 @@ export function AdminCouponsPage() {
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="PERCENTAGE" className="text-gray-900">Phần trăm (%)</SelectItem>
-                  <SelectItem value="FIXED_AMOUNT" className="text-gray-900">Số tiền cố định ($)</SelectItem>
+                  <SelectItem value="FIXED_AMOUNT" className="text-gray-900">Số tiền cố định (₫)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="text-gray-500 text-xs mb-1 block">Giá trị * {form.type === "PERCENTAGE" ? "(%)" : "($)"}</label>
-              <Input type="number" value={form.value} onChange={(e) => setForm(f => ({ ...f, value: e.target.value }))} placeholder={form.type === "PERCENTAGE" ? "20" : "50"} className="bg-gray-50 border-gray-200 text-gray-900" />
+              <label className="text-gray-500 text-xs mb-1 block">Giá trị * {form.type === "PERCENTAGE" ? "(%)" : "(₫)"}</label>
+              <Input type="number" value={form.value} onChange={(e) => setForm(f => ({ ...f, value: e.target.value }))} placeholder={form.type === "PERCENTAGE" ? "20" : "50.000"} className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
             <div>
-              <label className="text-gray-500 text-xs mb-1 block">Đơn hàng tối thiểu ($)</label>
-              <Input type="number" value={form.minOrderAmount} onChange={(e) => setForm(f => ({ ...f, minOrderAmount: e.target.value }))} placeholder="100" className="bg-gray-50 border-gray-200 text-gray-900" />
+              <label className="text-gray-500 text-xs mb-1 block">Đơn hàng tối thiểu (₫)</label>
+              <Input type="number" value={form.minOrderAmount} onChange={(e) => setForm(f => ({ ...f, minOrderAmount: e.target.value }))} placeholder="100.000" className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
             {form.type === "PERCENTAGE" && (
               <div>
-                <label className="text-gray-500 text-xs mb-1 block">Giảm tối đa ($)</label>
-                <Input type="number" value={form.maxDiscount} onChange={(e) => setForm(f => ({ ...f, maxDiscount: e.target.value }))} placeholder="50" className="bg-gray-50 border-gray-200 text-gray-900" />
+                <label className="text-gray-500 text-xs mb-1 block">Giảm tối đa (₫)</label>
+                <Input type="number" value={form.maxDiscount} onChange={(e) => setForm(f => ({ ...f, maxDiscount: e.target.value }))} placeholder="50.000" className="bg-gray-50 border-gray-200 text-gray-900" />
               </div>
             )}
             <div>
