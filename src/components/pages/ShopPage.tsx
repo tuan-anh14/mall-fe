@@ -55,10 +55,13 @@ interface FiltersContentProps {
   toggleBrand: (brand: string) => void;
   selectedRating: number | null;
   setSelectedRating: React.Dispatch<React.SetStateAction<number | null>>;
+  isFeatured: boolean;
+  setIsFeatured: (val: boolean) => void;
+  isTrending: boolean;
+  setIsTrending: (val: boolean) => void;
   clearFilters: () => void;
   maxPriceLimit: number;
 }
-
 const FiltersContent = memo(function FiltersContent({
   categories,
   selectedCategories,
@@ -70,11 +73,48 @@ const FiltersContent = memo(function FiltersContent({
   toggleBrand,
   selectedRating,
   setSelectedRating,
+  isFeatured,
+  setIsFeatured,
+  isTrending,
+  setIsTrending,
   clearFilters,
   maxPriceLimit,
 }: FiltersContentProps) {
   return (
     <div className="space-y-7">
+      {/* Promotion Filters */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Ưu đãi & Xu hướng</h3>
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2.5 group">
+            <Checkbox
+              id="filter-featured"
+              checked={isFeatured}
+              onCheckedChange={(val) => setIsFeatured(!!val)}
+            />
+            <Label
+              htmlFor="filter-featured"
+              className="text-sm text-gray-600 cursor-pointer group-hover:text-amber-600 transition-colors duration-200 flex items-center gap-2"
+            >
+              <span>Sản phẩm nổi bật</span>
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2.5 group">
+            <Checkbox
+              id="filter-trending"
+              checked={isTrending}
+              onCheckedChange={(val) => setIsTrending(!!val)}
+            />
+            <Label
+              htmlFor="filter-trending"
+              className="text-sm text-gray-600 cursor-pointer group-hover:text-blue-600 transition-colors duration-200 flex items-center gap-2"
+            >
+              <span>Đang xu hướng</span>
+            </Label>
+          </div>
+        </div>
+      </div>
+
       {/* Categories */}
       <div>
         <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Danh mục</h3>
@@ -150,11 +190,10 @@ const FiltersContent = memo(function FiltersContent({
               onClick={() =>
                 setSelectedRating(selectedRating === rating ? null : rating)
               }
-              className={`flex items-center gap-2 text-sm w-full px-3 py-2 rounded-xl transition-all duration-200 ${
-                selectedRating === rating
-                  ? "bg-blue-50 text-blue-700 border border-blue-200 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border border-transparent"
-              }`}
+              className={`flex items-center gap-2 text-sm w-full px-3 py-2 rounded-xl transition-all duration-200 ${selectedRating === rating
+                ? "bg-blue-50 text-blue-700 border border-blue-200 shadow-sm"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border border-transparent"
+                }`}
             >
               <span className="text-xs">{"⭐".repeat(rating)}</span>
               <span>trở lên</span>
@@ -204,6 +243,8 @@ export function ShopPage({
   );
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
+  const [isFeatured, setIsFeatured] = useState(false);
+  const [isTrending, setIsTrending] = useState(false);
   const [sortBy, setSortBy] = useState("popularity");
   const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
 
@@ -263,7 +304,7 @@ export function ShopPage({
   // Reset to page 1 when filters change (not when page itself changes)
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategories, selectedBrands, selectedRating, debouncedPriceRange, sortBy, searchQuery]);
+  }, [selectedCategories, selectedBrands, selectedRating, debouncedPriceRange, sortBy, searchQuery, isFeatured, isTrending]);
 
   // Fetch products whenever filters or page changes
   useEffect(() => {
@@ -292,6 +333,12 @@ export function ShopPage({
         if (selectedRating !== null) {
           params.set("rating", String(selectedRating));
         }
+        if (isFeatured) {
+          params.set("featured", "true");
+        }
+        if (isTrending) {
+          params.set("trending", "true");
+        }
         params.set("sort", SORT_MAP[sortBy] ?? "popular");
 
         const res = await get<{
@@ -301,6 +348,7 @@ export function ShopPage({
           limit: number;
           totalPages: number;
           maxPrice?: number;
+          brands?: string[];
         }>(`/api/v1/products?${params.toString()}`);
 
         const fetched = res.products ?? [];
@@ -311,14 +359,9 @@ export function ShopPage({
           setMaxPriceLimit(res.maxPrice);
         }
 
-        // Derive brands from fetched products
-        const uniqueBrands = Array.from(
-          new Set(fetched.map((p: any) => p.brand).filter(Boolean)),
-        ) as string[];
-        setBrands((prev) => {
-          const merged = Array.from(new Set([...prev, ...uniqueBrands]));
-          return merged;
-        });
+        if (res.brands) {
+          setBrands(res.brands);
+        }
       } catch (err) {
         console.error("Failed to load products:", err);
       } finally {
@@ -335,6 +378,8 @@ export function ShopPage({
     sortBy,
     searchQuery,
     currentPage,
+    isFeatured,
+    isTrending,
   ]);
 
   const toggleCategory = useCallback((category: string) => {
@@ -355,11 +400,13 @@ export function ShopPage({
     setSelectedCategories([]);
     setSelectedBrands([]);
     setSelectedRating(null);
+    setIsFeatured(false);
+    setIsTrending(false);
     setPriceRange([0, maxPriceLimit]);
     setDebouncedPriceRange([0, maxPriceLimit]);
     setSearchQuery("");
     setCurrentPage(1);
-  }, []);
+  }, [maxPriceLimit]);
 
   const handleViewProduct = useCallback(
     (id: string | number) => {
@@ -378,7 +425,7 @@ export function ShopPage({
     [onAddToCart],
   );
 
-  const hasActiveFilters = selectedCategories.length > 0 || selectedBrands.length > 0 || selectedRating !== null || searchQuery;
+  const hasActiveFilters = selectedCategories.length > 0 || selectedBrands.length > 0 || selectedRating !== null || searchQuery || isFeatured || isTrending;
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -461,6 +508,10 @@ export function ShopPage({
                       toggleBrand={toggleBrand}
                       selectedRating={selectedRating}
                       setSelectedRating={setSelectedRating}
+                      isFeatured={isFeatured}
+                      setIsFeatured={setIsFeatured}
+                      isTrending={isTrending}
+                      setIsTrending={setIsTrending}
                       clearFilters={clearFilters}
                       maxPriceLimit={maxPriceLimit}
                     />
@@ -528,6 +579,26 @@ export function ShopPage({
                     <X className="h-3 w-3 ml-0.5" />
                   </Badge>
                 )}
+                {isFeatured && (
+                  <Badge
+                    variant="secondary"
+                    className="cursor-pointer bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors duration-200 rounded-lg px-3 py-1 gap-1.5"
+                    onClick={() => setIsFeatured(false)}
+                  >
+                    Nổi bật
+                    <X className="h-3 w-3 ml-0.5" />
+                  </Badge>
+                )}
+                {isTrending && (
+                  <Badge
+                    variant="secondary"
+                    className="cursor-pointer bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors duration-200 rounded-lg px-3 py-1 gap-1.5"
+                    onClick={() => setIsTrending(false)}
+                  >
+                    Xu hướng
+                    <X className="h-3 w-3 ml-0.5" />
+                  </Badge>
+                )}
                 <button
                   onClick={clearFilters}
                   className="text-sm text-gray-500 hover:text-red-600 transition-colors duration-200 ml-2 underline underline-offset-2"
@@ -567,6 +638,10 @@ export function ShopPage({
                   toggleBrand={toggleBrand}
                   selectedRating={selectedRating}
                   setSelectedRating={setSelectedRating}
+                  isFeatured={isFeatured}
+                  setIsFeatured={setIsFeatured}
+                  isTrending={isTrending}
+                  setIsTrending={setIsTrending}
                   clearFilters={clearFilters}
                   maxPriceLimit={maxPriceLimit}
                 />
@@ -662,11 +737,10 @@ export function ShopPage({
                         variant={currentPage === item ? "default" : "outline"}
                         size="sm"
                         onClick={() => setCurrentPage(item as number)}
-                        className={`h-9 w-9 p-0 rounded-xl text-sm font-medium transition-all duration-200 ${
-                          currentPage === item
-                            ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm"
-                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                        }`}
+                        className={`h-9 w-9 p-0 rounded-xl text-sm font-medium transition-all duration-200 ${currentPage === item
+                          ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          }`}
                       >
                         {item}
                       </Button>

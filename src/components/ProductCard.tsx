@@ -28,12 +28,24 @@ export const ProductCard = memo(function ProductCard({
       transition={{ duration: 0.3 }}
       className="group relative bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-blue-400 hover:shadow-lg transition-all"
     >
-      {/* Discount Badge */}
-      {product.discount && (
-        <Badge className="absolute top-3 left-3 z-10 bg-red-500 text-white">
-          -{product.discount}%
-        </Badge>
-      )}
+      {/* Featured/Trending Badges */}
+      <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
+        {product.discount && (
+          <Badge className="bg-red-500 text-white border-0 shadow-sm">
+            -{product.discount}%
+          </Badge>
+        )}
+        {product.featured && (
+          <Badge className="bg-amber-500 text-white border-0 shadow-sm">
+            Nổi bật
+          </Badge>
+        )}
+        {product.trending && (
+          <Badge className="bg-blue-600 text-white border-0 shadow-sm">
+            Xu hướng
+          </Badge>
+        )}
+      </div>
 
       {/* Wishlist Button */}
       {onAddToWishlist && (

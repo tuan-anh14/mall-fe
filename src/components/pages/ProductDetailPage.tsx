@@ -197,7 +197,7 @@ export function ProductDetailPage({
         setReviews(newReviews);
       }
       setHasMoreReviews(newReviews.length === 10);
-      
+
       const summary = data.summary ?? {};
       setTotalReviews(summary.reviewCount ?? data.total ?? 0);
       const rawBreakdown = summary.breakdown ?? {};
@@ -336,7 +336,7 @@ export function ProductDetailPage({
         comment: replyText.trim(),
         images: replyImages,
       });
-      
+
       // Update local state
       setReviews((prev) =>
         prev.map((r) =>
@@ -444,8 +444,8 @@ export function ProductDetailPage({
                     key={i}
                     onClick={() => setSelectedImage(i)}
                     className={`aspect-square bg-white rounded-xl overflow-hidden border-2 transition-all duration-200 ${selectedImage === i
-                        ? "border-blue-500 shadow-md shadow-blue-500/10 ring-2 ring-blue-500/20"
-                        : "border-gray-200 hover:border-gray-300"
+                      ? "border-blue-500 shadow-md shadow-blue-500/10 ring-2 ring-blue-500/20"
+                      : "border-gray-200 hover:border-gray-300"
                       }`}
                   >
                     <img src={imgUrl} alt={`Ảnh ${i + 1}`} className="w-full h-full object-cover" />
@@ -470,8 +470,8 @@ export function ProductDetailPage({
                   <Star
                     key={i}
                     className={`h-4 w-4 ${i < Math.floor(product.rating)
-                        ? "fill-amber-400 text-amber-400"
-                        : "text-gray-200"
+                      ? "fill-amber-400 text-amber-400"
+                      : "text-gray-200"
                       }`}
                   />
                 ))}
@@ -479,7 +479,11 @@ export function ProductDetailPage({
               <span className="text-gray-900 font-semibold text-sm">{product.rating}</span>
               <span className="text-gray-400 text-sm">({product.reviews} đánh giá)</span>
               <Separator orientation="vertical" className="h-4 bg-gray-200" />
-              <span className="text-emerald-600 text-sm font-medium">Còn hàng</span>
+              {product.stock > 0 ? (
+                <span className="text-emerald-600 text-sm font-medium">Còn hàng</span>
+              ) : (
+                <span className="text-red-500 text-sm font-medium">Hết hàng</span>
+              )}
             </div>
 
             {/* Price */}
@@ -516,8 +520,8 @@ export function ProductDetailPage({
                         key={colorName}
                         onClick={() => setSelectedColor(colorName)}
                         className={`px-4 py-2.5 rounded-xl border-2 transition-all duration-200 text-sm font-medium ${selectedColor === colorName
-                            ? "border-blue-500 bg-blue-50 text-blue-700 shadow-sm shadow-blue-500/10"
-                            : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                          ? "border-blue-500 bg-blue-50 text-blue-700 shadow-sm shadow-blue-500/10"
+                          : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                           }`}
                       >
                         {colorName}
@@ -540,8 +544,8 @@ export function ProductDetailPage({
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       className={`min-w-[48px] px-4 py-2.5 rounded-xl border-2 transition-all duration-200 text-sm font-medium ${selectedSize === size
-                          ? "border-blue-500 bg-blue-50 text-blue-700 shadow-sm shadow-blue-500/10"
-                          : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                        ? "border-blue-500 bg-blue-50 text-blue-700 shadow-sm shadow-blue-500/10"
+                        : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                         }`}
                     >
                       {size}
@@ -552,7 +556,7 @@ export function ProductDetailPage({
             )}
 
             {/* Stock Status */}
-            {product.stock < 10 && (
+            {product.stock > 0 && product.stock < 10 && (
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex items-center gap-2">
                 <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
                 <p className="text-amber-700 text-sm font-medium">
@@ -560,9 +564,17 @@ export function ProductDetailPage({
                 </p>
               </div>
             )}
+            {product.stock === 0 && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 flex items-center gap-2">
+                <span className="flex h-2 w-2 rounded-full bg-red-500" />
+                <p className="text-red-700 text-sm font-medium">
+                  Sản phẩm hiện đang hết hàng.
+                </p>
+              </div>
+            )}
 
             {/* Quantity */}
-            <div>
+            <div className={product.stock === 0 ? "opacity-50 pointer-events-none" : ""}>
               <label className="text-sm font-medium text-gray-900 mb-2.5 block">Số lượng</label>
               <div className="flex items-center gap-3">
                 <div className="flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden">
@@ -571,23 +583,25 @@ export function ProductDetailPage({
                     variant="ghost"
                     className="h-10 w-10 rounded-none"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    disabled={quantity <= 1}
+                    disabled={quantity <= 1 || product.stock === 0}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="w-12 text-center text-gray-900 font-semibold tabular-nums text-sm border-x border-gray-200">{quantity}</span>
+                  <span className="w-12 text-center text-gray-900 font-semibold tabular-nums text-sm border-x border-gray-200">
+                    {product.stock === 0 ? 0 : quantity}
+                  </span>
                   <Button
                     size="icon"
                     variant="ghost"
                     className="h-10 w-10 rounded-none"
                     onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                    disabled={quantity >= product.stock}
+                    disabled={quantity >= product.stock || product.stock === 0}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
                 <span className="text-gray-400 text-sm">
-                  Còn {product.stock} sản phẩm
+                  {product.stock > 0 ? `Còn ${product.stock} sản phẩm` : "Hết hàng"}
                 </span>
               </div>
             </div>
@@ -596,10 +610,11 @@ export function ProductDetailPage({
             <div className="flex gap-3 pt-2">
               <Button
                 size="lg"
-                className="flex-1 bg-blue-600 hover:bg-blue-700 rounded-xl h-12 text-base font-semibold shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30 transition-all"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 rounded-xl h-12 text-base font-semibold shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30 transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none"
                 onClick={handleAddToCart}
+                disabled={product.stock === 0}
               >
-                Thêm vào giỏ
+                {product.stock > 0 ? "Thêm vào giỏ" : "Hết hàng"}
               </Button>
               <Button
                 size="lg"
@@ -622,10 +637,11 @@ export function ProductDetailPage({
             <Button
               size="lg"
               variant="outline"
-              className="w-full rounded-xl h-12 text-base font-semibold border-2 hover:bg-gray-50 transition-all"
+              className="w-full rounded-xl h-12 text-base font-semibold border-2 hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleBuyNow}
+              disabled={product.stock === 0}
             >
-              Mua ngay
+              {product.stock > 0 ? "Mua ngay" : "Sản phẩm hiện tại đang hết hàng !"}
             </Button>
 
             {/* Features */}
@@ -757,10 +773,10 @@ export function ProductDetailPage({
                         <label className="text-gray-700 text-sm font-medium mb-2 block">Đánh giá *</label>
                         <div className="flex gap-1">
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <button 
-                              key={star} 
+                            <button
+                              key={star}
                               type="button"
-                              onClick={() => setReviewRating(star)} 
+                              onClick={() => setReviewRating(star)}
                               className="hover:scale-110 transition-transform"
                             >
                               <Star className={`h-7 w-7 transition-colors ${star <= reviewRating ? "fill-amber-400 text-amber-400" : "text-gray-200 hover:text-gray-300"}`} />
@@ -775,21 +791,21 @@ export function ProductDetailPage({
                         <label className="text-gray-600 text-sm mb-2 block">Biểu tượng cảm xúc (tùy chọn)</label>
                         <div className="flex items-center gap-2">
                           {reviewEmoji && <span className="text-3xl animate-in zoom-in-50 duration-300">{reviewEmoji}</span>}
-                          
+
                           <Popover>
                             <PopoverTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 className="text-gray-500 border border-gray-200 hover:bg-gray-50 transition-all rounded-xl"
                               >
-                                <Smile className="h-4 w-4 mr-2 text-blue-500" /> 
+                                <Smile className="h-4 w-4 mr-2 text-blue-500" />
                                 {reviewEmoji ? "Đổi biểu tượng" : "Chọn biểu tượng"}
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent 
-                              side="top" 
-                              align="start" 
+                            <PopoverContent
+                              side="top"
+                              align="start"
                               className="p-0 border-none shadow-2xl z-[300] bg-transparent"
                             >
                               <EmojiPicker
@@ -803,10 +819,10 @@ export function ProductDetailPage({
                           </Popover>
 
                           {reviewEmoji && (
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors rounded-xl" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors rounded-xl"
                               onClick={() => setReviewEmoji("")}
                             >
                               <X className="h-4 w-4" />
@@ -896,8 +912,8 @@ export function ProductDetailPage({
                         <Star
                           key={i}
                           className={`h-4 w-4 ${i < Math.floor(ratingAverage)
-                              ? "fill-amber-400 text-amber-400"
-                              : "text-gray-200"
+                            ? "fill-amber-400 text-amber-400"
+                            : "text-gray-200"
                             }`}
                         />
                       ))}
@@ -956,8 +972,8 @@ export function ProductDetailPage({
                                     <Star
                                       key={i}
                                       className={`h-3.5 w-3.5 ${i < review.rating
-                                          ? "fill-amber-400 text-amber-400"
-                                          : "text-gray-200"
+                                        ? "fill-amber-400 text-amber-400"
+                                        : "text-gray-200"
                                         }`}
                                     />
                                   ))}
@@ -997,11 +1013,11 @@ export function ProductDetailPage({
                             ))}
                           </div>
                         )}
-                        
+
                         <div className="pl-12">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             className="text-gray-400 hover:text-blue-600 text-xs h-8 rounded-lg -ml-2 transition-colors"
                             onClick={() => handleHelpfulClick(review.id)}
                           >
@@ -1038,7 +1054,7 @@ export function ProductDetailPage({
                                         </span>
                                       </div>
                                       <p className="text-gray-600 text-xs leading-relaxed mb-2">{reply.comment}</p>
-                                      
+
                                       {reply.images && reply.images.length > 0 && (
                                         <div className="flex gap-2 mb-2 flex-wrap">
                                           {reply.images.map((url, i) => (
@@ -1094,7 +1110,7 @@ export function ProductDetailPage({
                             <div className="mt-3 flex flex-wrap gap-2">
                               {replyImages.map((url, i) => (
                                 <div key={i} className="relative w-14 h-14">
-                                    <ImageWithFallback src={url} alt="" className="w-full h-full object-cover rounded-lg" previewable={true} />
+                                  <ImageWithFallback src={url} alt="" className="w-full h-full object-cover rounded-lg" previewable={true} />
                                   <button
                                     className="absolute -top-1 -right-1 bg-red-500 rounded-full h-4 w-4 flex items-center justify-center shadow-sm"
                                     onClick={() => setReplyImages((prev) => prev.filter((_, idx) => idx !== i))}

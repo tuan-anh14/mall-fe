@@ -9,12 +9,15 @@ import {
   Package, 
   AlertCircle,
   MoreVertical,
-  ExternalLink
+  ExternalLink,
+  Star,
+  TrendingUp
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { Switch } from "../ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { get, del } from "../../lib/api";
+import { get, del, patch } from "../../lib/api";
 import { toast } from "sonner";
 import {
   AdminPageLayout,
@@ -55,6 +58,8 @@ interface Product {
   category: { id: string; name: string };
   seller: { id: string; storeName: string; storeSlug: string; userId: string };
   images: { id: string; url: string; isPrimary: boolean }[];
+  featured: boolean;
+  trending: boolean;
   createdAt: string;
 }
 
@@ -147,6 +152,23 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
       toast.error(err.message || "Lỗi khi xóa sản phẩm");
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleToggleFlag = async (productId: string, field: "featured" | "trending", currentValue: boolean) => {
+    try {
+      // Optimistic Update
+      setProducts(prev => prev.map(p => p.id === productId ? { ...p, [field]: !currentValue } : p));
+      
+      await patch(`/api/v1/admin/products/${productId}`, {
+        [field]: !currentValue
+      });
+      
+      toast.success(`Đã cập nhật trạng thái ${field === "featured" ? "nổi bật" : "xu hướng"}`);
+    } catch (err: any) {
+      // Rollback on error
+      setProducts(prev => prev.map(p => p.id === productId ? { ...p, [field]: currentValue } : p));
+      toast.error(err.message || "Không thể cập nhật trạng thái");
     }
   };
 
@@ -272,6 +294,18 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
                   <th className={adminThClass}>Danh mục</th>
                   <th className={adminThClass}>Giá (Base)</th>
                   <th className={adminThClass}>Tồn kho</th>
+                  <th className={adminThClass}>
+                    <div className="flex items-center gap-2 justify-center">
+                      <Star className="h-4 w-4 text-amber-500" />
+                      <span>Nổi bật</span>
+                    </div>
+                  </th>
+                  <th className={adminThClass}>
+                    <div className="flex items-center gap-2 justify-center">
+                      <TrendingUp className="h-4 w-4 text-blue-500" />
+                      <span>Xu hướng</span>
+                    </div>
+                  </th>
                   <th className={adminThClass}>Trạng thái</th>
                   <th className={cn(adminThClass, "text-right")}>Hành động</th>
                 </tr>
@@ -342,6 +376,24 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
                       )}>
                         {product.stock}
                       </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center justify-center">
+                        <Switch 
+                          checked={product.featured} 
+                          onCheckedChange={() => handleToggleFlag(product.id, "featured", product.featured)}
+                          className="data-[state=checked]:!bg-blue-600"
+                        />
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center justify-center">
+                        <Switch 
+                          checked={product.trending} 
+                          onCheckedChange={() => handleToggleFlag(product.id, "trending", product.trending)}
+                          className="data-[state=checked]:!bg-blue-600"
+                        />
+                      </div>
                     </td>
                     <td className="px-4 py-4">
                       {getStatusBadge(product.status)}
