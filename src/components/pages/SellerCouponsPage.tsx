@@ -43,6 +43,7 @@ interface Coupon {
   validFrom: string;
   validUntil: string | null;
   isActive: boolean;
+  isVisible: boolean;
 }
 
 interface CouponForm {
@@ -55,6 +56,7 @@ interface CouponForm {
   validFrom: string;
   validUntil: string;
   isActive: boolean;
+  isVisible: boolean;
 }
 
 const emptyForm: CouponForm = {
@@ -67,6 +69,7 @@ const emptyForm: CouponForm = {
   validFrom: new Date().toISOString().split("T")[0],
   validUntil: "",
   isActive: true,
+  isVisible: true,
 };
 
 function getCouponStatus(c: Coupon) {
@@ -122,6 +125,7 @@ export function SellerCouponsPage() {
       validFrom: c.validFrom.split("T")[0],
       validUntil: c.validUntil ? c.validUntil.split("T")[0] : "",
       isActive: c.isActive,
+      isVisible: c.isVisible ?? true,
     });
     setDialogOpen(true);
   };
@@ -137,6 +141,7 @@ export function SellerCouponsPage() {
         type: form.type,
         value: Number(form.value),
         isActive: form.isActive,
+        isVisible: form.isVisible,
         validFrom: new Date(form.validFrom).toISOString(),
       };
       if (form.minOrderAmount) payload.minOrderAmount = Number(form.minOrderAmount);
@@ -233,10 +238,17 @@ export function SellerCouponsPage() {
                   return (
                     <tr key={c.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
-                        <span className="font-mono font-bold text-gray-900 text-sm flex items-center gap-2">
-                          <Tag className="h-4 w-4 text-blue-600 flex-shrink-0" />
-                          {c.code}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span className="font-mono font-bold text-gray-900 text-sm flex items-center gap-2">
+                            <Tag className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                            {c.code}
+                          </span>
+                          {!c.isVisible && (
+                            <Badge variant="outline" className="text-[10px] py-0 px-1 border-blue-200 text-blue-600 bg-blue-50 self-start">
+                              Riêng tư
+                            </Badge>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-gray-900 text-sm font-medium">
@@ -404,17 +416,31 @@ export function SellerCouponsPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <input
-                id="isActive"
-                type="checkbox"
-                checked={form.isActive}
-                onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
-                className="h-4 w-4 rounded border-gray-300 cursor-pointer"
-              />
-              <Label htmlFor="isActive" className="cursor-pointer">
-                Kích hoạt ngay
-              </Label>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <input
+                  id="isActive"
+                  type="checkbox"
+                  checked={form.isActive}
+                  onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
+                  className="h-4 w-4 rounded border-gray-300 cursor-pointer"
+                />
+                <Label htmlFor="isActive" className="cursor-pointer text-sm">
+                  Kích hoạt ngay
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  id="isVisible"
+                  type="checkbox"
+                  checked={form.isVisible}
+                  onChange={(e) => setForm((f) => ({ ...f, isVisible: e.target.checked }))}
+                  className="h-4 w-4 rounded border-gray-300 cursor-pointer"
+                />
+                <Label htmlFor="isVisible" className="cursor-pointer text-sm">
+                  Công khai
+                </Label>
+              </div>
             </div>
           </div>
           <div className="flex justify-end gap-3 pt-2">

@@ -50,6 +50,7 @@ interface Coupon {
   validFrom: string;
   validUntil?: string | null;
   isActive: boolean;
+  isVisible: boolean;
   _count: { usages: number };
 }
 
@@ -65,6 +66,7 @@ interface FormState {
   validFrom: string;
   validUntil: string;
   isActive: boolean;
+  isVisible: boolean;
 }
 
 const emptyForm: FormState = {
@@ -79,6 +81,7 @@ const emptyForm: FormState = {
   validFrom: new Date().toISOString().slice(0, 16),
   validUntil: "",
   isActive: true,
+  isVisible: true,
 };
 
 export function AdminCouponsPage() {
@@ -128,6 +131,7 @@ export function AdminCouponsPage() {
       validFrom: new Date(coupon.validFrom).toISOString().slice(0, 16),
       validUntil: coupon.validUntil ? new Date(coupon.validUntil).toISOString().slice(0, 16) : "",
       isActive: coupon.isActive,
+      isVisible: coupon.isVisible ?? true,
     });
     setShowForm(true);
   };
@@ -142,6 +146,7 @@ export function AdminCouponsPage() {
         value: parseFloat(form.value),
         validFrom: new Date(form.validFrom).toISOString(),
         isActive: form.isActive,
+        isVisible: form.isVisible,
       };
       if (form.name) payload.name = form.name;
       if (form.description) payload.description = form.description;
@@ -253,10 +258,14 @@ export function AdminCouponsPage() {
               <label className="text-gray-500 text-xs mb-1 block">Hết hạn</label>
               <Input type="datetime-local" value={form.validUntil} onChange={(e) => setForm(f => ({ ...f, validUntil: e.target.value }))} className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
-            <div className="flex items-end gap-2">
+            <div className="flex items-end gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={form.isActive} onChange={(e) => setForm(f => ({ ...f, isActive: e.target.checked }))} className="accent-blue-500" />
                 <span className="text-gray-600 text-sm">Đang hoạt động</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={form.isVisible} onChange={(e) => setForm(f => ({ ...f, isVisible: e.target.checked }))} className="accent-blue-500" />
+                <span className="text-gray-600 text-sm">Công khai</span>
               </label>
             </div>
           </div>
@@ -302,10 +311,17 @@ export function AdminCouponsPage() {
                 ) : coupons.map((coupon) => (
                   <tr key={coupon.id} className={adminTrClass}>
                     <td className="px-6 py-4">
-                      <span className="text-gray-900 font-mono font-semibold text-sm flex items-center gap-1.5">
-                        <Tag className="h-3.5 w-3.5 text-blue-400" />
-                        {coupon.code}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-gray-900 font-mono font-semibold text-sm flex items-center gap-1.5">
+                          <Tag className="h-3.5 w-3.5 text-blue-400" />
+                          {coupon.code}
+                        </span>
+                        {!coupon.isVisible && (
+                          <Badge variant="outline" className="text-[10px] py-0 px-1 border-amber-200 text-amber-600 bg-amber-50 self-start">
+                            Riêng tư
+                          </Badge>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       {coupon.name ? (
