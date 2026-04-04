@@ -766,7 +766,7 @@ export function GDPRPage() {
           <div className="bg-white border border-gray-200 rounded-2xl p-8">
             <h2 className="text-2xl text-gray-900 mb-4">Cách thực hiện quyền của bạn</h2>
             <p className="text-gray-600 mb-4">
-              Để thực hiện bất kỳ quyền GDPR nào, vui lòng liên hệ Nhân viên Bảo vệ Dữ liệu của chúng tôi tại privacy@shophub.com. Chúng tôi sẽ phản hồi yêu cầu của bạn trong vòng 30 ngày.
+              Để thực hiện bất kỳ quyền GDPR nào, vui lòng liên hệ Nhân viên Bảo vệ Dữ liệu của chúng tôi tại privacy@ShopMall.com. Chúng tôi sẽ phản hồi yêu cầu của bạn trong vòng 30 ngày.
             </p>
           </div>
 
@@ -780,7 +780,7 @@ export function GDPRPage() {
           <div className="bg-white border border-gray-200 rounded-2xl p-8">
             <h2 className="text-2xl text-gray-900 mb-4">Liên hệ với chúng tôi</h2>
             <p className="text-gray-600">
-              Nếu bạn có bất kỳ câu hỏi nào về việc tuân thủ GDPR hoặc các hoạt động bảo vệ dữ liệu của chúng tôi, vui lòng liên hệ tại privacy@shophub.com.
+              Nếu bạn có bất kỳ câu hỏi nào về việc tuân thủ GDPR hoặc các hoạt động bảo vệ dữ liệu của chúng tôi, vui lòng liên hệ tại privacy@ShopMall.com.
             </p>
           </div>
         </div>

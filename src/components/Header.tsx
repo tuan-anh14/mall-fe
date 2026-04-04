@@ -342,7 +342,7 @@ export function Header({
                       ) : (
                         <div className="mt-2">
                           <h3 className="text-white font-bold text-lg">Chào mừng bạn!</h3>
-                          <p className="text-blue-100/70 text-xs mt-0.5">Khám phá hàng ngàn ưu đãi tại ShopHub</p>
+                          <p className="text-blue-100/70 text-xs mt-0.5">Khám phá hàng ngàn ưu đãi tại ShopMall</p>
                           <Button
                             variant="secondary"
                             size="sm"

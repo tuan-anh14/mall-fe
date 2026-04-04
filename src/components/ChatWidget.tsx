@@ -59,13 +59,13 @@ export function ChatWidget() {
                 </div>
                 <div>
                   <h3 className="text-white font-bold flex items-center gap-1.5 leading-tight text-base">
-                    ShopHub AI Assistant
+                    ShopMall AI Assistant
                     <Sparkles size={14} className="text-blue-200" />
                   </h3>
                   <p className="text-[11px] text-blue-100/80 font-medium">Bản dùng thử AI thông minh</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-1">
                 <Button
                   size="icon"
@@ -88,7 +88,7 @@ export function ChatWidget() {
             </div>
 
             {/* Messages Area */}
-            <div 
+            <div
               ref={scrollRef}
               className="flex-1 overflow-y-auto p-5 space-y-5 scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-transparent"
             >
@@ -106,14 +106,13 @@ export function ChatWidget() {
                       </AvatarFallback>
                     </Avatar>
                   )}
-                  
+
                   <div className={`max-w-[80%] flex flex-col ${msg.role === "user" ? "items-end" : ""}`}>
                     <div
-                      className={`px-4 py-3 text-[13.5px] shadow-sm transition-all leading-relaxed ${
-                        msg.role === "user"
+                      className={`px-4 py-3 text-[13.5px] shadow-sm transition-all leading-relaxed ${msg.role === "user"
                           ? "bg-blue-600 text-white rounded-[20px] rounded-tr-[4px] shadow-blue-200/20"
                           : "bg-white/60 backdrop-blur-sm border border-white/50 text-slate-800 rounded-[20px] rounded-tl-[4px]"
-                      }`}
+                        }`}
                     >
                       {msg.content}
                     </div>
@@ -123,7 +122,7 @@ export function ChatWidget() {
               ))}
 
               {isLoading && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex gap-3"
@@ -144,7 +143,7 @@ export function ChatWidget() {
 
             {/* Input Area */}
             <div className="p-4 bg-white/50 backdrop-blur-sm border-t border-gray-100/50">
-              <form 
+              <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSend();
@@ -153,7 +152,7 @@ export function ChatWidget() {
               >
                 <Input
                   autoFocus
-                  placeholder="Hỏi ShopHub AI..."
+                  placeholder="Hỏi ShopMall AI..."
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   disabled={isLoading}
@@ -169,7 +168,7 @@ export function ChatWidget() {
                 </Button>
               </form>
               <p className="text-[9px] text-center text-gray-400 mt-3 font-medium tracking-tight">
-                Phản hồi có thể không chính xác 100%. Powered by <span className="text-blue-500 font-bold">ShopHub AI</span>
+                Phản hồi có thể không chính xác 100%. Powered by <span className="text-blue-500 font-bold">ShopMall AI</span>
               </p>
             </div>
           </motion.div>
@@ -188,15 +187,14 @@ export function ChatWidget() {
           {!isOpen && (
             <span className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-20 pointer-events-none"></span>
           )}
-          
+
           <Button
             size="icon"
             onClick={() => setIsOpen(!isOpen)}
-            className={`h-16 w-16 rounded-full shadow-2xl transition-all duration-500 ${
-              isOpen 
-                ? "bg-white text-slate-800 rotate-90" 
+            className={`h-16 w-16 rounded-full shadow-2xl transition-all duration-500 ${isOpen
+                ? "bg-white text-slate-800 rotate-90"
                 : "bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-blue-500/40"
-            }`}
+              }`}
           >
             {isOpen ? <X className="h-7 w-7" /> : <MessageCircle className="h-7 w-7 fill-current" />}
           </Button>

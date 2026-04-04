@@ -119,7 +119,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
   }, [page, search, activeCategory]);
 
   useEffect(() => {
-    blogService.getCategories().then(setCategories).catch(() => {});
+    blogService.getCategories().then(setCategories).catch(() => { });
   }, []);
 
   useEffect(() => {
@@ -151,7 +151,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
             Khám phá Kiến thức &<br />Tin tức Mua sắm
           </h1>
           <p className="text-blue-100/80 text-lg mb-8">
-            Bài viết từ các Seller uy tín và đội ngũ ShopHub
+            Bài viết từ các Seller uy tín và đội ngũ ShopMall
           </p>
 
           {/* Search */}
@@ -182,11 +182,10 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3 overflow-x-auto scrollbar-hide">
             <button
               onClick={() => handleCategoryChange('')}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                !activeCategory
+              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${!activeCategory
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+                }`}
             >
               <Tag size={14} />
               Tất cả
@@ -195,11 +194,10 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
               <button
                 key={cat.id}
                 onClick={() => handleCategoryChange(cat.slug)}
-                className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  activeCategory === cat.slug
+                className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === cat.slug
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                  }`}
               >
                 {cat.name}
                 {cat.blogCount !== undefined && (
@@ -262,9 +260,8 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
                 <button
                   key={p}
                   onClick={() => setPage(p)}
-                  className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
-                    page === p ? 'bg-blue-600 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${page === p ? 'bg-blue-600 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   {p}
                 </button>

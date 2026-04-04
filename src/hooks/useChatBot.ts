@@ -13,7 +13,7 @@ export function useChatBot() {
     {
       id: 'welcome',
       role: 'assistant',
-      content: 'Xin chào! 👋 Tôi là trợ lý AI của ShopHub. Tôi có thể giúp gì cho bạn hôm nay?',
+      content: 'Xin chào! 👋 Tôi là trợ lý AI của ShopMall. Tôi có thể giúp gì cho bạn hôm nay?',
       time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -64,7 +64,7 @@ export function useChatBot() {
       {
         id: 'welcome',
         role: 'assistant',
-        content: 'Xin chào! 👋 Tôi là trợ lý AI của ShopHub. Tôi có thể giúp gì cho bạn hôm nay?',
+        content: 'Xin chào! 👋 Tôi là trợ lý AI của ShopMall. Tôi có thể giúp gì cho bạn hôm nay?',
         time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
       },
     ]);

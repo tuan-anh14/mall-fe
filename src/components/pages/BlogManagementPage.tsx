@@ -82,7 +82,7 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
   }, [page]);
 
   useEffect(() => {
-    blogService.getCategories().then(setCategories).catch(() => {});
+    blogService.getCategories().then(setCategories).catch(() => { });
   }, []);
 
   useEffect(() => {
@@ -263,7 +263,7 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
                 onChange={handleFileChange}
                 className="hidden"
               />
-              <div 
+              <div
                 onClick={() => !uploading && fileInputRef.current?.click()}
                 className={`flex items-center gap-3 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white cursor-pointer transition-all hover:bg-gray-50 hover:border-indigo-300 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
@@ -317,7 +317,7 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
                 <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide">
                   Xem trước ảnh bìa
                 </label>
-                <button 
+                <button
                   onClick={() => setThumbnail('')}
                   className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1"
                 >
@@ -376,7 +376,7 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
               <List size={32} className="text-indigo-400" />
             </div>
             <h2 className="text-xl font-semibold text-gray-700 mb-2">Chưa có bài viết nào</h2>
-            <p className="text-gray-500 mb-6">Bắt đầu chia sẻ kiến thức của bạn với cộng đồng ShopHub!</p>
+            <p className="text-gray-500 mb-6">Bắt đầu chia sẻ kiến thức của bạn với cộng đồng ShopMall!</p>
             <button
               onClick={() => openEditor()}
               className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors cursor-pointer"
@@ -397,10 +397,10 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
                       {/* Thumbnail */}
                       {blog.thumbnail && (
                         <div className="w-20 h-14 rounded-lg overflow-hidden flex-shrink-0">
-                          <ImageWithFallback 
-                            src={blog.thumbnail} 
-                            alt={blog.title} 
-                            className="w-full h-full object-cover" 
+                          <ImageWithFallback
+                            src={blog.thumbnail}
+                            alt={blog.title}
+                            className="w-full h-full object-cover"
                             previewable={true}
                           />
                         </div>
@@ -465,15 +465,15 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
             )}
           </>
         )}
-        <AlertDialog 
-          open={deleteDialog.open} 
+        <AlertDialog
+          open={deleteDialog.open}
           onOpenChange={(open) => !open && setDeleteDialog({ open: false, blog: null })}
         >
           <AlertDialogContent className="bg-white border-gray-200/80 rounded-2xl shadow-xl max-w-md">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-gray-900 text-lg font-bold">Xóa bài viết</AlertDialogTitle>
               <AlertDialogDescription className="text-gray-500 text-sm leading-relaxed">
-                Bạn có chắc chắn muốn xóa bài viết <strong className="text-gray-700">"{deleteDialog.blog?.title}"</strong>? 
+                Bạn có chắc chắn muốn xóa bài viết <strong className="text-gray-700">"{deleteDialog.blog?.title}"</strong>?
                 Hành động này không thể hoàn tác.
               </AlertDialogDescription>
             </AlertDialogHeader>
