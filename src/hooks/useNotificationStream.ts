@@ -13,6 +13,7 @@ export interface StreamNotification {
 
 export function useNotificationStream(isAuthenticated: boolean) {
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
   const [latestNotification, setLatestNotification] = useState<StreamNotification | null>(null);
   const esRef = useRef<EventSource | null>(null);
 
@@ -25,6 +26,7 @@ export function useNotificationStream(isAuthenticated: boolean) {
       if (res.ok) {
         const json = await res.json();
         setUnreadCount(json.unreadCount ?? 0);
+        setUnreadMessageCount(json.unreadMessageCount ?? 0);
       }
     } catch {
       // ignore
@@ -42,6 +44,7 @@ export function useNotificationStream(isAuthenticated: boolean) {
         esRef.current = null;
       }
       setUnreadCount(0);
+      setUnreadMessageCount(0);
       return;
     }
 
@@ -58,6 +61,9 @@ export function useNotificationStream(isAuthenticated: boolean) {
           setLatestNotification(notif);
           if (!notif.isRead) {
             setUnreadCount((c) => c + 1);
+            if (notif.type === "MESSAGE") {
+              setUnreadMessageCount((c) => c + 1);
+            }
           }
         }
       } catch {
@@ -81,5 +87,12 @@ export function useNotificationStream(isAuthenticated: boolean) {
 
   const clearUnread = useCallback(() => setUnreadCount(0), []);
 
-  return { unreadCount, latestNotification, decrementUnread, clearUnread, refetchCount: fetchUnreadCount };
+  return {
+    unreadCount,
+    unreadMessageCount,
+    latestNotification,
+    decrementUnread,
+    clearUnread,
+    refetchCount: fetchUnreadCount
+  };
 }

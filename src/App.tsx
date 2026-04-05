@@ -329,8 +329,10 @@ export default function App() {
   } = useWishlist();
   const {
     unreadCount: notificationCount,
+    unreadMessageCount,
     latestNotification,
     clearUnread,
+    refetchCount,
   } = useNotificationStream(isAuthenticated);
 
   const currentPage = getPageFromPathname(location.pathname);
@@ -338,6 +340,13 @@ export default function App() {
   useEffect(() => {
     document.documentElement.classList.add("light");
   }, []);
+
+  // Sync unread counts quando navigating
+  useEffect(() => {
+    if (isAuthenticated) {
+      refetchCount();
+    }
+  }, [location.pathname, isAuthenticated, refetchCount]);
 
   // Show toast for new real-time notifications
   useEffect(() => {
@@ -559,12 +568,16 @@ export default function App() {
           )}
           wishlistCount={wishlistItems.length}
           notificationCount={notificationCount}
+          unreadChatCount={unreadMessageCount}
           isAuthenticated={isAuthenticated}
           user={user}
           onLogout={handleLogout}
           onSearch={(q) => navigate("shop", { search: q })}
           onBecomeSellerRequest={becomeSellerRequest}
-          onNotificationsOpen={clearUnread}
+          onNotificationsOpen={() => {
+            clearUnread();
+            refetchCount();
+          }}
         />
       )}
 

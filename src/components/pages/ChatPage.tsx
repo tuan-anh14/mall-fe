@@ -59,6 +59,7 @@ interface ChatPageProps {
   sellerInfo?: {
     sellerId?: string;
     productId?: string;
+    conversationId?: string;
     name: string;
     avatar?: string;
     isOnline?: boolean;
@@ -146,10 +147,20 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
     loadConversations();
   }, []);
 
-  // If sellerInfo is passed, find or create the conversation with that seller (once per sellerId)
+  // If sellerInfo is passed, find or create the conversation (once per sellerId or conversationId)
   useEffect(() => {
-    if (!sellerInfo?.sellerId) return;
+    if (!sellerInfo) return;
     if (isLoadingConversations) return;
+
+    // Handle direct conversationId from notification
+    if (sellerInfo.conversationId) {
+      if (sellerConvInitiatedRef.current === sellerInfo.conversationId) return;
+      sellerConvInitiatedRef.current = sellerInfo.conversationId;
+      selectConversation(sellerInfo.conversationId);
+      return;
+    }
+
+    if (!sellerInfo.sellerId) return;
     if (sellerConvInitiatedRef.current === sellerInfo.sellerId) return;
 
     const existing = conversations.find((c) => c.sellerUserId === sellerInfo.sellerId);
@@ -160,7 +171,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
       sellerConvInitiatedRef.current = sellerInfo.sellerId;
       createConversation(sellerInfo.sellerId, sellerInfo.productId);
     }
-  }, [sellerInfo?.sellerId, isLoadingConversations, conversations]);
+  }, [sellerInfo, isLoadingConversations, conversations]);
 
   const loadConversations = async () => {
     setIsLoadingConversations(true);

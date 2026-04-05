@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, Package, Heart, TrendingUp, X, Check, CheckCheck, ArrowRight, Inbox, ChevronLeft, ChevronRight } from "lucide-react";
+import { Bell, Package, Heart, TrendingUp, X, Check, CheckCheck, ArrowRight, Inbox, ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -38,6 +38,7 @@ interface ApiNotification {
   createdAt: string;
   actionType?: string;
   actionId?: string;
+  actionData?: any;
 }
 
 interface UiNotification {
@@ -79,6 +80,8 @@ function getIconForType(type: string): React.ElementType {
       return TrendingUp;
     case "WISHLIST":
       return Heart;
+    case "MESSAGE":
+      return MessageSquare;
     default:
       return Bell;
   }
@@ -89,6 +92,7 @@ const typeStyles: Record<string, { color: string; bg: string; accent: string }> 
   SALE: { color: "text-amber-600", bg: "bg-amber-50", accent: "bg-amber-500" },
   PROMOTION: { color: "text-amber-600", bg: "bg-amber-50", accent: "bg-amber-500" },
   WISHLIST: { color: "text-rose-600", bg: "bg-rose-50", accent: "bg-rose-500" },
+  MESSAGE: { color: "text-indigo-600", bg: "bg-indigo-50", accent: "bg-indigo-500" },
   DEFAULT: { color: "text-blue-600", bg: "bg-blue-50", accent: "bg-blue-500" },
   READ: { color: "text-gray-400", bg: "bg-gray-100", accent: "bg-transparent" },
 };
@@ -104,6 +108,8 @@ function getActionPageForType(actionType?: string): string {
     case "WISHLIST": return "wishlist";
     case "PROMOTION":
     case "SALE": return "shop";
+    case "CHAT":
+    case "MESSAGE": return "chat";
     default: return "home";
   }
 }
@@ -114,6 +120,8 @@ function getActionTextForType(actionType?: string): string {
     case "WISHLIST": return "Xem yêu thích";
     case "PROMOTION":
     case "SALE": return "Mua ngay";
+    case "CHAT":
+    case "MESSAGE": return "Trả lời";
     default: return "Xem";
   }
 }
@@ -127,8 +135,9 @@ function mapApiNotification(n: ApiNotification): UiNotification {
     message: n.message,
     time: formatRelativeTime(n.createdAt),
     isRead: n.isRead,
-    actionText: getActionTextForType(n.actionType),
-    actionPage: getActionPageForType(n.actionType),
+    actionText: getActionTextForType(n.actionType || n.type),
+    actionPage: getActionPageForType(n.actionType || n.type),
+    actionData: n.actionData,
   };
 }
 
@@ -151,11 +160,10 @@ function NotificationCard({
 
   return (
     <div
-      className={`group relative flex rounded-xl border overflow-hidden cursor-pointer transition-all duration-200 ${
-        isUnread
+      className={`group relative flex rounded-xl border overflow-hidden cursor-pointer transition-all duration-200 ${isUnread
           ? "bg-white border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-px"
           : "bg-white/70 border-gray-100 hover:bg-white hover:border-gray-200 hover:shadow-sm"
-      }`}
+        }`}
       onClick={() => onOpen(notification)}
     >
       {/* Left accent bar */}
@@ -308,6 +316,7 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
   const promotionNotifications = notifications.filter(
     (n) => n.type === "sale" || n.type === "promotion"
   );
+  const messageNotifications = notifications.filter((n) => n.type === "message");
 
   const hasNoNotifications = !isLoading && notifications.length === 0;
 
@@ -444,6 +453,12 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
                 <span>Khuyến mãi</span>
               </div>
               <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                  <MessageSquare className="h-4 w-4 text-indigo-400" />
+                </div>
+                <span>Tin nhắn</span>
+              </div>
+              <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center">
                   <Heart className="h-4 w-4 text-rose-400" />
                 </div>
@@ -482,6 +497,13 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
                     <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
                   )}
                 </TabsTrigger>
+                <TabsTrigger value="messages">
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  Tin nhắn
+                  {messageNotifications.filter(n => !n.isRead).length > 0 && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 shrink-0" />
+                  )}
+                </TabsTrigger>
               </TabsList>
             </motion.div>
 
@@ -495,6 +517,11 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
               <TabsContent value="promotions">
                 {renderList(promotionNotifications) || (
                   <div className="text-center py-16 text-gray-400 text-sm">Không có thông báo khuyến mãi</div>
+                )}
+              </TabsContent>
+              <TabsContent value="messages">
+                {renderList(messageNotifications) || (
+                  <div className="text-center py-16 text-gray-400 text-sm">Không có tin nhắn mới</div>
                 )}
               </TabsContent>
             </div>
@@ -530,11 +557,10 @@ export function NotificationsPage({ onNavigate }: NotificationsPageProps) {
                     variant={currentPage === item ? "default" : "outline"}
                     size="sm"
                     onClick={() => setCurrentPage(item as number)}
-                    className={`h-9 w-9 p-0 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      currentPage === item
+                    className={`h-9 w-9 p-0 rounded-xl text-sm font-medium transition-all duration-200 ${currentPage === item
                         ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm"
                         : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     {item}
                   </Button>

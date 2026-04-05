@@ -50,6 +50,7 @@ interface HeaderProps {
   cartCount?: number;
   wishlistCount?: number;
   notificationCount?: number;
+  unreadChatCount?: number;
   isAuthenticated?: boolean;
   user?: UserType | null;
   onLogout?: () => void;
@@ -133,6 +134,7 @@ export function Header({
   cartCount = 0,
   wishlistCount = 0,
   notificationCount = 0,
+  unreadChatCount = 0,
   isAuthenticated = false,
   user = null,
   onLogout,
@@ -140,6 +142,7 @@ export function Header({
   onBecomeSellerRequest,
   onNotificationsOpen,
 }: HeaderProps) {
+  console.log("[Header] Rendering with counts:", { notificationCount, unreadChatCount, isAuthenticated });
   const [searchQuery, setSearchQuery] = useState("");
   const [showSellerDialog, setShowSellerDialog] = useState(false);
   const [sellerMessage, setSellerMessage] = useState("");
@@ -180,6 +183,7 @@ export function Header({
       try {
         const res = await get<{ promotions: PlatformPromotion[] }>("/api/v1/products/promotions");
         if (isMounted) {
+          console.log("[Header] Promotions fetched:", res.promotions);
           setPromotions(res.promotions ?? []);
         }
       } catch {
@@ -201,6 +205,7 @@ export function Header({
     setNotifLoading(true);
     try {
       const res = await get<{ notifications: MiniNotification[] }>("/api/v1/notifications?page=1&limit=5");
+      console.log("[Header] Mini notifications fetched:", res.notifications);
       setMiniNotifs(res.notifications ?? []);
     } catch {
       /* ignore */
@@ -214,6 +219,7 @@ export function Header({
     setCartLoading(true);
     try {
       const res = await get<{ cart: { items: MiniCartItem[]; subtotal?: number; total?: number } }>("/api/v1/cart");
+      console.log("[Header] Mini cart fetched:", res.cart);
       const items = res.cart?.items ?? [];
       setMiniCart(items);
       setCartTotal(res.cart?.subtotal ?? res.cart?.total ?? items.reduce((s, i) => s + i.product.price * i.quantity, 0));
@@ -622,9 +628,14 @@ export function Header({
                     variant="ghost"
                     size="icon"
                     onClick={() => onNavigate("chat")}
-                    className="hidden md:flex h-9 w-9 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200"
+                    className="hidden md:flex relative h-9 w-9 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200"
                   >
                     <MessageCircle className="h-[18px] w-[18px]" />
+                    {unreadChatCount > 0 && (
+                      <Badge className="absolute -right-0.5 -top-0.5 h-[18px] min-w-[18px] rounded-full px-1 flex items-center justify-center text-[10px] font-bold bg-amber-500 text-white border-2 border-blue-700">
+                        {unreadChatCount > 99 ? "99+" : unreadChatCount}
+                      </Badge>
+                    )}
                   </Button>
                 )}
 
