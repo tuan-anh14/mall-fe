@@ -544,12 +544,12 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
           {/* Conversations List */}
           <div className="lg:col-span-4 bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col">
             {/* Search */}
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 bg-white border-b border-gray-100">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Tìm kiếm cuộc trò chuyện..."
-                  className="pl-10 bg-gray-50 border-gray-200 text-gray-900"
+                  className="pl-10 h-10 rounded-full bg-gray-100 border-transparent focus-visible:ring-1 focus-visible:ring-blue-100 focus-visible:bg-white text-gray-900 transition-colors"
                   value={conversationSearch}
                   onChange={(e) => setConversationSearch(e.target.value)}
                 />
@@ -563,9 +563,12 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                   Đang tải cuộc trò chuyện...
                 </div>
               ) : conversations.length === 0 ? (
-                <div className="p-8 text-center">
-                  <MessageSquare className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-400 text-sm">Chưa có cuộc trò chuyện</p>
+                <div className="p-8 pb-12 mt-10 text-center flex flex-col items-center justify-center">
+                  <div className="h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center mb-4 border border-dashed border-gray-200">
+                    <MessageSquare className="h-6 w-6 text-gray-300" />
+                  </div>
+                  <p className="text-gray-500 text-sm">Chưa có cuộc trò chuyện</p>
+                  <p className="text-gray-400 text-xs mt-1">Hãy dạo shop và tìm món đồ ưng ý nhé</p>
                 </div>
               ) : (
                 (() => {
@@ -584,10 +587,12 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                       {filtered.map((conv) => (
                         <motion.div
                           key={conv.id}
-                          whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
+                          whileHover={{ backgroundColor: "rgb(248 250 252)" }}
                           onClick={() => selectConversation(conv.id)}
-                          className={`p-4 cursor-pointer border-b border-gray-100 ${
-                            conv.id === activeConversationId ? "bg-gray-100" : ""
+                          className={`p-4 cursor-pointer transition-colors ${
+                            conv.id === activeConversationId
+                              ? "bg-blue-50/70 border-l-4 border-blue-600"
+                              : "border-l-4 border-transparent hover:bg-slate-50"
                           }`}
                         >
                           <div className="flex gap-3">
@@ -629,7 +634,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
             {activeConversation ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b border-gray-200 bg-gray-50">
+                <div className="p-4 border-b border-gray-100 bg-white shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] z-10 relative">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Button
@@ -773,10 +778,10 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                           </Avatar>
                           <div className="relative">
                             <div
-                              className={`rounded-2xl p-3 ${
+                              className={`rounded-2xl p-3 shadow-sm ${
                                 message.sender === "user"
-                                  ? "bg-blue-600 rounded-tr-sm"
-                                  : "bg-gray-100 rounded-tl-sm"
+                                  ? "bg-blue-600 text-white rounded-tr-sm"
+                                  : "bg-gray-100 text-gray-900 rounded-tl-sm"
                               }`}
                             >
                               {message.attachmentType === "image" && message.attachmentUrl ? (
@@ -797,7 +802,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                                 </div>
                               ) : null}
                               {message.text && message.text !== "📷 Hình ảnh" && (
-                                <p className={`text-sm ${message.sender === "user" ? "text-white" : "text-gray-900"}`}>{message.text}</p>
+                                <p className="text-sm">{message.text}</p>
                               )}
                             </div>
                             {/* Delete button - only for current user's messages */}
@@ -880,7 +885,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       onKeyDown={handleKeyPress}
-                      className="flex-1 bg-gray-50 border-gray-200 text-gray-900"
+                      className="flex-1 rounded-full bg-gray-100 border-transparent focus-visible:ring-1 focus-visible:ring-blue-100 focus-visible:bg-white text-gray-900 px-4"
                       disabled={isSending || isUploadingImage}
                     />
                     
@@ -913,19 +918,22 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                     <Button
                       size="icon"
                       onClick={handleSendMessage}
-                      className="bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0"
+                      className="bg-blue-600 hover:bg-blue-700 text-white rounded-full flex-shrink-0 shadow-md hover:shadow-lg transition-all"
                       disabled={!newMessage.trim() || isSending || isUploadingImage}
                     >
-                      <Send className="h-5 w-5" />
+                      <Send className="h-4 w-4 ml-0.5" />
                     </Button>
                   </div>
                 </div>
               </>
             ) : (
               /* No conversation selected */
-              <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
-                <MessageSquare className="h-16 w-16 mb-4 opacity-30" />
-                <p className="text-lg">Chọn cuộc trò chuyện để bắt đầu nhắn tin</p>
+              <div className="flex-1 flex flex-col items-center justify-center bg-gray-50/30">
+                <div className="h-24 w-24 bg-blue-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                  <MessageSquare className="h-10 w-10 text-blue-300" />
+                </div>
+                <h3 className="text-xl font-medium text-gray-800 mb-2">Xin chào! 👋</h3>
+                <p className="text-gray-500">Chọn một cuộc trò chuyện ở danh sách bên trái để bắt đầu</p>
               </div>
             )}
           </div>
