@@ -161,6 +161,10 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
     }
 
     if (!sellerInfo.sellerId) return;
+    if (sellerInfo.sellerId === userId) {
+      sessionStorage.removeItem("chat_seller");
+      return;
+    }
     if (sellerConvInitiatedRef.current === sellerInfo.sellerId) return;
 
     const existing = conversations.find((c) => c.sellerUserId === sellerInfo.sellerId);
@@ -187,7 +191,9 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
         }>;
       }>("/api/v1/conversations");
 
-      const mapped: Conversation[] = (res.conversations ?? []).map((conv) => {
+      const mapped: Conversation[] = (res.conversations ?? [])
+        .filter((conv) => conv.lastMessage && conv.lastMessage.trim() !== "")
+        .map((conv) => {
         const baseName = conv.otherUser?.name ?? "Không xác định";
         const displayName = userType === "buyer" ? `${baseName}` : baseName;
         return {
@@ -452,6 +458,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
       )
     );
     setMessages([]);
+    setConversations((prev) => prev.filter((c) => c.id !== activeConversationId));
+    setActiveConversationId(null);
     toast.success("Đã xóa trò chuyện thành công");
   };
 
