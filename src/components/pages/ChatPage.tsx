@@ -31,7 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import EmojiPicker, { Theme } from "emoji-picker-react";
+import { EmojiPickerButton } from "../ui/emoji-picker";
 import {
   Dialog,
   DialogContent,
@@ -482,8 +482,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
     }
   };
 
-  const onEmojiClick = (emojiData: any) => {
-    setNewMessage((prev) => prev + emojiData.emoji);
+  const onEmojiSelect = (emoji: string) => {
+    setNewMessage((prev) => prev + emoji);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -889,31 +889,10 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                       disabled={isSending || isUploadingImage}
                     />
                     
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          disabled={isSending || isUploadingImage}
-                          className="text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors flex-shrink-0"
-                        >
-                          <Smile className="h-5 w-5" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent 
-                        side="top" 
-                        align="end" 
-                        className="p-0 border-none shadow-2xl z-[300] bg-transparent"
-                      >
-                        <EmojiPicker
-                          onEmojiClick={onEmojiClick}
-                          theme={Theme.LIGHT}
-                          width={320}
-                          height={400}
-                          searchPlaceholder="Tìm emoji..."
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <EmojiPickerButton 
+                      onEmojiSelect={onEmojiSelect} 
+                      disabled={isSending || isUploadingImage}
+                    />
 
                     <Button
                       size="icon"

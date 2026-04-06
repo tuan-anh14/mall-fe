@@ -13,7 +13,7 @@ import { API_URL } from "../../lib/api";
 import { viewHistoryService } from "../../services/viewHistory.service";
 import { formatCurrency } from "../../lib/currency";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import EmojiPicker, { Theme } from "emoji-picker-react";
+import { EmojiPickerButton } from "../ui/emoji-picker";
 import { SellerVouchers } from "../SellerVouchers";
 
 interface ReviewReply {
@@ -135,8 +135,16 @@ export function ProductDetailPage({
   const [coupons, setCoupons] = useState<any[]>([]);
   const [couponsLoading, setCouponsLoading] = useState(false);
 
-  const onReviewEmojiClick = (emojiData: any) => {
-    setReviewEmoji(emojiData.emoji);
+  const onReviewEmojiClick = (emoji: string) => {
+    setReviewEmoji(emoji);
+  };
+
+  const onCommentEmojiClick = (emoji: string) => {
+    setReviewComment((prev) => prev + emoji);
+  };
+
+  const onReplyEmojiClick = (emoji: string) => {
+    setReplyText((prev) => prev + emoji);
   };
 
   useEffect(() => {
@@ -812,31 +820,7 @@ export function ProductDetailPage({
                         <div className="flex items-center gap-2">
                           {reviewEmoji && <span className="text-3xl animate-in zoom-in-50 duration-300">{reviewEmoji}</span>}
 
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-gray-500 border border-gray-200 hover:bg-gray-50 transition-all rounded-xl"
-                              >
-                                <Smile className="h-4 w-4 mr-2 text-blue-500" />
-                                {reviewEmoji ? "Đổi biểu tượng" : "Chọn biểu tượng"}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              side="top"
-                              align="start"
-                              className="p-0 border-none shadow-2xl z-[300] bg-transparent"
-                            >
-                              <EmojiPicker
-                                onEmojiClick={onReviewEmojiClick}
-                                theme={Theme.LIGHT}
-                                width={320}
-                                height={400}
-                                searchPlaceholder="Tìm emoji..."
-                              />
-                            </PopoverContent>
-                          </Popover>
+                          <EmojiPickerButton onEmojiSelect={onReviewEmojiClick} align="start" />
 
                           {reviewEmoji && (
                             <Button
@@ -852,15 +836,20 @@ export function ProductDetailPage({
                       </div>
 
                       {/* Review Comment */}
-                      <div>
+                      <div className="relative">
                         <label className="text-gray-700 text-sm font-medium mb-2 block">Nhận xét *</label>
-                        <textarea
-                          value={reviewComment}
-                          onChange={(e) => setReviewComment(e.target.value)}
-                          placeholder="Chia sẻ trải nghiệm của bạn với sản phẩm này..."
-                          rows={4}
-                          className="w-full bg-white border border-gray-200 rounded-xl p-3.5 text-gray-900 placeholder:text-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm"
-                        />
+                        <div className="relative">
+                          <textarea
+                            value={reviewComment}
+                            onChange={(e) => setReviewComment(e.target.value)}
+                            placeholder="Chia sẻ trải nghiệm của bạn với sản phẩm này..."
+                            rows={4}
+                            className="w-full bg-white border border-gray-200 rounded-xl p-3.5 pr-12 text-gray-900 placeholder:text-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm"
+                          />
+                          <div className="absolute right-3 bottom-3">
+                            <EmojiPickerButton onEmojiSelect={onCommentEmojiClick} />
+                          </div>
+                        </div>
                       </div>
 
                       {/* Image Upload */}
@@ -979,7 +968,8 @@ export function ProductDetailPage({
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <Avatar className="h-9 w-9">
+                            <Avatar className="h-9 w-9 flex-shrink-0">
+                              <AvatarImage src={review.user?.avatar} className="object-cover" />
                               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-xs font-semibold">
                                 {getAvatarInitials(review.user?.name)}
                               </AvatarFallback>
@@ -1054,10 +1044,10 @@ export function ProductDetailPage({
                                 <div key={reply.id} className="relative group/reply">
                                   <div className="flex gap-3 mb-1">
                                     <Avatar className="h-7 w-7 flex-shrink-0">
-                                      <AvatarFallback className="bg-gray-100 text-gray-400 text-[10px] font-bold">
+                                      <AvatarImage src={reply.user?.avatar} className="object-cover" />
+                                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-[10px] font-bold">
                                         {getAvatarInitials(reply.user?.name)}
                                       </AvatarFallback>
-                                      {reply.user?.avatar && <img src={reply.user.avatar} alt="" className="object-cover" />}
                                     </Avatar>
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-center gap-2 mb-0.5">
@@ -1117,14 +1107,19 @@ export function ProductDetailPage({
                         {/* Reply Input */}
                         {replyingTo === review.id && (
                           <div className="ml-12 mt-3 p-3 bg-gray-50/50 rounded-xl border border-gray-100 animate-in fade-in slide-in-from-top-2 duration-200">
-                            <textarea
-                              value={replyText}
-                              onChange={(e) => setReplyText(e.target.value)}
-                              placeholder={`Chào ${review.user?.name}, trả lời đánh giá này...`}
-                              className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none resize-none"
-                              rows={2}
-                              autoFocus
-                            />
+                            <div className="relative">
+                              <textarea
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder={`Chào ${review.user?.name}, trả lời đánh giá này...`}
+                                className="w-full bg-white border border-gray-200 rounded-xl p-3 pr-10 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none resize-none"
+                                rows={2}
+                                autoFocus
+                              />
+                              <div className="absolute right-2 bottom-2">
+                                <EmojiPickerButton onEmojiSelect={onReplyEmojiClick} iconSize={18} />
+                              </div>
+                            </div>
 
                             {/* Reply Images Upload */}
                             <div className="mt-3 flex flex-wrap gap-2">
