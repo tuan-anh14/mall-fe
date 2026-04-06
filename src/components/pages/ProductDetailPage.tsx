@@ -709,15 +709,14 @@ export function ProductDetailPage({
                   <div className="min-w-0">
                     <p className="text-gray-900 font-semibold text-sm group-hover:text-blue-600 transition-colors truncate">{product.seller?.storeName || `${product.brand} Store`}</p>
                     <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                      {product.seller?.isVerified && (
+                      {!!product.seller?.isVerified && (
                         <span className="inline-flex items-center gap-1 text-emerald-600 font-medium">
                           <Shield className="h-3 w-3" /> Đã xác minh
                         </span>
                       )}
-                      {product.seller?.positiveRating && (
+                      {!!product.seller?.positiveRating && (
                         <span>{product.seller.positiveRating}% tích cực</span>
                       )}
-                      {!product.seller?.isVerified && !product.seller?.positiveRating && <span>Người bán</span>}
                     </div>
                   </div>
                 </div>
