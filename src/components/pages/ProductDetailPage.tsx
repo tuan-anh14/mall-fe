@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Star, Heart, Share2, Truck, Shield, RotateCcw, MessageCircle, Minus, Plus, Upload, X, Smile } from "lucide-react";
+import { Star, Heart, Share2, Truck, Shield, RotateCcw, MessageCircle, Minus, Plus, Upload, X, Smile, ShoppingCart } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -1195,31 +1195,43 @@ export function ProductDetailPage({
               {relatedProducts.map((related) => (
                 <div
                   key={related.id}
-                  className="group bg-white border border-gray-200/80 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+                  className="group bg-white border border-gray-200/80 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col h-full"
                   onClick={() => onNavigate("product", related)}
                 >
-                  <div className="aspect-square overflow-hidden bg-gray-50">
+                  <div className="aspect-square relative overflow-hidden bg-gray-50">
                     <ImageWithFallback
                       src={(related.images?.[0] as any)?.url ?? related.images?.[0] ?? related.image ?? ""}
                       alt={related.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
                   </div>
-                  <div className="p-3.5">
+                  <div className="p-3.5 flex flex-col flex-1">
                     <p className="text-gray-400 text-xs mb-0.5">{related.brand}</p>
-                    <p className="text-gray-900 text-sm font-semibold line-clamp-2 mb-2 leading-snug">{related.name}</p>
-                    <div className="flex items-center gap-2">
+                    <p className="text-gray-900 text-sm font-semibold line-clamp-2 mb-2 leading-snug min-h-[40px]">{related.name}</p>
+                    <div className="flex items-center gap-2 mb-2">
                       <span className="text-blue-700 font-bold text-sm tabular-nums">{formatCurrency(related.price)}</span>
                       {related.originalPrice && (
                         <span className="text-gray-400 text-xs line-through tabular-nums">{formatCurrency(related.originalPrice)}</span>
                       )}
                     </div>
                     {related.rating !== undefined && (
-                      <div className="flex items-center gap-1 mt-1.5">
+                      <div className="flex items-center gap-1 mb-3">
                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                         <span className="text-gray-500 text-xs tabular-nums">{related.rating}</span>
                       </div>
                     )}
+                    <div className="mt-auto pt-2">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddToCart(related, 1);
+                        }}
+                        className="w-full bg-amber-500 hover:bg-amber-600 text-white h-9 text-xs font-bold"
+                      >
+                        <ShoppingCart className="h-3.5 w-3.5 mr-2" />
+                        Thêm vào giỏ
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -1239,31 +1251,43 @@ export function ProductDetailPage({
               {similarProducts.map((similar) => (
                 <div
                   key={similar.id}
-                  className="group bg-white border border-gray-200/80 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+                  className="group bg-white border border-gray-200/80 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col h-full"
                   onClick={() => onNavigate("product", similar)}
                 >
-                  <div className="aspect-square overflow-hidden bg-gray-50">
+                  <div className="aspect-square relative overflow-hidden bg-gray-50">
                     <ImageWithFallback
                       src={(similar.images?.[0] as any)?.url ?? similar.images?.[0] ?? similar.image ?? ""}
                       alt={similar.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
                   </div>
-                  <div className="p-3.5">
+                  <div className="p-3.5 flex flex-col flex-1">
                     <p className="text-gray-400 text-xs mb-0.5">{similar.brand}</p>
-                    <p className="text-gray-900 text-sm font-semibold line-clamp-2 mb-2 leading-snug">{similar.name}</p>
-                    <div className="flex items-center gap-2">
+                    <p className="text-gray-900 text-sm font-semibold line-clamp-2 mb-2 leading-snug min-h-[40px]">{similar.name}</p>
+                    <div className="flex items-center gap-2 mb-2">
                       <span className="text-blue-700 font-bold text-sm tabular-nums">{formatCurrency(similar.price)}</span>
                       {similar.originalPrice && (
                         <span className="text-gray-400 text-xs line-through tabular-nums">{formatCurrency(similar.originalPrice)}</span>
                       )}
                     </div>
                     {similar.rating !== undefined && (
-                      <div className="flex items-center gap-1 mt-1.5">
+                      <div className="flex items-center gap-1 mb-3">
                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                         <span className="text-gray-500 text-xs tabular-nums">{similar.rating}</span>
                       </div>
                     )}
+                    <div className="mt-auto pt-2">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddToCart(similar, 1);
+                        }}
+                        className="w-full bg-amber-500 hover:bg-amber-600 text-white h-9 text-xs font-bold"
+                      >
+                        <ShoppingCart className="h-3.5 w-3.5 mr-2" />
+                        Thêm vào giỏ
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
