@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Star, Heart, Share2, Truck, Shield, RotateCcw, MessageCircle, Minus, Plus, Upload, X, Smile, ShoppingCart } from "lucide-react";
+import { Star, Heart, Share2, Truck, Shield, RotateCcw, MessageCircle, Minus, Plus, Upload, X, Smile, ShoppingCart, ThumbsUp } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -42,6 +42,7 @@ interface Review {
   images: string[];
   emoji?: string;
   helpful: number;
+  hasVoted?: boolean;
   user: ReviewUser;
   createdAt: string;
   replies: ReviewReply[];
@@ -419,15 +420,27 @@ export function ProductDetailPage({
       toast.error("Vui lòng đăng nhập để bình chọn");
       return;
     }
+
+    const review = reviews.find(r => r.id === reviewId);
+    if (!review || review.hasVoted) return;
+
+    // Optimistic Update: Update UI immediately
+    setReviews((prev) =>
+      prev.map((r) =>
+        r.id === reviewId ? { ...r, helpful: (r.helpful || 0) + 1, hasVoted: true } : r
+      )
+    );
+
     try {
       await post(`/api/v1/reviews/${reviewId}/helpful`, {});
-      setReviews((prev) =>
-        prev.map((r) =>
-          r.id === reviewId ? { ...r, helpful: (r.helpful || 0) + 1 } : r
-        )
-      );
       toast.success("Cảm ơn bạn đã phản hồi!");
     } catch (err: any) {
+      // Rollback on error
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId ? { ...r, helpful: Math.max(0, (r.helpful || 0) - 1), hasVoted: false } : r
+        )
+      );
       toast.error(err.message || "Bạn đã bình chọn cho đánh giá này rồi");
     }
   };
@@ -1024,10 +1037,17 @@ export function ProductDetailPage({
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-gray-400 hover:text-blue-600 text-xs h-8 rounded-lg -ml-2 transition-colors"
-                            onClick={() => handleHelpfulClick(review.id)}
+                            className={`text-xs h-8 rounded-lg -ml-2 transition-all duration-300 ${
+                              review.hasVoted 
+                                ? "text-blue-600 bg-blue-50/50 font-medium cursor-default hover:bg-blue-50/50" 
+                                : "text-gray-400 hover:text-blue-600 hover:bg-blue-50/30"
+                            }`}
+                            onClick={() => !review.hasVoted && handleHelpfulClick(review.id)}
+                            disabled={review.hasVoted}
                           >
-                            👍 Hữu ích ({review.helpful})
+                            <ThumbsUp className={`h-3.5 w-3.5 mr-1.5 transition-all ${review.hasVoted ? "fill-blue-600" : ""}`} />
+                            {review.hasVoted ? "Đã ghi nhận hữu ích" : "Hữu ích?"}
+                            <span className="ml-1 opacity-60">({review.helpful})</span>
                           </Button>
                         </div>
 
