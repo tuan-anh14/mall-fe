@@ -245,9 +245,6 @@ export function ProductDetailPage({
   const handleAddToCart = async () => {
     try {
       await onAddToCart(product, quantity, selectedColor ?? undefined, selectedSize ?? undefined);
-      toast.success(`Đã thêm ${quantity} ${product.name} vào giỏ hàng`, {
-        description: `Màu: ${selectedColor || 'Mặc định'}, Kích cỡ: ${selectedSize || 'Mặc định'}`,
-      });
     } catch {
       // error already shown by addToCart
     }
