@@ -1,11 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Star, Upload, Trash2, Edit, Save, Plus, X, Package, LayoutDashboard, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Star, Upload, Trash2, Edit, Save, Plus, X, Package, LayoutDashboard, ChevronLeft, ChevronRight, Image as ImageIcon, Sparkles } from "lucide-react";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "../ui/dialog";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Info, AlertTriangle, Sparkles as SparklesIcon, Check } from "lucide-react";
 import { get, post, put, del } from "../../lib/api";
 import { API_URL } from "../../lib/api";
 import { toast } from "sonner";
@@ -75,6 +85,10 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
   const [newSize, setNewSize] = useState("");
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [generatingDescription, setGeneratingDescription] = useState(false);
+  const [isAIDialogOpen, setIsAIDialogOpen] = useState(false);
+  const [aiInstructions, setAiInstructions] = useState("");
+  const [aiPreview, setAiPreview] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load categories
@@ -158,6 +172,54 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
       next.splice(to, 0, item);
       return next;
     });
+  };
+
+  const handleAIGenerate = async () => {
+    if (!formData.name) {
+      toast.error("Vui lòng nhập tên sản phẩm trước khi tạo mô tả bằng AI");
+      return;
+    }
+
+    setGeneratingDescription(true);
+    setAiPreview(""); // Reset preview
+    try {
+      const categoryName = categories.find((c) => c.id === formData.categoryId)?.name;
+      const res = await post<{ description: string }>("/api/v1/ai-chat/generate-description", {
+        name: formData.name,
+        brand: formData.brand,
+        categoryName,
+        specifications: specifications.filter((s) => s.key.trim() && s.value.trim()),
+        colors: colors.filter(Boolean),
+        sizes: sizes.filter(Boolean),
+        additionalInstructions: aiInstructions,
+      });
+
+      if (res.description) {
+        setAiPreview(res.description);
+        toast.success("AI đã soạn xong bản thảo! ✨");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Không thể tạo mô tả bằng AI. Vui lòng thử lại sau.");
+    } finally {
+      setGeneratingDescription(false);
+    }
+  };
+
+  const applyAIDescription = () => {
+    if (aiPreview) {
+      setFormData((prev) => ({ ...prev, description: aiPreview }));
+      setIsAIDialogOpen(false);
+      setAiPreview("");
+      setAiInstructions("");
+      toast.success("Đã áp dụng mô tả AI vào sản phẩm!");
+    }
+  };
+
+  const getMissingDataCount = () => {
+    let count = 0;
+    if (!formData.brand) count++;
+    if (specifications.filter((s) => s.key.trim() && s.value.trim()).length === 0) count++;
+    return count;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -250,9 +312,21 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
 
             {/* Description */}
             <div>
-              <Label htmlFor="description" className="text-gray-900 mb-2 block">
-                Mô tả
-              </Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="description" className="text-gray-900 block font-medium">
+                  Mô tả
+                </Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-1.5 font-semibold bg-blue-50/50 border border-blue-100"
+                  onClick={() => setIsAIDialogOpen(true)}
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Tạo bằng AI
+                </Button>
+              </div>
               <Textarea
                 id="description"
                 name="description"
@@ -701,6 +775,120 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
           </Button>
         </div>
       </form>
+
+      {/* AI Assistant Dialog */}
+      <Dialog open={isAIDialogOpen} onOpenChange={setIsAIDialogOpen}>
+        <DialogContent className="max-w-2xl bg-white border-gray-200">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl text-gray-900">
+              <Sparkles className="h-6 w-6 text-blue-600" />
+              Trợ lý AI ShopHub
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
+              Tôi sẽ giúp bạn soạn thảo một bản mô tả sản phẩm chuyên nghiệp dựa trên dữ liệu bạn cung cấp.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 my-4">
+            {/* Context Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                  <Check className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase font-bold">Tên sản phẩm</p>
+                  <p className="text-sm font-medium text-gray-900 line-clamp-1">{formData.name || "Chưa nhập"}</p>
+                </div>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${specifications.length > 0 ? "bg-green-100 text-green-600" : "bg-yellow-100 text-yellow-600"}`}>
+                  {specifications.length > 0 ? <Check className="h-4 w-4" /> : <Info className="h-4 w-4" />}
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase font-bold">Thông số kỹ thuật</p>
+                  <p className="text-sm font-medium text-gray-900">{specifications.length} thông số</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Validation Warning */}
+            {getMissingDataCount() > 0 && (
+              <Alert className="bg-yellow-50 border-yellow-200 text-yellow-800">
+                <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                <AlertDescription className="text-xs">
+                  Dữ liệu hiện tại hơi ít ({getMissingDataCount()} mục trống). Bạn nên nhập thêm **Thương hiệu** hoặc **Thông số kỹ thuật** để AI viết hay và chính xác hơn, tránh suy luận sai lầm.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Additional Instructions */}
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-700">Yêu cầu thêm cho AI (Tùy chọn)</Label>
+              <Textarea
+                placeholder="Ví dụ: Viết kiểu sang chảnh, tập trung vào tính năng gaming, hoặc viết cho đối tượng sinh viên..."
+                value={aiInstructions}
+                onChange={(e) => setAiInstructions(e.target.value)}
+                className="bg-gray-50 border-gray-200 text-gray-900 min-h-[80px]"
+              />
+            </div>
+
+            {/* Preview Section */}
+            {aiPreview && (
+              <div className="space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <Label className="text-sm font-semibold text-gray-700">Bản thảo từ AI:</Label>
+                <div className="bg-blue-50/30 border border-blue-100 rounded-xl p-4 max-h-[250px] overflow-y-auto prose prose-sm prose-blue">
+                  <div className="text-gray-800 whitespace-pre-wrap text-sm leading-relaxed whitespace-pre-line">
+                    {aiPreview}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex flex-col sm:flex-row gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsAIDialogOpen(false)}
+              className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
+            >
+              Hủy bỏ
+            </Button>
+            {aiPreview ? (
+              <Button
+                onClick={applyAIDescription}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white gap-2"
+              >
+                <Check className="h-4 w-4" />
+                Áp dụng mô tả này
+              </Button>
+            ) : (
+              <Button
+                onClick={handleAIGenerate}
+                disabled={generatingDescription || !formData.name}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white gap-2"
+              >
+                {generatingDescription ? (
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white animate-spin rounded-full" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+                {generatingDescription ? "Giai đoạn suy luận..." : "Bắt đầu soạn thảo"}
+              </Button>
+            )}
+            {aiPreview && (
+              <Button
+                variant="outline"
+                onClick={handleAIGenerate}
+                disabled={generatingDescription}
+                className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
+              >
+                {generatingDescription ? "Đang viết lại..." : "Thử lại bản khác"}
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
