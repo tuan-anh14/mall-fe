@@ -527,7 +527,6 @@ export function Header({
               {/* Search Bar */}
               <div className="hidden md:flex flex-1 max-w-md">
                 <div className="relative w-full">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2" color="white" size={16} strokeWidth={2.5} />
                   <Input
                     placeholder="Tìm kiếm sản phẩm..."
                     value={searchQuery}
@@ -535,6 +534,7 @@ export function Header({
                     onKeyDown={handleSearchKeyDown}
                     className="pl-10 pr-20 h-10 bg-white/10 border-white/25 text-white placeholder:text-white/60 rounded-xl backdrop-blur-sm focus:bg-white/15 focus:border-white/40 transition-all"
                   />
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white z-10" size={16} strokeWidth={2.5} />
                   <Button
                     size="sm"
                     onClick={handleSearch}
