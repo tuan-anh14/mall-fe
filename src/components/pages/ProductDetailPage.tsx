@@ -123,6 +123,7 @@ export function ProductDetailPage({
   const [reviewImages, setReviewImages] = useState<string[]>([]);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [isUploadingReviewImage, setIsUploadingReviewImage] = useState(false);
+  const [reviewModerationError, setReviewModerationError] = useState<string | null>(null);
   const reviewImageInputRef = useRef<HTMLInputElement>(null);
 
   // Threaded reply state
@@ -131,6 +132,7 @@ export function ProductDetailPage({
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
   const [replyImages, setReplyImages] = useState<string[]>([]);
   const [isUploadingReplyImage, setIsUploadingReplyImage] = useState(false);
+  const [replyModerationError, setReplyModerationError] = useState<string | null>(null);
   const replyImageInputRef = useRef<HTMLInputElement>(null);
 
   const [coupons, setCoupons] = useState<any[]>([]);
@@ -324,6 +326,7 @@ export function ProductDetailPage({
       return;
     }
     setIsSubmittingReview(true);
+    setReviewModerationError(null);
     try {
       const body: any = {
         productId: product.id,
@@ -343,9 +346,15 @@ export function ProductDetailPage({
       setReviewRating(5);
       setReviewImages([]);
       setReviewEmoji("");
+      setReviewModerationError(null);
       toast.success("Đã gửi đánh giá thành công!");
     } catch (err: any) {
-      toast.error(err.message || "Không thể gửi đánh giá");
+      const msg: string = err.message || "Không thể gửi đánh giá";
+      if (msg.includes("vi phạm tiêu chuẩn cộng đồng") || msg.includes("vi phạm")) {
+        setReviewModerationError(msg);
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setIsSubmittingReview(false);
     }
@@ -354,6 +363,7 @@ export function ProductDetailPage({
   const handleReplySubmit = async (reviewId: string) => {
     if (!replyText.trim()) return;
     setIsSubmittingReply(true);
+    setReplyModerationError(null);
     try {
       const data = await post<{ reply: ReviewReply }>(`/api/v1/reviews/${reviewId}/replies`, {
         comment: replyText.trim(),
@@ -371,9 +381,15 @@ export function ProductDetailPage({
       setReplyText("");
       setReplyImages([]);
       setReplyingTo(null);
+      setReplyModerationError(null);
       toast.success("Đã gửi phản hồi");
     } catch (err: any) {
-      toast.error(err.message || "Không thể gửi phản hồi");
+      const msg: string = err.message || "Không thể gửi phản hồi";
+      if (msg.includes("vi phạm tiêu chuẩn cộng đồng") || msg.includes("vi phạm")) {
+        setReplyModerationError(msg);
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setIsSubmittingReply(false);
     }
@@ -847,13 +863,19 @@ export function ProductDetailPage({
                       {/* Review Comment */}
                       <div className="relative">
                         <label className="text-gray-700 text-sm font-medium mb-2 block">Nhận xét *</label>
+                        {reviewModerationError && (
+                          <div className="mb-2 flex items-start gap-2 bg-red-50 border border-red-300 rounded-xl px-3.5 py-2.5">
+                            <span className="text-red-500 font-bold mt-0.5">!</span>
+                            <p className="text-red-700 text-sm">{reviewModerationError}</p>
+                          </div>
+                        )}
                         <div className="relative">
                           <textarea
                             value={reviewComment}
-                            onChange={(e) => setReviewComment(e.target.value)}
+                            onChange={(e) => { setReviewComment(e.target.value); setReviewModerationError(null); }}
                             placeholder="Chia sẻ trải nghiệm của bạn với sản phẩm này..."
                             rows={4}
-                            className="w-full bg-white border border-gray-200 rounded-xl p-3.5 pr-12 text-gray-900 placeholder:text-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm"
+                            className={`w-full bg-white border rounded-xl p-3.5 pr-12 text-gray-900 placeholder:text-gray-400 resize-none focus:outline-none focus:ring-2 transition-all text-sm ${reviewModerationError ? "border-red-400 focus:ring-red-500/20 focus:border-red-500" : "border-gray-200 focus:ring-blue-500/20 focus:border-blue-400"}`}
                           />
                           <div className="absolute right-3 bottom-3">
                             <EmojiPickerButton onEmojiSelect={onCommentEmojiClick} />
@@ -1123,12 +1145,18 @@ export function ProductDetailPage({
                         {/* Reply Input */}
                         {replyingTo === review.id && (
                           <div className="ml-12 mt-3 p-3 bg-gray-50/50 rounded-xl border border-gray-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                            {replyModerationError && (
+                              <div className="mb-2 flex items-start gap-2 bg-red-50 border border-red-300 rounded-xl px-3 py-2">
+                                <span className="text-red-500 font-bold mt-0.5">!</span>
+                                <p className="text-red-700 text-xs">{replyModerationError}</p>
+                              </div>
+                            )}
                             <div className="relative">
                               <textarea
                                 value={replyText}
-                                onChange={(e) => setReplyText(e.target.value)}
+                                onChange={(e) => { setReplyText(e.target.value); setReplyModerationError(null); }}
                                 placeholder={`Chào ${review.user?.name}, trả lời đánh giá này...`}
-                                className="w-full bg-white border border-gray-200 rounded-xl p-3 pr-10 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none resize-none"
+                                className={`w-full bg-white border rounded-xl p-3 pr-10 text-sm focus:ring-2 outline-none resize-none ${replyModerationError ? "border-red-400 focus:ring-red-500/20 focus:border-red-500" : "border-gray-200 focus:ring-blue-500/20 focus:border-blue-400"}`}
                                 rows={2}
                                 autoFocus
                               />
@@ -1167,7 +1195,7 @@ export function ProductDetailPage({
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => { setReplyingTo(null); setReplyText(""); }}
+                                onClick={() => { setReplyingTo(null); setReplyText(""); setReplyModerationError(null); }}
                                 className="text-gray-500 h-8"
                               >
                                 Hủy
