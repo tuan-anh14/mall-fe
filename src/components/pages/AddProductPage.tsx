@@ -458,11 +458,10 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
 
             {/* Drop zone */}
             <div
-              className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
-                uploading
-                  ? "border-blue-500/50 bg-blue-50"
-                  : "border-gray-200 hover:border-blue-400 hover:bg-gray-50"
-              }`}
+              className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${uploading
+                ? "border-blue-500/50 bg-blue-50"
+                : "border-gray-200 hover:border-blue-400 hover:bg-gray-50"
+                }`}
               onClick={() => !uploading && fileInputRef.current?.click()}
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
@@ -497,11 +496,11 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                     className="relative aspect-square bg-gray-50 rounded-xl overflow-hidden group border border-gray-200"
                   >
                     <ImageWithFallback
-                    src={url}
-                    alt={`Ảnh sản phẩm ${index + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    previewable={true}
-                  />
+                      src={url}
+                      alt={`Ảnh sản phẩm ${index + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      previewable={true}
+                    />
 
                     {/* Primary badge */}
                     {index === 0 && (
@@ -778,18 +777,20 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
 
       {/* AI Assistant Dialog */}
       <Dialog open={isAIDialogOpen} onOpenChange={setIsAIDialogOpen}>
-        <DialogContent className="max-w-2xl bg-white border-gray-200">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-2xl text-gray-900">
-              <Sparkles className="h-6 w-6 text-blue-600" />
-              Trợ lý AI ShopHub
-            </DialogTitle>
-            <DialogDescription className="text-gray-500">
-              Tôi sẽ giúp bạn soạn thảo một bản mô tả sản phẩm chuyên nghiệp dựa trên dữ liệu bạn cung cấp.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-2xl bg-white border-gray-200 p-0 overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="p-6 pb-2">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-2xl text-gray-900">
+                <Sparkles className="h-6 w-6 text-blue-600" />
+                Trợ lý AI ShopMall
+              </DialogTitle>
+              <DialogDescription className="text-gray-500">
+                Tôi sẽ giúp bạn soạn thảo một bản mô tả sản phẩm chuyên nghiệp dựa trên dữ liệu bạn cung cấp.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
-          <div className="space-y-4 my-4">
+          <div className="flex-1 overflow-y-auto p-6 py-2 space-y-4">
             {/* Context Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-center gap-3">
@@ -817,7 +818,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
               <Alert className="bg-yellow-50 border-yellow-200 text-yellow-800">
                 <AlertTriangle className="h-4 w-4 text-yellow-600" />
                 <AlertDescription className="text-xs">
-                  Dữ liệu hiện tại hơi ít ({getMissingDataCount()} mục trống). Bạn nên nhập thêm **Thương hiệu** hoặc **Thông số kỹ thuật** để AI viết hay và chính xác hơn, tránh suy luận sai lầm.
+                  Dữ liệu hiện tại hơi ít ({getMissingDataCount()} mục trống). Bạn nên nhập thêm "Thương hiệu" hoặc "Thông số kỹ thuật" để AI viết hay và chính xác hơn, tránh suy luận sai lầm.
                 </AlertDescription>
               </Alert>
             )}
@@ -837,7 +838,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             {aiPreview && (
               <div className="space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
                 <Label className="text-sm font-semibold text-gray-700">Bản thảo từ AI:</Label>
-                <div className="bg-blue-50/30 border border-blue-100 rounded-xl p-4 max-h-[250px] overflow-y-auto prose prose-sm prose-blue">
+                <div className="bg-blue-50/30 border border-blue-100 rounded-xl p-4 prose prose-sm prose-blue">
                   <div className="text-gray-800 whitespace-pre-wrap text-sm leading-relaxed whitespace-pre-line">
                     {aiPreview}
                   </div>
@@ -846,49 +847,52 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             )}
           </div>
 
-          <DialogFooter className="flex flex-col sm:flex-row gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setIsAIDialogOpen(false)}
-              className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
-            >
-              Hủy bỏ
-            </Button>
-            {aiPreview ? (
-              <Button
-                onClick={applyAIDescription}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white gap-2"
-              >
-                <Check className="h-4 w-4" />
-                Áp dụng mô tả này
-              </Button>
-            ) : (
-              <Button
-                onClick={handleAIGenerate}
-                disabled={generatingDescription || !formData.name}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white gap-2"
-              >
-                {generatingDescription ? (
-                  <div className="h-4 w-4 border-2 border-white/30 border-t-white animate-spin rounded-full" />
-                ) : (
-                  <Sparkles className="h-4 w-4" />
-                )}
-                {generatingDescription ? "Giai đoạn suy luận..." : "Bắt đầu soạn thảo"}
-              </Button>
-            )}
-            {aiPreview && (
+          <div className="p-6 pt-2 bg-gray-50/50">
+            <DialogFooter className="flex flex-col sm:flex-row gap-3">
               <Button
                 variant="outline"
-                onClick={handleAIGenerate}
-                disabled={generatingDescription}
-                className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
+                onClick={() => setIsAIDialogOpen(false)}
+                className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
               >
-                {generatingDescription ? "Đang viết lại..." : "Thử lại bản khác"}
+                Hủy bỏ
               </Button>
-            )}
-          </DialogFooter>
+              {aiPreview ? (
+                <Button
+                  onClick={applyAIDescription}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white gap-2"
+                >
+                  <Check className="h-4 w-4" />
+                  Áp dụng mô tả này
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleAIGenerate}
+                  disabled={generatingDescription || !formData.name}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                >
+                  {generatingDescription ? (
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white animate-spin rounded-full" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
+                  {generatingDescription ? "Giai đoạn suy luận..." : "Bắt đầu soạn thảo"}
+                </Button>
+              )}
+              {aiPreview && (
+                <Button
+                  variant="outline"
+                  onClick={handleAIGenerate}
+                  disabled={generatingDescription}
+                  className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
+                >
+                  {generatingDescription ? "Đang viết lại..." : "Thử lại bản khác"}
+                </Button>
+              )}
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
   );
 }
+
