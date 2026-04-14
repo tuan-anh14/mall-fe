@@ -63,13 +63,13 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
         {/* Left Side - Luxury Branding */}
         <div className="hidden lg:flex flex-col relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-blue-700 via-blue-800 to-indigo-950 p-12 shadow-2xl group">
           {/* Animated Background Gradients */}
-          <motion.div 
-            animate={{ 
+          <motion.div
+            animate={{
               scale: [1, 1.2, 1],
-              opacity: [0.3, 0.2, 0.3] 
+              opacity: [0.3, 0.2, 0.3]
             }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-blue-400/20 blur-[100px]" 
+            className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-blue-400/20 blur-[100px]"
           />
 
           <div className="relative z-10 flex flex-col h-full">
@@ -82,7 +82,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
 
             <div className="flex-1 space-y-12">
               <div>
-                <motion.h2 
+                <motion.h2
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
@@ -91,7 +91,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   Nâng tầm trải nghiệm <br />
                   <span className="text-blue-300">Mua sắm số</span>
                 </motion.h2>
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
@@ -108,7 +108,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                   { icon: <Zap className="h-6 w-6" />, title: "Tốc độ vượt trội", desc: "Hệ thống tối ưu, đặt hàng chỉ trong 3 giây." },
                   { icon: <Headphones className="h-6 w-6" />, title: "Hỗ trợ tận tâm", desc: "Đội ngũ chăm sóc khách hàng túc trực 24/7." }
                 ].map((feature, idx) => (
-                  <motion.div 
+                  <motion.div
                     key={idx}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -128,7 +128,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
             </div>
 
             <div className="pt-8 mt-auto border-t border-white/10 flex items-center justify-between text-blue-100/40 text-sm">
-              <p>© 2024 SHOP MALL Inc.</p>
+              <p>© 2026 SHOP MALL Inc.</p>
               <div className="flex gap-4">
                 <span>Privacy</span>
                 <span>Terms</span>
@@ -140,8 +140,8 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
         {/* Right Side - Forms */}
         <div className="flex flex-col justify-center py-10 lg:py-0 px-2 lg:px-8">
           <div className="w-full max-w-md mx-auto">
-            <Tabs 
-              defaultValue="login" 
+            <Tabs
+              defaultValue="login"
               className="w-full"
               onValueChange={setActiveTab}
             >
@@ -242,7 +242,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                         >
                           {loginForm.formState.isSubmitting ? (
                             <span className="flex items-center gap-2">
-                              <motion.span 
+                              <motion.span
                                 animate={{ rotate: 360 }}
                                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                                 className="h-4 w-4 border-2 border-white/50 border-t-white rounded-full"

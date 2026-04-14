@@ -50,7 +50,7 @@ export function AboutPage() {
               <span className="block bg-gradient-to-r from-amber-300 to-amber-400 bg-clip-text text-transparent">Shop MALL</span>
             </h1>
             <p className="text-lg text-blue-100/80 leading-relaxed max-w-xl">
-              Điểm đến cao cấp cho các sản phẩm chất lượng từ 2024. Chúng tôi kết nối sản phẩm tuyệt vời với những khách hàng sành điệu.
+              Điểm đến cao cấp cho các sản phẩm chất lượng từ 2026. Chúng tôi kết nối sản phẩm tuyệt vời với những khách hàng sành điệu.
             </p>
           </motion.div>
         </div>

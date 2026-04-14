@@ -214,7 +214,7 @@ export function AdminCouponsPage() {
             </div>
             <div>
               <label className="text-gray-500 text-xs mb-1 block">Tên hiển thị</label>
-              <Input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Black Friday 2024" className="bg-gray-50 border-gray-200 text-gray-900" />
+              <Input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Black Friday 2026" className="bg-gray-50 border-gray-200 text-gray-900" />
             </div>
             <div>
               <label className="text-gray-500 text-xs mb-1 block">Mô tả ngắn (hiển thị trên banner)</label>

@@ -457,7 +457,7 @@ export function Header({
 
                   {/* Foot Actions */}
                   <div className="p-4 bg-gray-50/50 border-t border-gray-100 flex flex-col items-center justify-center">
-                    <p className="text-[10px] text-gray-400 font-medium">© 2024 ShopMall. All rights reserved.</p>
+                    <p className="text-[10px] text-gray-400 font-medium">© 2026 ShopMall. All rights reserved.</p>
                   </div>
                 </SheetContent>
               </Sheet>

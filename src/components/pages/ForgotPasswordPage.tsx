@@ -41,9 +41,9 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
 
       <div className="w-full max-w-[500px] relative z-10">
         <motion.div
-           initial={{ opacity: 0, x: -20 }}
-           animate={{ opacity: 1, x: 0 }}
-           transition={{ duration: 0.4 }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
         >
           <Button
             variant="ghost"
@@ -55,7 +55,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
           </Button>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white/70 backdrop-blur-xl border border-white p-6 lg:p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)]"
@@ -111,7 +111,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                   >
                     {isSubmitting ? (
                       <span className="flex items-center gap-2">
-                        <motion.span 
+                        <motion.span
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                           className="h-4 w-4 border-2 border-white/50 border-t-white rounded-full"
@@ -135,7 +135,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                       <CheckCircle className="h-10 w-10 text-white" />
                     </div>
                   </div>
-                  <motion.div 
+                  <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.3, type: "spring" }}
@@ -152,7 +152,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                   </p>
                   <p className="text-gray-900 font-black mt-1 break-all tracking-tight underline underline-offset-4 decoration-blue-200">{submittedEmail}</p>
                 </div>
-                
+
                 <div className="space-y-6">
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest px-4 leading-relaxed">
                     Bạn không nhận được email? <br />
@@ -165,7 +165,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
                       thử lại
                     </button>
                   </p>
-                  
+
                   <Button
                     variant="outline"
                     className="w-full h-14 rounded-2xl border-gray-200 hover:bg-gray-50 font-bold transition-all"
@@ -180,8 +180,8 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
         </motion.div>
 
         <p className="text-center mt-12 text-gray-400 text-xs font-medium uppercase tracking-widest leading-relaxed">
-          Bảo mật bởi hệ thống Shop MALL <br /> 
-          © 2024 Secure Authentication Center
+          Bảo mật bởi hệ thống Shop MALL <br />
+          © 2026 Secure Authentication Center
         </p>
       </div>
     </div>
