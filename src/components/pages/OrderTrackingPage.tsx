@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Check, Package, Truck, MapPin, CheckCircle } from "lucide-react";
+import { Check, Package, Truck, MapPin, CheckCircle, RotateCcw } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
@@ -8,6 +8,7 @@ import { get } from "../../lib/api";
 import { formatCurrency } from "../../lib/currency";
 import { toast } from "sonner";
 import { walletService } from "../../services/wallet.service";
+import { ReturnRequestModal } from "../ReturnRequestModal";
 
 interface TrackingStep {
   status: string;
@@ -77,7 +78,10 @@ const STATUS_LABEL_VI: Record<string, string> = {
   OUT_FOR_DELIVERY: "Đang giao hàng",
   DELIVERED: "Đã giao hàng thành công",
   CANCELLED: "Đã hủy",
-  REFUNDED: "Đã hoàn tiền",
+  REFUNDED: "Đã hoàn trả tiền",
+  RETURN_REQUESTED: "Yêu cầu đổi / trả hàng",
+  RETURN_APPROVED: "Đã chấp nhận yêu cầu",
+  RETURNED: "Hoàn trả hàng thành công",
 };
 
 const STATUS_ICON_MAP: Record<string, React.ElementType> = {
@@ -95,6 +99,8 @@ const STATUS_ICON_MAP: Record<string, React.ElementType> = {
   out_for_delivery: MapPin,
   DELIVERED: CheckCircle,
   delivered: CheckCircle,
+  RETURN_REQUESTED: RotateCcw,
+  RETURNED: CheckCircle,
 };
 
 function getTrackingIcon(status: string): React.ElementType {
@@ -102,8 +108,11 @@ function getTrackingIcon(status: string): React.ElementType {
 }
 
 function getPaymentStatus(order: Order) {
-  if (order.status === "CANCELLED" || order.status === "REFUNDED") {
+  if (order.status === "CANCELLED") {
     return { label: "Đã hủy", color: "text-red-600" };
+  }
+  if (order.status === "REFUNDED" || order.status === "RETURNED") {
+    return { label: "Đã hoàn tiền", color: "text-blue-600" };
   }
   if (order.paymentMethod === "cod") {
     if (order.status === "DELIVERED") return { label: "Đã thanh toán", color: "text-green-600" };
@@ -119,6 +128,7 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -314,9 +324,9 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
                         <div className="flex flex-col items-center">
                           <div
                             className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all ${
-                              isCompleted
+                              isCompleted || step.status === "RETURNED"
                                 ? "bg-blue-600 border-blue-600"
-                                : isCurrent
+                                : isCurrent || step.status === "RETURN_REQUESTED"
                                 ? "border-blue-600 bg-blue-50 animate-pulse"
                                 : "border-gray-200 bg-gray-50"
                             }`}
@@ -470,6 +480,17 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
               >
                 Liên hệ hỗ trợ
               </Button>
+
+              {currentOrder.status === "DELIVERED" && (
+                <Button
+                  variant="outline"
+                  className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
+                  onClick={() => setIsReturnModalOpen(true)}
+                >
+                  Yêu cầu trả hàng
+                </Button>
+              )}
+
               <Button
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => onNavigate("shop")}
@@ -480,6 +501,18 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
           </>
         )}
       </div>
+      
+      {currentOrder && (
+        <ReturnRequestModal
+          isOpen={isReturnModalOpen}
+          onOpenChange={setIsReturnModalOpen}
+          orderId={currentOrder.id}
+          onSuccess={() => {
+            // Re-fetch orders to show updated status if needed
+            window.location.reload(); 
+          }}
+        />
+      )}
     </div>
   );
 }

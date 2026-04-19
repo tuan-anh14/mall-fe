@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Search, Package, Truck, CheckCircle, Clock, Filter } from "lucide-react";
+import { Search, Package, Truck, CheckCircle, Clock, Filter, RotateCcw } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
+import { SellerReturnRequestModal } from "../SellerReturnRequestModal";
 
 interface OrderCustomer {
   id: string;
@@ -40,6 +41,7 @@ interface Order {
   total: number;
   customer: OrderCustomer;
   items: OrderItem[];
+  returnRequest?: { id: string };
 }
 
 interface OrderStats {
@@ -47,6 +49,7 @@ interface OrderStats {
   pending: number;
   shipped: number;
   delivered: number;
+  returns: number;
 }
 
 interface SellerOrdersPageProps {
@@ -59,16 +62,20 @@ const STATUS_VI: Record<string, string> = {
   Delivered: "Đã giao",
   Cancelled: "Đã hủy",
   Refunded: "Hoàn tiền",
+  RETURN_REQUESTED: "Chờ đổi trả",
+  RETURNED: "Đã trả hàng",
 };
 
 export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPageProps) {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [stats, setStats] = useState<OrderStats>({ total: 0, pending: 0, shipped: 0, delivered: 0 });
+  const [stats, setStats] = useState<OrderStats>({ total: 0, pending: 0, shipped: 0, delivered: 0, returns: 0 });
+  const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -94,6 +101,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
     }, 300);
     return () => clearTimeout(timer);
   }, [fetchOrders]);
+
 
   const handleUpdateStatus = async (orderId: string, newStatus: string) => {
     setUpdatingId(orderId);
@@ -140,6 +148,10 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                           ? "bg-green-500/20 text-green-400 border-green-500/30"
                           : order.status === "Shipped"
                           ? "bg-blue-50 text-blue-600 border-blue-200"
+                          : order.status === "RETURN_REQUESTED"
+                          ? "bg-blue-50 text-blue-700 border-blue-300 animate-pulse"
+                          : order.status === "RETURNED"
+                          ? "bg-blue-100 text-blue-800 border-blue-400"
                           : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
                       }
                     >
@@ -156,7 +168,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                     >
                       Xem chi tiết
                     </Button>
-                    {order.status !== "Delivered" && (
+                    {order.status !== "Delivered" && order.status !== "RETURN_REQUESTED" && order.status !== "RETURNED" && (
                       <Button
                         size="sm"
                         disabled={updatingId === order.id}
@@ -174,6 +186,18 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                           ? "Đánh dấu đã giao"
                           : "Đánh dấu đã nhận"}
                       </Button>
+                    )}
+                    {order.status === "RETURN_REQUESTED" && (
+                       <Button
+                         size="sm"
+                         className="bg-blue-600 hover:bg-blue-700 text-white"
+                         onClick={() => {
+                           setSelectedRequestId(order.returnRequest?.id || null);
+                           setIsReturnModalOpen(true);
+                         }}
+                       >
+                         Quản lý đổi / trả
+                       </Button>
                     )}
                   </div>
                 </TableCell>
@@ -200,7 +224,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4 mb-8">
         <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <Package className="h-5 w-5 text-blue-400" />
@@ -221,7 +245,6 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
             <p className="text-sm text-gray-500">Đang giao</p>
           </div>
           <p className="text-3xl text-gray-900">{stats.shipped}</p>
-
         </div>
         <div className="bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/20 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
@@ -229,6 +252,13 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
             <p className="text-sm text-gray-500">Đã giao</p>
           </div>
           <p className="text-3xl text-gray-900">{stats.delivered}</p>
+        </div>
+        <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <RotateCcw className="h-5 w-5 text-blue-500" />
+            <p className="text-sm text-gray-500">Đổi hàng / Hoàn tiền</p>
+          </div>
+          <p className="text-3xl text-gray-900">{stats.returns}</p>
         </div>
       </div>
 
@@ -257,6 +287,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                   <SelectItem value="Processing">Đang xử lý</SelectItem>
                   <SelectItem value="Shipped">Đang giao</SelectItem>
                   <SelectItem value="Delivered">Đã giao</SelectItem>
+                  <SelectItem value="RETURN_REQUESTED">Đổi / Trả hàng</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -267,20 +298,22 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
           <div className="text-center text-gray-500 py-12">Đang tải đơn hàng...</div>
         ) : (
           <Tabs
-            value={statusFilter === "all" ? "all" : statusFilter === "Processing" ? "pending" : statusFilter === "Shipped" ? "shipped" : "delivered"}
+            value={statusFilter === "all" ? "all" : statusFilter === "Processing" ? "pending" : statusFilter === "Shipped" ? "shipped" : statusFilter === "Delivered" ? "delivered" : "returns"}
             onValueChange={(tab: string) => {
               if (tab === "all") setStatusFilter("all");
               else if (tab === "pending") setStatusFilter("Processing");
               else if (tab === "shipped") setStatusFilter("Shipped");
               else if (tab === "delivered") setStatusFilter("Delivered");
+              else if (tab === "returns") setStatusFilter("RETURN_REQUESTED");
             }}
             className="w-full"
           >
-            <TabsList className="w-full sm:flex-nowrap">
+            <TabsList className="flex-wrap h-auto">
               <TabsTrigger value="all">Tất cả ({stats.total})</TabsTrigger>
               <TabsTrigger value="pending">Chờ xử lý ({stats.pending})</TabsTrigger>
               <TabsTrigger value="shipped">Đang giao ({stats.shipped})</TabsTrigger>
               <TabsTrigger value="delivered">Đã giao ({stats.delivered})</TabsTrigger>
+              <TabsTrigger value="returns">Đổi / Trả ({stats.returns})</TabsTrigger>
             </TabsList>
 
             <TabsContent value="all" className="m-0">
@@ -297,6 +330,13 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
 
             <TabsContent value="delivered" className="m-0">
               <OrderTable rows={orders} showStatus={false} />
+            </TabsContent>
+            
+            <TabsContent value="returns" className="m-0">
+              <OrderTable 
+                rows={orders.filter(o => o.status === "RETURN_REQUESTED" || o.status === "RETURNED")} 
+                showStatus={true} 
+              />
             </TabsContent>
           </Tabs>
         )}
@@ -398,6 +438,13 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
           )}
         </DialogContent>
       </Dialog>
+
+      <SellerReturnRequestModal
+        isOpen={isReturnModalOpen}
+        onOpenChange={setIsReturnModalOpen}
+        requestId={selectedRequestId || ""}
+        onSuccess={() => fetchOrders()}
+      />
     </div>
   );
 }

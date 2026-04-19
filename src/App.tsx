@@ -81,6 +81,11 @@ const SellerReviewsPage = lazy(() =>
     default: m.SellerReviewsPage,
   })),
 );
+const SellerReturnRequestsPage = lazy(() =>
+  import("./components/pages/SellerReturnRequestsPage").then((m) => ({
+    default: m.SellerReturnRequestsPage,
+  })),
+);
 const SellerCouponsPage = lazy(() =>
   import("./components/pages/SellerCouponsPage").then((m) => ({
     default: m.SellerCouponsPage,
@@ -884,6 +889,18 @@ export default function App() {
                     )
                   ) : (
                     <SellerOrdersPage onNavigate={navigate} />
+                  )
+                }
+              />
+              <Route
+                path="/seller/returns"
+                element={
+                  !isAuthenticated || !isSeller ? (
+                    sellerRedirect(
+                      "Truy cập bị từ chối. Cần tài khoản người bán.",
+                    )
+                  ) : (
+                    <SellerReturnRequestsPage />
                   )
                 }
               />
