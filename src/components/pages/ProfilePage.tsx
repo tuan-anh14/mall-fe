@@ -256,7 +256,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
         transition={{ duration: 0.45, ease: motionEase, delay: 0.04 }}
         className="bg-white border border-gray-200/80 rounded-2xl shadow-sm mb-6 overflow-visible"
       >
-        <div className="relative z-0 h-32 sm:h-36 shrink-0 rounded-t-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 overflow-hidden">
+        <div className="relative z-0 h-32 sm:h-36 shrink-0 rounded-t-2xl bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(255,255,255,0.2),transparent_55%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_100%,rgba(0,0,0,0.08),transparent_50%)]" />
         </div>
@@ -266,7 +266,7 @@ export function ProfilePage({ onNavigate, onLogout, user: userProp }: ProfilePag
             {avatarUrl ? (
               <AvatarImage src={avatarUrl} alt={displayName || "Avatar"} className="object-cover" />
             ) : null}
-            <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
+            <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-blue-500 to-blue-600 text-white">
               {profileLoading ? "…" : displayAvatar}
             </AvatarFallback>
           </Avatar>

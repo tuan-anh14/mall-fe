@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { TrendingUp, ShoppingBag, Users, Package, Plus, LayoutDashboard, PenTool } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
@@ -43,7 +44,7 @@ interface Order {
   date: string;
   status: string;
   total: number;
-  customer: { id: string; name: string; email: string };
+  customer: { id: string; name: string; email: string; avatar?: string };
   items: any[];
 }
 
@@ -471,7 +472,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                     </TableHeader>
                     <TableBody>
                       {(() => {
-                        const customerMap = new Map<string, { id: string; name: string; email: string; orderCount: number; totalSpent: number }>();
+                        const customerMap = new Map<string, { id: string; name: string; email: string; orderCount: number; totalSpent: number; avatar?: string }>();
                         orders.forEach((order) => {
                           const c = order.customer;
                           if (!customerMap.has(c.id)) {
@@ -498,9 +499,14 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                           <TableRow key={customer.id} className="border-gray-100 hover:bg-gray-50/80">
                             <TableCell>
                               <div className="flex items-center gap-3">
-                                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm font-semibold shadow-sm">
-                                  {customer.name[0]?.toUpperCase() || "?"}
-                                </div>
+                                <Avatar className="h-9 w-9 border border-gray-100 shadow-sm">
+                                  {customer.avatar && (
+                                    <AvatarImage src={customer.avatar} alt={customer.name} className="object-cover" />
+                                  )}
+                                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-semibold">
+                                    {customer.name[0]?.toUpperCase() || "?"}
+                                  </AvatarFallback>
+                                </Avatar>
                                 <span className="text-gray-900 font-medium text-sm">{customer.name}</span>
                               </div>
                             </TableCell>
