@@ -91,6 +91,11 @@ const SellerCouponsPage = lazy(() =>
     default: m.SellerCouponsPage,
   })),
 );
+const SellerInventoryPage = lazy(() =>
+  import("./components/pages/SellerInventoryPage").then((m) => ({
+    default: m.SellerInventoryPage,
+  })),
+);
 const AddProductPage = lazy(() =>
   import("./components/pages/AddProductPage").then((m) => ({
     default: m.AddProductPage,
@@ -925,6 +930,18 @@ export default function App() {
                     )
                   ) : (
                     <SellerCouponsPage />
+                  )
+                }
+              />
+              <Route
+                path="/seller/inventory"
+                element={
+                  !isAuthenticated || !isSeller ? (
+                    sellerRedirect(
+                      "Truy cập bị từ chối. Cần tài khoản người bán.",
+                    )
+                  ) : (
+                    <SellerInventoryPage onNavigate={navigate} />
                   )
                 }
               />

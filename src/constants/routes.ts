@@ -13,6 +13,7 @@ export const PAGE_TO_PATH: Record<string, string> = {
   "seller-returns": "/seller/returns",
   "seller-reviews": "/seller/reviews",
   "seller-coupons": "/seller/coupons",
+  "seller-inventory": "/seller/inventory",
   "add-product": "/seller/add-product",
   "edit-product": "/seller/edit-product",
   // Admin pages
@@ -61,6 +62,7 @@ export const SELLER_PAGES = [
   "seller-returns",
   "seller-reviews",
   "seller-coupons",
+  "seller-inventory",
   "add-product",
   "edit-product",
 ];

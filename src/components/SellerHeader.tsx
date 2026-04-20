@@ -1,5 +1,5 @@
 import React from "react";
-import { Package, ShoppingBag, BarChart3, LogOut, Store, Home, MessageSquare, Star, Tag, RotateCcw } from "lucide-react";
+import { Package, ShoppingBag, BarChart3, LogOut, Store, Home, MessageSquare, Star, Tag, RotateCcw, Boxes } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
@@ -23,6 +23,7 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
   const navItems = [
     { id: "dashboard", label: "Tổng quan", icon: BarChart3 },
     { id: "seller-products", label: "Sản phẩm", icon: Package },
+    { id: "seller-inventory", label: "Kho hàng", icon: Boxes },
     { id: "seller-orders", label: "Đơn hàng", icon: ShoppingBag },
     { id: "seller-returns", label: "Trả hàng", icon: RotateCcw },
     { id: "seller-reviews", label: "Đánh giá", icon: Star },
@@ -34,7 +35,7 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div 
+          <div
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => onNavigate("dashboard")}
           >
@@ -42,8 +43,7 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
               <Store className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl text-white font-semibold">Kênh Người Bán</h1>
-              <p className="text-xs text-blue-100">Quản lý cửa hàng</p>
+              <p className="text-xl text-white font-semibold">Cửa hàng</p>
             </div>
           </div>
 
@@ -52,16 +52,15 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentPage === item.id;
-              
+
               return (
                 <Button
                   key={item.id}
                   variant="ghost"
-                  className={`gap-2 ${
-                    isActive
-                      ? "text-white bg-white/20"
-                      : "text-blue-100 hover:text-white hover:bg-white/10"
-                  }`}
+                  className={`gap-2 ${isActive
+                    ? "text-white bg-white/20"
+                    : "text-blue-100 hover:text-white hover:bg-white/10"
+                    }`}
                   onClick={() => onNavigate(item.id)}
                 >
                   <Icon className="h-4 w-4" />
@@ -94,7 +93,7 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
               <p className="text-sm text-white font-medium">{user?.name || "Seller"}</p>
               <p className="text-xs text-blue-100">Tài khoản Người bán</p>
             </div>
-            <Avatar 
+            <Avatar
               className="h-10 w-10 cursor-pointer border-2 border-white/30 bg-blue-700 overflow-hidden shadow-sm"
               onClick={() => onNavigate("profile")}
             >
@@ -122,17 +121,16 @@ export function SellerHeader({ currentPage, onNavigate, onLogout, user }: Seller
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentPage === item.id;
-            
+
             return (
               <Button
                 key={item.id}
                 variant="ghost"
                 size="sm"
-                className={`gap-2 flex-shrink-0 ${
-                  isActive
-                    ? "text-white bg-white/10"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
-                }`}
+                className={`gap-2 flex-shrink-0 ${isActive
+                  ? "text-white bg-white/10"
+                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  }`}
                 onClick={() => onNavigate(item.id)}
               >
                 <Icon className="h-4 w-4" />

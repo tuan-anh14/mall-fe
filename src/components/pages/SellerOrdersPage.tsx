@@ -126,7 +126,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
             <TableHead className="text-gray-600">Ngày</TableHead>
             <TableHead className="text-gray-600">Khách hàng</TableHead>
             <TableHead className="text-gray-600">Sản phẩm</TableHead>
-            <TableHead className="text-gray-600">Tổng</TableHead>
+            <TableHead className="text-gray-600">Tổng (Shop)</TableHead>
             {showStatus && <TableHead className="text-gray-600">Trạng thái</TableHead>}
             <TableHead className="text-gray-600 text-right">Thao tác</TableHead>
           </TableRow>
@@ -152,6 +152,8 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                           ? "bg-blue-50 text-blue-700 border-blue-300 animate-pulse"
                           : order.status === "RETURNED"
                           ? "bg-blue-100 text-blue-800 border-blue-400"
+                          : order.status === "Refunded"
+                          ? "bg-orange-50 text-orange-600 border-orange-200"
                           : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
                       }
                     >
@@ -168,7 +170,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                     >
                       Xem chi tiết
                     </Button>
-                    {order.status !== "Delivered" && order.status !== "RETURN_REQUESTED" && order.status !== "RETURNED" && (
+                    {(order.status === "Processing" || order.status === "Shipped") && (
                       <Button
                         size="sm"
                         disabled={updatingId === order.id}
@@ -183,8 +185,8 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                         {updatingId === order.id
                           ? "Đang cập nhật..."
                           : order.status === "Processing"
-                          ? "Đánh dấu đã giao"
-                          : "Đánh dấu đã nhận"}
+                          ? "Xác nhận giao hàng"
+                          : "Xác nhận đã giao"}
                       </Button>
                     )}
                     {order.status === "RETURN_REQUESTED" && (
@@ -333,9 +335,9 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
             </TabsContent>
             
             <TabsContent value="returns" className="m-0">
-              <OrderTable 
-                rows={orders.filter(o => o.status === "RETURN_REQUESTED" || o.status === "RETURNED")} 
-                showStatus={true} 
+              <OrderTable
+                rows={orders.filter(o => o.status === "RETURN_REQUESTED" || o.status === "RETURNED" || o.status === "Refunded")}
+                showStatus={true}
               />
             </TabsContent>
           </Tabs>
@@ -407,12 +409,12 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
 
               {/* Total */}
               <div className="flex justify-between items-center border-t border-gray-200 pt-4">
-                <span className="text-gray-500">Tổng cộng</span>
+                <span className="text-gray-500">Tổng cộng (Shop)</span>
                 <span className="text-gray-900 text-lg">{formatCurrency(selectedOrder.total)}</span>
               </div>
 
               {/* Update Status */}
-              {selectedOrder.status !== "Delivered" && (
+              {(selectedOrder.status === "Processing" || selectedOrder.status === "Shipped") && (
                 <div className="flex justify-end gap-2">
                   <Button
                     size="sm"
@@ -429,8 +431,8 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                     {updatingId === selectedOrder.id
                       ? "Đang cập nhật..."
                       : selectedOrder.status === "Processing"
-                      ? "Đánh dấu đã giao"
-                      : "Đánh dấu đã nhận"}
+                      ? "Xác nhận giao hàng"
+                      : "Xác nhận đã giao"}
                   </Button>
                 </div>
               )}
