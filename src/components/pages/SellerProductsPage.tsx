@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Plus, Search, Edit, Trash2, Eye, Package } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Eye, EyeOff, Package } from "lucide-react";
 import { formatCurrency } from "../../lib/currency";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { Switch } from "../ui/switch";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
-import { get, del } from "../../lib/api";
+import { get, del, patch } from "../../lib/api";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -57,6 +58,7 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [updatingVisibleId, setUpdatingVisibleId] = useState<string | null>(null);
 
   const fetchProducts = useCallback(async (search?: string) => {
     try {
@@ -90,6 +92,26 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
   const handleDeleteClick = (product: Product) => {
     setSelectedProduct(product);
     setDeleteDialogOpen(true);
+  };
+
+  const handleToggleVisibility = async (product: Product) => {
+    const isCurrentlyActive = product.status === "ACTIVE";
+    const nextStatus = isCurrentlyActive ? "INACTIVE" : "ACTIVE";
+    
+    setUpdatingVisibleId(product.id);
+    try {
+      await patch(`/api/v1/seller/products/${product.id}`, { status: nextStatus });
+      toast.success(
+        isCurrentlyActive 
+          ? `Đã ẩn sản phẩm "${product.name}"` 
+          : `Đã hiện sản phẩm "${product.name}"`
+      );
+      fetchProducts(searchQuery || undefined);
+    } catch (err: any) {
+      toast.error(err.message || 'Không thể cập nhật trạng thái sản phẩm');
+    } finally {
+      setUpdatingVisibleId(null);
+    }
   };
 
   const handleDeleteConfirm = async () => {
@@ -221,23 +243,30 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          className={
-                            product.status === "ACTIVE"
-                              ? "bg-green-500/20 text-green-400 border-green-500/30"
-                              : product.status === "DRAFT"
-                              ? "bg-gray-500/20 text-gray-400 border-gray-500/30"
-                              : "bg-red-500/20 text-red-400 border-red-500/30"
-                          }
-                        >
-                          {product.status === "ACTIVE"
-                            ? "Đang bán"
-                            : product.status === "INACTIVE"
-                            ? "Ngừng bán"
-                            : product.status === "OUT_OF_STOCK"
-                            ? "Hết hàng"
-                            : "Nháp"}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={product.status === "ACTIVE"}
+                            onCheckedChange={() => handleToggleVisibility(product)}
+                            disabled={updatingVisibleId === product.id}
+                          />
+                          <Badge
+                            className={
+                              product.status === "ACTIVE"
+                                ? "bg-green-500/20 text-green-400 border-green-500/30"
+                                : product.status === "DRAFT"
+                                ? "bg-gray-500/20 text-gray-400 border-gray-500/30"
+                                : "bg-red-500/20 text-red-400 border-red-500/30"
+                            }
+                          >
+                            {product.status === "ACTIVE"
+                              ? "Hiện"
+                              : product.status === "INACTIVE"
+                              ? "Ẩn"
+                              : product.status === "OUT_OF_STOCK"
+                              ? "Hết hàng"
+                              : "Nháp"}
+                          </Badge>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2 justify-end">
