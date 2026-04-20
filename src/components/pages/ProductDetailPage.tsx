@@ -104,6 +104,7 @@ export function ProductDetailPage({
   const [totalReviews, setTotalReviews] = useState(product.reviews ?? 0);
   const [ratingBreakdown, setRatingBreakdown] = useState<RatingBreakdownItem[]>([]);
   const [ratingAverage, setRatingAverage] = useState<number>(product.rating ?? 0);
+  const [reviewSortBy, setReviewSortBy] = useState<"newest" | "helpful">("newest");
 
   const [expandedReplies, setExpandedReplies] = useState<Record<string, boolean>>({});
 
@@ -214,10 +215,10 @@ export function ProductDetailPage({
     }
   };
 
-  const fetchReviews = async (page = 1, append = false) => {
+  const fetchReviews = async (page = 1, append = false, sortBy = reviewSortBy) => {
     if (!append) setReviewsLoading(true);
     try {
-      const data = await get(`/api/v1/reviews/products/${product.id}?page=${page}&limit=10`);
+      const data = await get(`/api/v1/reviews/products/${product.id}?page=${page}&limit=10&sortBy=${sortBy}`);
       const newReviews = data.reviews ?? [];
       if (append) {
         setReviews((prev) => [...prev, ...newReviews]);
@@ -243,6 +244,13 @@ export function ProductDetailPage({
     } finally {
       if (!append) setReviewsLoading(false);
     }
+  };
+
+  const handleSortChange = (newSort: "newest" | "helpful") => {
+    if (newSort === reviewSortBy) return;
+    setReviewSortBy(newSort);
+    setReviewsPage(1);
+    fetchReviews(1, false, newSort);
   };
 
   const handleAddToCart = async () => {
@@ -438,26 +446,27 @@ export function ProductDetailPage({
     }
 
     const review = reviews.find(r => r.id === reviewId);
-    if (!review || review.hasVoted) return;
+    if (!review) return;
+
+    const isVoting = !review.hasVoted;
 
     // Optimistic Update: Update UI immediately
     setReviews((prev) =>
       prev.map((r) =>
-        r.id === reviewId ? { ...r, helpful: (r.helpful || 0) + 1, hasVoted: true } : r
+        r.id === reviewId ? { ...r, helpful: Math.max(0, (r.helpful || 0) + (isVoting ? 1 : -1)), hasVoted: isVoting } : r
       )
     );
 
     try {
       await post(`/api/v1/reviews/${reviewId}/helpful`, {});
-      toast.success("Cảm ơn bạn đã phản hồi!");
     } catch (err: any) {
       // Rollback on error
       setReviews((prev) =>
         prev.map((r) =>
-          r.id === reviewId ? { ...r, helpful: Math.max(0, (r.helpful || 0) - 1), hasVoted: false } : r
+          r.id === reviewId ? { ...r, helpful: Math.max(0, (r.helpful || 0) + (!isVoting ? 1 : -1)), hasVoted: !isVoting } : r
         )
       );
-      toast.error(err.message || "Bạn đã bình chọn cho đánh giá này rồi");
+      toast.error(err.message || "Lỗi cập nhật bình chọn");
     }
   };
 
@@ -980,6 +989,24 @@ export function ProductDetailPage({
 
                 {/* Reviews List */}
                 <div className="lg:col-span-2 space-y-4">
+                  <div className="flex items-center justify-between mb-2 pb-3 border-b border-gray-100">
+                    <h3 className="font-bold text-gray-900 text-lg">Chi tiết đánh giá</h3>
+                    <div className="flex bg-gray-100/80 p-1 rounded-xl">
+                      <button 
+                        onClick={() => handleSortChange('newest')}
+                        className={`text-xs font-semibold px-4 py-2.5 rounded-lg transition-all border ${reviewSortBy === 'newest' ? 'bg-white text-blue-600 border-gray-200/50 shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-900 hover:bg-gray-200/50'}`}
+                      >
+                        Mới nhất
+                      </button>
+                      <button
+                        onClick={() => handleSortChange('helpful')}
+                        className={`text-xs font-semibold px-4 py-2.5 rounded-lg transition-all border ${reviewSortBy === 'helpful' ? 'bg-white text-amber-600 border-gray-200/50 shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-900 hover:bg-gray-200/50'}`}
+                      >
+                        Hữu ích nhất
+                      </button>
+                    </div>
+                  </div>
+
                   {reviewsLoading ? (
                     <div className="flex flex-col items-center justify-center py-16">
                       <div className="h-8 w-8 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
@@ -1006,7 +1033,14 @@ export function ProductDetailPage({
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="text-gray-900 font-medium text-sm">{review.user?.name}</p>
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <p className="text-gray-900 font-medium text-sm">{review.user?.name}</p>
+                                {(review.helpful || 0) >= 5 && (
+                                  <Badge className="bg-amber-50 text-amber-600 border-amber-200/60 text-[10px] h-5 px-1.5 font-bold shadow-sm">
+                                    🔥 Đánh giá chất lượng
+                                  </Badge>
+                                )}
+                              </div>
                               <div className="flex items-center gap-2">
                                 <div className="flex gap-0.5">
                                   {[...Array(5)].map((_, i) => (
@@ -1059,17 +1093,17 @@ export function ProductDetailPage({
                           <Button
                             variant="ghost"
                             size="sm"
-                            className={`text-xs h-8 rounded-lg -ml-2 transition-all duration-300 ${
+                            className={`text-xs h-8 rounded-lg -ml-2 transition-all duration-300 group ${
                               review.hasVoted 
-                                ? "text-blue-600 bg-blue-50/50 font-medium cursor-default hover:bg-blue-50/50" 
-                                : "text-gray-400 hover:text-blue-600 hover:bg-blue-50/30"
+                                ? "text-blue-600 bg-blue-50 hover:bg-blue-100/60 font-medium" 
+                                : "text-gray-500 hover:text-blue-600 hover:bg-blue-50/30"
                             }`}
-                            onClick={() => !review.hasVoted && handleHelpfulClick(review.id)}
-                            disabled={review.hasVoted}
+                            onClick={() => handleHelpfulClick(review.id)}
                           >
-                            <ThumbsUp className={`h-3.5 w-3.5 mr-1.5 transition-all ${review.hasVoted ? "fill-blue-600" : ""}`} />
-                            {review.hasVoted ? "Đã ghi nhận hữu ích" : "Hữu ích?"}
-                            <span className="ml-1 opacity-60">({review.helpful})</span>
+                            <ThumbsUp className={`h-3.5 w-3.5 mr-1.5 transition-transform duration-300 ${review.hasVoted ? "fill-blue-600 scale-110" : "group-hover:scale-110 group-active:scale-95"}`} />
+                            {review.hasVoted 
+                               ? ((review.helpful || 0) > 1 ? `👍 Bạn và ${review.helpful - 1} người thấy hữu ích` : "Đã ghi nhận hữu ích") 
+                               : ((review.helpful || 0) > 0 ? `👍 ${review.helpful} người thấy hữu ích` : "Hữu ích?")}
                           </Button>
                         </div>
 
