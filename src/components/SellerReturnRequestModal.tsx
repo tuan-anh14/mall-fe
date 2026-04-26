@@ -92,7 +92,7 @@ export function SellerReturnRequestModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-white border-gray-200">
+      <DialogContent className="sm:max-w-[600px] bg-white border-gray-200 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-900">Quản lý Yêu cầu Trả hàng</DialogTitle>
         </DialogHeader>
@@ -110,7 +110,7 @@ export function SellerReturnRequestModal({
                 <div>
                   <Label className="text-gray-500 text-xs">Khách hàng:</Label>
                   <p className="text-gray-900 font-bold text-sm mt-0.5">
-                    {request.user.firstName} {request.user.lastName} ({request.user.email})
+                    {request.user?.firstName} {request.user?.lastName} ({request.user?.email})
                   </p>
                 </div>
                 <div>

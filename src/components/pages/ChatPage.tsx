@@ -111,6 +111,13 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+function isValidAvatar(url?: string | null): boolean {
+  if (!url) return false;
+  if (url === "null" || url === "undefined") return false;
+  if (url.trim() === "") return false;
+  return true;
+}
+
 export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar }: ChatPageProps) {
   const { openPreview } = useImagePreview();
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -598,7 +605,7 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                           <div className="flex gap-3">
                             <div className="relative">
                               <Avatar className="h-12 w-12">
-                                {conv.avatarUrl && <AvatarImage src={conv.avatarUrl} className="object-cover" />}
+                                {isValidAvatar(conv.avatarUrl) && <AvatarImage src={conv.avatarUrl} className="object-cover" />}
                                 <AvatarFallback className="bg-blue-600 text-white">
                                   {conv.avatar}
                                 </AvatarFallback>
@@ -646,8 +653,8 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                         <ArrowLeft className="h-5 w-5" />
                       </Button>
                       <div className="relative">
-                        <Avatar className="h-12 w-12">
-                          {activeConversation.avatarUrl && <AvatarImage src={activeConversation.avatarUrl} className="object-cover" />}
+                        <Avatar key={activeConversation.id} className="h-12 w-12">
+                          {isValidAvatar(activeConversation.avatarUrl) && <AvatarImage src={activeConversation.avatarUrl} className="object-cover" />}
                           <AvatarFallback className="bg-blue-600 text-white">
                             {activeConversation.avatar}
                           </AvatarFallback>
@@ -762,9 +769,9 @@ export function ChatPage({ onNavigate, sellerInfo, userId, userType, userAvatar 
                         >
                           <Avatar className="h-8 w-8 flex-shrink-0">
                             {message.sender === "user" ? (
-                              userAvatar && <AvatarImage src={userAvatar} className="object-cover" />
+                              isValidAvatar(userAvatar) && <AvatarImage src={userAvatar} className="object-cover" />
                             ) : (
-                              activeConversation.avatarUrl && <AvatarImage src={activeConversation.avatarUrl} className="object-cover" />
+                              isValidAvatar(activeConversation.avatarUrl) && <AvatarImage src={activeConversation.avatarUrl} className="object-cover" />
                             )}
                             <AvatarFallback
                               className={
