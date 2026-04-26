@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { API_URL } from "@/lib/api";
+import { API_URL, get } from "@/lib/api";
 
 export interface StreamNotification {
   id: string;
@@ -20,14 +20,9 @@ export function useNotificationStream(isAuthenticated: boolean) {
   const fetchUnreadCount = useCallback(async () => {
     if (!isAuthenticated) return;
     try {
-      const res = await fetch(`${API_URL}/api/v1/notifications?limit=1&isRead=false`, {
-        credentials: "include",
-      });
-      if (res.ok) {
-        const json = await res.json();
-        setUnreadCount(json.unreadCount ?? 0);
-        setUnreadMessageCount(json.unreadMessageCount ?? 0);
-      }
+      const res = await get(`/api/v1/notifications?limit=1&isRead=false`);
+      setUnreadCount(res?.unreadCount ?? 0);
+      setUnreadMessageCount(res?.unreadMessageCount ?? 0);
     } catch {
       // ignore
     }
