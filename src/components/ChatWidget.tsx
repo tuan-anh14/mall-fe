@@ -59,7 +59,7 @@ export function ChatWidget() {
                 </div>
                 <div>
                   <h3 className="text-white font-bold flex items-center gap-1.5 leading-tight text-base">
-                    ShopMall AI Assistant
+                    ShopHub AI Assistant
                     <Sparkles size={14} className="text-blue-200" />
                   </h3>
                   <p className="text-[11px] text-blue-100/80 font-medium">Bản dùng thử AI thông minh</p>
@@ -110,8 +110,8 @@ export function ChatWidget() {
                   <div className={`max-w-[80%] flex flex-col ${msg.role === "user" ? "items-end" : ""}`}>
                     <div
                       className={`px-4 py-3 text-[13.5px] shadow-sm transition-all leading-relaxed ${msg.role === "user"
-                          ? "bg-blue-600 text-white rounded-[20px] rounded-tr-[4px] shadow-blue-200/20"
-                          : "bg-white/60 backdrop-blur-sm border border-white/50 text-slate-800 rounded-[20px] rounded-tl-[4px]"
+                        ? "bg-blue-600 text-white rounded-[20px] rounded-tr-[4px] shadow-blue-200/20"
+                        : "bg-white/60 backdrop-blur-sm border border-white/50 text-slate-800 rounded-[20px] rounded-tl-[4px]"
                         }`}
                     >
                       {msg.content}
@@ -152,7 +152,7 @@ export function ChatWidget() {
               >
                 <Input
                   autoFocus
-                  placeholder="Hỏi ShopMall AI..."
+                  placeholder="Hỏi ShopHub AI..."
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   disabled={isLoading}
@@ -168,7 +168,7 @@ export function ChatWidget() {
                 </Button>
               </form>
               <p className="text-[9px] text-center text-gray-400 mt-3 font-medium tracking-tight">
-                Phản hồi có thể không chính xác 100%. Powered by <span className="text-blue-500 font-bold">ShopMall AI</span>
+                Phản hồi có thể không chính xác 100%. Powered by <span className="text-blue-500 font-bold">ShopHub AI</span>
               </p>
             </div>
           </motion.div>
@@ -192,8 +192,8 @@ export function ChatWidget() {
             size="icon"
             onClick={() => setIsOpen(!isOpen)}
             className={`h-16 w-16 rounded-full shadow-2xl transition-all duration-500 ${isOpen
-                ? "bg-white text-slate-800 rotate-90"
-                : "bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-blue-500/40"
+              ? "bg-white text-slate-800 rotate-90"
+              : "bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-blue-500/40"
               }`}
           >
             {isOpen ? <X className="h-7 w-7" /> : <MessageCircle className="h-7 w-7 fill-current" />}

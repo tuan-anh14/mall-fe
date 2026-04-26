@@ -367,7 +367,7 @@ export function Header({
                       ) : (
                         <div className="mt-2">
                           <h3 className="text-white font-bold text-lg">Chào mừng bạn!</h3>
-                          <p className="text-blue-100/70 text-xs mt-0.5">Khám phá hàng ngàn ưu đãi tại ShopMall</p>
+                          <p className="text-blue-100/70 text-xs mt-0.5">Khám phá hàng ngàn ưu đãi tại ShopHub</p>
                           <Button
                             variant="secondary"
                             size="sm"
@@ -457,7 +457,7 @@ export function Header({
 
                   {/* Foot Actions */}
                   <div className="p-4 bg-gray-50/50 border-t border-gray-100 flex flex-col items-center justify-center">
-                    <p className="text-[10px] text-gray-400 font-medium">© 2026 ShopMall. All rights reserved.</p>
+                    <p className="text-[10px] text-gray-400 font-medium">© 2026 ShopHub. All rights reserved.</p>
                   </div>
                 </SheetContent>
               </Sheet>

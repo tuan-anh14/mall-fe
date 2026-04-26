@@ -190,7 +190,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                             <Input
                               id="login-email"
                               type="email"
-                              placeholder="admin@shopmall.com"
+                              placeholder="admin@shophub.com"
                               className="h-14 pl-12 bg-gray-50/50 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium"
                               {...loginForm.register("email")}
                             />

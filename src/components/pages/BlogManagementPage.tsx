@@ -376,7 +376,7 @@ export function BlogManagementPage({ onNavigate }: BlogManagementPageProps) {
               <List size={32} className="text-indigo-400" />
             </div>
             <h2 className="text-xl font-semibold text-gray-700 mb-2">Chưa có bài viết nào</h2>
-            <p className="text-gray-500 mb-6">Bắt đầu chia sẻ kiến thức của bạn với cộng đồng ShopMall!</p>
+            <p className="text-gray-500 mb-6">Bắt đầu chia sẻ kiến thức của bạn với cộng đồng ShopHub!</p>
             <button
               onClick={() => openEditor()}
               className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors cursor-pointer"

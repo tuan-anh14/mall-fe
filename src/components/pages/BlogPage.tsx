@@ -151,7 +151,7 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
             Khám phá Kiến thức &<br />Tin tức Mua sắm
           </h1>
           <p className="text-blue-100/80 text-lg mb-8">
-            Bài viết từ các Seller uy tín và đội ngũ ShopMall
+            Bài viết từ các Seller uy tín và đội ngũ ShopHub
           </p>
 
           {/* Search */}
@@ -183,8 +183,8 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
             <button
               onClick={() => handleCategoryChange('')}
               className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${!activeCategory
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
             >
               <Tag size={14} />
@@ -195,8 +195,8 @@ export function BlogPage({ onNavigate }: BlogPageProps) {
                 key={cat.id}
                 onClick={() => handleCategoryChange(cat.slug)}
                 className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === cat.slug
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
               >
                 {cat.name}

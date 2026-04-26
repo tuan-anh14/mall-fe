@@ -239,7 +239,7 @@ export function ContactPage() {
   };
 
   const contactInfo = [
-    { icon: Mail, title: "Email", lines: ["support@shopmall.com", "sales@shopmall.com"], color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
+    { icon: Mail, title: "Email", lines: ["support@shophub.com", "sales@shophub.com"], color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
     { icon: Phone, title: "Điện thoại", lines: ["+1 (555) 123-4567", "+1 (555) 987-6543"], color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
     { icon: MapPin, title: "Địa chỉ", lines: ["123 Shopping Street", "New York, NY 10001"], color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-100" },
     { icon: Clock, title: "Giờ làm việc", lines: ["Thứ Hai - Thứ Sáu: 9h - 18h", "Thứ Bảy - Chủ Nhật: 10h - 16h"], color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100" },
@@ -766,7 +766,7 @@ export function GDPRPage() {
           <div className="bg-white border border-gray-200 rounded-2xl p-8">
             <h2 className="text-2xl text-gray-900 mb-4">Cách thực hiện quyền của bạn</h2>
             <p className="text-gray-600 mb-4">
-              Để thực hiện bất kỳ quyền GDPR nào, vui lòng liên hệ Nhân viên Bảo vệ Dữ liệu của chúng tôi tại privacy@ShopMall.com. Chúng tôi sẽ phản hồi yêu cầu của bạn trong vòng 30 ngày.
+              Để thực hiện bất kỳ quyền GDPR nào, vui lòng liên hệ Nhân viên Bảo vệ Dữ liệu của chúng tôi tại privacy@ShopHub.com. Chúng tôi sẽ phản hồi yêu cầu của bạn trong vòng 30 ngày.
             </p>
           </div>
 
@@ -780,7 +780,7 @@ export function GDPRPage() {
           <div className="bg-white border border-gray-200 rounded-2xl p-8">
             <h2 className="text-2xl text-gray-900 mb-4">Liên hệ với chúng tôi</h2>
             <p className="text-gray-600">
-              Nếu bạn có bất kỳ câu hỏi nào về việc tuân thủ GDPR hoặc các hoạt động bảo vệ dữ liệu của chúng tôi, vui lòng liên hệ tại privacy@ShopMall.com.
+              Nếu bạn có bất kỳ câu hỏi nào về việc tuân thủ GDPR hoặc các hoạt động bảo vệ dữ liệu của chúng tôi, vui lòng liên hệ tại privacy@ShopHub.com.
             </p>
           </div>
         </div>

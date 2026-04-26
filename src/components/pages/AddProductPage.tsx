@@ -782,7 +782,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-2xl text-gray-900">
                 <Sparkles className="h-6 w-6 text-blue-600" />
-                Trợ lý AI ShopMall
+                Trợ lý AI ShopHub
               </DialogTitle>
               <DialogDescription className="text-gray-500">
                 Tôi sẽ giúp bạn soạn thảo một bản mô tả sản phẩm chuyên nghiệp dựa trên dữ liệu bạn cung cấp.
