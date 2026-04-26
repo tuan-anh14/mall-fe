@@ -180,7 +180,7 @@ export function ForgotPasswordPage({ onNavigate }: ForgotPasswordPageProps) {
         </motion.div>
 
         <p className="text-center mt-12 text-gray-400 text-xs font-medium uppercase tracking-widest leading-relaxed">
-          Bảo mật bởi hệ thống Shop MALL <br />
+          Bảo mật bởi hệ thống Shop HUB <br />
           © 2026 Secure Authentication Center
         </p>
       </div>

@@ -77,7 +77,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
               <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-105">
                 <ShoppingCart className="h-7 w-7 text-white" />
               </div>
-              <span className="text-3xl tracking-tight text-white"><span className="font-light">Shop</span> <span className="font-bold">MALL</span></span>
+              <span className="text-3xl tracking-tight text-white"><span className="font-light">Shop</span> <span className="font-bold">HUB</span></span>
             </div>
 
             <div className="flex-1 space-y-12">
@@ -128,7 +128,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
             </div>
 
             <div className="pt-8 mt-auto border-t border-white/10 flex items-center justify-between text-blue-100/40 text-sm">
-              <p>© 2026 SHOP MALL Inc.</p>
+              <p>© 2026 Shop HUB Inc.</p>
               <div className="flex gap-4">
                 <span>Privacy</span>
                 <span>Terms</span>

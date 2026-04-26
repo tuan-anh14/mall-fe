@@ -47,7 +47,7 @@ export function AboutPage() {
             <p className="text-blue-200 text-sm font-semibold uppercase tracking-widest mb-4">Về chúng tôi</p>
             <h1 className="text-5xl md:text-6xl font-bold text-white tracking-tight leading-[1.1] mb-6">
               Giới thiệu
-              <span className="block bg-gradient-to-r from-amber-300 to-amber-400 bg-clip-text text-transparent">Shop MALL</span>
+              <span className="block bg-gradient-to-r from-amber-300 to-amber-400 bg-clip-text text-transparent">Shop HUB</span>
             </h1>
             <p className="text-lg text-blue-100/80 leading-relaxed max-w-xl">
               Điểm đến cao cấp cho các sản phẩm chất lượng từ 2026. Chúng tôi kết nối sản phẩm tuyệt vời với những khách hàng sành điệu.
@@ -101,7 +101,7 @@ export function AboutPage() {
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Câu chuyện của chúng tôi</p>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-6">Xây dựng trải nghiệm mua sắm hoàn hảo</h2>
             <p className="text-gray-600 text-lg leading-relaxed mb-6">
-              Shop MALL được thành lập với sứ mệnh đơn giản: tạo ra một nền tảng thương mại điện tử cao cấp kết nối các sản phẩm chất lượng với những khách hàng sành điệu. Chúng tôi tin rằng mua sắm trực tuyến nên là một trải nghiệm thú vị và liền mạch.
+              Shop HUB được thành lập với sứ mệnh đơn giản: tạo ra một nền tảng thương mại điện tử cao cấp kết nối các sản phẩm chất lượng với những khách hàng sành điệu. Chúng tôi tin rằng mua sắm trực tuyến nên là một trải nghiệm thú vị và liền mạch.
             </p>
             <p className="text-gray-600 text-lg leading-relaxed">
               Ngày nay, chúng tôi phục vụ hàng nghìn khách hàng trên toàn thế giới, cung cấp các sản phẩm được tuyển chọn kỹ lưỡng trong lĩnh vực điện tử, thời trang, đồ gia dụng và nhiều hơn nữa. Cam kết xuất sắc là động lực cho mọi việc chúng tôi làm.
@@ -439,21 +439,21 @@ export function TermsPage() {
           <div className="bg-white border border-gray-200 rounded-2xl p-8">
             <h2 className="text-2xl text-gray-900 mb-4">1. Chấp nhận điều khoản</h2>
             <p className="text-gray-600">
-              Bằng việc truy cập và sử dụng Shop MALL, bạn chấp nhận và đồng ý tuân theo các điều khoản và quy định của thỏa thuận này.
+              Bằng việc truy cập và sử dụng Shop HUB, bạn chấp nhận và đồng ý tuân theo các điều khoản và quy định của thỏa thuận này.
             </p>
           </div>
 
           <div className="bg-white border border-gray-200 rounded-2xl p-8">
             <h2 className="text-2xl text-gray-900 mb-4">2. Giấy phép sử dụng</h2>
             <p className="text-gray-600">
-              Được cấp phép tải xuống tạm thời một bản sao tài liệu trên Shop MALL chỉ để xem cá nhân, phi thương mại.
+              Được cấp phép tải xuống tạm thời một bản sao tài liệu trên Shop HUB chỉ để xem cá nhân, phi thương mại.
             </p>
           </div>
 
           <div className="bg-white border border-gray-200 rounded-2xl p-8">
             <h2 className="text-2xl text-gray-900 mb-4">3. Tuyên bố miễn trừ</h2>
             <p className="text-gray-600">
-              Các tài liệu trên Shop MALL được cung cấp trên cơ sở 'nguyên trạng'. Shop MALL không đưa ra bảo đảm nào, dù rõ ràng hay ngụ ý.
+              Các tài liệu trên Shop HUB được cung cấp trên cơ sở 'nguyên trạng'. Shop HUB không đưa ra bảo đảm nào, dù rõ ràng hay ngụ ý.
             </p>
           </div>
         </div>
@@ -500,7 +500,7 @@ export function CareersPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl text-gray-900 mb-6">Tuyển dụng tại Shop MALL</h1>
+        <h1 className="text-5xl text-gray-900 mb-6">Tuyển dụng tại Shop HUB</h1>
         <p className="text-xl text-gray-600 mb-12">
           Tham gia đội ngũ và cùng xây dựng tương lai thương mại điện tử.
         </p>
@@ -509,7 +509,7 @@ export function CareersPage() {
           <div className="bg-white border border-gray-200 rounded-2xl p-8">
             <h2 className="text-2xl text-gray-900 mb-4">Tại sao làm việc với chúng tôi?</h2>
             <p className="text-gray-600 mb-6">
-              Tại Shop MALL, chúng tôi không chỉ xây dựng một nền tảng thương mại điện tử. Chúng tôi đang tạo ra những trải nghiệm làm hài lòng khách hàng và trao quyền cho người bán. Hãy tham gia cùng chúng tôi!
+              Tại Shop HUB, chúng tôi không chỉ xây dựng một nền tảng thương mại điện tử. Chúng tôi đang tạo ra những trải nghiệm làm hài lòng khách hàng và trao quyền cho người bán. Hãy tham gia cùng chúng tôi!
             </p>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="bg-white border border-gray-200 rounded-xl p-4 text-center">

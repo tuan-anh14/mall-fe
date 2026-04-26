@@ -82,7 +82,7 @@ export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHe
                   </div>
                   <div>
                     <p className="text-sm font-semibold">Quản trị</p>
-                    <p className="text-[11px] text-blue-100">Shop MALL</p>
+                    <p className="text-[11px] text-blue-100">Shop HUB</p>
                   </div>
                 </div>
               </div>
@@ -134,7 +134,7 @@ export function AdminHeader({ currentPage, onNavigate, onLogout, user }: AdminHe
             </div>
             <div className="hidden min-w-0 sm:block">
               <p className="truncate text-sm font-semibold text-white">Quản trị</p>
-              <p className="truncate text-[11px] text-blue-100">Shop MALL</p>
+              <p className="truncate text-[11px] text-blue-100">Shop HUB</p>
             </div>
           </button>
 

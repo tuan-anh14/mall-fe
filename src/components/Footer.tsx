@@ -26,7 +26,7 @@ export function Footer({ onNavigate }: FooterProps) {
                 <div className="h-6 w-6 border-4 border-white/30 border-t-white rounded-full animate-spin-slow" />
               </div>
               <span className="text-2xl tracking-tighter text-white">
-                <span className="font-light italic">Shop</span> <span className="font-black text-blue-500">MALL</span>
+                <span className="font-light italic">Shop</span> <span className="font-black text-blue-500">HUB</span>
               </span>
             </div>
 
@@ -134,7 +134,7 @@ export function Footer({ onNavigate }: FooterProps) {
             <button onClick={() => onNavigate("terms")} className="hover:text-blue-500 transition-colors">Terms of Service</button>
             <button onClick={() => onNavigate("cookies")} className="hover:text-blue-500 transition-colors">Cookies</button>
           </div>
-          <p className="text-gray-600">&copy; {currentYear} SHOP MALL</p>
+          <p className="text-gray-600">&copy; {currentYear} Shop HUB</p>
         </div>
       </div>
 

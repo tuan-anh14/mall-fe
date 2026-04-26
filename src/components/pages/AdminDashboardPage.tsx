@@ -178,7 +178,7 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps) {
             Bảng điều khiển Admin
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Theo dõi người dùng, đơn hàng và hoạt động hệ thống Shop MALL
+            Theo dõi người dùng, đơn hàng và hoạt động hệ thống Shop HUB
           </p>
         </div>
         <Button

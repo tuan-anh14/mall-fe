@@ -74,16 +74,16 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  
+
   // Modal states
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  
+
   // Deposit states
   const [depositAmount, setDepositAmount] = useState("");
   const [depositGateway, setDepositGateway] = useState<"VNPAY">("VNPAY");
   const [isDepositing, setIsDepositing] = useState(false);
-  
+
   // Withdraw states
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [isWithdrawing, setIsWithdrawing] = useState(false);
@@ -309,7 +309,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                 </div>
                 <div>
                   <p className="text-white/60 text-xs font-medium tracking-wide uppercase">Số dư khả dụng</p>
-                  <p className="text-white/80 text-sm">Shop MALL Wallet</p>
+                  <p className="text-white/80 text-sm">Shop HUB Wallet</p>
                 </div>
               </div>
               <button
@@ -473,8 +473,8 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                       key={amt}
                       onClick={() => setDepositAmount(String(amt))}
                       className={`py-2.5 rounded-xl text-sm font-medium border-2 transition-all duration-200 ${depositAmount === String(amt)
-                          ? "border-blue-500 bg-blue-50 text-blue-700 shadow-sm shadow-blue-500/10"
-                          : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
+                        ? "border-blue-500 bg-blue-50 text-blue-700 shadow-sm shadow-blue-500/10"
+                        : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
                         }`}
                     >
                       {formatCurrency(amt)}
@@ -506,8 +506,8 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                       key={gw}
                       onClick={() => setDepositGateway(gw)}
                       className={`flex items-center gap-3 p-3.5 rounded-xl border-2 transition-all duration-200 ${depositGateway === gw
-                          ? "border-blue-500 bg-blue-50/80 shadow-sm shadow-blue-500/10"
-                          : "border-gray-200 bg-white hover:border-gray-300"
+                        ? "border-blue-500 bg-blue-50/80 shadow-sm shadow-blue-500/10"
+                        : "border-gray-200 bg-white hover:border-gray-300"
                         }`}
                     >
                       <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-lg bg-red-50`}>
@@ -605,7 +605,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                 </div>
                 <div className="flex justify-between mt-1 px-1">
                   <p className="text-[10px] text-gray-400">Số dư hiện tại: {formatCurrency(balance)}</p>
-                  <button 
+                  <button
                     onClick={() => setWithdrawAmount(String(balance))}
                     className="text-[10px] text-blue-600 font-bold hover:underline"
                   >

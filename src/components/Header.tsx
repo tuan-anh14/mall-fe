@@ -472,7 +472,7 @@ export function Header({
                 </div>
                 <span className="text-xl tracking-tight text-white">
                   <span className="font-light">Shop</span>{" "}
-                  <span className="font-bold">MALL</span>
+                  <span className="font-bold">HUB</span>
                 </span>
               </div>
 
