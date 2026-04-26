@@ -38,7 +38,7 @@ export function useChatBot() {
     // Convert out format into Gemini Content format { role: 'user' | 'model', parts: [{ text: ... }] }
     const historyPayload = [...messages, userMessage]
       .filter((m) => m.id !== 'welcome') // Remove welcome message from history
-      .slice(-15)
+      .slice(-10)
       .map((m) => ({
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }],
