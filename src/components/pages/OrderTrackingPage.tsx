@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Check, Package, Truck, MapPin, CheckCircle, RotateCcw } from "lucide-react";
+import { Check, Package, Truck, MapPin, CheckCircle, RotateCcw, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
-import { get } from "../../lib/api";
+import { get, put } from "../../lib/api";
 import { formatCurrency } from "../../lib/currency";
 import { toast } from "sonner";
 import { walletService } from "../../services/wallet.service";
@@ -78,7 +78,8 @@ const STATUS_LABEL_VI: Record<string, string> = {
   OUT_FOR_DELIVERY: "Đang giao hàng",
   DELIVERED: "Đã giao hàng thành công",
   CANCELLED: "Đã hủy",
-  REFUNDED: "Đã hoàn trả tiền",
+  CANCEL_REQUESTED: "Đang chờ duyệt hủy...",
+  REFUNDED: "Đã hoàn tiền",
   RETURN_REQUESTED: "Yêu cầu đổi / trả hàng",
   RETURN_APPROVED: "Đã chấp nhận yêu cầu",
   RETURNED: "Hoàn trả hàng thành công",
@@ -99,8 +100,10 @@ const STATUS_ICON_MAP: Record<string, React.ElementType> = {
   out_for_delivery: MapPin,
   DELIVERED: CheckCircle,
   delivered: CheckCircle,
+  CANCEL_REQUESTED: AlertCircle,
   RETURN_REQUESTED: RotateCcw,
   RETURNED: CheckCircle,
+  CANCELLED: AlertCircle,
 };
 
 function getTrackingIcon(status: string): React.ElementType {
@@ -109,7 +112,10 @@ function getTrackingIcon(status: string): React.ElementType {
 
 function getPaymentStatus(order: Order) {
   if (order.status === "CANCELLED") {
-    return { label: "Đã hủy", color: "text-red-600" };
+    return { label: "Đã hủy đơn", color: "text-red-600" };
+  }
+  if (order.status === "CANCEL_REQUESTED") {
+    return { label: "Chờ hoàn tiền", color: "text-amber-600" };
   }
   if (order.status === "REFUNDED" || order.status === "RETURNED") {
     return { label: "Đã hoàn tiền", color: "text-blue-600" };
@@ -129,32 +135,56 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const res = await get<{ orders: Order[]; total: number; page: number; limit: number; totalPages: number }>(
+        "/api/v1/orders?page=1&limit=20"
+      );
+      const fetchedOrders = res.orders ?? [];
+      setOrders(fetchedOrders);
+
+      if (fetchedOrders.length > 0) {
+        if (orderId) {
+          const found = fetchedOrders.find((o) => o.id === orderId);
+          setSelectedOrder(found ?? fetchedOrders[0]);
+        } else {
+          setSelectedOrder(fetchedOrders[0]);
+        }
+      }
+    } catch {
+      // Failed to fetch orders; leave empty
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!selectedOrder) return;
+    
+    const reason = window.prompt("Vui lòng nhập lý do hủy đơn hàng:");
+    if (reason === null) return; // User cancelled prompt
+    
+    if (!reason.trim()) {
+      toast.error("Vui lòng nhập lý do hủy");
+      return;
+    }
+
+    setCancelling(true);
+    try {
+      await put(`/api/v1/orders/${selectedOrder.id}/cancel`, { cancelReason: reason });
+      toast.success("Đã gửi yêu cầu hủy đơn hàng");
+      await fetchOrders();
+    } catch (error: any) {
+      toast.error(error.message || "Không thể yêu cầu hủy đơn hàng");
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const res = await get<{ orders: Order[]; total: number; page: number; limit: number; totalPages: number }>(
-          "/api/v1/orders?page=1&limit=20"
-        );
-        const fetchedOrders = res.orders ?? [];
-        setOrders(fetchedOrders);
-
-        if (fetchedOrders.length > 0) {
-          if (orderId) {
-            const found = fetchedOrders.find((o) => o.id === orderId);
-            setSelectedOrder(found ?? fetchedOrders[0]);
-          } else {
-            setSelectedOrder(fetchedOrders[0]);
-          }
-        }
-      } catch {
-        // Failed to fetch orders; leave empty
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const handleVnpayCallback = async () => {
       const searchParams = new URLSearchParams(window.location.search);
       const txnRef = searchParams.get("vnp_TxnRef");
@@ -324,7 +354,11 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
                         <div className="flex flex-col items-center">
                           <div
                             className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all ${
-                              isCompleted || step.status === "RETURNED"
+                              step.status === "CANCELLED"
+                                ? "bg-red-100 border-red-600"
+                                : step.status === "CANCEL_REQUESTED"
+                                ? "bg-amber-100 border-amber-600 animate-pulse"
+                                : isCompleted || step.status === "RETURNED"
                                 ? "bg-blue-600 border-blue-600"
                                 : isCurrent || step.status === "RETURN_REQUESTED"
                                 ? "border-blue-600 bg-blue-50 animate-pulse"
@@ -445,9 +479,13 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Vận chuyển</span>
-                  <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                    MIỄN PHÍ
-                  </Badge>
+                  {Number(currentOrder.shippingCost) > 0 ? (
+                    <span>{formatCurrency(Number(currentOrder.shippingCost))}</span>
+                  ) : (
+                    <Badge variant="secondary" className="bg-green-500/20 text-green-400">
+                      MIỄN PHÍ
+                    </Badge>
+                  )}
                 </div>
                 {currentOrder.couponDiscount != null && currentOrder.couponDiscount > 0 && (
                   <div className="flex justify-between text-green-400">
@@ -472,14 +510,34 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
             </div>
 
             {/* Actions */}
-            <div className="mt-8 flex gap-4">
+            <div className="mt-8 flex flex-wrap gap-4">
               <Button
                 variant="outline"
-                className="flex-1"
-                onClick={() => onNavigate("help")}
+                className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
               >
                 Liên hệ hỗ trợ
               </Button>
+
+              {currentOrder && ["PENDING", "CONFIRMED", "PROCESSING"].includes(currentOrder.status) && (
+                <Button
+                  variant="outline"
+                  className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
+                  onClick={handleCancelOrder}
+                  disabled={cancelling}
+                >
+                  {cancelling ? "Đang xử lý..." : "Hủy đơn hàng"}
+                </Button>
+              )}
+
+              {currentOrder && currentOrder.status === "CANCEL_REQUESTED" && (
+                <Button
+                  variant="outline"
+                  className="flex-1 bg-amber-50 text-amber-600 border-amber-200"
+                  disabled
+                >
+                  Đang chờ hủy...
+                </Button>
+              )}
 
               {currentOrder.status === "DELIVERED" && (
                 <Button
