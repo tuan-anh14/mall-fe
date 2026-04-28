@@ -57,6 +57,8 @@ interface SellerOrdersPageProps {
 }
 
 const STATUS_VI: Record<string, string> = {
+  Pending: "Chờ xác nhận",
+  Confirmed: "Đã xác nhận",
   Processing: "Đang xử lý",
   Shipped: "Đang giao",
   Delivered: "Đã giao",
@@ -64,6 +66,7 @@ const STATUS_VI: Record<string, string> = {
   Refunded: "Hoàn tiền",
   RETURN_REQUESTED: "Chờ đổi trả",
   RETURNED: "Đã trả hàng",
+  CANCEL_REQUESTED: "Yêu cầu hủy",
 };
 
 export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPageProps) {
@@ -111,6 +114,19 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
       fetchOrders();
     } catch (err: any) {
       toast.error(err.message || 'Không thể cập nhật trạng thái đơn hàng');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleApproveCancel = async (orderId: string, action: 'APPROVE' | 'REJECT') => {
+    try {
+      setUpdatingId(orderId);
+      await put(`/api/v1/seller/orders/${orderId}/handle-cancel`, { action });
+      await fetchOrders();
+      toast.success(action === 'APPROVE' ? 'Đã đồng ý hủy đơn hàng' : 'Đã từ chối hủy đơn');
+    } catch (err: any) {
+      toast.error(err.message || 'Lỗi xử lý yêu cầu hủy');
     } finally {
       setUpdatingId(null);
     }
@@ -170,6 +186,16 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                     >
                       Xem chi tiết
                     </Button>
+                    {(order.status === "Pending" || order.status === "Confirmed") && (
+                      <Button
+                        size="sm"
+                        disabled={updatingId === order.id}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => handleUpdateStatus(order.id, "Processing")}
+                      >
+                        {updatingId === order.id ? "Đang cập nhật..." : "Chuẩn bị hàng"}
+                      </Button>
+                    )}
                     {(order.status === "Processing" || order.status === "Shipped") && (
                       <Button
                         size="sm"
@@ -188,6 +214,27 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                           ? "Xác nhận giao hàng"
                           : "Xác nhận đã giao"}
                       </Button>
+                    )}
+                    {order.status === "CANCEL_REQUESTED" && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={updatingId === order.id}
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                          onClick={() => handleApproveCancel(order.id, 'APPROVE')}
+                        >
+                          Đồng ý Hủy
+                        </Button>
+                        <Button
+                          size="sm"
+                          disabled={updatingId === order.id}
+                          className="bg-gray-800 hover:bg-gray-900 text-white"
+                          onClick={() => handleApproveCancel(order.id, 'REJECT')}
+                        >
+                          Từ chối
+                        </Button>
+                      </>
                     )}
                     {order.status === "RETURN_REQUESTED" && (
                        <Button
