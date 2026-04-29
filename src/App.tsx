@@ -214,6 +214,11 @@ const AdminWalletPage = lazy(() =>
     default: m.AdminWalletPage,
   })),
 );
+const AdminFinancePage = lazy(() =>
+  import("./components/pages/AdminFinancePage").then((m) => ({
+    default: m.AdminFinancePage,
+  })),
+);
 
 // Blog pages
 const BlogPage = lazy(() =>
@@ -1041,6 +1046,16 @@ export default function App() {
                     adminRedirect("Truy cập bị từ chối. Cần quyền Admin.")
                   ) : (
                     <AdminStatsPage />
+                  )
+                }
+              />
+              <Route
+                path="/admin/finance"
+                element={
+                  !isAuthenticated || !isAdmin ? (
+                    adminRedirect("Quyền admin yêu cầu")
+                  ) : (
+                    <AdminFinancePage />
                   )
                 }
               />

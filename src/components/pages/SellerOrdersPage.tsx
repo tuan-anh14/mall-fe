@@ -41,7 +41,10 @@ interface Order {
   total: number;
   customer: OrderCustomer;
   items: OrderItem[];
+  revenueStatus?: string;
+  isPaidOnline?: boolean;
   returnRequest?: { id: string };
+  rawStatus: string;
 }
 
 interface OrderStats {
@@ -155,7 +158,19 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                 <TableCell className="text-gray-600">{order.date}</TableCell>
                 <TableCell className="text-gray-600">{order.customer.name}</TableCell>
                 <TableCell className="text-gray-600">{order.items.length} sản phẩm</TableCell>
-                <TableCell className="text-gray-900">{formatCurrency(order.total)}</TableCell>
+                <TableCell className="text-gray-900">
+                  <div>{formatCurrency(order.total)}</div>
+                  {order.revenueStatus === 'PENDING' && (
+                    <div className="text-[10px] text-yellow-600 font-medium bg-yellow-50 px-1.5 py-0.5 rounded border border-yellow-100 inline-block mt-1">
+                      Chờ quyết toán
+                    </div>
+                  )}
+                  {order.revenueStatus === 'RELEASED' && (
+                    <div className="text-[10px] text-green-600 font-medium bg-green-50 px-1.5 py-0.5 rounded border border-green-100 inline-block mt-1">
+                      Đã về ví
+                    </div>
+                  )}
+                </TableCell>
                 {showStatus && (
                   <TableCell>
                     <Badge
@@ -215,7 +230,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                           : "Xác nhận đã giao"}
                       </Button>
                     )}
-                    {order.status === "CANCEL_REQUESTED" && (
+                    {order.rawStatus === "CANCEL_REQUESTED" && (
                       <>
                         <Button
                           size="sm"
