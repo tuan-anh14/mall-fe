@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "../../hooks/useAuth";
 import {
   Wallet,
   ArrowUpCircle,
@@ -68,6 +69,7 @@ const STATUS_BADGE: Record<string, { label: string; class: string }> = {
 };
 
 export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
+  const { user, checkAuth } = useAuth();
   const [wallet, setWallet] = useState<WalletInfo | null>(null);
   const [stats, setStats] = useState<any>(null);
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
@@ -121,7 +123,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      await Promise.allSettled([fetchWalletData(), fetchTransactions(1)]);
+      await Promise.allSettled([checkAuth(), fetchWalletData(), fetchTransactions(1)]);
       setLoading(false);
     };
     init();
@@ -235,20 +237,31 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
 
   const balance = wallet?.balance ?? 0;
 
+  const isSeller = user?.userType?.toLowerCase() === "seller";
+
   const quickStats = [
+    ...(isSeller ? [
+      {
+        label: "Tổng thu",
+        value: stats?.totalIncome ?? 0,
+        color: "text-emerald-700",
+        iconColor: "text-emerald-600 bg-emerald-50",
+        icon: TrendingUp,
+      },
+      {
+        label: "Phí sàn (5%)",
+        value: stats?.totalFees ?? 0,
+        color: "text-indigo-600",
+        iconColor: "text-indigo-600 bg-indigo-50",
+        icon: Briefcase,
+      },
+    ] : []),
     {
-      label: "Tổng thu",
-      value: stats?.totalIncome ?? 0,
-      color: "text-emerald-700",
+      label: "Đã nạp qua VNPAY",
+      value: stats?.totalDeposited ?? 0,
+      color: "text-emerald-600",
       iconColor: "text-emerald-600 bg-emerald-50",
-      icon: TrendingUp,
-    },
-    {
-      label: "Phí sàn (5%)",
-      value: stats?.totalFees ?? 0,
-      color: "text-indigo-600",
-      iconColor: "text-indigo-600 bg-indigo-50",
-      icon: Briefcase,
+      icon: ArrowDownCircle,
     },
     {
       label: "Đã chi tiêu",
@@ -339,7 +352,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <div className={`grid grid-cols-2 ${isSeller ? "lg:grid-cols-5" : "lg:grid-cols-3"} gap-3 mb-6`}>
           {quickStats.map(({ label, value, color, iconColor, icon: Icon }) => (
             <div key={label} className="bg-white border border-gray-200/80 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2 mb-2">

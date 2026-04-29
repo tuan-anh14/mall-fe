@@ -27,6 +27,7 @@ export interface WalletStats {
   totalSpent: number;
   totalWithdrawn: number;
   totalRefunded: number;
+  totalDeposited: number;
 }
 
 export interface DepositIntent {
