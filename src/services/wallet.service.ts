@@ -8,12 +8,13 @@ export interface WalletInfo {
 
 export interface WalletTransaction {
   id: string;
-  type: "DEPOSIT" | "PAYMENT" | "REFUND" | "ADJUSTMENT" | "WITHDRAW" | "SELLER_INCOME" | "SELLER_FEE_DEDUCTED";
+  type: "DEPOSIT" | "PAYMENT" | "REFUND" | "ADJUSTMENT" | "WITHDRAW" | "SELLER_INCOME" | "SELLER_FEE_DEDUCTED" | "SELLER_REFUND_DEDUCTED";
   status: "PENDING" | "COMPLETED" | "FAILED" | "CANCELLED";
   amount: number;
   balanceBefore: number;
   balanceAfter: number;
   orderId?: string;
+  title?: string;
   description?: string;
   gatewayTxnId?: string;
   createdAt: string;

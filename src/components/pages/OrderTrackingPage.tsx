@@ -135,8 +135,26 @@ const STATUS_ICON_MAP: Record<string, React.ElementType> = {
   CANCELLED: AlertCircle,
 };
 
+const RETURN_WINDOW_DAYS = 7;
+
 function getTrackingIcon(status: string): React.ElementType {
   return STATUS_ICON_MAP[status] || Package;
+}
+
+function getDeliveredAt(order: Order) {
+  const deliveredStep = order.tracking?.steps?.find(
+    (step) => step.status?.toUpperCase() === "DELIVERED" && step.date,
+  );
+  return deliveredStep?.date ?? null;
+}
+
+function canRequestReturn(order: Order) {
+  if (order.status !== "DELIVERED") return false;
+  const deliveredAt = getDeliveredAt(order);
+  if (!deliveredAt) return false;
+  const expiresAt = new Date(deliveredAt);
+  expiresAt.setDate(expiresAt.getDate() + RETURN_WINDOW_DAYS);
+  return new Date() <= expiresAt;
 }
 
 function getPaymentStatus(order: Order) {
@@ -297,6 +315,7 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
   }
 
   const currentOrder = selectedOrder;
+  const showReturnButton = currentOrder ? canRequestReturn(currentOrder) : false;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -561,7 +580,7 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
                 </Button>
               )}
 
-              {currentOrder.status === "DELIVERED" && (
+              {showReturnButton && (
                 <Button
                   variant="outline"
                   className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"

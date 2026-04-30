@@ -54,11 +54,12 @@ const TX_ICON_STYLES: Record<string, { icon: any; color: string; bg: string }> =
 const TX_LABELS: Record<string, string> = {
   DEPOSIT: "Nạp tiền",
   PAYMENT: "Thanh toán",
-  REFUND: "Hoàn tiền",
+  REFUND: "Hoàn tiền trả hàng",
   ADJUSTMENT: "Điều chỉnh",
   WITHDRAW: "Rút tiền",
   SELLER_INCOME: "Doanh thu",
   SELLER_FEE_DEDUCTED: "Phí sàn (5%)",
+  SELLER_REFUND_DEDUCTED: "Khấu trừ hoàn tiền",
 };
 
 const STATUS_BADGE: Record<string, { label: string; class: string }> = {
@@ -408,7 +409,7 @@ export function WalletDashboard({ onNavigate }: WalletDashboardProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-gray-900 text-sm font-semibold">
-                          {TX_LABELS[txn.type]}
+                          {txn.title || TX_LABELS[txn.type] || "Giao dịch ví"}
                         </p>
                         <Badge variant="secondary" className={`text-[10px] font-medium px-1.5 py-0 h-5 ${statusInfo?.class}`}>
                           {statusInfo?.label}
