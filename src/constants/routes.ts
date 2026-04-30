@@ -32,6 +32,7 @@ export const PAGE_TO_PATH: Record<string, string> = {
   login: "/login",
   "forgot-password": "/forgot-password",
   "reset-password": "/reset-password",
+  "oauth-callback": "/auth/oauth/callback",
   // Static
   about: "/about",
   contact: "/contact",

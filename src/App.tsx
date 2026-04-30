@@ -311,6 +311,17 @@ function RedirectWithToast({ to, message }: { to: string; message: string }) {
   return <Navigate to={to} replace />;
 }
 
+function OAuthCallbackPage() {
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4 text-gray-500">
+        <div className="w-10 h-10 rounded-full border-4 border-blue-500/30 border-t-blue-500 animate-spin" />
+        <p className="text-sm font-medium">Đang hoàn tất đăng nhập...</p>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const reactNavigate = useNavigate();
   const location = useLocation();
@@ -382,8 +393,22 @@ export default function App() {
         replace: true,
       });
     }
-    checkAuth().then((authenticated) => {
-      if (authenticated) fetchCartAndWishlist();
+    const isOAuthCallback = location.pathname === "/auth/oauth/callback";
+    checkAuth().then(async (me) => {
+      if (me) {
+        await fetchCartAndWishlist();
+        if (isOAuthCallback) {
+          toast.success(`Chào mừng trở lại, ${me.name}!`);
+          if (me.userType === "admin")
+            reactNavigate("/admin", { replace: true });
+          else if (me.userType === "seller")
+            reactNavigate("/dashboard", { replace: true });
+          else reactNavigate("/", { replace: true });
+        }
+      } else if (isOAuthCallback) {
+        toast.error("Đăng nhập Google thất bại. Vui lòng thử lại.");
+        reactNavigate("/login", { replace: true });
+      }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -541,6 +566,7 @@ export default function App() {
     currentPage !== "forgot-password" &&
     currentPage !== "reset-password" &&
     currentPage !== "verify-email" &&
+    currentPage !== "oauth-callback" &&
     !showSellerHeader &&
     !showAdminHeader;
 
@@ -739,6 +765,10 @@ export default function App() {
                     email={(location.state as any)?.email}
                   />
                 }
+              />
+              <Route
+                path="/auth/oauth/callback"
+                element={<OAuthCallbackPage />}
               />
 
               {/* Buyer protected pages */}

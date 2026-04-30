@@ -8,14 +8,16 @@ export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  const checkAuth = async (): Promise<boolean> => {
+  const checkAuth = async (): Promise<User | null> => {
     try {
       const { user: me } = await authService.me();
       setUser(me);
       setIsAuthenticated(true);
-      return true;
+      return me;
     } catch {
-      return false;
+      setUser(null);
+      setIsAuthenticated(false);
+      return null;
     } finally {
       setIsAuthLoading(false);
     }
