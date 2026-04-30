@@ -349,7 +349,7 @@ export function CartPage({ onNavigate, cartItems, onRemoveItem, onUpdateQuantity
                     {[
                       { icon: Shield, label: "An toàn" },
                       { icon: Truck, label: "Giao nhanh" },
-                      { icon: RotateCcw, label: "Đổi trả" },
+                      { icon: RotateCcw, label: "Trả hàng" },
                     ].map((badge, i) => (
                       <div key={i} className="flex flex-col items-center gap-1.5">
                         <div className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center">

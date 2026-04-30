@@ -88,7 +88,7 @@ export function SellerReturnRequestsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
           <RotateCcw className="h-8 w-8 text-blue-600" />
-          Yêu cầu Đổi / Trả hàng
+          Yêu cầu trả hàng
         </h1>
         <p className="text-gray-500">Quản lý các yêu cầu trả hàng và hoàn tiền từ khách hàng</p>
       </div>
@@ -169,7 +169,7 @@ export function SellerReturnRequestsPage() {
               <Package className="h-10 w-10 text-gray-300" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Không có yêu cầu nào</h3>
-            <p className="text-gray-500">Hiện tại chưa có yêu cầu đổi/trả hàng nào phù hợp với bộ lọc của bạn.</p>
+            <p className="text-gray-500">Hiện tại chưa có yêu cầu trả hàng nào phù hợp với bộ lọc của bạn.</p>
           </div>
         ) : (
           <Table>

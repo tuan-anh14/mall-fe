@@ -43,18 +43,18 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
     },
     {
       id: "returns",
-      title: "Đổi trả & Hoàn tiền",
+      title: "Trả hàng & Hoàn tiền",
       icon: "🔄",
       questions: [
         {
-          question: "Chính sách đổi trả của bạn là gì?",
+          question: "Chính sách trả hàng của bạn là gì?",
           answer:
-            "Chúng tôi áp dụng chính sách đổi trả trong 30 ngày cho hầu hết các sản phẩm. Sản phẩm phải chưa sử dụng, còn nguyên bao bì gốc và trong tình trạng như khi nhận hàng. Một số sản phẩm như hàng cá nhân hóa không được đổi trả.",
+            "Chúng tôi áp dụng chính sách trả hàng hoàn tiền trong 7 ngày sau khi nhận hàng cho các đơn đủ điều kiện. Sản phẩm phải còn nguyên trạng và đáp ứng điều kiện kiểm tra của người bán. Một số sản phẩm có thể không đủ điều kiện trả hàng.",
         },
         {
-          question: "Làm thế nào để yêu cầu đổi trả?",
+          question: "Làm thế nào để yêu cầu trả hàng?",
           answer:
-            "Vào lịch sử đơn hàng, chọn đơn hàng bạn muốn đổi trả và nhấn 'Yêu cầu đổi trả'. Làm theo hướng dẫn để in nhãn trả hàng và gửi sản phẩm về cho chúng tôi.",
+            "Vào lịch sử đơn hàng, chọn đơn hàng bạn muốn trả và nhấn 'Yêu cầu trả hàng'. Làm theo hướng dẫn để gửi yêu cầu và cung cấp hình ảnh minh chứng.",
         },
         {
           question: "Khi nào tôi nhận được tiền hoàn?",
@@ -64,7 +64,7 @@ export function HelpPage({ onNavigate }: HelpPageProps) {
         {
           question: "Tôi có thể đổi sản phẩm không?",
           answer:
-            "Có, chúng tôi hỗ trợ đổi sang kích cỡ hoặc màu sắc khác. Vui lòng liên hệ hỗ trợ khách hàng để sắp xếp đổi hàng, hoặc bạn có thể trả sản phẩm cũ và đặt đơn hàng mới.",
+            "Hiện tại hệ thống chưa hỗ trợ đổi hàng trực tiếp. Nếu cần sản phẩm khác, bạn có thể gửi yêu cầu trả hàng hoàn tiền theo điều kiện áp dụng rồi đặt đơn mới.",
         },
       ],
     },

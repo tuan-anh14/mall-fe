@@ -49,7 +49,7 @@ export function ReturnRequestModal({
 
   const handleSubmit = async () => {
     if (!reason.trim()) {
-      toast.error("Vui lòng nhập lý do đổi trả hàng.");
+      toast.error("Vui lòng nhập lý do trả hàng.");
       return;
     }
     if (images.length === 0) {
@@ -73,7 +73,7 @@ export function ReturnRequestModal({
         images: imageUrls,
       });
 
-      toast.success("Yêu cầu đổi trả đã được gửi thành công!");
+      toast.success("Yêu cầu trả hàng đã được gửi thành công!");
       onSuccess?.();
       onOpenChange(false);
       // Reset form
@@ -90,7 +90,7 @@ export function ReturnRequestModal({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] bg-white max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gray-900">Yêu cầu Đổi trả hàng</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900">Yêu cầu trả hàng</DialogTitle>
           <DialogDescription>
             Đơn hàng: <span className="font-semibold text-blue-600">{orderId}</span>
           </DialogDescription>
@@ -99,7 +99,7 @@ export function ReturnRequestModal({
         <div className="space-y-6 py-4">
           <div className="space-y-2">
             <Label htmlFor="reason" className="text-sm font-semibold text-gray-700">
-              Lý do đổi trả <span className="text-red-500">*</span>
+              Lý do trả hàng <span className="text-red-500">*</span>
             </Label>
             <Textarea
               id="reason"

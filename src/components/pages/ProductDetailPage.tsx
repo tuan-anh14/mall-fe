@@ -709,7 +709,7 @@ export function ProductDetailPage({
               {[
                 { icon: Truck, label: "Miễn phí vận chuyển", desc: "Đơn hàng trên 500K", color: "text-blue-600 bg-blue-50" },
                 { icon: Shield, label: "Thanh toán an toàn", desc: "Bảo mật 100%", color: "text-emerald-600 bg-emerald-50" },
-                { icon: RotateCcw, label: "Đổi trả dễ dàng", desc: "30 ngày đổi trả", color: "text-orange-600 bg-orange-50" },
+                { icon: RotateCcw, label: "Đổi trả dễ dàng", desc: "7 ngày đổi trả", color: "text-orange-600 bg-orange-50" },
                 { icon: MessageCircle, label: "Hỗ trợ 24/7", desc: "Luôn sẵn sàng", color: "text-violet-600 bg-violet-50" },
               ].map(({ icon: Icon, label, desc, color }) => (
                 <div key={label} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-100">

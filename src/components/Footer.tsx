@@ -73,7 +73,7 @@ export function Footer({ onNavigate }: FooterProps) {
           <div className="lg:col-span-2">
             <h3 className="text-white font-black uppercase tracking-widest text-xs mb-8">Hỗ trợ</h3>
             <ul className="space-y-4">
-              {["Trung tâm trợ giúp", "Theo dõi đơn", "Chính sách đổi trả", "Vận chuyển"].map((item, idx) => (
+              {["Trung tâm trợ giúp", "Theo dõi đơn", "Chính sách trả hàng", "Vận chuyển"].map((item, idx) => (
                 <li key={idx}>
                   <button
                     onClick={() => onNavigate("help")}

@@ -109,7 +109,7 @@ const STATUS_LABEL_VI: Record<string, string> = {
   CANCELLED: "Đã hủy",
   CANCEL_REQUESTED: "Đang chờ duyệt hủy...",
   REFUNDED: "Đã hoàn tiền",
-  RETURN_REQUESTED: "Yêu cầu đổi / trả hàng",
+  RETURN_REQUESTED: "Yêu cầu trả hàng",
   RETURN_APPROVED: "Đã chấp nhận yêu cầu",
   RETURNED: "Hoàn trả hàng thành công",
 };

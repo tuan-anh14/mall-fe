@@ -68,7 +68,7 @@ const STATUS_VI: Record<string, string> = {
   Delivered: "Đã giao",
   Cancelled: "Đã hủy",
   Refunded: "Hoàn tiền",
-  RETURN_REQUESTED: "Chờ đổi trả",
+  RETURN_REQUESTED: "Chờ trả hàng",
   RETURNED: "Đã trả hàng",
   CANCEL_REQUESTED: "Yêu cầu hủy",
 };
@@ -300,7 +300,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                            setIsReturnModalOpen(true);
                          }}
                        >
-                         Quản lý đổi / trả
+                         Quản lý trả hàng
                        </Button>
                     )}
                   </div>
@@ -360,7 +360,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
         <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <RotateCcw className="h-5 w-5 text-blue-500" />
-            <p className="text-sm text-gray-500">Đổi hàng / Hoàn tiền</p>
+            <p className="text-sm text-gray-500">Trả hàng / Hoàn tiền</p>
           </div>
           <p className="text-3xl text-gray-900">{stats.returns}</p>
         </div>
@@ -391,7 +391,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                   <SelectItem value="Processing">Đang xử lý</SelectItem>
                   <SelectItem value="Shipped">Đang giao</SelectItem>
                   <SelectItem value="Delivered">Đã giao</SelectItem>
-                  <SelectItem value="RETURN_REQUESTED">Đổi / Trả hàng</SelectItem>
+                  <SelectItem value="RETURN_REQUESTED">Trả hàng</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -417,7 +417,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
               <TabsTrigger value="pending">Chờ xử lý ({stats.pending})</TabsTrigger>
               <TabsTrigger value="shipped">Đang giao ({stats.shipped})</TabsTrigger>
               <TabsTrigger value="delivered">Đã giao ({stats.delivered})</TabsTrigger>
-              <TabsTrigger value="returns">Đổi / Trả ({stats.returns})</TabsTrigger>
+              <TabsTrigger value="returns">Trả hàng ({stats.returns})</TabsTrigger>
             </TabsList>
 
             <TabsContent value="all" className="m-0">

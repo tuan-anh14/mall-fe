@@ -716,7 +716,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                   {[
                     { icon: Shield, label: "Bảo mật", color: "text-emerald-600 bg-emerald-50" },
                     { icon: Truck, label: "Giao nhanh", color: "text-blue-600 bg-blue-50" },
-                    { icon: Package, label: "Đổi trả", color: "text-orange-600 bg-orange-50" },
+                    { icon: Package, label: "Trả hàng", color: "text-orange-600 bg-orange-50" },
                   ].map(({ icon: Icon, label, color }) => (
                     <div key={label} className="flex-1 flex flex-col items-center gap-1.5">
                       <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${color}`}>
