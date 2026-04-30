@@ -779,7 +779,7 @@ export function ProductDetailPage({
           <Tabs defaultValue="description" variant="underline" className="w-full">
             <TabsList>
               <TabsTrigger value="description">Mô tả</TabsTrigger>
-              <TabsTrigger value="specifications">Thông số kỹ thuật</TabsTrigger>
+              <TabsTrigger value="specifications">Thông số</TabsTrigger>
               <TabsTrigger value="reviews">Đánh giá ({totalReviews})</TabsTrigger>
             </TabsList>
 
@@ -791,7 +791,7 @@ export function ProductDetailPage({
             </TabsContent>
 
             <TabsContent value="specifications" className="p-6 lg:p-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Thông số kỹ thuật chi tiết</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Thông số chi tiết</h3>
               <div className="grid md:grid-cols-2 gap-3">
                 {(Array.isArray(product.specifications) ? product.specifications : Object.entries(product.specifications ?? {}).map(([key, value]) => ({ key, value }))).map((spec: any, idx: number) => (
                   <div
@@ -992,7 +992,7 @@ export function ProductDetailPage({
                   <div className="flex items-center justify-between mb-2 pb-3 border-b border-gray-100">
                     <h3 className="font-bold text-gray-900 text-lg">Chi tiết đánh giá</h3>
                     <div className="flex bg-gray-100/80 p-1 rounded-xl">
-                      <button 
+                      <button
                         onClick={() => handleSortChange('newest')}
                         className={`text-xs font-semibold px-4 py-2.5 rounded-lg transition-all border ${reviewSortBy === 'newest' ? 'bg-white text-blue-600 border-gray-200/50 shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-900 hover:bg-gray-200/50'}`}
                       >
@@ -1093,17 +1093,16 @@ export function ProductDetailPage({
                           <Button
                             variant="ghost"
                             size="sm"
-                            className={`text-xs h-8 rounded-lg -ml-2 transition-all duration-300 group ${
-                              review.hasVoted 
-                                ? "text-blue-600 bg-blue-50 hover:bg-blue-100/60 font-medium" 
+                            className={`text-xs h-8 rounded-lg -ml-2 transition-all duration-300 group ${review.hasVoted
+                                ? "text-blue-600 bg-blue-50 hover:bg-blue-100/60 font-medium"
                                 : "text-gray-500 hover:text-blue-600 hover:bg-blue-50/30"
-                            }`}
+                              }`}
                             onClick={() => handleHelpfulClick(review.id)}
                           >
                             <ThumbsUp className={`h-3.5 w-3.5 mr-1.5 transition-transform duration-300 ${review.hasVoted ? "fill-blue-600 scale-110" : "group-hover:scale-110 group-active:scale-95"}`} />
-                            {review.hasVoted 
-                               ? ((review.helpful || 0) > 1 ? `👍 Bạn và ${review.helpful - 1} người thấy hữu ích` : "Đã ghi nhận hữu ích") 
-                               : ((review.helpful || 0) > 0 ? `👍 ${review.helpful} người thấy hữu ích` : "Hữu ích?")}
+                            {review.hasVoted
+                              ? ((review.helpful || 0) > 1 ? `👍 Bạn và ${review.helpful - 1} người thấy hữu ích` : "Đã ghi nhận hữu ích")
+                              : ((review.helpful || 0) > 0 ? `👍 ${review.helpful} người thấy hữu ích` : "Hữu ích?")}
                           </Button>
                         </div>
 

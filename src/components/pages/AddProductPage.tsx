@@ -698,7 +698,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
         {/* Specifications */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl text-gray-900">Thông số kỹ thuật</h2>
+            <h2 className="text-2xl text-gray-900">Thông số</h2>
             <Button
               type="button"
               variant="outline"
@@ -712,7 +712,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
 
           {specifications.length === 0 ? (
             <p className="text-gray-400 text-sm text-center py-4">
-              Chưa có thông số kỹ thuật. Nhấn "Thêm thông số" để thêm các thông số như kích thước, chất liệu, tương thích, v.v.
+              Chưa có Thông số. Nhấn "Thêm thông số" để thêm các thông số như kích thước, chất liệu, tương thích, v.v.
             </p>
           ) : (
             <div className="space-y-3">
@@ -807,7 +807,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
                   {specifications.length > 0 ? <Check className="h-4 w-4" /> : <Info className="h-4 w-4" />}
                 </div>
                 <div>
-                  <p className="text-[10px] text-gray-400 uppercase font-bold">Thông số kỹ thuật</p>
+                  <p className="text-[10px] text-gray-400 uppercase font-bold">Thông số</p>
                   <p className="text-sm font-medium text-gray-900">{specifications.length} thông số</p>
                 </div>
               </div>
@@ -818,7 +818,7 @@ export function AddProductPage({ onNavigate, initialProduct }: AddProductPagePro
               <Alert className="bg-yellow-50 border-yellow-200 text-yellow-800">
                 <AlertTriangle className="h-4 w-4 text-yellow-600" />
                 <AlertDescription className="text-xs">
-                  Dữ liệu hiện tại hơi ít ({getMissingDataCount()} mục trống). Bạn nên nhập thêm "Thương hiệu" hoặc "Thông số kỹ thuật" để AI viết hay và chính xác hơn, tránh suy luận sai lầm.
+                  Dữ liệu hiện tại hơi ít ({getMissingDataCount()} mục trống). Bạn nên nhập thêm "Thương hiệu" hoặc "Thông số" để AI viết hay và chính xác hơn, tránh suy luận sai lầm.
                 </AlertDescription>
               </Alert>
             )}

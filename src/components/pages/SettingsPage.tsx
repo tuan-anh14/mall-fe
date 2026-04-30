@@ -385,7 +385,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     // Validate size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Ảnh quá lớn. Vui lòng chọn ảnh dưới 5MB");
@@ -396,12 +396,12 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      
+
       const uploadRes = await post<{ url: string }>("/api/v1/upload/avatar", formData);
-      
+
       const newUrl = uploadRes.url;
       await put("/api/v1/users/me", { avatar: newUrl });
-      
+
       setAvatarUrl(newUrl);
       toast.success("Cập nhật ảnh đại diện thành công!");
     } catch (err: any) {
@@ -467,7 +467,7 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               </div>
               <div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">Cài đặt</h1>
-                <p className="text-sm text-gray-500 mt-0.5">Quản lý tài khoản, thông báo và bảo mật</p>
+                <p className="text-sm text-gray-500 mt-0.5">Quản lý tài khoản, bảo mật</p>
               </div>
             </div>
           </div>
@@ -475,551 +475,214 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
 
         {/* Settings Tabs */}
         <div className={`${cardClass} mb-6`}>
-        <Tabs defaultValue="account" variant="underline" className="w-full">
-          <TabsList className="rounded-t-2xl px-1">
-            <TabsTrigger value="account">
-              <User className="h-4 w-4" />
-              Tài khoản
-            </TabsTrigger>
-            <TabsTrigger value="notifications">
-              <Bell className="h-4 w-4" />
-              Thông báo
-            </TabsTrigger>
-            <TabsTrigger value="security">
-              <Lock className="h-4 w-4" />
-              Bảo mật
-            </TabsTrigger>
-            <TabsTrigger value="preferences">
-              <Globe className="h-4 w-4" />
-              Tùy chọn
-            </TabsTrigger>
-            {(userType === "SELLER" || userType === "ADMIN") && (
-              <TabsTrigger value="store">
-                <Store className="h-4 w-4" />
-                Cửa hàng
+          <Tabs defaultValue="account" variant="underline" className="w-full">
+            <TabsList className="rounded-t-2xl px-1">
+              <TabsTrigger value="account">
+                <User className="h-4 w-4" />
+                Tài khoản
               </TabsTrigger>
-            )}
-          </TabsList>
+              <TabsTrigger value="security">
+                <Lock className="h-4 w-4" />
+                Bảo mật
+              </TabsTrigger>
+              {(userType === "SELLER" || userType === "ADMIN") && (
+                <TabsTrigger value="store">
+                  <Store className="h-4 w-4" />
+                  Cửa hàng
+                </TabsTrigger>
+              )}
+            </TabsList>
 
-          {/* Account Settings */}
-          <TabsContent value="account" className="p-5 lg:p-6 focus-visible:outline-none">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="space-y-5"
-            >
-              {/* Personal Information */}
-              <Card className={cardClass}>
-                <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
-                  <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
-                    <span className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center">
-                      <User className="h-[18px] w-[18px] text-blue-600" />
-                    </span>
-                    Thông tin cá nhân
-                  </CardTitle>
-                  <CardDescription className="text-gray-500 text-sm">
-                    Cập nhật thông tin cá nhân và liên hệ
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 pt-5">
-                  <div className="flex items-center gap-4 mb-2">
-                    <Avatar className="h-16 w-16 border rounded-full bg-gray-50 flex items-center justify-center">
-                      {isUploadingAvatar ? (
-                        <div className="h-5 w-5 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
-                      ) : avatarUrl ? (
-                        <AvatarImage src={avatarUrl} className="object-cover" />
-                      ) : (
-                        <AvatarFallback className="bg-blue-100 text-blue-700 font-bold text-xl">
-                          {(firstName[0] || "U").toUpperCase()}
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
-                    <div>
-                      <Button variant="outline" size="sm" onClick={() => document.getElementById("avatar-upload")?.click()} disabled={isUploadingAvatar} className="rounded-lg h-9 font-medium border-gray-200">
-                        Đổi ảnh đại diện
-                      </Button>
-                      <input 
-                        type="file" 
-                        id="avatar-upload" 
-                        accept="image/png, image/jpeg, image/webp" 
-                        className="hidden" 
-                        onChange={handleAvatarUpload} 
-                      />
-                      <p className="text-[11px] text-gray-500 mt-1.5">JPG, PNG hoặc WEBP. Tối đa 5MB.</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="firstName" className="text-gray-700 text-sm font-medium">Họ</Label>
-                      <Input
-                        id="firstName"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        className={inputClass}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="lastName" className="text-gray-700 text-sm font-medium">Tên</Label>
-                      <Input
-                        id="lastName"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        className={inputClass}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-gray-700 text-sm font-medium">Địa chỉ email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      readOnly
-                      className={`${inputClass} opacity-70 cursor-not-allowed bg-gray-100/80`}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="phone" className="text-gray-700 text-sm font-medium">Số điện thoại</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className={inputClass}
-                    />
-                  </div>
-                  <Button
-                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 font-semibold shadow-lg shadow-blue-600/20"
-                    onClick={handleSaveProfile}
-                    disabled={isSavingProfile}
-                  >
-                    {isSavingProfile ? "Đang lưu..." : "Lưu thay đổi"}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Payment Methods */}
-              <Card className={cardClass}>
-                <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
-                  <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
-                    <span className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center">
-                      <CreditCard className="h-[18px] w-[18px] text-emerald-600" />
-                    </span>
-                    Phương thức thanh toán
-                  </CardTitle>
-                  <CardDescription className="text-gray-500 text-sm">
-                    Quản lý phương thức thanh toán đã lưu
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-5">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50/80 border border-gray-100 hover:border-gray-200 transition-colors">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <CreditCard className="h-5 w-5 text-white" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-gray-900 font-medium text-sm">Visa kết thúc bằng 4242</p>
-                          <p className="text-xs text-gray-500">Hết hạn 12/25</p>
-                        </div>
+            {/* Account Settings */}
+            <TabsContent value="account" className="p-5 lg:p-6 focus-visible:outline-none">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="space-y-5"
+              >
+                {/* Personal Information */}
+                <Card className={cardClass}>
+                  <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
+                    <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
+                      <span className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <User className="h-[18px] w-[18px] text-blue-600" />
+                      </span>
+                      Thông tin cá nhân
+                    </CardTitle>
+                    <CardDescription className="text-gray-500 text-sm">
+                      Cập nhật thông tin cá nhân và liên hệ
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 pt-5">
+                    <div className="flex items-center gap-4 mb-2">
+                      <Avatar className="h-16 w-16 border rounded-full bg-gray-50 flex items-center justify-center">
+                        {isUploadingAvatar ? (
+                          <div className="h-5 w-5 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
+                        ) : avatarUrl ? (
+                          <AvatarImage src={avatarUrl} className="object-cover" />
+                        ) : (
+                          <AvatarFallback className="bg-blue-100 text-blue-700 font-bold text-xl">
+                            {(firstName[0] || "U").toUpperCase()}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <div>
+                        <Button variant="outline" size="sm" onClick={() => document.getElementById("avatar-upload")?.click()} disabled={isUploadingAvatar} className="rounded-lg h-9 font-medium border-gray-200">
+                          Đổi ảnh đại diện
+                        </Button>
+                        <input
+                          type="file"
+                          id="avatar-upload"
+                          accept="image/png, image/jpeg, image/webp"
+                          className="hidden"
+                          onChange={handleAvatarUpload}
+                        />
+                        <p className="text-[11px] text-gray-500 mt-1.5">JPG, PNG hoặc WEBP. Tối đa 5MB.</p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="rounded-lg h-9 w-9 p-0 flex-shrink-0"
-                        onClick={() => handleEditPayment({ type: "Visa", last4: "4242", expiry: "12/25" })}
-                      >
-                        <Edit className="h-4 w-4 text-gray-500" />
-                      </Button>
                     </div>
-                    <Button
-                      variant="outline"
-                      className="w-full border-gray-200 text-gray-900 hover:bg-gray-50 rounded-xl h-11 font-medium"
-                      onClick={handleAddPayment}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Thêm phương thức thanh toán
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Shipping Addresses */}
-              <Card className={cardClass}>
-                <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
-                  <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
-                    <span className="h-9 w-9 rounded-xl bg-orange-50 flex items-center justify-center">
-                      <MapPin className="h-[18px] w-[18px] text-orange-600" />
-                    </span>
-                    Địa chỉ giao hàng
-                  </CardTitle>
-                  <CardDescription className="text-gray-500 text-sm">
-                    Quản lý địa chỉ giao hàng
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-5">
-                  <div className="space-y-3">
-                    {isLoadingAddresses ? (
-                      <div className="flex flex-col items-center justify-center py-10">
-                        <div className="h-8 w-8 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
-                        <p className="text-gray-400 text-sm mt-3">Đang tải địa chỉ...</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="firstName" className="text-gray-700 text-sm font-medium">Họ</Label>
+                        <Input
+                          id="firstName"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          className={inputClass}
+                        />
                       </div>
-                    ) : addresses.length === 0 ? (
-                      <div className="text-center py-10 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
-                        <MapPin className="h-10 w-10 text-gray-200 mx-auto mb-2" />
-                        <p className="text-gray-500 text-sm font-medium">Chưa có địa chỉ nào</p>
-                        <p className="text-gray-400 text-xs mt-1">Thêm địa chỉ để giao hàng nhanh hơn</p>
-                      </div>
-                    ) : (
-                      addresses.map((address) => (
-                        <div
-                          key={address.id}
-                          className="flex items-start justify-between gap-3 p-4 rounded-xl bg-gray-50/80 border border-gray-100 hover:border-gray-200 transition-colors"
-                        >
-                          <div className="flex items-start gap-3 min-w-0">
-                            <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100">
-                              <MapPin className="h-5 w-5 text-blue-600" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex flex-wrap items-center gap-2 mb-1">
-                                <p className="text-gray-900 font-semibold text-sm">{address.label}</p>
-                                {address.isDefault && (
-                                  <span className="text-[10px] font-semibold px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">
-                                    Mặc định
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-sm text-gray-600">{address.street}</p>
-                              <p className="text-sm text-gray-500">
-                                {address.city}, {address.state} {address.zip}
-                              </p>
-                              <p className="text-sm text-gray-500">{address.country}</p>
-                            </div>
-                          </div>
-                          <div className="flex gap-1 flex-shrink-0">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-9 w-9 p-0 rounded-lg"
-                              onClick={() => handleEditAddress(address)}
-                            >
-                              <Edit className="h-4 w-4 text-gray-500" />
-                            </Button>
-                            {!address.isDefault && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-9 w-9 p-0 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50"
-                                onClick={() => handleDeleteAddress(address.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    )}
-
-                    <Button
-                      variant="outline"
-                      className="w-full border-gray-200 text-gray-900 hover:bg-gray-50 rounded-xl h-11 font-medium"
-                      onClick={handleAddAddress}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Thêm địa chỉ mới
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </TabsContent>
-
-          {/* Notification Settings */}
-          <TabsContent value="notifications" className="p-5 lg:p-6 focus-visible:outline-none">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Card className={cardClass}>
-                <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
-                  <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
-                    <span className="h-9 w-9 rounded-xl bg-violet-50 flex items-center justify-center">
-                      <Bell className="h-[18px] w-[18px] text-violet-600" />
-                    </span>
-                    Tùy chọn thông báo
-                  </CardTitle>
-                  <CardDescription className="text-gray-500 text-sm">
-                    Chọn loại thông báo bạn muốn nhận
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-0 pt-2">
-                  {[
-                    { key: "emailNotifications" as const, title: "Thông báo email", desc: "Nhận thông báo qua email" },
-                    { key: "orderUpdates" as const, title: "Cập nhật đơn hàng", desc: "Nhận cập nhật về đơn hàng" },
-                    { key: "promotions" as const, title: "Email khuyến mãi", desc: "Ưu đãi và khuyến mãi đặc biệt" },
-                    { key: "newsletter" as const, title: "Thông báo giảm giá", desc: "Khi sản phẩm yêu thích giảm giá" },
-                    { key: "loginAlerts" as const, title: "Cảnh báo đăng nhập", desc: "Hoạt động đăng nhập mới" },
-                  ].map((row, i) => (
-                    <div key={row.key}>
-                      {i > 0 && <Separator className="bg-gray-100" />}
-                      <div className="flex items-center justify-between gap-4 py-4 px-1 rounded-xl hover:bg-gray-50/80 transition-colors">
-                        <div className="space-y-0.5 min-w-0">
-                          <Label className="text-gray-900 font-medium text-sm">{row.title}</Label>
-                          <p className="text-xs text-gray-500">{row.desc}</p>
-                        </div>
-                        <Switch
-                          checked={notifSettings[row.key]}
-                          onCheckedChange={() => toggleNotif(row.key)}
-                          className="data-[state=checked]:bg-blue-600 flex-shrink-0"
+                      <div className="space-y-1.5">
+                        <Label htmlFor="lastName" className="text-gray-700 text-sm font-medium">Tên</Label>
+                        <Input
+                          id="lastName"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          className={inputClass}
                         />
                       </div>
                     </div>
-                  ))}
-                  <div className="pt-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="email" className="text-gray-700 text-sm font-medium">Địa chỉ email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        readOnly
+                        className={`${inputClass} opacity-70 cursor-not-allowed bg-gray-100/80`}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="phone" className="text-gray-700 text-sm font-medium">Số điện thoại</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
                     <Button
                       className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 font-semibold shadow-lg shadow-blue-600/20"
-                      onClick={handleSaveNotifSettings}
-                      disabled={isSavingNotif}
+                      onClick={handleSaveProfile}
+                      disabled={isSavingProfile}
                     >
-                      {isSavingNotif ? "Đang lưu..." : "Lưu tùy chọn"}
+                      {isSavingProfile ? "Đang lưu..." : "Lưu thay đổi"}
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </TabsContent>
+                  </CardContent>
+                </Card>
 
-          {/* Security Settings */}
-          <TabsContent value="security" className="p-5 lg:p-6 focus-visible:outline-none">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="space-y-5"
-            >
-              <Card className={cardClass}>
-                <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
-                  <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
-                    <span className="h-9 w-9 rounded-xl bg-sky-50 flex items-center justify-center">
-                      <Lock className="h-[18px] w-[18px] text-sky-600" />
-                    </span>
-                    Đổi mật khẩu
-                  </CardTitle>
-                  <CardDescription className="text-gray-500 text-sm">
-                    Cập nhật mật khẩu để giữ tài khoản an toàn
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 pt-5">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="currentPassword" className="text-gray-700 text-sm font-medium">Mật khẩu hiện tại</Label>
-                    <Input
-                      id="currentPassword"
-                      type="password"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="newPassword" className="text-gray-700 text-sm font-medium">Mật khẩu mới</Label>
-                    <Input
-                      id="newPassword"
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="confirmPassword" className="text-gray-700 text-sm font-medium">Xác nhận mật khẩu mới</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className={inputClass}
-                    />
-                  </div>
-                  <Button
-                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 font-semibold shadow-lg shadow-blue-600/20"
-                    onClick={handleChangePassword}
-                    disabled={isChangingPassword}
-                  >
-                    {isChangingPassword ? "Đang cập nhật..." : "Cập nhật mật khẩu"}
-                  </Button>
-                </CardContent>
-              </Card>
+                {/* Shipping Addresses */}
+                <Card className={cardClass}>
+                  <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
+                    <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
+                      <span className="h-9 w-9 rounded-xl bg-orange-50 flex items-center justify-center">
+                        <MapPin className="h-[18px] w-[18px] text-orange-600" />
+                      </span>
+                      Địa chỉ giao hàng
+                    </CardTitle>
+                    <CardDescription className="text-gray-500 text-sm">
+                      Quản lý địa chỉ giao hàng
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-5">
+                    <div className="space-y-3">
+                      {isLoadingAddresses ? (
+                        <div className="flex flex-col items-center justify-center py-10">
+                          <div className="h-8 w-8 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
+                          <p className="text-gray-400 text-sm mt-3">Đang tải địa chỉ...</p>
+                        </div>
+                      ) : addresses.length === 0 ? (
+                        <div className="text-center py-10 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
+                          <MapPin className="h-10 w-10 text-gray-200 mx-auto mb-2" />
+                          <p className="text-gray-500 text-sm font-medium">Chưa có địa chỉ nào</p>
+                          <p className="text-gray-400 text-xs mt-1">Thêm địa chỉ để giao hàng nhanh hơn</p>
+                        </div>
+                      ) : (
+                        addresses.map((address) => (
+                          <div
+                            key={address.id}
+                            className="flex items-start justify-between gap-3 p-4 rounded-xl bg-gray-50/80 border border-gray-100 hover:border-gray-200 transition-colors"
+                          >
+                            <div className="flex items-start gap-3 min-w-0">
+                              <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100">
+                                <MapPin className="h-5 w-5 text-blue-600" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 mb-1">
+                                  <p className="text-gray-900 font-semibold text-sm">{address.label}</p>
+                                  {address.isDefault && (
+                                    <span className="text-[10px] font-semibold px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">
+                                      Mặc định
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-sm text-gray-600">{address.street}</p>
+                                <p className="text-sm text-gray-500">
+                                  {address.city}, {address.state} {address.zip}
+                                </p>
+                                <p className="text-sm text-gray-500">{address.country}</p>
+                              </div>
+                            </div>
+                            <div className="flex gap-1 flex-shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-9 w-9 p-0 rounded-lg"
+                                onClick={() => handleEditAddress(address)}
+                              >
+                                <Edit className="h-4 w-4 text-gray-500" />
+                              </Button>
+                              {!address.isDefault && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-9 w-9 p-0 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50"
+                                  onClick={() => handleDeleteAddress(address.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )}
 
-              <Card className={cardClass}>
-                <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
-                  <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
-                    <span className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center">
-                      <Shield className="h-[18px] w-[18px] text-emerald-600" />
-                    </span>
-                    Xác thực hai yếu tố
-                  </CardTitle>
-                  <CardDescription className="text-gray-500 text-sm">
-                    Thêm lớp bảo mật bổ sung cho tài khoản
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3 pt-5">
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50/80 border border-gray-100">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="h-10 w-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center flex-shrink-0">
-                        <Smartphone className="h-5 w-5 text-gray-500" />
-                      </div>
-                      <div>
-                        <p className="text-gray-900 font-medium text-sm">Ứng dụng xác thực</p>
-                        <p className="text-xs text-gray-500">
-                          {notifSettings.twoFactorAuth ? "Đã bật" : "Chưa bật"}
-                        </p>
-                      </div>
+                      <Button
+                        variant="outline"
+                        className="w-full border-gray-200 text-gray-900 hover:bg-gray-50 rounded-xl h-11 font-medium"
+                        onClick={handleAddAddress}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Thêm địa chỉ mới
+                      </Button>
                     </div>
-                    <Button
-                      variant="outline"
-                      className="border-gray-200 text-gray-900 hover:bg-white rounded-xl h-9 text-sm font-medium flex-shrink-0"
-                      onClick={() => toggleNotif("twoFactorAuth")}
-                    >
-                      {notifSettings.twoFactorAuth ? "Tắt" : "Bật"}
-                    </Button>
-                  </div>
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50/80 border border-gray-100">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="h-10 w-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center flex-shrink-0">
-                        <Mail className="h-5 w-5 text-gray-500" />
-                      </div>
-                      <div>
-                        <p className="text-gray-900 font-medium text-sm">Xác minh email</p>
-                        <p className="text-xs text-gray-500">Đã bật</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" className="border-gray-200 text-gray-900 hover:bg-white rounded-xl h-9 text-sm font-medium flex-shrink-0">
-                      Tắt
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </TabsContent>
 
-              <Card className={cardClass}>
-                <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
-                  <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
-                    <span className="h-9 w-9 rounded-xl bg-amber-50 flex items-center justify-center">
-                      <Eye className="h-[18px] w-[18px] text-amber-600" />
-                    </span>
-                    Phiên đăng nhập
-                  </CardTitle>
-                  <CardDescription className="text-gray-500 text-sm">
-                    Quản lý phiên đăng nhập đang hoạt động
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3 pt-5">
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50/80 border border-gray-100 gap-3">
-                    <div className="min-w-0">
-                      <p className="text-gray-900 font-medium text-sm">Chrome trên Windows</p>
-                      <p className="text-xs text-gray-500">Hoạt động gần nhất: 2 phút trước</p>
-                    </div>
-                    <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg text-xs font-medium flex-shrink-0">Thu hồi</Button>
-                  </div>
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50/80 border border-gray-100 gap-3">
-                    <div className="min-w-0">
-                      <p className="text-gray-900 font-medium text-sm">Safari trên iPhone</p>
-                      <p className="text-xs text-gray-500">Hoạt động gần nhất: 2 ngày trước</p>
-                    </div>
-                    <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg text-xs font-medium flex-shrink-0">Thu hồi</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </TabsContent>
-
-          {/* Preferences Settings */}
-          <TabsContent value="preferences" className="p-5 lg:p-6 focus-visible:outline-none">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Card className={cardClass}>
-                <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
-                  <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
-                    <span className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center">
-                      <Globe className="h-[18px] w-[18px] text-indigo-600" />
-                    </span>
-                    Tùy chọn chung
-                  </CardTitle>
-                  <CardDescription className="text-gray-500 text-sm">
-                    Tùy chỉnh trải nghiệm mua sắm
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-0 pt-2">
-                  <div className="space-y-2 py-4">
-                    <Label className="text-gray-700 text-sm font-medium">Ngôn ngữ</Label>
-                    <Select defaultValue="vi">
-                      <SelectTrigger className={`${inputClass} h-11`}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white border-gray-200 rounded-xl">
-                        <SelectItem value="vi">Tiếng Việt</SelectItem>
-                        <SelectItem value="en">Tiếng Anh</SelectItem>
-                        <SelectItem value="es">Tiếng Tây Ban Nha</SelectItem>
-                        <SelectItem value="fr">Tiếng Pháp</SelectItem>
-                        <SelectItem value="de">Tiếng Đức</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Separator className="bg-gray-100" />
-                  <div className="space-y-2 py-4">
-                    <Label className="text-gray-700 text-sm font-medium">Tiền tệ</Label>
-                    <Select defaultValue="vnd">
-                      <SelectTrigger className={`${inputClass} h-11`}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white border-gray-200 rounded-xl">
-                        <SelectItem value="vnd">VND - Việt Nam Đồng</SelectItem>
-                        <SelectItem value="usd">USD - US Dollar</SelectItem>
-                        <SelectItem value="eur">EUR - Euro</SelectItem>
-                        <SelectItem value="gbp">GBP - British Pound</SelectItem>
-                        <SelectItem value="jpy">JPY - Japanese Yen</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Separator className="bg-gray-100" />
-                  <div className="flex items-center justify-between gap-4 py-4 px-1 rounded-xl hover:bg-gray-50/80 transition-colors">
-                    <div className="space-y-0.5 min-w-0">
-                      <Label className="text-gray-900 font-medium text-sm flex items-center gap-2">
-                        <Moon className="h-4 w-4 text-gray-400" />
-                        Chế độ tối
-                      </Label>
-                      <p className="text-xs text-gray-500">Giao diện tối trên toàn trang (sắp ra mắt)</p>
-                    </div>
-                    <Switch defaultChecked={false} className="data-[state=checked]:bg-blue-600 flex-shrink-0" />
-                  </div>
-                  <Separator className="bg-gray-100" />
-                  <div className="flex items-center justify-between gap-4 py-4 px-1 rounded-xl hover:bg-gray-50/80 transition-colors">
-                    <div className="space-y-0.5 min-w-0">
-                      <Label className="text-gray-900 font-medium text-sm">Gợi ý sản phẩm</Label>
-                      <p className="text-xs text-gray-500">Gợi ý cá nhân hóa trên trang chủ</p>
-                    </div>
-                    <Switch defaultChecked className="data-[state=checked]:bg-blue-600 flex-shrink-0" />
-                  </div>
-                  <div className="pt-4">
-                    <Button
-                      className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 font-semibold shadow-lg shadow-blue-600/20"
-                      onClick={() => toast.success("Đã lưu tùy chọn!")}
-                    >
-                      Lưu tùy chọn
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </TabsContent>
-
-          {/* Store Settings */}
-          {(userType === "SELLER" || userType === "ADMIN") && (
-            <TabsContent value="store" className="p-5 lg:p-6 focus-visible:outline-none">
+            {/* Security Settings */}
+            <TabsContent value="security" className="p-5 lg:p-6 focus-visible:outline-none">
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1029,77 +692,224 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
                 <Card className={cardClass}>
                   <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
                     <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
-                      <span className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center">
-                        <Store className="h-[18px] w-[18px] text-blue-600" />
+                      <span className="h-9 w-9 rounded-xl bg-sky-50 flex items-center justify-center">
+                        <Lock className="h-[18px] w-[18px] text-sky-600" />
                       </span>
-                      Trạng thái cửa hàng
+                      Đổi mật khẩu
                     </CardTitle>
                     <CardDescription className="text-gray-500 text-sm">
-                      Quản lý hoạt động kinh doanh của bạn
+                      Cập nhật mật khẩu để giữ tài khoản an toàn
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6 pt-5">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-gray-50/80 border border-gray-100">
-                      <div className="space-y-1">
-                        <p className="text-gray-900 font-semibold text-sm">
-                          {isSuspended ? "Cửa hàng đang tạm ngưng" : "Cửa hàng đang hoạt động"}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {isSuspended 
-                            ? "Sản phẩm của bạn hiện đang bị ẩn và khách hàng không thể đặt hàng mới." 
-                            : "Sản phẩm của bạn đang hiển thị bình thường với khách hàng."}
-                        </p>
-                      </div>
-                      <Button
-                        variant={isSuspended ? "default" : "outline"}
-                        className={isSuspended 
-                          ? "bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold px-6 h-10 shadow-lg shadow-blue-600/20"
-                          : "border-gray-200 text-gray-900 hover:bg-white rounded-xl font-semibold px-6 h-10"}
-                        onClick={() => setSuspendDialogOpen(true)}
-                        disabled={isUpdatingStore}
-                      >
-                        {isSuspended ? "Mở lại cửa hàng" : "Tạm ngưng bán"}
-                      </Button>
+                  <CardContent className="space-y-4 pt-5">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="currentPassword" className="text-gray-700 text-sm font-medium">Mật khẩu hiện tại</Label>
+                      <Input
+                        id="currentPassword"
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        className={inputClass}
+                      />
                     </div>
-
-                    <div className="p-4 rounded-xl bg-amber-50 border border-amber-100">
-                      <div className="flex gap-3">
-                        <Shield className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                        <div className="space-y-1">
-                          <p className="text-amber-900 font-semibold text-sm">Lưu ý quan trọng</p>
-                          <ul className="text-sm text-amber-800/80 space-y-1 list-disc list-inside">
-                            <li>Bạn chỉ có thể tạm ngưng hoặc đóng cửa hàng khi KHÔNG có đơn hàng đang xử lý.</li>
-                            <li>Khi tạm ngưng, tất cả sản phẩm đang hiển thị sẽ chuyển sang trạng thái "Ẩn".</li>
-                            <li>Khi đóng cửa hàng, tài khoản của bạn sẽ trở về vai trò "Người mua" bình thường.</li>
-                          </ul>
-                        </div>
-                      </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="newPassword" className="text-gray-700 text-sm font-medium">Mật khẩu mới</Label>
+                      <Input
+                        id="newPassword"
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className={inputClass}
+                      />
                     </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="confirmPassword" className="text-gray-700 text-sm font-medium">Xác nhận mật khẩu mới</Label>
+                      <Input
+                        id="confirmPassword"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                    <Button
+                      className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 font-semibold shadow-lg shadow-blue-600/20"
+                      onClick={handleChangePassword}
+                      disabled={isChangingPassword}
+                    >
+                      {isChangingPassword ? "Đang cập nhật..." : "Cập nhật mật khẩu"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </TabsContent>
 
+            {/* Preferences Settings */}
+            <TabsContent value="preferences" className="p-5 lg:p-6 focus-visible:outline-none">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Card className={cardClass}>
+                  <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
+                    <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
+                      <span className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center">
+                        <Globe className="h-[18px] w-[18px] text-indigo-600" />
+                      </span>
+                      Tùy chọn chung
+                    </CardTitle>
+                    <CardDescription className="text-gray-500 text-sm">
+                      Tùy chỉnh trải nghiệm mua sắm
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-0 pt-2">
+                    <div className="space-y-2 py-4">
+                      <Label className="text-gray-700 text-sm font-medium">Ngôn ngữ</Label>
+                      <Select defaultValue="vi">
+                        <SelectTrigger className={`${inputClass} h-11`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-gray-200 rounded-xl">
+                          <SelectItem value="vi">Tiếng Việt</SelectItem>
+                          <SelectItem value="en">Tiếng Anh</SelectItem>
+                          <SelectItem value="es">Tiếng Tây Ban Nha</SelectItem>
+                          <SelectItem value="fr">Tiếng Pháp</SelectItem>
+                          <SelectItem value="de">Tiếng Đức</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <Separator className="bg-gray-100" />
-
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-red-100 bg-red-50/30">
-                      <div className="space-y-1">
-                        <p className="text-red-900 font-semibold text-sm">Đóng cửa hàng vĩnh viễn</p>
-                        <p className="text-sm text-red-700/70">
-                          Hành động này sẽ hủy tư cách Người bán của bạn. Bạn phải tạo yêu cầu mới nếu muốn bán lại.
-                        </p>
+                    <div className="space-y-2 py-4">
+                      <Label className="text-gray-700 text-sm font-medium">Tiền tệ</Label>
+                      <Select defaultValue="vnd">
+                        <SelectTrigger className={`${inputClass} h-11`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-gray-200 rounded-xl">
+                          <SelectItem value="vnd">VND - Việt Nam Đồng</SelectItem>
+                          <SelectItem value="usd">USD - US Dollar</SelectItem>
+                          <SelectItem value="eur">EUR - Euro</SelectItem>
+                          <SelectItem value="gbp">GBP - British Pound</SelectItem>
+                          <SelectItem value="jpy">JPY - Japanese Yen</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Separator className="bg-gray-100" />
+                    <div className="flex items-center justify-between gap-4 py-4 px-1 rounded-xl hover:bg-gray-50/80 transition-colors">
+                      <div className="space-y-0.5 min-w-0">
+                        <Label className="text-gray-900 font-medium text-sm flex items-center gap-2">
+                          <Moon className="h-4 w-4 text-gray-400" />
+                          Chế độ tối
+                        </Label>
+                        <p className="text-xs text-gray-500">Giao diện tối trên toàn trang (sắp ra mắt)</p>
                       </div>
+                      <Switch defaultChecked={false} className="data-[state=checked]:bg-blue-600 flex-shrink-0" />
+                    </div>
+                    <Separator className="bg-gray-100" />
+                    <div className="flex items-center justify-between gap-4 py-4 px-1 rounded-xl hover:bg-gray-50/80 transition-colors">
+                      <div className="space-y-0.5 min-w-0">
+                        <Label className="text-gray-900 font-medium text-sm">Gợi ý sản phẩm</Label>
+                        <p className="text-xs text-gray-500">Gợi ý cá nhân hóa trên trang chủ</p>
+                      </div>
+                      <Switch defaultChecked className="data-[state=checked]:bg-blue-600 flex-shrink-0" />
+                    </div>
+                    <div className="pt-4">
                       <Button
-                        variant="destructive"
-                        className="rounded-xl font-semibold px-6 h-10"
-                        onClick={() => setCloseStoreDialogOpen(true)}
-                        disabled={isUpdatingStore}
+                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 font-semibold shadow-lg shadow-blue-600/20"
+                        onClick={() => toast.success("Đã lưu tùy chọn!")}
                       >
-                        Đóng cửa hàng
+                        Lưu tùy chọn
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
               </motion.div>
             </TabsContent>
-          )}
-        </Tabs>
+
+            {/* Store Settings */}
+            {(userType === "SELLER" || userType === "ADMIN") && (
+              <TabsContent value="store" className="p-5 lg:p-6 focus-visible:outline-none">
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className="space-y-5"
+                >
+                  <Card className={cardClass}>
+                    <CardHeader className="border-b border-gray-100 bg-gray-50/40 pb-4">
+                      <CardTitle className="text-gray-900 flex items-center gap-3 text-base font-bold">
+                        <span className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center">
+                          <Store className="h-[18px] w-[18px] text-blue-600" />
+                        </span>
+                        Trạng thái cửa hàng
+                      </CardTitle>
+                      <CardDescription className="text-gray-500 text-sm">
+                        Quản lý hoạt động kinh doanh của bạn
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6 pt-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-gray-50/80 border border-gray-100">
+                        <div className="space-y-1">
+                          <p className="text-gray-900 font-semibold text-sm">
+                            {isSuspended ? "Cửa hàng đang tạm ngưng" : "Cửa hàng đang hoạt động"}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {isSuspended
+                              ? "Sản phẩm của bạn hiện đang bị ẩn và khách hàng không thể đặt hàng mới."
+                              : "Sản phẩm của bạn đang hiển thị bình thường với khách hàng."}
+                          </p>
+                        </div>
+                        <Button
+                          variant={isSuspended ? "default" : "outline"}
+                          className={isSuspended
+                            ? "bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold px-6 h-10 shadow-lg shadow-blue-600/20"
+                            : "border-gray-200 text-gray-900 hover:bg-white rounded-xl font-semibold px-6 h-10"}
+                          onClick={() => setSuspendDialogOpen(true)}
+                          disabled={isUpdatingStore}
+                        >
+                          {isSuspended ? "Mở lại cửa hàng" : "Tạm ngưng bán"}
+                        </Button>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-amber-50 border border-amber-100">
+                        <div className="flex gap-3">
+                          <Shield className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                          <div className="space-y-1">
+                            <p className="text-amber-900 font-semibold text-sm">Lưu ý quan trọng</p>
+                            <ul className="text-sm text-amber-800/80 space-y-1 list-disc list-inside">
+                              <li>Bạn chỉ có thể tạm ngưng hoặc đóng cửa hàng khi KHÔNG có đơn hàng đang xử lý.</li>
+                              <li>Khi tạm ngưng, tất cả sản phẩm đang hiển thị sẽ chuyển sang trạng thái "Ẩn".</li>
+                              <li>Khi đóng cửa hàng, tài khoản của bạn sẽ trở về vai trò "Người mua" bình thường.</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Separator className="bg-gray-100" />
+
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-red-100 bg-red-50/30">
+                        <div className="space-y-1">
+                          <p className="text-red-900 font-semibold text-sm">Đóng cửa hàng vĩnh viễn</p>
+                          <p className="text-sm text-red-700/70">
+                            Hành động này sẽ hủy tư cách Người bán của bạn. Bạn phải tạo yêu cầu mới nếu muốn bán lại.
+                          </p>
+                        </div>
+                        <Button
+                          variant="destructive"
+                          className="rounded-xl font-semibold px-6 h-10"
+                          onClick={() => setCloseStoreDialogOpen(true)}
+                          disabled={isUpdatingStore}
+                        >
+                          Đóng cửa hàng
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </TabsContent>
+            )}
+          </Tabs>
         </div>
 
         {/* Danger Zone */}
@@ -1169,8 +979,8 @@ export function SettingsPage({ onNavigate, onLogout }: SettingsPageProps) {
               {isSuspended ? "Mở lại cửa hàng" : "Tạm ngưng bán"}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-gray-500 text-sm leading-relaxed">
-              {isSuspended 
-                ? "Bạn có muốn mở lại cửa hàng? Các sản phẩm sẽ không tự động hiển thị lại, bạn cần kích hoạt thủ công." 
+              {isSuspended
+                ? "Bạn có muốn mở lại cửa hàng? Các sản phẩm sẽ không tự động hiển thị lại, bạn cần kích hoạt thủ công."
                 : "Tất cả sản phẩm đang bán sẽ bị chuyển sang trạng thái Ẩn. Bạn chỉ có thể thực hiện khi không có đơn hàng đang chờ xử lý."}
             </AlertDialogDescription>
           </AlertDialogHeader>
