@@ -20,9 +20,12 @@ interface CheckoutPageProps {
   user?: any;
 }
 
+type PaymentMethod = "wallet" | "vnpay" | "cod";
+const PAYMENT_METHODS: PaymentMethod[] = ["wallet", "vnpay", "cod"];
+
 export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }: CheckoutPageProps) {
   const [step, setStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState("wallet");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("wallet");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
@@ -404,7 +407,14 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                     </div>
                   </div>
 
-                  <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+                  <RadioGroup
+                    value={paymentMethod}
+                    onValueChange={(value) => {
+                      if (PAYMENT_METHODS.includes(value as PaymentMethod)) {
+                        setPaymentMethod(value as PaymentMethod);
+                      }
+                    }}
+                  >
                     <div className="space-y-2.5">
                       {/* Shop Wallet */}
                       <div
@@ -470,22 +480,6 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                         </Label>
                       </div>
 
-                      {/* Card */}
-                      <div
-                        className={`flex items-center space-x-3 border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 ${paymentMethod === "card"
-                          ? "border-blue-500 bg-blue-50/80 shadow-sm shadow-blue-500/10"
-                          : "border-gray-200 bg-white hover:border-gray-300"
-                          }`}
-                      >
-                        <RadioGroupItem value="card" id="card" />
-                        <Label htmlFor="card" className="flex-1 cursor-pointer">
-                          <div className="flex items-center gap-2.5">
-                            <div className="h-8 w-8 rounded-lg bg-violet-50 flex items-center justify-center text-base">💳</div>
-                            <span className="text-gray-900 font-medium text-sm">Thẻ tín dụng/ghi nợ</span>
-                          </div>
-                        </Label>
-                      </div>
-
                       {/* COD */}
                       <div
                         className={`flex items-center space-x-3 border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 ${paymentMethod === "cod"
@@ -503,47 +497,6 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       </div>
                     </div>
                   </RadioGroup>
-
-                  {paymentMethod === "card" && (
-                    <div className="space-y-4 pt-2 border-t border-gray-100">
-                      <div className="space-y-1.5 pt-4">
-                        <Label htmlFor="cardNumber" className="text-sm font-medium">Số thẻ</Label>
-                        <Input
-                          id="cardNumber"
-                          placeholder="1234 5678 9012 3456"
-                          className="bg-gray-50/50 border-gray-200 rounded-xl h-11 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <Label htmlFor="expiry" className="text-sm font-medium">Ngày hết hạn</Label>
-                          <Input
-                            id="expiry"
-                            placeholder="MM/YY"
-                            className="bg-gray-50/50 border-gray-200 rounded-xl h-11 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="cvv" className="text-sm font-medium">CVV</Label>
-                          <Input
-                            id="cvv"
-                            placeholder="123"
-                            className="bg-gray-50/50 border-gray-200 rounded-xl h-11 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="cardName" className="text-sm font-medium">Tên chủ thẻ</Label>
-                        <Input
-                          id="cardName"
-                          placeholder="Nguyễn Văn A"
-                          className="bg-gray-50/50 border-gray-200 rounded-xl h-11 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
-                        />
-                      </div>
-                    </div>
-                  )}
 
                   <div className="flex gap-3 pt-2">
                     <Button variant="outline" onClick={() => setStep(1)} className="flex-1 rounded-xl h-11 font-medium">
@@ -615,11 +568,7 @@ export function CheckoutPage({ onNavigate, cartItems = [], onOrderPlaced, user }
                       <p className="text-gray-600 text-sm">
                         {paymentMethod === "wallet" && `Shop Wallet (Số dư: ${formatCurrency(walletInfo?.balance ?? 0)})`}
                         {paymentMethod === "vnpay" && "VNPAY"}
-                        {paymentMethod === "momo" && "Ví MoMo"}
-                        {paymentMethod === "card" && "Thẻ tín dụng/ghi nợ"}
                         {paymentMethod === "cod" && "Thanh toán khi nhận hàng"}
-                        {paymentMethod === "paypal" && "PayPal"}
-                        {paymentMethod === "crypto" && "Tiền điện tử (Bitcoin)"}
                       </p>
                     </div>
 

@@ -43,6 +43,7 @@ interface Order {
   items: OrderItem[];
   revenueStatus?: string;
   isPaidOnline?: boolean;
+  paymentMethod?: string;
   returnRequest?: { id: string };
   rawStatus: string;
 }
@@ -70,6 +71,17 @@ const STATUS_VI: Record<string, string> = {
   RETURN_REQUESTED: "Chờ đổi trả",
   RETURNED: "Đã trả hàng",
   CANCEL_REQUESTED: "Yêu cầu hủy",
+};
+
+const normalizeStatusKey = (status?: string | null) =>
+  status?.trim().toUpperCase().replace(/[\s-]+/g, "_") ?? "";
+
+const getOrderStatusKey = (order: Pick<Order, "status" | "rawStatus">) =>
+  normalizeStatusKey(order.rawStatus || order.status);
+
+const getOrderDisplayStatus = (order: Pick<Order, "status" | "rawStatus">) => {
+  const statusKey = getOrderStatusKey(order);
+  return STATUS_VI[statusKey] ?? STATUS_VI[order.status] ?? order.status;
 };
 
 export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPageProps) {
@@ -135,6 +147,19 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
     }
   };
 
+  const handleConfirmCodPayment = async (orderId: string) => {
+    try {
+      setUpdatingId(orderId);
+      await put(`/api/v1/seller/orders/${orderId}/confirm-cod-payment`, {});
+      await fetchOrders();
+      toast.success('Đã ghi nhận tiền COD và cộng doanh thu vào ví shop.');
+    } catch (err: any) {
+      toast.error(err.message || 'Không thể xác nhận tiền COD');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
 
   const OrderTable = ({ rows, showStatus = true }: { rows: Order[]; showStatus?: boolean }) => (
     <div className="overflow-x-auto">
@@ -165,6 +190,11 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                       Chờ quyết toán
                     </div>
                   )}
+                  {order.revenueStatus === 'UNPAID' && (
+                    <div className="text-[10px] text-gray-600 font-medium bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100 inline-block mt-1">
+                      {order.paymentMethod === 'cod' ? 'Chờ thu COD' : 'Chưa thanh toán'}
+                    </div>
+                  )}
                   {order.revenueStatus === 'RELEASED' && (
                     <div className="text-[10px] text-green-600 font-medium bg-green-50 px-1.5 py-0.5 rounded border border-green-100 inline-block mt-1">
                       Đã về ví
@@ -179,16 +209,16 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                           ? "bg-green-500/20 text-green-400 border-green-500/30"
                           : order.status === "Shipped"
                           ? "bg-blue-50 text-blue-600 border-blue-200"
-                          : order.status === "RETURN_REQUESTED"
+                          : getOrderStatusKey(order) === "RETURN_REQUESTED"
                           ? "bg-blue-50 text-blue-700 border-blue-300 animate-pulse"
-                          : order.status === "RETURNED"
+                          : getOrderStatusKey(order) === "RETURNED"
                           ? "bg-blue-100 text-blue-800 border-blue-400"
                           : order.status === "Refunded"
                           ? "bg-orange-50 text-orange-600 border-orange-200"
                           : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
                       }
                     >
-                      {STATUS_VI[order.status] ?? order.status}
+                      {getOrderDisplayStatus(order)}
                     </Badge>
                   </TableCell>
                 )}
@@ -230,7 +260,17 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                           : "Xác nhận đã giao"}
                       </Button>
                     )}
-                    {order.rawStatus === "CANCEL_REQUESTED" && (
+                    {order.status === "Delivered" && order.paymentMethod === "cod" && order.revenueStatus === "UNPAID" && (
+                      <Button
+                        size="sm"
+                        disabled={updatingId === order.id}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                        onClick={() => handleConfirmCodPayment(order.id)}
+                      >
+                        {updatingId === order.id ? "Đang cập nhật..." : "Đã nhận tiền COD"}
+                      </Button>
+                    )}
+                    {getOrderStatusKey(order) === "CANCEL_REQUESTED" && (
                       <>
                         <Button
                           size="sm"
@@ -251,7 +291,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                         </Button>
                       </>
                     )}
-                    {order.status === "RETURN_REQUESTED" && (
+                    {getOrderStatusKey(order) === "RETURN_REQUESTED" && (
                        <Button
                          size="sm"
                          className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -398,7 +438,10 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
             
             <TabsContent value="returns" className="m-0">
               <OrderTable
-                rows={orders.filter(o => o.status === "RETURN_REQUESTED" || o.status === "RETURNED" || o.status === "Refunded")}
+                rows={orders.filter(o => {
+                  const statusKey = getOrderStatusKey(o);
+                  return statusKey === "RETURN_REQUESTED" || statusKey === "RETURNED" || statusKey === "REFUNDED";
+                })}
                 showStatus={true}
               />
             </TabsContent>
@@ -433,7 +476,7 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                         ? "text-blue-600"
                         : "text-yellow-400"
                     }>
-                      {STATUS_VI[selectedOrder.status] ?? selectedOrder.status}
+                      {getOrderDisplayStatus(selectedOrder)}
                     </span>
                   </p>
                 </div>
@@ -495,6 +538,21 @@ export function SellerOrdersPage({ onNavigate: _onNavigate }: SellerOrdersPagePr
                       : selectedOrder.status === "Processing"
                       ? "Xác nhận giao hàng"
                       : "Xác nhận đã giao"}
+                  </Button>
+                </div>
+              )}
+              {selectedOrder.status === "Delivered" && selectedOrder.paymentMethod === "cod" && selectedOrder.revenueStatus === "UNPAID" && (
+                <div className="flex justify-end gap-2">
+                  <Button
+                    size="sm"
+                    disabled={updatingId === selectedOrder.id}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    onClick={async () => {
+                      await handleConfirmCodPayment(selectedOrder.id);
+                      setSelectedOrder(null);
+                    }}
+                  >
+                    {updatingId === selectedOrder.id ? "Đang cập nhật..." : "Đã nhận tiền COD"}
                   </Button>
                 </div>
               )}

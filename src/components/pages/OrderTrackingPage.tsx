@@ -228,10 +228,15 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
       const txnRef = searchParams.get("vnp_TxnRef");
       const responseCode = searchParams.get("vnp_ResponseCode");
 
-      if (txnRef && txnRef.startsWith("ORD-") && responseCode) {
+      const isOrderPayment = txnRef?.startsWith("ORD-") || txnRef?.startsWith("ORDERPAY-");
+
+      if (isOrderPayment && responseCode) {
         try {
-          await walletService.verifyVnpayCallback(window.location.search);
+          const result: any = await walletService.verifyVnpayCallback(window.location.search);
           if (responseCode === "00") {
+            if (result?.orderId) {
+              onNavigate("orders", { orderId: result.orderId });
+            }
             toast.success("Thanh toán đơn hàng thành công!");
           } else if (responseCode === "24") {
             toast.error("Bạn đã hủy thanh toán. Đơn hàng đã bị hủy.");
