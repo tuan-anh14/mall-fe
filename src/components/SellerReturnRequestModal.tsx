@@ -36,7 +36,7 @@ export function SellerReturnRequestModal({
   const { openPreview } = useImagePreview();
 
   const getDefaultRefundAmount = (order: ReturnRequest["order"]) =>
-    Math.max(0, order.subtotal - (order.couponDiscount ?? 0) + order.tax);
+    Math.max(0, Number(order.total || 0));
 
   useEffect(() => {
     if (isOpen && requestId) {
