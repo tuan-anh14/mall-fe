@@ -185,12 +185,13 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [cancelling, setCancelling] = useState(false);
+  const [filterStatus, setFilterStatus] = useState("ALL");
 
   const fetchOrders = async () => {
     setLoading(true);
     try {
       const res = await get<{ orders: Order[]; total: number; page: number; limit: number; totalPages: number }>(
-        "/api/v1/orders?page=1&limit=20"
+        "/api/v1/orders?page=1&limit=100"
       );
       const fetchedOrders = res.orders ?? [];
       setOrders(fetchedOrders);
@@ -317,6 +318,20 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
   const currentOrder = selectedOrder;
   const showReturnButton = currentOrder ? canRequestReturn(currentOrder) : false;
 
+  const statusTabs = [
+    { id: "ALL", label: "Tất cả", types: [] },
+    { id: "PENDING", label: "Chờ xác nhận", types: ["PENDING"] },
+    { id: "PROCESSING", label: "Đang xử lý", types: ["CONFIRMED", "PROCESSING"] },
+    { id: "SHIPPED", label: "Đang giao", types: ["SHIPPED", "OUT_FOR_DELIVERY"] },
+    { id: "DELIVERED", label: "Hoàn thành", types: ["DELIVERED"] },
+    { id: "RETURN", label: "Trả hàng/Hoàn tiền", types: ["RETURN_REQUESTED", "RETURN_APPROVED", "RETURNED", "REFUNDED"] },
+    { id: "CANCELLED", label: "Đã hủy", types: ["CANCELLED", "CANCEL_REQUESTED"] },
+  ];
+
+  const filteredOrders = orders.filter(o => 
+    filterStatus === "ALL" || statusTabs.find(t => t.id === filterStatus)?.types.includes(o.status)
+  );
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
@@ -326,26 +341,60 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
           </Button>
         </div>
 
-        {/* Order List */}
-        {orders.length > 1 && (
-          <div className="mb-6 space-y-2">
-            <h2 className="text-gray-500 text-sm uppercase tracking-wider mb-3">Chọn đơn hàng</h2>
+        {/* Status Filter Tabs */}
+        <div className="flex overflow-x-auto pb-4 mb-6 gap-2 no-scrollbar">
+          {statusTabs.map((tab) => {
+            const count = orders.filter(o => tab.id === "ALL" || tab.types.includes(o.status)).length;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setFilterStatus(tab.id);
+                  const filtered = orders.filter(o => tab.id === "ALL" || tab.types.includes(o.status));
+                  if (filtered.length > 0) setSelectedOrder(filtered[0]);
+                }}
+                className={`px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${
+                  filterStatus === tab.id
+                    ? "bg-blue-600 border-blue-600 text-white shadow-md"
+                    : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                {tab.label}
+                <span className={`ml-2 px-1.5 py-0.5 rounded text-[10px] ${
+                  filterStatus === tab.id ? "bg-white/20 text-white" : "bg-gray-100 text-gray-400"
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Order List within Filter */}
+        <div className="mb-8">
+          <h2 className="text-gray-500 text-xs uppercase font-bold tracking-widest mb-3">Danh sách đơn hàng</h2>
+          {filteredOrders.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {orders.map((order) => (
+              {filteredOrders.map((order) => (
                 <button
                   key={order.id}
                   onClick={() => setSelectedOrder(order)}
-                  className={`px-4 py-2 rounded-lg border text-sm transition-all ${selectedOrder?.id === order.id
-                    ? "border-blue-600 bg-blue-50 text-gray-900"
-                    : "border-gray-200 bg-white text-gray-500 hover:border-gray-400"
-                    }`}
+                  className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${
+                    selectedOrder?.id === order.id
+                      ? "border-blue-600 bg-blue-600 text-white shadow-sm"
+                      : "border-gray-200 bg-white text-gray-500 hover:border-gray-400"
+                  }`}
                 >
                   {order.id}
                 </button>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="bg-gray-50 border border-dashed border-gray-200 rounded-2xl py-8 text-center">
+              <p className="text-gray-400 text-sm">Không có đơn hàng nào ở trạng thái này</p>
+            </div>
+          )}
+        </div>
 
         {currentOrder && (
           <>
@@ -475,11 +524,9 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
             </div>
 
             {/* Order Items */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-8">
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 mb-8">
               <h2 className="text-2xl text-gray-900 mb-6">Sản phẩm trong đơn</h2>
-
               <div className="space-y-4">
-                {/* Hiển thị danh sách sản phẩm của Đơn Hàng (Đã được tách riêng rẽ theo Shop từ backend) */}
                 <div className="space-y-3">
                   <div className="bg-blue-50 px-4 py-2.5 flex items-center gap-2 border-b border-blue-100 rounded-t-xl">
                     <Package className="h-4 w-4 text-blue-500" />
@@ -552,13 +599,9 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
 
             {/* Actions */}
             <div className="mt-8 flex flex-wrap gap-4">
-              <Button
-                variant="outline"
-                className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
-              >
+              <Button variant="outline" className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50">
                 Liên hệ hỗ trợ
               </Button>
-
               {currentOrder && ["PENDING", "CONFIRMED", "PROCESSING"].includes(currentOrder.status) && (
                 <Button
                   variant="outline"
@@ -569,17 +612,11 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
                   {cancelling ? "Đang xử lý..." : "Hủy đơn hàng"}
                 </Button>
               )}
-
               {currentOrder && currentOrder.status === "CANCEL_REQUESTED" && (
-                <Button
-                  variant="outline"
-                  className="flex-1 bg-amber-50 text-amber-600 border-amber-200"
-                  disabled
-                >
+                <Button variant="outline" className="flex-1 bg-amber-50 text-amber-600 border-amber-200" disabled>
                   Đang chờ hủy...
                 </Button>
               )}
-
               {showReturnButton && (
                 <Button
                   variant="outline"
@@ -589,11 +626,7 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
                   Yêu cầu trả hàng
                 </Button>
               )}
-
-              <Button
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => onNavigate("shop")}
-              >
+              <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white" onClick={() => onNavigate("shop")}>
                 Tiếp tục mua sắm
               </Button>
             </div>
@@ -606,14 +639,10 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
           isOpen={isReturnModalOpen}
           onOpenChange={setIsReturnModalOpen}
           orderId={currentOrder.id}
-          onSuccess={() => {
-            // Re-fetch orders to show updated status if needed
-            window.location.reload();
-          }}
+          onSuccess={() => window.location.reload()}
         />
       )}
 
-      {/* Cancel Order Modal - Tương tự Modal đăng ký người bán ở Header */}
       <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
         <DialogContent className="sm:max-w-[450px] bg-white rounded-2xl border-none shadow-2xl">
           <DialogHeader>
@@ -625,43 +654,21 @@ export function OrderTrackingPage({ onNavigate, orderId, onCartRefresh }: OrderT
               Vui lòng cho chúng tôi biết lý do bạn muốn hủy đơn hàng <span className="font-semibold text-red-600">{currentOrder?.id}</span>.
             </DialogDescription>
           </DialogHeader>
-
           <div className="space-y-4 mt-2">
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1.5 block">
-                Lý do hủy đơn <span className="text-red-500">*</span>
-              </Label>
+              <Label className="text-sm font-medium text-gray-700 mb-1.5 block">Lý do hủy đơn *</Label>
               <Textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 placeholder="Ví dụ: Tôi muốn đổi địa chỉ, Đặt nhầm sản phẩm,..."
                 rows={4}
-                className="w-full rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 px-4 py-3 text-sm resize-none focus:outline-none focus:border-blue-400 focus:bg-white transition-all"
+                className="w-full rounded-xl bg-gray-50 border border-gray-200 text-gray-900 px-4 py-3 text-sm focus:border-blue-400 transition-all resize-none"
               />
             </div>
-
             <div className="flex gap-3 pt-2">
-              <Button
-                variant="ghost"
-                className="flex-1 rounded-xl hover:bg-gray-100"
-                onClick={() => setIsCancelModalOpen(false)}
-                disabled={cancelling}
-              >
-                Đóng
-              </Button>
-              <Button
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-lg shadow-red-100"
-                onClick={confirmCancel}
-                disabled={cancelling}
-              >
-                {cancelling ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang xử lý...
-                  </>
-                ) : (
-                  "Xác nhận hủy"
-                )}
+              <Button variant="ghost" className="flex-1 rounded-xl" onClick={() => setIsCancelModalOpen(false)} disabled={cancelling}>Đóng</Button>
+              <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-lg shadow-red-100" onClick={confirmCancel} disabled={cancelling}>
+                {cancelling ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Xác nhận hủy"}
               </Button>
             </div>
           </div>
