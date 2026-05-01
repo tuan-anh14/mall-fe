@@ -102,13 +102,13 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   }
 
   const statCards = [
-    {
-      label: "Ví của tôi",
-      value: formatCurrency(stats?.walletBalance ?? 0),
-      change: stats?.revenueChange ?? 0,
-      icon: TrendingUp,
-      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
-    },
+    // {
+    //   label: "Ví của tôi",
+    //   value: formatCurrency(stats?.walletBalance ?? 0),
+    //   change: stats?.revenueChange ?? 0,
+    //   icon: TrendingUp,
+    //   iconBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
+    // },
     {
       label: "Doanh thu (Net)",
       value: formatCurrencyCompact(stats?.totalRevenue ?? 0),
