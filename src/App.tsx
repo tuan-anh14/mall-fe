@@ -131,6 +131,11 @@ const WishlistPage = lazy(() =>
     default: m.WishlistPage,
   })),
 );
+const RecentlyViewedPage = lazy(() =>
+  import("./components/pages/RecentlyViewedPage").then((m) => ({
+    default: m.default,
+  })),
+);
 const SettingsPage = lazy(() =>
   import("./components/pages/SettingsPage").then((m) => ({
     default: m.SettingsPage,
@@ -798,6 +803,19 @@ export default function App() {
                       cartItems={cartItems}
                       onOrderPlaced={() => clearCart()}
                       user={user}
+                    />
+                  )
+                }
+              />
+              <Route
+                path="/view-history"
+                element={
+                  !isAuthenticated ? (
+                    authRedirect("Vui lòng đăng nhập để xem lịch sử")
+                  ) : (
+                    <RecentlyViewedPage
+                      onNavigate={navigate}
+                      onAddToCart={addToCart}
                     />
                   )
                 }

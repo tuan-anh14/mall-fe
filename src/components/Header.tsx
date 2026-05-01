@@ -21,6 +21,7 @@ import {
   TrendingUp,
   BookOpen,
   PenTool,
+  Clock,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -783,6 +784,10 @@ export function Header({
                       <DropdownMenuItem onClick={() => onNavigate("orders")} className="text-gray-700 hover:text-gray-900 cursor-pointer rounded-lg h-9">
                         <Package className="h-4 w-4 mr-2.5 text-gray-400" />
                         Đơn hàng của tôi
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onNavigate("view-history")} className="text-gray-700 hover:text-gray-900 cursor-pointer rounded-lg h-9">
+                        <Clock className="h-4 w-4 mr-2.5 text-gray-400" />
+                        Sản phẩm đã xem
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onNavigate("wallet")} className="text-gray-700 hover:text-gray-900 cursor-pointer rounded-lg h-9">
                         <Wallet className="h-4 w-4 mr-2.5 text-gray-400" />

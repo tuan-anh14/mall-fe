@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, TrendingUp, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { ProductCard } from "./ProductCard";
 import { viewHistoryService } from "../services/viewHistory.service";
@@ -18,12 +18,16 @@ export function RecommendedSection({
   isInWishlist,
 }: RecommendedSectionProps) {
   const [products, setProducts] = useState<any[]>([]);
+  const [isPersonalized, setIsPersonalized] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     viewHistoryService
       .getRecommendations(8)
-      .then((res) => setProducts(res.products))
+      .then((res) => {
+        setProducts(res.products);
+        setIsPersonalized(res.isPersonalized ?? false);
+      })
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);
@@ -50,10 +54,20 @@ export function RecommendedSection({
     <section className="py-12 container mx-auto px-4">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-blue-600" />
+          {isPersonalized ? (
+            <Sparkles className="h-5 w-5 text-blue-600" />
+          ) : (
+            <TrendingUp className="h-5 w-5 text-orange-500" />
+          )}
           <div>
-            <h2 className="text-2xl text-gray-900">Đề xuất cho bạn</h2>
-            <p className="text-sm text-gray-500">Dựa trên lịch sử xem của bạn</p>
+            <h2 className="text-2xl text-gray-900">
+              {isPersonalized ? "Đề xuất cho bạn" : "Xu hướng tuần này"}
+            </h2>
+            <p className="text-sm text-gray-500">
+              {isPersonalized
+                ? "Dựa trên lịch sử mua hàng và sở thích của bạn"
+                : "Sản phẩm được yêu thích nhất hiện tại"}
+            </p>
           </div>
         </div>
         <Button variant="ghost" onClick={() => onNavigate("shop")}>

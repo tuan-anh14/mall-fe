@@ -44,6 +44,7 @@ export interface ViewHistoryResponse {
 export interface RecommendationsResponse {
   products: any[];
   source: "ai" | "builtin";
+  isPersonalized: boolean;
 }
 
 export const viewHistoryService = {

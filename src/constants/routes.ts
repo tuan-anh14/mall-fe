@@ -44,6 +44,7 @@ export const PAGE_TO_PATH: Record<string, string> = {
   chat: "/chat",
   settings: "/settings",
   wallet: "/wallet",
+  "view-history": "/view-history",
   "admin-wallets": "/admin/wallets",
   careers: "/careers",
   returns: "/returns",
