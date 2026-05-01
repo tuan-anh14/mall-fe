@@ -35,6 +35,9 @@ export function SellerReturnRequestModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { openPreview } = useImagePreview();
 
+  const getDefaultRefundAmount = (order: ReturnRequest["order"]) =>
+    Math.max(0, order.subtotal - (order.couponDiscount ?? 0) + order.tax);
+
   useEffect(() => {
     if (isOpen && requestId) {
       fetchRequest();
@@ -47,8 +50,7 @@ export function SellerReturnRequestModal({
       const data = await returnService.getRequestById(requestId);
       setRequest(data);
       setSellerNote(data.sellerNote || "");
-      // Default to order total if not set, but still editable
-      setRefundAmount(data.refundAmount?.toString() || data.order.total.toString());
+      setRefundAmount(data.refundAmount?.toString() || getDefaultRefundAmount(data.order).toString());
     } catch (error: any) {
       toast.error(error.message || "Không thể tải chi tiết yêu cầu.");
     } finally {
@@ -140,15 +142,20 @@ export function SellerReturnRequestModal({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="refund" className="text-sm font-semibold text-gray-700">Số tiền hoàn lại</Label>
-                  <Input
-                    id="refund"
-                    type="number"
-                    value={refundAmount}
-                    onChange={(e) => setRefundAmount(e.target.value)}
-                    placeholder="Nhập số tiền..."
-                    className="rounded-xl border-gray-200"
-                  />
-                  <p className="text-[10px] text-gray-400 mt-1">Mặc định sẽ hoàn toàn bộ tiền đơn hàng.</p>
+                  <div className="relative">
+                    <Input
+                      id="refund"
+                      type="number"
+                      value={refundAmount}
+                      onChange={(e) => setRefundAmount(e.target.value)}
+                      placeholder="Nhập số tiền..."
+                      className="rounded-xl border-gray-200 pr-10"
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-semibold text-gray-500">
+                      đ
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1">Mặc định hoàn tiền hàng sau giảm giá và VAT.</p>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold text-gray-700">Trạng thái hiện tại</Label>
