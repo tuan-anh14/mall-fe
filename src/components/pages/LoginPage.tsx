@@ -270,7 +270,7 @@ export function LoginPage({ onNavigate, onLogin, onRegister }: LoginPageProps) {
                           <ShoppingCart className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="text-gray-900 text-sm font-black uppercase tracking-tight">Buyer Account</p>
+                          <p className="text-gray-900 text-sm font-black uppercase tracking-tight">Tài khoản người mua</p>
                           <p className="text-gray-500 text-[10px] font-medium leading-tight">Mặc định là tài khoản mua hàng, bạn có thể nâng cấp thành người bán sau.</p>
                         </div>
                       </div>
