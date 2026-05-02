@@ -27,6 +27,8 @@ export interface Product {
   sizes?: string[];
   featured?: boolean;
   trending?: boolean;
+  isApproved?: boolean;
+  rejectionReason?: string;
   seller?: ProductSeller;
 }
 

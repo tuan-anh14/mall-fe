@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Plus, Search, Edit, Trash2, Eye, EyeOff, Package } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Eye, EyeOff, Package, Clock, CheckCircle2, AlertCircle } from "lucide-react";
 import { formatCurrency } from "../../lib/currency";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -33,6 +33,10 @@ interface Product {
   status: string;
   ratingAverage: number;
   reviewCount: number;
+  isApproved: boolean;
+  rejectionReason?: string | null;
+  featured: boolean;
+  trending: boolean;
   images: { id: string; url: string; isPrimary: boolean; sortOrder: number }[];
   colors?: { id: string; name: string; hexCode?: string }[];
   sizes?: { id: string; value: string }[];
@@ -205,7 +209,8 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                   <TableHead className="text-gray-600">Danh mục</TableHead>
                   <TableHead className="text-gray-600">Giá</TableHead>
                   <TableHead className="text-gray-600">Tồn kho</TableHead>
-                  <TableHead className="text-gray-600">Trạng thái</TableHead>
+                  <TableHead className="text-gray-600">Kiểm duyệt</TableHead>
+                  <TableHead className="text-gray-600">Hiển thị</TableHead>
                   <TableHead className="text-gray-600 text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
@@ -242,23 +247,50 @@ export function SellerProductsPage({ onNavigate }: SellerProductsPageProps) {
                           {product.stock} sản phẩm
                         </Badge>
                       </TableCell>
+                       <TableCell>
+                        {product.isApproved ? (
+                          <div className="flex items-center gap-1.5 text-emerald-500">
+                            <CheckCircle2 className="h-4 w-4" />
+                            <span className="text-xs font-medium">Đã duyệt</span>
+                          </div>
+                        ) : product.rejectionReason ? (
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1.5 text-rose-500">
+                              <AlertCircle className="h-4 w-4" />
+                              <span className="text-xs font-medium">Bị từ chối</span>
+                            </div>
+                            <span className="text-[10px] text-gray-400 italic max-w-[150px] line-clamp-2" title={product.rejectionReason}>
+                              Lý do: {product.rejectionReason}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 text-amber-500">
+                            <Clock className="h-4 w-4 animate-pulse" />
+                            <span className="text-xs font-medium">Đang chờ</span>
+                          </div>
+                        )}
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Switch
                             checked={product.status === "ACTIVE"}
                             onCheckedChange={() => handleToggleVisibility(product)}
-                            disabled={updatingVisibleId === product.id}
+                            disabled={updatingVisibleId === product.id || !product.isApproved}
                           />
                           <Badge
                             className={
-                              product.status === "ACTIVE"
+                              !product.isApproved 
+                                ? "bg-slate-500/10 text-slate-400 border-slate-500/20"
+                                : product.status === "ACTIVE"
                                 ? "bg-green-500/20 text-green-400 border-green-500/30"
                                 : product.status === "DRAFT"
                                 ? "bg-gray-500/20 text-gray-400 border-gray-500/30"
                                 : "bg-red-500/20 text-red-400 border-red-500/30"
                             }
                           >
-                            {product.status === "ACTIVE"
+                            {!product.isApproved 
+                              ? "Bị ẩn (Chưa duyệt)"
+                              : product.status === "ACTIVE"
                               ? "Hiện"
                               : product.status === "INACTIVE"
                               ? "Ẩn"

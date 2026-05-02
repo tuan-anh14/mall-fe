@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { TrendingUp, ShoppingBag, Users, Package, Plus, LayoutDashboard, PenTool } from "lucide-react";
+import { TrendingUp, ShoppingBag, Users, Package, Plus, LayoutDashboard, PenTool, Clock } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -36,6 +36,8 @@ interface Product {
   price: number;
   stock: number;
   status: string;
+  isApproved: boolean;
+  rejectionReason?: string | null;
   images: { id: string; url: string; isPrimary: boolean; sortOrder: number }[];
 }
 
@@ -102,13 +104,6 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
   }
 
   const statCards = [
-    // {
-    //   label: "Ví của tôi",
-    //   value: formatCurrency(stats?.walletBalance ?? 0),
-    //   change: stats?.revenueChange ?? 0,
-    //   icon: TrendingUp,
-    //   iconBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
-    // },
     {
       label: "Doanh thu (Net)",
       value: formatCurrencyCompact(stats?.totalRevenue ?? 0),
@@ -117,11 +112,18 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       iconBg: "bg-blue-50 text-blue-600 border-blue-100",
     },
     {
-      label: "Phí sàn (5%)",
-      value: formatCurrencyCompact(stats?.totalFees ?? 0),
-      change: 0,
+      label: "Tổng sản phẩm",
+      value: (stats?.totalProducts ?? 0).toLocaleString("vi-VN"),
+      change: stats?.productsChange ?? 0,
       icon: Package,
       iconBg: "bg-indigo-50 text-indigo-600 border-indigo-100",
+    },
+    {
+      label: "Đang chờ duyệt",
+      value: (products.filter(p => !p.isApproved && !p.rejectionReason).length).toLocaleString("vi-VN"),
+      change: 0,
+      icon: Clock,
+      iconBg: "bg-amber-50 text-amber-600 border-amber-100",
     },
     {
       label: "Số đơn hàng",
@@ -342,35 +344,47 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                               {product.stock}
                             </Badge>
                           </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant="secondary"
-                              className={
-                                product.stock > 0
-                                  ? "bg-blue-50 text-blue-700 border-blue-200 font-medium"
-                                  : "bg-gray-100 text-gray-600 border-gray-200 font-medium"
-                              }
-                            >
-                              {product.stock > 0 ? "Đang bán" : "Hết hàng"}
-                            </Badge>
+                           <TableCell>
+                            {!product.isApproved ? (
+                              product.rejectionReason ? (
+                                <Badge variant="secondary" className="bg-red-50 text-red-700 border-red-200 font-medium">
+                                  Bị từ chối
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 font-medium animate-pulse">
+                                  Chờ duyệt
+                                </Badge>
+                              )
+                            ) : (
+                              <Badge
+                                variant="secondary"
+                                className={
+                                  product.stock > 0
+                                    ? "bg-blue-50 text-blue-700 border-blue-200 font-medium"
+                                    : "bg-gray-100 text-gray-600 border-gray-200 font-medium"
+                                }
+                              >
+                                {product.stock > 0 ? "Đang bán" : "Hết hàng"}
+                              </Badge>
+                            )}
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex gap-2 justify-end flex-wrap">
                               <Button
                                 size="sm"
-                                variant="outline"
-                                className="rounded-lg h-8 text-xs font-medium"
+                                variant={product.rejectionReason ? "destructive" : "outline"}
+                                className={`rounded-lg h-8 text-xs font-medium ${!product.rejectionReason && "hover:bg-gray-50"}`}
                                 onClick={() => onNavigate("edit-product", product)}
                               >
-                                Sửa
+                                {product.rejectionReason ? "Sửa lỗi" : "Sửa"}
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="rounded-lg h-8 text-xs font-medium text-red-600 border-red-200 hover:bg-red-50"
+                                className="rounded-lg h-8 text-xs font-medium text-blue-600 border-blue-200 hover:bg-blue-50"
                                 onClick={() => onNavigate("seller-products")}
                               >
-                                Quản lý
+                                Chi tiết
                               </Button>
                             </div>
                           </TableCell>

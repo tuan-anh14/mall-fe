@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { 
   Search, 
   Trash2, 
@@ -11,7 +11,10 @@ import {
   MoreVertical,
   ExternalLink,
   Star,
-  TrendingUp
+  TrendingUp,
+  CheckCircle2,
+  XCircle,
+  Clock
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -51,6 +54,7 @@ import { cn } from "../ui/utils";
 interface Product {
   id: string;
   name: string;
+  slug: string;
   sku?: string | null;
   price: number;
   stock: number;
@@ -60,6 +64,8 @@ interface Product {
   images: { id: string; url: string; isPrimary: boolean }[];
   featured: boolean;
   trending: boolean;
+  isApproved: boolean;
+  rejectionReason?: string | null;
   createdAt: string;
 }
 
@@ -92,6 +98,15 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
 
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Rejection Dialog State
+  const [rejectTarget, setRejectTarget] = useState<Product | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejecting, setRejecting] = useState(false);
+
+  // Approval Dialog State
+  const [approveTarget, setApproveTarget] = useState<Product | null>(null);
+  const [approving, setApproving] = useState(false);
 
   const fetchFilters = async () => {
     try {
@@ -174,8 +189,12 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
 
   const currentTotalPages = Math.ceil(total / limit);
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
+  const getStatusBadge = (product: Product) => {
+    if (!product.isApproved) {
+      return <Badge className="bg-slate-100 text-slate-500 border-slate-200 font-medium">Bị ẩn</Badge>;
+    }
+
+    switch (product.status) {
       case "ACTIVE":
         return <Badge className="bg-emerald-50 text-emerald-700 border-emerald-100 font-medium">Đang bán</Badge>;
       case "INACTIVE":
@@ -185,7 +204,7 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
       case "BANNED":
         return <Badge className="bg-red-50 text-red-700 border-red-100 font-medium">Khóa</Badge>;
       default:
-        return <Badge className="bg-blue-50 text-blue-700 border-blue-100 font-medium">{status}</Badge>;
+        return <Badge className="bg-blue-50 text-blue-700 border-blue-100 font-medium">{product.status}</Badge>;
     }
   };
 
@@ -249,7 +268,8 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                 <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                <SelectItem value="PENDING_APPROVAL">Chờ duyệt</SelectItem>
                 <SelectItem value="ACTIVE">Đang bán</SelectItem>
                 <SelectItem value="INACTIVE">Đang ẩn</SelectItem>
                 <SelectItem value="OUT_OF_STOCK">Hết hàng</SelectItem>
@@ -307,6 +327,7 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
                     </div>
                   </th>
                   <th className={adminThClass}>Trạng thái</th>
+                  <th className={adminThClass}>Kiểm duyệt</th>
                   <th className={cn(adminThClass, "text-right")}>Hành động</th>
                 </tr>
               </thead>
@@ -344,6 +365,8 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
                                 }
                               };
                               onNavigate("product", navProduct);
+                              // Hoặc mở tab mới theo ID nếu cần
+                              // window.open(`/product/${product.id}`, "_blank");
                             }}
                           >
                             {product.name}
@@ -396,28 +419,61 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      {getStatusBadge(product.status)}
+                      {getStatusBadge(product)}
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        {product.isApproved ? (
+                          <div className="flex flex-col items-center text-emerald-600">
+                            <CheckCircle2 className="h-5 w-5" />
+                            <span className="text-[10px] font-bold uppercase mt-0.5">Đã duyệt</span>
+                          </div>
+                        ) : product.rejectionReason ? (
+                          <div className="flex flex-col items-center text-rose-600">
+                            <XCircle className="h-5 w-5" />
+                            <span className="text-[10px] font-bold uppercase mt-0.5">Từ chối</span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center text-amber-500">
+                            <Clock className="h-5 w-5 animate-pulse" />
+                            <span className="text-[10px] font-bold uppercase mt-0.5">Chờ duyệt</span>
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center justify-end gap-2">
+                        {!product.isApproved && !product.rejectionReason && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50"
+                              onClick={() => setApproveTarget(product)}
+                              title="Duyệt sản phẩm"
+                            >
+                              <CheckCircle2 className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-50"
+                              onClick={() => {
+                                setRejectTarget(product);
+                                setRejectReason("");
+                              }}
+                              title="Từ chối"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-slate-400 hover:text-blue-600 hover:bg-blue-50"
-                          onClick={() => {
-                            const navProduct = {
-                              ...product,
-                              image: product.images?.[0]?.url,
-                              category: product.category.name,
-                              seller: {
-                                ...product.seller,
-                                userId: product.seller.userId,
-                                storeName: product.seller.storeName
-                              }
-                            };
-                            onNavigate("product", navProduct);
-                          }}
-                          title="Xem trang sản phẩm"
+                          onClick={() => window.open(`/product/${product.id}`, "_blank")}
+                          title="Xem sản phẩm"
                         >
                           <ExternalLink className="h-4 w-4" />
                         </Button>
@@ -447,6 +503,93 @@ export function AdminProductsPage({ onNavigate }: { onNavigate: (page: string, d
         setCurrentPage={setPage}
         totalItems={total}
       />
+
+      {/* Approve Confirmation */}
+      <AlertDialog open={!!approveTarget} onOpenChange={() => setApproveTarget(null)}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-slate-900">
+              <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+              Xác nhận duyệt sản phẩm?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-500">
+              Sản phẩm <strong className="text-slate-900">{approveTarget?.name}</strong> sẽ được hiển thị công khai trên cửa hàng sau khi duyệt.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={approving} className="border-slate-200">Hủy</AlertDialogCancel>
+            <AlertDialogAction 
+              disabled={approving}
+              onClick={async (e) => {
+                e.preventDefault();
+                if (!approveTarget) return;
+                setApproving(true);
+                try {
+                  await patch(`/api/v1/admin/products/${approveTarget.id}/approve`, {});
+                  toast.success("Đã duyệt sản phẩm");
+                  setApproveTarget(null);
+                  fetchProducts();
+                } catch (err: any) {
+                  toast.error(err.message || "Lỗi khi duyệt");
+                } finally {
+                  setApproving(false);
+                }
+              }}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {approving ? "Đang xử lý..." : "Xác nhận duyệt"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Reject Dialog */}
+      <AlertDialog open={!!rejectTarget} onOpenChange={() => setRejectTarget(null)}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-slate-900">
+              <XCircle className="h-5 w-5 text-rose-500" />
+              Lý do từ chối sản phẩm
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-500">
+              Vui lòng nhập lý do từ chối sản phẩm <strong className="text-slate-900">{rejectTarget?.name}</strong>. 
+              Seller sẽ nhìn thấy lý do này để chỉnh sửa.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4">
+            <Input 
+              placeholder="Nhập lý do chi tiết..." 
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              className="bg-slate-50 border-slate-200"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={rejecting} className="border-slate-200">Hủy</AlertDialogCancel>
+            <AlertDialogAction 
+              disabled={rejecting || !rejectReason.trim()}
+              onClick={async (e) => {
+                e.preventDefault();
+                if (!rejectTarget || !rejectReason.trim()) return;
+                setRejecting(true);
+                try {
+                  await patch(`/api/v1/admin/products/${rejectTarget.id}/reject`, { reason: rejectReason });
+                  toast.success("Đã từ chối sản phẩm");
+                  setRejectTarget(null);
+                  fetchProducts();
+                } catch (err: any) {
+                  toast.error(err.message || "Lỗi khi thực hiện");
+                } finally {
+                  setRejecting(false);
+                }
+              }}
+              className="bg-rose-600 hover:bg-rose-700 text-white"
+            >
+              {rejecting ? "Đang xử lý..." : "Gửi từ chối"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
